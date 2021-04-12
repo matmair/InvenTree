@@ -1,43 +1,29 @@
-"""
-Unit tests for task management
-"""
+""" Unit tests for the main web views """
 
 from django.test import TestCase
-from django_q.models import Schedule
+from django.urls import reverse
+from django.contrib.auth import get_user_model
 
-import InvenTree.tasks
+import os
 
 
-class ScheduledTaskTests(TestCase):
-    """
-    Unit tests for scheduled tasks
-    """
+class ViewTests(TestCase):
+    """ Tests for various top-level views """
 
-    def get_tasks(self, name):
+    username = 'test_user'
+    password = 'test_pass'
 
-        return Schedule.objects.filter(func=name)
+    def setUp(self):
 
-    def test_add_task(self):
-        """
-        Ensure that duplicate tasks cannot be added.
-        """
+        # Create a user
+        get_user_model().objects.create_user(self.username, 'user@email.com', self.password)
 
-        task = 'InvenTree.tasks.heartbeat'
+        self.client.login(username=self.username, password=self.password)
 
-        self.assertEqual(self.get_tasks(task).count(), 0)
+    def test_api_doc(self):
+        """ Test that the api-doc view works """
 
-        InvenTree.tasks.schedule_task(task, schedule_type=Schedule.MINUTES, minutes=10)
+        api_url = os.path.join(reverse('index'), 'api-doc') + '/'
 
-        self.assertEqual(self.get_tasks(task).count(), 1)
-
-        t = Schedule.objects.get(func=task)
-
-        self.assertEqual(t.minutes, 10)
-
-        # Attempt to schedule the same task again
-        InvenTree.tasks.schedule_task(task, schedule_type=Schedule.MINUTES, minutes=5)
-        self.assertEqual(self.get_tasks(task).count(), 1)
-        
-        # But the 'minutes' should have been updated
-        t = Schedule.objects.get(func=task)
-        self.assertEqual(t.minutes, 5)
+        response = self.client.get(api_url)
+        self.assertEqual(response.status_code, 200)
