@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: inventree\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-04 20:22+0000\n"
-"PO-Revision-Date: 2021-04-12 20:01\n"
+"PO-Revision-Date: 2021-04-12 22:13\n"
 "Last-Translator: \n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -169,23 +169,23 @@ msgstr ""
 
 #: InvenTree/settings.py:430
 msgid "English"
-msgstr ""
+msgstr "Inglés"
 
 #: InvenTree/settings.py:431
 msgid "French"
-msgstr ""
+msgstr "Francés"
 
 #: InvenTree/settings.py:432
 msgid "German"
-msgstr ""
+msgstr "Alemán"
 
 #: InvenTree/settings.py:433
 msgid "Polish"
-msgstr ""
+msgstr "Polaco"
 
 #: InvenTree/settings.py:434
 msgid "Turkish"
-msgstr ""
+msgstr "Turco"
 
 #: InvenTree/status.py:24
 msgid "Celery worker check failed"
@@ -230,11 +230,11 @@ msgstr ""
 
 #: InvenTree/status_codes.py:176
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: InvenTree/status_codes.py:177
 msgid "Attention needed"
-msgstr ""
+msgstr "Atención necesaria"
 
 #: InvenTree/status_codes.py:178
 msgid "Damaged"
