@@ -1,159 +1,158 @@
-""" Low level tests for the InvenTree API """
+"""
+Custom field validators for InvenTree
+"""
 
-from rest_framework import status
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
-from django.urls import reverse
+from moneyed import CURRENCIES
 
-from InvenTree.api_tester import InvenTreeAPITestCase
+import common.models
 
-from users.models import RuleSet
-
-from base64 import b64encode
+import re
 
 
-class APITests(InvenTreeAPITestCase):
-    """ Tests for the InvenTree API """
+def validate_currency_code(code):
+    """
+    Check that a given code is a valid currency code.
+    """
 
-    fixtures = [
-        'location',
-        'stock',
-        'part',
-        'category',
-    ]
+    if code not in CURRENCIES:
+        raise ValidationError(_('Not a valid currency code'))
 
-    token = None
 
-    auto_login = False
+def allowable_url_schemes():
+    """ Return the list of allowable URL schemes.
+    In addition to the default schemes allowed by Django,
+    the install configuration file (config.yaml) can specify
+    extra schemas """
 
-    def setUp(self):
+    # Default schemes
+    schemes = ['http', 'https', 'ftp', 'ftps']
 
-        super().setUp()
+    extra = settings.EXTRA_URL_SCHEMES
 
-    def basicAuth(self):
-        # Use basic authentication
+    for e in extra:
+        if e.lower() not in schemes:
+            schemes.append(e.lower())
 
-        authstring = bytes("{u}:{p}".format(u=self.username, p=self.password), "ascii")
+    return schemes
 
-        # Use "basic" auth by default
-        auth = b64encode(authstring).decode("ascii")
-        self.client.credentials(HTTP_AUTHORIZATION="Basic {auth}".format(auth=auth))
 
-    def tokenAuth(self):
+def validate_part_name(value):
+    """ Prevent some illegal characters in part names.
+    """
 
-        self.basicAuth()
-        token_url = reverse('api-token')
-        response = self.client.get(token_url, format='json', data={})
+    for c in ['|', '#', '$', '{', '}']:
+        if c in str(value):
+            raise ValidationError(
+                _('Invalid character in part name')
+            )
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('token', response.data)
 
-        token = response.data['token']
-        self.token = token
+def validate_part_ipn(value):
+    """ Validate the Part IPN against regex rule """
 
-    def token_failure(self):
-        # Test token endpoint without basic auth
-        url = reverse('api-token')
-        response = self.client.get(url, format='json')
+    pattern = common.models.InvenTreeSetting.get_setting('PART_IPN_REGEX')
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIsNone(self.token)
+    if pattern:
+        match = re.search(pattern, value)
 
-    def token_success(self):
+        if match is None:
+            raise ValidationError(_('IPN must match regex pattern {pat}').format(pat=pattern))
 
-        self.tokenAuth()
-        self.assertIsNotNone(self.token)
 
-    def test_info_view(self):
-        """
-        Test that we can read the 'info-view' endpoint.
-        """
+def validate_build_order_reference(value):
+    """
+    Validate the 'reference' field of a BuildOrder
+    """
 
-        url = reverse('api-inventree-info')
+    pattern = common.models.InvenTreeSetting.get_setting('BUILDORDER_REFERENCE_REGEX')
 
-        response = self.client.get(url, format='json')
+    if pattern:
+        match = re.search(pattern, value)
 
-        data = response.json()
-        self.assertIn('server', data)
-        self.assertIn('version', data)
-        self.assertIn('instance', data)
+        if match is None:
+            raise ValidationError(_('Reference must match pattern') + f" '{pattern}'")
 
-        self.assertEquals('InvenTree', data['server'])
 
-    def test_role_view(self):
-        """
-        Test that we can access the 'roles' view for the logged in user.
+def validate_purchase_order_reference(value):
+    """
+    Validate the 'reference' field of a PurchaseOrder
+    """
 
-        Also tests that it is *not* accessible if the client is not logged in.
-        """
+    pattern = common.models.InvenTreeSetting.get_setting('PURCHASEORDER_REFERENCE_REGEX')
 
-        url = reverse('api-user-roles')
+    if pattern:
+        match = re.search(pattern, value)
 
-        response = self.client.get(url, format='json')
+        if match is None:
+            raise ValidationError(_('Reference must match pattern') + f" '{pattern}'")
 
-        # Not logged in, so cannot access user role data
-        self.assertTrue(response.status_code in [401, 403])
 
-        # Now log in!
-        self.basicAuth()
+def validate_sales_order_reference(value):
+    """
+    Validate the 'reference' field of a SalesOrder
+    """
 
-        response = self.get(url)
+    pattern = common.models.InvenTreeSetting.get_setting('SALESORDER_REFERENCE_REGEX')
 
-        data = response.data
+    if pattern:
+        match = re.search(pattern, value)
 
-        self.assertIn('user', data)
-        self.assertIn('username', data)
-        self.assertIn('is_staff', data)
-        self.assertIn('is_superuser', data)
-        self.assertIn('roles', data)
+        if match is None:
+            raise ValidationError(_('Reference must match pattern') + f" '{pattern}'")
 
-        roles = data['roles']
 
-        role_names = roles.keys()
+def validate_tree_name(value):
+    """ Prevent illegal characters in tree item names """
 
-        # By default, 'view' permissions are provided
-        for rule in RuleSet.RULESET_NAMES:
-            self.assertIn(rule, role_names)
+    for c in "!@#$%^&*'\"\\/[]{}<>,|+=~`\"":
+        if c in str(value):
+            raise ValidationError(_('Illegal character in name ({x})'.format(x=c)))
 
-            self.assertIn('view', roles[rule])
 
-            self.assertNotIn('add', roles[rule])
-            self.assertNotIn('change', roles[rule])
-            self.assertNotIn('delete', roles[rule])
-    
-    def test_with_superuser(self):
-        """
-        Superuser should have *all* roles assigned
-        """
+def validate_overage(value):
+    """ Validate that a BOM overage string is properly formatted.
 
-        self.user.is_superuser = True
-        self.user.save()
+    An overage string can look like:
 
-        self.basicAuth()
+    - An integer number ('1' / 3 / 4)
+    - A percentage ('5%' / '10 %')
+    """
 
-        response = self.get(reverse('api-user-roles'))
+    value = str(value).lower().strip()
 
-        roles = response.data['roles']
+    # First look for a simple integer value
+    try:
+        i = int(value)
 
-        for rule in RuleSet.RULESET_NAMES:
-            self.assertIn(rule, roles.keys())
+        if i < 0:
+            raise ValidationError(_("Overage value must not be negative"))
+        
+        # Looks like an integer!
+        return True
+    except ValueError:
+        pass
 
-            for perm in ['view', 'add', 'change', 'delete']:
-                self.assertIn(perm, roles[rule])
+    # Now look for a percentage value
+    if value.endswith('%'):
+        v = value[:-1].strip()
 
-    def test_with_roles(self):
-        """
-        Assign some roles to the user
-        """
+        # Does it look like a number?
+        try:
+            f = float(v)
 
-        self.basicAuth()
-        response = self.get(reverse('api-user-roles'))
+            if f < 0:
+                raise ValidationError(_("Overage value must not be negative"))
+            elif f > 100:
+                raise ValidationError(_("Overage must not exceed 100%"))
 
-        self.assignRole('part.delete')
-        self.assignRole('build.change')
-        response = self.get(reverse('api-user-roles'))
+            return True
+        except ValueError:
+            pass
 
-        roles = response.data['roles']
-
-        # New role permissions should have been added now
-        self.assertIn('delete', roles['part'])
-        self.assertIn('change', roles['build'])
+    raise ValidationError(
+        _("Overage must be an integer value or a percentage")
+    )
