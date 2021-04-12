@@ -1,147 +1,222 @@
-from django.shortcuts import HttpResponseRedirect
-from django.urls import reverse_lazy
-from django.db import connection
-from django.shortcuts import redirect
-import logging
-import time
-import operator
+"""
+Generic models which provide extra functionality over base Django model types.
+"""
 
-from rest_framework.authtoken.models import Token
+from __future__ import unicode_literals
 
-logger = logging.getLogger("inventree")
+import os
 
+from django.db import models
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.utils.translation import gettext_lazy as _
 
-class AuthRequiredMiddleware(object):
-    def __init__(self, get_response):
-        self.get_response = get_response
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
-    def __call__(self, request):
-        # Code to be executed for each request before
-        # the view (and later middleware) are called.
+from mptt.models import MPTTModel, TreeForeignKey
 
-        assert hasattr(request, 'user')
-
-        response = self.get_response(request)
-
-        if not request.user.is_authenticated:
-            """
-            Normally, a web-based session would use csrftoken based authentication.
-            However when running an external application (e.g. the InvenTree app),
-            we wish to use token-based auth to grab media files.
-
-            So, we will allow token-based authentication but ONLY for the /media/ directory.
-
-            What problem is this solving?
-            - The InvenTree mobile app does not use csrf token auth
-            - Token auth is used by the Django REST framework, but that is under the /api/ endpoint
-            - Media files (e.g. Part images) are required to be served to the app
-            - We do not want to make /media/ files accessible without login!
-
-            There is PROBABLY a better way of going about this?
-            a) Allow token-based authentication against a user?
-            b) Serve /media/ files in a duplicate location e.g. /api/media/ ?
-            c) Is there a "standard" way of solving this problem?
-
-            My [google|stackoverflow]-fu has failed me. So this hack has been created.
-            """
-
-            authorized = False
-
-            # Allow static files to be accessed without auth
-            # Important for e.g. login page
-            if request.path_info.startswith('/static/'):
-                authorized = True
-
-            elif 'Authorization' in request.headers.keys():
-                auth = request.headers['Authorization'].strip()
-
-                if auth.startswith('Token') and len(auth.split()) == 2:
-                    token = auth.split()[1]
-
-                    # Does the provided token match a valid user?
-                    if Token.objects.filter(key=token).exists():
-
-                        allowed = ['/api/', '/media/']
-
-                        # Only allow token-auth for /media/ or /static/ dirs!
-                        if any([request.path_info.startswith(a) for a in allowed]):
-                            authorized = True
-
-            # No authorization was found for the request
-            if not authorized:
-                # A logout request will redirect the user to the login screen
-                if request.path_info == reverse_lazy('logout'):
-                    return HttpResponseRedirect(reverse_lazy('login'))
-
-                login = reverse_lazy('login')
-
-                if not request.path_info == login and not request.path_info.startswith('/api/'):
-                    # Save the 'next' parameter to pass through to the login view
-
-                    return redirect('%s?next=%s' % (login, request.path))
-
-        # Code to be executed for each request/response after
-        # the view is called.
-
-        return response
+from .validators import validate_tree_name
 
 
-class QueryCountMiddleware(object):
+def rename_attachment(instance, filename):
     """
-    This middleware will log the number of queries run
-    and the total time taken for each request (with a
-    status code of 200). It does not currently support
-    multi-db setups.
+    Function for renaming an attachment file.
+    The subdirectory for the uploaded file is determined by the implementing class.
 
-    To enable this middleware, set 'log_queries: True' in the local InvenTree config file.
+        Args:
+        instance: Instance of a PartAttachment object
+        filename: name of uploaded file
 
-    Reference: https://www.dabapps.com/blog/logging-sql-queries-django-13/
-
-    Note: 2020-08-15 - This is no longer used, instead we now rely on the django-debug-toolbar addon
+    Returns:
+        path to store file, format: '<subdir>/<id>/filename'
     """
 
-    def __init__(self, get_response):
-        self.get_response = get_response
+    # Construct a path to store a file attachment for a given model type
+    return os.path.join(instance.getSubdir(), filename)
 
-    def __call__(self, request):
 
-        t_start = time.time()
-        response = self.get_response(request)
-        t_stop = time.time()
+class InvenTreeAttachment(models.Model):
+    """ Provides an abstracted class for managing file attachments.
 
-        if response.status_code == 200:
-            total_time = 0
+    Attributes:
+        attachment: File
+        comment: String descriptor for the attachment
+        user: User associated with file upload
+        upload_date: Date the file was uploaded
+    """
+    def getSubdir(self):
+        """
+        Return the subdirectory under which attachments should be stored.
+        Note: Re-implement this for each subclass of InvenTreeAttachment
+        """
 
-            if len(connection.queries) > 0:
+        return "attachments"
 
-                queries = {}
+    def __str__(self):
+        return os.path.basename(self.attachment.name)
 
-                for query in connection.queries:
-                    query_time = query.get('time')
+    attachment = models.FileField(upload_to=rename_attachment, verbose_name=_('Attachment'),
+                                  help_text=_('Select file to attach'))
 
-                    sql = query.get('sql').split('.')[0]
+    comment = models.CharField(blank=True, max_length=100, verbose_name=_('Comment'), help_text=_('File comment'))
 
-                    if sql in queries:
-                        queries[sql] += 1
-                    else:
-                        queries[sql] = 1
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        blank=True, null=True,
+        verbose_name=_('User'),
+        help_text=_('User'),
+    )
 
-                    if query_time is None:
-                        # django-debug-toolbar monkeypatches the connection
-                        # cursor wrapper and adds extra information in each
-                        # item in connection.queries. The query time is stored
-                        # under the key "duration" rather than "time" and is
-                        # in milliseconds, not seconds.
-                        query_time = float(query.get('duration', 0))
+    upload_date = models.DateField(auto_now_add=True, null=True, blank=True, verbose_name=_('upload date'))
 
-                    total_time += float(query_time)
+    @property
+    def basename(self):
+        return os.path.basename(self.attachment.name)
 
-                logger.debug('{n} queries run, {a:.3f}s / {b:.3f}s'.format(
-                    n=len(connection.queries),
-                    a=total_time,
-                    b=(t_stop - t_start)))
+    class Meta:
+        abstract = True
 
-                for x in sorted(queries.items(), key=operator.itemgetter(1), reverse=True):
-                    print(x[0], ':', x[1])
 
-        return response
+class InvenTreeTree(MPTTModel):
+    """ Provides an abstracted self-referencing tree model for data categories.
+
+    - Each Category has one parent Category, which can be blank (for a top-level Category).
+    - Each Category can have zero-or-more child Categor(y/ies)
+
+    Attributes:
+        name: brief name
+        description: longer form description
+        parent: The item immediately above this one. An item with a null parent is a top-level item
+    """
+
+    class Meta:
+        abstract = True
+
+        # Names must be unique at any given level in the tree
+        unique_together = ('name', 'parent')
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+
+    name = models.CharField(
+        blank=False,
+        max_length=100,
+        validators=[validate_tree_name],
+        verbose_name=_("Name"),
+        help_text=_("Name"),
+    )
+
+    description = models.CharField(
+        blank=True,
+        max_length=250,
+        verbose_name=_("Description"),
+        help_text=_("Description (optional)")
+    )
+
+    # When a category is deleted, graft the children onto its parent
+    parent = TreeForeignKey('self',
+                            on_delete=models.DO_NOTHING,
+                            blank=True,
+                            null=True,
+                            verbose_name=_("parent"),
+                            related_name='children')
+
+    @property
+    def item_count(self):
+        """ Return the number of items which exist *under* this node in the tree.
+
+        Here an 'item' is considered to be the 'leaf' at the end of each branch,
+        and the exact nature here will depend on the class implementation.
+        
+        The default implementation returns zero
+        """
+        return 0
+
+    def getUniqueParents(self):
+        """ Return a flat set of all parent items that exist above this node.
+        If any parents are repeated (which would be very bad!), the process is halted
+        """
+
+        return self.get_ancestors()
+
+    def getUniqueChildren(self, include_self=True):
+        """ Return a flat set of all child items that exist under this node.
+        If any child items are repeated, the repetitions are omitted.
+        """
+
+        return self.get_descendants(include_self=include_self)
+
+    @property
+    def has_children(self):
+        """ True if there are any children under this item """
+        return self.getUniqueChildren(include_self=False).count() > 0
+
+    def getAcceptableParents(self):
+        """ Returns a list of acceptable parent items within this model
+        Acceptable parents are ones which are not underneath this item.
+        Setting the parent of an item to its own child results in recursion.
+        """
+
+        contents = ContentType.objects.get_for_model(type(self))
+
+        available = contents.get_all_objects_for_this_type()
+
+        # List of child IDs
+        childs = self.getUniqueChildren()
+
+        acceptable = [None]
+
+        for a in available:
+            if a.id not in childs:
+                acceptable.append(a)
+
+        return acceptable
+
+    @property
+    def parentpath(self):
+        """ Get the parent path of this category
+
+        Returns:
+            List of category names from the top level to the parent of this category
+        """
+
+        return [a for a in self.get_ancestors()]
+
+    @property
+    def path(self):
+        """ Get the complete part of this category.
+
+        e.g. ["Top", "Second", "Third", "This"]
+
+        Returns:
+            List of category names from the top level to this category
+        """
+        return self.parentpath + [self]
+
+    @property
+    def pathstring(self):
+        """ Get a string representation for the path of this item.
+
+        e.g. "Top/Second/Third/This"
+        """
+        return '/'.join([item.name for item in self.path])
+
+    def __str__(self):
+        """ String representation of a category is the full path to that category """
+
+        return "{path} - {desc}".format(path=self.pathstring, desc=self.description)
+
+
+@receiver(pre_delete, sender=InvenTreeTree, dispatch_uid='tree_pre_delete_log')
+def before_delete_tree_item(sender, instance, using, **kwargs):
+    """ Receives pre_delete signal from InvenTreeTree object.
+
+    Before an item is deleted, update each child object to point to the parent of the object being deleted.
+    """
+
+    # Update each tree item below this one
+    for child in instance.children.all():
+        child.parent = instance.parent
+        child.save()
