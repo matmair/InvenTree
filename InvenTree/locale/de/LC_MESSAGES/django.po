@@ -1,302 +1,171 @@
-
-import json
-
-from django.test import TestCase
-import django.core.exceptions as django_exceptions
-from django.core.exceptions import ValidationError
-
-from .validators import validate_overage, validate_part_name
-from . import helpers
-from . import version
-
-from mptt.exceptions import InvalidMove
-
-from decimal import Decimal
-
-from stock.models import StockLocation
-
-
-class ValidatorTest(TestCase):
-
-    """ Simple tests for custom field validators """
-
-    def test_part_name(self):
-        """ Test part name validator """
-
-        validate_part_name('hello world')
-
-        with self.assertRaises(django_exceptions.ValidationError):
-            validate_part_name('This | name is not } valid')
-
-    def test_overage(self):
-        """ Test overage validator """
-
-        validate_overage("100%")
-        validate_overage("10")
-        validate_overage("45.2 %")
-
-        with self.assertRaises(django_exceptions.ValidationError):
-            validate_overage("-1")
-
-        with self.assertRaises(django_exceptions.ValidationError):
-            validate_overage("-2.04 %")
-
-        with self.assertRaises(django_exceptions.ValidationError):
-            validate_overage("105%")
-
-        with self.assertRaises(django_exceptions.ValidationError):
-            validate_overage("xxx %")
-
-        with self.assertRaises(django_exceptions.ValidationError):
-            validate_overage("aaaa")
-
-
-class TestHelpers(TestCase):
-    """ Tests for InvenTree helper functions """
-
-    def test_image_url(self):
-        """ Test if a filename looks like an image """
-
-        for name in ['ape.png', 'bat.GiF', 'apple.WeBP', 'BiTMap.Bmp']:
-            self.assertTrue(helpers.TestIfImageURL(name))
-
-        for name in ['no.doc', 'nah.pdf', 'whatpng']:
-            self.assertFalse(helpers.TestIfImageURL(name))
-
-    def test_str2bool(self):
-        """ Test string to boolean conversion """
-
-        for s in ['yes', 'Y', 'ok', '1', 'OK', 'Ok', 'tRuE', 'oN']:
-            self.assertTrue(helpers.str2bool(s))
-            self.assertFalse(helpers.str2bool(s, test=False))
-
-        for s in ['nO', '0', 'none', 'noNE', None, False, 'falSe', 'off']:
-            self.assertFalse(helpers.str2bool(s))
-            self.assertTrue(helpers.str2bool(s, test=False))
-
-        for s in ['wombat', '', 'xxxx']:
-            self.assertFalse(helpers.str2bool(s))
-            self.assertFalse(helpers.str2bool(s, test=False))
-
-    def test_isnull(self):
-
-        for s in ['null', 'none', '', '-1', 'false']:
-            self.assertTrue(helpers.isNull(s))
-
-        for s in ['yes', 'frog', 'llama', 'true']:
-            self.assertFalse(helpers.isNull(s))
-
-    def testStaticUrl(self):
-
-        self.assertEqual(helpers.getStaticUrl('test.jpg'), '/static/test.jpg')
-        self.assertEqual(helpers.getBlankImage(), '/static/img/blank_image.png')
-        self.assertEqual(helpers.getBlankThumbnail(), '/static/img/blank_image.thumbnail.png')
-
-    def testMediaUrl(self):
-
-        self.assertEqual(helpers.getMediaUrl('xx/yy.png'), '/media/xx/yy.png')
-
-    def testDecimal2String(self):
-        
-        self.assertEqual(helpers.decimal2string(Decimal('1.2345000')), '1.2345')
-        self.assertEqual(helpers.decimal2string('test'), 'test')
-
-
-class TestQuoteWrap(TestCase):
-    """ Tests for string wrapping """
-
-    def test_single(self):
-
-        self.assertEqual(helpers.WrapWithQuotes('hello'), '"hello"')
-        self.assertEqual(helpers.WrapWithQuotes('hello"'), '"hello"')
-
-
-class TestIncrement(TestCase):
-
-    def tests(self):
-        """ Test 'intelligent' incrementing function """
-
-        tests = [
-            ("", ""),
-            (1, "2"),
-            ("001", "002"),
-            ("1001", "1002"),
-            ("ABC123", "ABC124"),
-            ("XYZ0", "XYZ1"),
-            ("123Q", "123Q"),
-            ("QQQ", "QQQ"),
-        ]
-
-        for test in tests:
-            a, b = test
-
-            result = helpers.increment(a)
-            self.assertEqual(result, b)
-
-
-class TestMakeBarcode(TestCase):
-    """ Tests for barcode string creation """
-
-    def test_barcode_extended(self):
-
-        bc = helpers.MakeBarcode(
-            "part",
-            3,
-            {
-                "id": 3,
-                "url": "www.google.com",
-            },
-            brief=False
-        )
-
-        self.assertIn('part', bc)
-        self.assertIn('tool', bc)
-        self.assertIn('"tool": "InvenTree"', bc)
-
-        data = json.loads(bc)
-
-        self.assertEqual(data['part']['id'], 3)
-        self.assertEqual(data['part']['url'], 'www.google.com')
-
-    def test_barcode_brief(self):
-
-        bc = helpers.MakeBarcode(
-            "stockitem",
-            7,
-        )
-
-        data = json.loads(bc)
-        self.assertEqual(len(data), 1)
-        self.assertEqual(data['stockitem'], 7)
-
-
-class TestDownloadFile(TestCase):
-
-    def test_download(self):
-        helpers.DownloadFile("hello world", "out.txt")
-        helpers.DownloadFile(bytes("hello world".encode("utf8")), "out.bin")
-
-
-class TestMPTT(TestCase):
-    """ Tests for the MPTT tree models """
-
-    fixtures = [
-        'location',
-    ]
-
-    def setUp(self):
-        super().setUp()
-
-        StockLocation.objects.rebuild()
-
-    def test_self_as_parent(self):
-        """ Test that we cannot set self as parent """
-
-        loc = StockLocation.objects.get(pk=4)
-        loc.parent = loc
-
-        with self.assertRaises(InvalidMove):
-            loc.save()
-
-    def test_child_as_parent(self):
-        """ Test that we cannot set a child as parent """
-
-        parent = StockLocation.objects.get(pk=4)
-        child = StockLocation.objects.get(pk=5)
-
-        parent.parent = child
-        
-        with self.assertRaises(InvalidMove):
-            parent.save()
-
-    def test_move(self):
-        """ Move an item to a different tree """
-
-        drawer = StockLocation.objects.get(name='Drawer_1')
-
-        # Record the tree ID
-        tree = drawer.tree_id
-
-        home = StockLocation.objects.get(name='Home')
-
-        drawer.parent = home
-        drawer.save()
-
-        self.assertNotEqual(tree, drawer.tree_id)
-        
-
-class TestSerialNumberExtraction(TestCase):
-    """ Tests for serial number extraction code """
-
-    def test_simple(self):
-
-        e = helpers.extract_serial_numbers
-
-        sn = e("1-5", 5)
-        self.assertEqual(len(sn), 5)
-        for i in range(1, 6):
-            self.assertIn(i, sn)
-
-        sn = e("1, 2, 3, 4, 5", 5)
-        self.assertEqual(len(sn), 5)
-
-        sn = e("1-5, 10-15", 11)
-        self.assertIn(3, sn)
-        self.assertIn(13, sn)
-
-    def test_failures(self):
-
-        e = helpers.extract_serial_numbers
-
-        # Test duplicates
-        with self.assertRaises(ValidationError):
-            e("1,2,3,3,3", 5)
-
-        # Test invalid length
-        with self.assertRaises(ValidationError):
-            e("1,2,3", 5)
-
-        # Test empty string
-        with self.assertRaises(ValidationError):
-            e(", , ,", 0)
-
-        # Test incorrect sign in group
-        with self.assertRaises(ValidationError):
-            e("10-2", 8)
-
-        # Test invalid group
-        with self.assertRaises(ValidationError):
-            e("1-5-10", 10)
-
-        with self.assertRaises(ValidationError):
-            e("10, a, 7-70j", 4)
-
-
-class TestVersionNumber(TestCase):
-    """
-    Unit tests for version number functions
-    """
-
-    def test_tuple(self):
-
-        v = version.inventreeVersionTuple()
-        self.assertEqual(len(v), 3)
-
-        s = '.'.join([str(i) for i in v])
-
-        self.assertTrue(s in version.inventreeVersion())
-
-    def test_comparison(self):
-        """
-        Test direct comparison of version numbers
-        """
-
-        v_a = version.inventreeVersionTuple('1.2.0')
-        v_b = version.inventreeVersionTuple('1.2.3')
-        v_c = version.inventreeVersionTuple('1.2.4')
-        v_d = version.inventreeVersionTuple('2.0.0')
-
-        self.assertTrue(v_b > v_a)
-        self.assertTrue(v_c > v_b)
-        self.assertTrue(v_d > v_c)
-        self.assertTrue(v_d > v_a)
+"""
+Top-level URL lookup for InvenTree application.
+
+Passes URL lookup downstream to each app as required.
+"""
+
+
+from django.conf.urls import url, include
+from django.urls import path
+from django.contrib import admin
+from django.contrib.auth import views as auth_views
+
+from company.urls import company_urls
+from company.urls import supplier_part_urls
+from company.urls import price_break_urls
+
+from common.urls import common_urls
+from part.urls import part_urls
+from stock.urls import stock_urls
+from build.urls import build_urls
+from order.urls import order_urls
+
+from barcodes.api import barcode_api_urls
+from common.api import common_api_urls
+from part.api import part_api_urls, bom_api_urls
+from company.api import company_api_urls
+from stock.api import stock_api_urls
+from build.api import build_api_urls
+from order.api import order_api_urls
+from label.api import label_api_urls
+from report.api import report_api_urls
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+from django.views.generic.base import RedirectView
+from rest_framework.documentation import include_docs_urls
+
+from .views import IndexView, SearchView, DatabaseStatsView
+from .views import SettingsView, EditUserView, SetPasswordView
+from .views import ColorThemeSelectView, SettingCategorySelectView
+from .views import DynamicJsView
+
+from common.views import SettingEdit
+
+from .api import InfoView, NotFoundView
+from .api import ActionPluginView
+
+from users.urls import user_urls
+
+admin.site.site_header = "InvenTree Admin"
+
+apipatterns = [
+    url(r'^barcode/', include(barcode_api_urls)),
+    url(r'^common/', include(common_api_urls)),
+    url(r'^part/', include(part_api_urls)),
+    url(r'^bom/', include(bom_api_urls)),
+    url(r'^company/', include(company_api_urls)),
+    url(r'^stock/', include(stock_api_urls)),
+    url(r'^build/', include(build_api_urls)),
+    url(r'^order/', include(order_api_urls)),
+    url(r'^label/', include(label_api_urls)),
+    url(r'^report/', include(report_api_urls)),
+
+    # User URLs
+    url(r'^user/', include(user_urls)),
+
+    # Plugin endpoints
+    url(r'^action/', ActionPluginView.as_view(), name='api-action-plugin'),
+
+    # InvenTree information endpoint
+    url(r'^$', InfoView.as_view(), name='api-inventree-info'),
+
+    # Unknown endpoint
+    url(r'^.*$', NotFoundView.as_view(), name='api-404'),
+]
+
+settings_urls = [
+
+    url(r'^user/?', SettingsView.as_view(template_name='InvenTree/settings/user.html'), name='settings-user'),
+    url(r'^theme/?', ColorThemeSelectView.as_view(), name='settings-theme'),
+   
+    url(r'^global/?', SettingsView.as_view(template_name='InvenTree/settings/global.html'), name='settings-global'),
+    url(r'^report/?', SettingsView.as_view(template_name='InvenTree/settings/report.html'), name='settings-report'),
+    url(r'^category/?', SettingCategorySelectView.as_view(), name='settings-category'),
+    url(r'^part/?', SettingsView.as_view(template_name='InvenTree/settings/part.html'), name='settings-part'),
+    url(r'^stock/?', SettingsView.as_view(template_name='InvenTree/settings/stock.html'), name='settings-stock'),
+    url(r'^build/?', SettingsView.as_view(template_name='InvenTree/settings/build.html'), name='settings-build'),
+    url(r'^purchase-order/?', SettingsView.as_view(template_name='InvenTree/settings/po.html'), name='settings-po'),
+    url(r'^sales-order/?', SettingsView.as_view(template_name='InvenTree/settings/so.html'), name='settings-so'),
+
+    url(r'^(?P<pk>\d+)/edit/', SettingEdit.as_view(), name='setting-edit'),
+
+    # Catch any other urls
+    url(r'^.*$', SettingsView.as_view(template_name='InvenTree/settings/user.html'), name='settings'),
+]
+
+# Some javascript files are served 'dynamically', allowing them to pass through the Django translation layer
+dynamic_javascript_urls = [
+    url(r'^modals.js', DynamicJsView.as_view(template_name='js/modals.js'), name='modals.js'),
+    url(r'^barcode.js', DynamicJsView.as_view(template_name='js/barcode.js'), name='barcode.js'),
+    url(r'^bom.js', DynamicJsView.as_view(template_name='js/bom.js'), name='bom.js'),
+    url(r'^build.js', DynamicJsView.as_view(template_name='js/build.js'), name='build.js'),
+    url(r'^calendar.js', DynamicJsView.as_view(template_name='js/calendar.js'), name='calendar.js'),
+    url(r'^company.js', DynamicJsView.as_view(template_name='js/company.js'), name='company.js'),
+    url(r'^order.js', DynamicJsView.as_view(template_name='js/order.js'), name='order.js'),
+    url(r'^part.js', DynamicJsView.as_view(template_name='js/part.js'), name='part.js'),
+    url(r'^label.js', DynamicJsView.as_view(template_name='js/label.js'), name='label.js'),
+    url(r'^report.js', DynamicJsView.as_view(template_name='js/report.js'), name='report.js'),
+    url(r'^stock.js', DynamicJsView.as_view(template_name='js/stock.js'), name='stock.js'),
+    url(r'^tables.js', DynamicJsView.as_view(template_name='js/tables.js'), name='tables.js'),
+    url(r'^table_filters.js', DynamicJsView.as_view(template_name='js/table_filters.js'), name='table_filters.js'),
+    url(r'^filters.js', DynamicJsView.as_view(template_name='js/filters.js'), name='filters.js'),
+]
+
+urlpatterns = [
+    url(r'^part/', include(part_urls)),
+    url(r'^supplier-part/', include(supplier_part_urls)),
+    url(r'^price-break/', include(price_break_urls)),
+
+    # "Dynamic" javascript files which are rendered using InvenTree templating.
+    url(r'^dynamic/', include(dynamic_javascript_urls)),
+
+    url(r'^common/', include(common_urls)),
+
+    url(r'^stock/', include(stock_urls)),
+
+    url(r'^company/', include(company_urls)),
+    url(r'^order/', include(order_urls)),
+
+    url(r'^build/', include(build_urls)),
+
+    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+    url(r'^login/?', auth_views.LoginView.as_view(), name='login'),
+    url(r'^logout/', auth_views.LogoutView.as_view(template_name='registration/logout.html'), name='logout'),
+    
+    url(r'^settings/', include(settings_urls)),
+
+    url(r'^edit-user/', EditUserView.as_view(), name='edit-user'),
+    url(r'^set-password/', SetPasswordView.as_view(), name='set-password'),
+
+    url(r'^admin/error_log/', include('error_report.urls')),
+    url(r'^admin/shell/', include('django_admin_shell.urls')),
+    url(r'^admin/', admin.site.urls, name='inventree-admin'),
+
+    url(r'^index/', IndexView.as_view(), name='index'),
+    url(r'^search/', SearchView.as_view(), name='search'),
+    url(r'^stats/', DatabaseStatsView.as_view(), name='stats'),
+
+    url(r'^api/', include(apipatterns)),
+    url(r'^api-doc/', include_docs_urls(title='InvenTree API')),
+
+    url(r'^markdownx/', include('markdownx.urls')),
+]
+
+# Static file access
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Media file access
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Debug toolbar access (if in DEBUG mode)
+if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug/', include(debug_toolbar.urls)),
+    ] + urlpatterns
+
+# Send any unknown URLs to the parts page
+urlpatterns += [url(r'^.*$', RedirectView.as_view(url='/index/', permanent=False), name='index')]
