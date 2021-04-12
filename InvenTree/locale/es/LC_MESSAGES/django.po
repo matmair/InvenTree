@@ -1,43 +1,84 @@
+"""
+Serializers used in various InvenTree apps
+"""
+
+
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-import inspect
-import importlib
-import pkgutil
+from rest_framework import serializers
 
+import os
 
-def iter_namespace(pkg):
-
-    return pkgutil.iter_modules(pkg.__path__, pkg.__name__ + ".")
-
-
-def get_modules(pkg):
-    # Return all modules in a given package
-    return [importlib.import_module(name) for finder, name, ispkg in iter_namespace(pkg)]
+from django.conf import settings
+from django.contrib.auth.models import User
 
 
-def get_classes(module):
-    # Return all classes in a given module
-    return inspect.getmembers(module, inspect.isclass)
+class UserSerializer(serializers.ModelSerializer):
+    """ Serializer for User - provides all fields """
+
+    class Meta:
+        model = User
+        fields = 'all'
 
 
-def get_plugins(pkg, baseclass):
+class UserSerializerBrief(serializers.ModelSerializer):
+    """ Serializer for User - provides limited information """
+
+    class Meta:
+        model = User
+        fields = [
+            'pk',
+            'username',
+        ]
+
+
+class InvenTreeModelSerializer(serializers.ModelSerializer):
     """
-    Return a list of all modules under a given package.
-
-    - Modules must be a subclass of the provided 'baseclass'
-    - Modules must have a non-empty PLUGIN_NAME parameter
+    Inherits the standard Django ModelSerializer class,
+    but also ensures that the underlying model class data are checked on validation.
     """
 
-    plugins = []
+    def validate(self, data):
+        """ Perform serializer validation.
+        In addition to running validators on the serializer fields,
+        this class ensures that the underlying model is also validated.
+        """
+        
+        # Run any native validation checks first (may throw an ValidationError)
+        data = super(serializers.ModelSerializer, self).validate(data)
 
-    modules = get_modules(pkg)
+        # Now ensure the underlying model is correct
+        instance = self.Meta.model(**data)
+        instance.clean()
 
-    # Iterate through each module in the package
-    for mod in modules:
-        # Iterate through each class in the module
-        for item in get_classes(mod):
-            plugin = item[1]
-            if issubclass(plugin, baseclass) and plugin.PLUGIN_NAME:
-                plugins.append(plugin)
+        return data
 
-    return plugins
+
+class InvenTreeAttachmentSerializerField(serializers.FileField):
+    """
+    Override the DRF native FileField serializer,
+    to remove the leading server path.
+
+    For example, the FileField might supply something like:
+
+    http://127.0.0.1:8000/media/foo/bar.jpg
+
+    Whereas we wish to return:
+
+    /media/foo/bar.jpg
+
+    Why? You can't handle the why!
+
+    Actually, if the server process is serving the data at 127.0.0.1,
+    but a proxy service (e.g. nginx) is then providing DNS lookup to the outside world,
+    then an attachment which prefixes the "address" of the internal server
+    will not be accessible from the outside world.
+    """
+
+    def to_representation(self, value):
+
+        if not value:
+            return None
+
+        return os.path.join(str(settings.MEDIA_URL), str(value))
