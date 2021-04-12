@@ -1,244 +1,159 @@
-from django.utils.translation import ugettext_lazy as _
+""" Low level tests for the InvenTree API """
+
+from rest_framework import status
+
+from django.urls import reverse
+
+from InvenTree.api_tester import InvenTreeAPITestCase
+
+from users.models import RuleSet
+
+from base64 import b64encode
 
 
-class StatusCode:
-    """
-    Base class for representing a set of StatusCodes.
-    This is used to map a set of integer values to text.
-    """
+class APITests(InvenTreeAPITestCase):
+    """ Tests for the InvenTree API """
 
-    @classmethod
-    def render(cls, key, large=False):
+    fixtures = [
+        'location',
+        'stock',
+        'part',
+        'category',
+    ]
+
+    token = None
+
+    auto_login = False
+
+    def setUp(self):
+
+        super().setUp()
+
+    def basicAuth(self):
+        # Use basic authentication
+
+        authstring = bytes("{u}:{p}".format(u=self.username, p=self.password), "ascii")
+
+        # Use "basic" auth by default
+        auth = b64encode(authstring).decode("ascii")
+        self.client.credentials(HTTP_AUTHORIZATION="Basic {auth}".format(auth=auth))
+
+    def tokenAuth(self):
+
+        self.basicAuth()
+        token_url = reverse('api-token')
+        response = self.client.get(token_url, format='json', data={})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('token', response.data)
+
+        token = response.data['token']
+        self.token = token
+
+    def token_failure(self):
+        # Test token endpoint without basic auth
+        url = reverse('api-token')
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertIsNone(self.token)
+
+    def token_success(self):
+
+        self.tokenAuth()
+        self.assertIsNotNone(self.token)
+
+    def test_info_view(self):
         """
-        Render the value as a HTML label.
+        Test that we can read the 'info-view' endpoint.
         """
 
-        # If the key cannot be found, pass it back
-        if key not in cls.options.keys():
-            return key
-        
-        value = cls.options.get(key, key)
-        color = cls.colors.get(key, 'grey')
+        url = reverse('api-inventree-info')
 
-        if large:
-            span_class = 'label label-large label-large-{c}'.format(c=color)
-        else:
-            span_class = 'label label-{c}'.format(c=color)
+        response = self.client.get(url, format='json')
 
-        return "<span class='{cl}'>{value}</span>".format(
-            cl=span_class,
-            value=value
-        )
+        data = response.json()
+        self.assertIn('server', data)
+        self.assertIn('version', data)
+        self.assertIn('instance', data)
 
-    @classmethod
-    def list(cls):
+        self.assertEquals('InvenTree', data['server'])
+
+    def test_role_view(self):
         """
-        Return the StatusCode options as a list of mapped key / value items
+        Test that we can access the 'roles' view for the logged in user.
+
+        Also tests that it is *not* accessible if the client is not logged in.
         """
 
-        codes = []
+        url = reverse('api-user-roles')
 
-        for key in cls.options.keys():
+        response = self.client.get(url, format='json')
 
-            opt = {
-                'key': key,
-                'value': cls.options[key]
-            }
+        # Not logged in, so cannot access user role data
+        self.assertTrue(response.status_code in [401, 403])
 
-            color = cls.colors.get(key, None)
+        # Now log in!
+        self.basicAuth()
 
-            if color:
-                opt['color'] = color
+        response = self.get(url)
 
-            codes.append(opt)
+        data = response.data
 
-        return codes
+        self.assertIn('user', data)
+        self.assertIn('username', data)
+        self.assertIn('is_staff', data)
+        self.assertIn('is_superuser', data)
+        self.assertIn('roles', data)
 
-    @classmethod
-    def text(cls, key):
-        return cls.options.get(key, None)
+        roles = data['roles']
 
-    @classmethod
-    def items(cls):
-        return cls.options.items()
+        role_names = roles.keys()
 
-    @classmethod
-    def label(cls, value):
-        """ Return the status code label associated with the provided value """
-        return cls.options.get(value, value)
+        # By default, 'view' permissions are provided
+        for rule in RuleSet.RULESET_NAMES:
+            self.assertIn(rule, role_names)
 
-    @classmethod
-    def value(cls, label):
-        """ Return the value associated with the provided label """
-        for k in cls.options.keys():
-            if cls.options[k].lower() == label.lower():
-                return k
+            self.assertIn('view', roles[rule])
 
-        raise ValueError("Label not found")
+            self.assertNotIn('add', roles[rule])
+            self.assertNotIn('change', roles[rule])
+            self.assertNotIn('delete', roles[rule])
+    
+    def test_with_superuser(self):
+        """
+        Superuser should have *all* roles assigned
+        """
 
+        self.user.is_superuser = True
+        self.user.save()
 
-class PurchaseOrderStatus(StatusCode):
-    """
-    Defines a set of status codes for a PurchaseOrder
-    """
+        self.basicAuth()
 
-    # Order status codes
-    PENDING = 10  # Order is pending (not yet placed)
-    PLACED = 20  # Order has been placed with supplier
-    COMPLETE = 30  # Order has been completed
-    CANCELLED = 40  # Order was cancelled
-    LOST = 50  # Order was lost
-    RETURNED = 60  # Order was returned
+        response = self.get(reverse('api-user-roles'))
 
-    options = {
-        PENDING: _("Pending"),
-        PLACED: _("Placed"),
-        COMPLETE: _("Complete"),
-        CANCELLED: _("Cancelled"),
-        LOST: _("Lost"),
-        RETURNED: _("Returned"),
-    }
+        roles = response.data['roles']
 
-    colors = {
-        PENDING: 'blue',
-        PLACED: 'blue',
-        COMPLETE: 'green',
-        CANCELLED: 'red',
-        LOST: 'yellow',
-        RETURNED: 'yellow',
-    }
+        for rule in RuleSet.RULESET_NAMES:
+            self.assertIn(rule, roles.keys())
 
-    # Open orders
-    OPEN = [
-        PENDING,
-        PLACED,
-    ]
+            for perm in ['view', 'add', 'change', 'delete']:
+                self.assertIn(perm, roles[rule])
 
-    # Failed orders
-    FAILED = [
-        CANCELLED,
-        LOST,
-        RETURNED
-    ]
+    def test_with_roles(self):
+        """
+        Assign some roles to the user
+        """
 
+        self.basicAuth()
+        response = self.get(reverse('api-user-roles'))
 
-class SalesOrderStatus(StatusCode):
-    """ Defines a set of status codes for a SalesOrder """
+        self.assignRole('part.delete')
+        self.assignRole('build.change')
+        response = self.get(reverse('api-user-roles'))
 
-    PENDING = 10  # Order is pending
-    SHIPPED = 20  # Order has been shipped to customer
-    CANCELLED = 40  # Order has been cancelled
-    LOST = 50  # Order was lost
-    RETURNED = 60  # Order was returned
+        roles = response.data['roles']
 
-    options = {
-        PENDING: _("Pending"),
-        SHIPPED: _("Shipped"),
-        CANCELLED: _("Cancelled"),
-        LOST: _("Lost"),
-        RETURNED: _("Returned"),
-    }
-
-    colors = {
-        PENDING: 'blue',
-        SHIPPED: 'green',
-        CANCELLED: 'red',
-        LOST: 'yellow',
-        RETURNED: 'yellow',
-    }
-
-    # Open orders
-    OPEN = [
-        PENDING,
-    ]
-
-    # Completed orders
-    COMPLETE = [
-        SHIPPED,
-    ]
-
-
-class StockStatus(StatusCode):
-
-    OK = 10  # Item is OK
-    ATTENTION = 50  # Item requires attention
-    DAMAGED = 55  # Item is damaged
-    DESTROYED = 60  # Item is destroyed
-    REJECTED = 65  # Item is rejected
-    LOST = 70  # Item has been lost
-    RETURNED = 85  # Item has been returned from a customer
-
-    # Any stock code above 100 means that the stock item is not "in stock"
-    # This can be used as a quick check for filtering
-    NOT_IN_STOCK = 100
-
-    options = {
-        OK: _("OK"),
-        ATTENTION: _("Attention needed"),
-        DAMAGED: _("Damaged"),
-        DESTROYED: _("Destroyed"),
-        LOST: _("Lost"),
-        REJECTED: _("Rejected"),
-        RETURNED: _("Returned"),
-    }
-
-    colors = {
-        OK: 'green',
-        ATTENTION: 'yellow',
-        DAMAGED: 'red',
-        DESTROYED: 'red',
-        LOST: 'grey',
-        REJECTED: 'red',
-    }
-
-    # The following codes correspond to parts that are 'available' or 'in stock'
-    AVAILABLE_CODES = [
-        OK,
-        ATTENTION,
-        DAMAGED,
-        RETURNED,
-    ]
-
-    # The following codes correspond to parts that are 'unavailable'
-    UNAVAILABLE_CODES = [
-        DESTROYED,
-        LOST,
-        REJECTED,
-    ]
-
-    # The following codes are available for receiving goods
-    RECEIVING_CODES = [
-        OK,
-        ATTENTION,
-        DAMAGED,
-        DESTROYED,
-        REJECTED
-    ]
-
-
-class BuildStatus(StatusCode):
-
-    # Build status codes
-    PENDING = 10  # Build is pending / active
-    PRODUCTION = 20  # BuildOrder is in production
-    CANCELLED = 30  # Build was cancelled
-    COMPLETE = 40  # Build is complete
-
-    options = {
-        PENDING: _("Pending"),
-        PRODUCTION: _("Production"),
-        CANCELLED: _("Cancelled"),
-        COMPLETE: _("Complete"),
-    }
-
-    colors = {
-        PENDING: 'blue',
-        PRODUCTION: 'blue',
-        COMPLETE: 'green',
-        CANCELLED: 'red',
-    }
-
-    ACTIVE_CODES = [
-        PENDING,
-        PRODUCTION,
-    ]
+        # New role permissions should have been added now
+        self.assertIn('delete', roles['part'])
+        self.assertIn('change', roles['build'])
