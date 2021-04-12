@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: inventree\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-04 20:22+0000\n"
-"PO-Revision-Date: 2021-04-12 20:01\n"
+"PO-Revision-Date: 2021-04-12 20:55\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -136,7 +136,7 @@ msgstr "Hochladedatum"
 #: report/models.py:179 templates/InvenTree/search.html:136
 #: templates/InvenTree/search.html:273 templates/js/part.js:109
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: InvenTree/models.py:114 build/models.py:134
 #: build/templates/build/detail.html:21 company/models.py:361
@@ -230,7 +230,7 @@ msgstr "Versendet"
 
 #: InvenTree/status_codes.py:176
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: InvenTree/status_codes.py:177
 msgid "Attention needed"
@@ -905,7 +905,7 @@ msgstr "Bau-Status"
 #: templates/js/order.js:187 templates/js/order.js:285
 #: templates/js/stock.js:624 templates/js/stock.js:1198
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: build/templates/build/build_base.html:108
 msgid "This build was due on"
@@ -1095,7 +1095,7 @@ msgstr "Bauauftrag-details"
 #: order/templates/order/po_navbar.html:14
 #: order/templates/order/so_navbar.html:15 part/templates/part/navbar.html:15
 msgid "Details"
-msgstr ""
+msgstr "Details"
 
 #: build/templates/build/navbar.html:20 build/templates/build/navbar.html:23
 #: build/templates/build/parts.html:11
@@ -1341,7 +1341,7 @@ msgstr "Barcode-Scanner Unterstützung"
 
 #: common/models.py:96
 msgid "IPN Regex"
-msgstr ""
+msgstr "IPN Regex"
 
 #: common/models.py:97
 msgid "Regular expression pattern for matching Part IPN"
@@ -1658,7 +1658,7 @@ msgstr "Standard-Währung für diese Firma"
 
 #: company/forms.py:76 part/forms.py:46
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: company/forms.py:77 part/forms.py:47
 msgid "Image URL"
@@ -1683,7 +1683,7 @@ msgstr "Firmenbeschreibung"
 #: company/models.py:101 company/templates/company/company_base.html:70
 #: company/templates/company/detail.html:31 templates/js/company.js:60
 msgid "Website"
-msgstr ""
+msgstr "Website"
 
 #: company/models.py:101
 msgid "Company website URL"
@@ -1707,7 +1707,7 @@ msgstr "Kontakt-Telefon"
 
 #: company/models.py:112 company/templates/company/company_base.html:91
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: company/models.py:112
 msgid "Contact email address"
@@ -1726,7 +1726,7 @@ msgstr "Anlaufstelle"
 #: report/templates/report/inventree_build_order_base.html:165
 #: stock/models.py:1557 templates/js/company.js:208 templates/js/part.js:430
 msgid "Link"
-msgstr ""
+msgstr "Link"
 
 #: company/models.py:118
 msgid "Link to external company information"
@@ -1809,7 +1809,7 @@ msgstr "Hersteller auswählen"
 #: order/templates/order/purchase_order_detail.html:183 part/bom.py:173
 #: templates/js/company.js:204
 msgid "MPN"
-msgstr ""
+msgstr "MPN"
 
 #: company/models.py:350
 msgid "Manufacturer part number"
@@ -1909,7 +1909,8 @@ msgstr "Sind Sie sicher, dass Sie die Firma '%(name)s' löschen wollen?"
 #, python-format
 msgid "There are %(count)s parts sourced from this company.<br>\n"
 "If this supplier is deleted, these supplier part entries will also be deleted."
-msgstr ""
+msgstr "Es gibt %(count)s Teile, die von diesem Unternehmen bezogen werden.<br>\n"
+"Wenn dieser Lieferant gelöscht wird, werden auch diese Zuliefererteile gelöscht."
 
 #: company/templates/company/detail.html:21
 msgid "Company Name"
@@ -2290,7 +2291,7 @@ msgstr "Label Beschreibung"
 
 #: label/models.py:116 stock/forms.py:202
 msgid "Label"
-msgstr ""
+msgstr "Label"
 
 #: label/models.py:117
 msgid "Label template file"
@@ -2826,7 +2827,7 @@ msgstr "Keine passenden Positionen gefunden"
 
 #: order/templates/order/sales_order_detail.html:199
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: order/templates/order/sales_order_detail.html:229 templates/js/build.js:523
 #: templates/js/build.js:785
@@ -3318,7 +3319,7 @@ msgstr "Revisions- oder Versionsnummer"
 #: part/models.py:738 part/templates/part/detail.html:35 report/models.py:198
 #: templates/js/part.js:164
 msgid "Revision"
-msgstr ""
+msgstr "Revision"
 
 #: part/models.py:760
 msgid "Where is this item normally stored?"
@@ -3511,7 +3512,7 @@ msgstr "Stücklisten-Anzahl für dieses Stücklisten-Teil"
 
 #: part/models.py:2160 templates/js/bom.js:216 templates/js/bom.js:269
 msgid "Optional"
-msgstr ""
+msgstr "Optional"
 
 #: part/models.py:2160
 msgid "This BOM item is optional"
@@ -4031,7 +4032,7 @@ msgstr "Teil Test-Vorlagen"
 
 #: part/templates/part/navbar.html:103 stock/templates/stock/item_base.html:382
 msgid "Tests"
-msgstr ""
+msgstr "Tests"
 
 #: part/templates/part/navbar.html:107 part/templates/part/navbar.html:110
 #: part/templates/part/related.html:10
@@ -4557,7 +4558,7 @@ msgstr "Auftrags-Abfragefilter"
 
 #: report/models.py:500
 msgid "Snippet"
-msgstr ""
+msgstr "Snippet"
 
 #: report/models.py:501
 msgid "Report snippet file"
@@ -4599,7 +4600,7 @@ msgstr "Testergebnisse"
 #: report/templates/report/inventree_test_report_base.html:88
 #: stock/models.py:1640
 msgid "Test"
-msgstr ""
+msgstr "Test"
 
 #: report/templates/report/inventree_test_report_base.html:89
 #: stock/models.py:1646
@@ -5532,7 +5533,7 @@ msgstr "Seite existiert nicht"
 
 #: templates/InvenTree/index.html:6
 msgid "Index"
-msgstr ""
+msgstr "Index"
 
 #: templates/InvenTree/index.html:97
 msgid "Starred Parts"
@@ -5836,7 +5837,7 @@ msgstr "Barcode-Daten eingeben"
 
 #: templates/js/barcode.js:14
 msgid "Barcode"
-msgstr ""
+msgstr "Barcode"
 
 #: templates/js/barcode.js:32
 msgid "Enter optional notes for stock transfer"
@@ -6676,11 +6677,11 @@ msgstr "Barcode scannen"
 
 #: templates/navbar.html:63
 msgid "InvenTree server issues detected"
-msgstr "InvenTree Server Fehler aufgetreten"
+msgstr "InvenTree Server-Probleme erkannt"
 
 #: templates/navbar.html:69 users/models.py:36
 msgid "Admin"
-msgstr ""
+msgstr "Admin"
 
 #: templates/navbar.html:71 templates/registration/logout.html:5
 msgid "Logout"
@@ -6724,7 +6725,7 @@ msgstr "hier</a> zum abmelden</p>"
 
 #: templates/stats.html:9
 msgid "Server"
-msgstr ""
+msgstr "Server"
 
 #: templates/stats.html:13
 msgid "Instance Name"
