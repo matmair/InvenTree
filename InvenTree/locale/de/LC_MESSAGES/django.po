@@ -1,159 +1,126 @@
-""" Low level tests for the InvenTree API """
+"""
+Main JSON interface views
+"""
 
-from rest_framework import status
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-from django.urls import reverse
+import logging
 
-from InvenTree.api_tester import InvenTreeAPITestCase
+from django.utils.translation import ugettext_lazy as _
+from django.http import JsonResponse
 
-from users.models import RuleSet
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
-from base64 import b64encode
+from rest_framework import permissions
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .views import AjaxView
+from .version import inventreeVersion, inventreeApiVersion, inventreeInstanceName
+from .status import is_worker_running
+
+from plugins import plugins as inventree_plugins
 
 
-class APITests(InvenTreeAPITestCase):
-    """ Tests for the InvenTree API """
+logger = logging.getLogger("inventree")
 
-    fixtures = [
-        'location',
-        'stock',
-        'part',
-        'category',
+
+logger.info("Loading action plugins...")
+action_plugins = inventree_plugins.load_action_plugins()
+
+
+class InfoView(AjaxView):
+    """ Simple JSON endpoint for InvenTree information.
+    Use to confirm that the server is running, etc.
+    """
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, *args, **kwargs):
+
+        data = {
+            'server': 'InvenTree',
+            'version': inventreeVersion(),
+            'instance': inventreeInstanceName(),
+            'apiVersion': inventreeApiVersion(),
+            'worker_running': is_worker_running(),
+        }
+
+        return JsonResponse(data)
+
+
+class NotFoundView(AjaxView):
+    """
+    Simple JSON view when accessing an invalid API view.
+    """
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, *args, **kwargs):
+
+        data = {
+            'details': _('API endpoint not found'),
+            'url': request.build_absolute_uri(),
+        }
+
+        return JsonResponse(data, status=404)
+
+
+class AttachmentMixin:
+    """
+    Mixin for creating attachment objects,
+    and ensuring the user information is saved correctly.
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter,
     ]
 
-    token = None
+    def perform_create(self, serializer):
+        """ Save the user information when a file is uploaded """
 
-    auto_login = False
+        attachment = serializer.save()
+        attachment.user = self.request.user
+        attachment.save()
 
-    def setUp(self):
 
-        super().setUp()
+class ActionPluginView(APIView):
+    """
+    Endpoint for running custom action plugins.
+    """
 
-    def basicAuth(self):
-        # Use basic authentication
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
 
-        authstring = bytes("{u}:{p}".format(u=self.username, p=self.password), "ascii")
+    def post(self, request, *args, **kwargs):
 
-        # Use "basic" auth by default
-        auth = b64encode(authstring).decode("ascii")
-        self.client.credentials(HTTP_AUTHORIZATION="Basic {auth}".format(auth=auth))
+        action = request.data.get('action', None)
 
-    def tokenAuth(self):
+        data = request.data.get('data', None)
 
-        self.basicAuth()
-        token_url = reverse('api-token')
-        response = self.client.get(token_url, format='json', data={})
+        if action is None:
+            return Response({
+                'error': _("No action specified")
+            })
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('token', response.data)
+        for plugin_class in action_plugins:
+            if plugin_class.action_name() == action:
 
-        token = response.data['token']
-        self.token = token
+                plugin = plugin_class(request.user, data=data)
 
-    def token_failure(self):
-        # Test token endpoint without basic auth
-        url = reverse('api-token')
-        response = self.client.get(url, format='json')
+                plugin.perform_action()
 
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertIsNone(self.token)
+                return Response(plugin.get_response())
 
-    def token_success(self):
-
-        self.tokenAuth()
-        self.assertIsNotNone(self.token)
-
-    def test_info_view(self):
-        """
-        Test that we can read the 'info-view' endpoint.
-        """
-
-        url = reverse('api-inventree-info')
-
-        response = self.client.get(url, format='json')
-
-        data = response.json()
-        self.assertIn('server', data)
-        self.assertIn('version', data)
-        self.assertIn('instance', data)
-
-        self.assertEquals('InvenTree', data['server'])
-
-    def test_role_view(self):
-        """
-        Test that we can access the 'roles' view for the logged in user.
-
-        Also tests that it is *not* accessible if the client is not logged in.
-        """
-
-        url = reverse('api-user-roles')
-
-        response = self.client.get(url, format='json')
-
-        # Not logged in, so cannot access user role data
-        self.assertTrue(response.status_code in [401, 403])
-
-        # Now log in!
-        self.basicAuth()
-
-        response = self.get(url)
-
-        data = response.data
-
-        self.assertIn('user', data)
-        self.assertIn('username', data)
-        self.assertIn('is_staff', data)
-        self.assertIn('is_superuser', data)
-        self.assertIn('roles', data)
-
-        roles = data['roles']
-
-        role_names = roles.keys()
-
-        # By default, 'view' permissions are provided
-        for rule in RuleSet.RULESET_NAMES:
-            self.assertIn(rule, role_names)
-
-            self.assertIn('view', roles[rule])
-
-            self.assertNotIn('add', roles[rule])
-            self.assertNotIn('change', roles[rule])
-            self.assertNotIn('delete', roles[rule])
-    
-    def test_with_superuser(self):
-        """
-        Superuser should have *all* roles assigned
-        """
-
-        self.user.is_superuser = True
-        self.user.save()
-
-        self.basicAuth()
-
-        response = self.get(reverse('api-user-roles'))
-
-        roles = response.data['roles']
-
-        for rule in RuleSet.RULESET_NAMES:
-            self.assertIn(rule, roles.keys())
-
-            for perm in ['view', 'add', 'change', 'delete']:
-                self.assertIn(perm, roles[rule])
-
-    def test_with_roles(self):
-        """
-        Assign some roles to the user
-        """
-
-        self.basicAuth()
-        response = self.get(reverse('api-user-roles'))
-
-        self.assignRole('part.delete')
-        self.assignRole('build.change')
-        response = self.get(reverse('api-user-roles'))
-
-        roles = response.data['roles']
-
-        # New role permissions should have been added now
-        self.assertIn('delete', roles['part'])
-        self.assertIn('change', roles['build'])
+        # If we got to here, no matching action was found
+        return Response({
+            'error': _("No matching action found"),
+            "action": action,
+        })
