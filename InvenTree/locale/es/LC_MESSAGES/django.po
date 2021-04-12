@@ -1,62 +1,143 @@
-"""
-Provides system status functionality checks.
-"""
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-from django.utils.translation import ugettext_lazy as _
-
+import re
+import json
+import requests
 import logging
+
 from datetime import datetime, timedelta
 
-from django_q.models import Success
-from django_q.monitor import Stat
+from django.core.exceptions import AppRegistryNotReady
+from django.db.utils import OperationalError, ProgrammingError
+
 
 logger = logging.getLogger("inventree")
 
 
-def is_worker_running(**kwargs):
+def schedule_task(taskname, **kwargs):
     """
-    Return True if the background worker process is oprational
-    """
-
-    clusters = Stat.get_all()
-
-    if len(clusters) > 0:
-        # TODO - Introspect on any cluster information
-        return True
-
-    """
-    Sometimes Stat.get_all() returns [].
-    In this case we have the 'heartbeat' task running every 15 minutes.
-    Check to see if we have a result within the last 20 minutes
+    Create a scheduled task.
+    If the task has already been scheduled, ignore!
     """
 
-    now = datetime.now()
-    past = now - timedelta(minutes=20)
+    # If unspecified, repeat indefinitely
+    repeats = kwargs.pop('repeats', -1)
+    kwargs['repeats'] = repeats
 
-    results = Success.objects.filter(
+    try:
+        from django_q.models import Schedule
+    except (AppRegistryNotReady):
+        logger.warning("Could not start background tasks - App registry not ready")
+        return
+
+    try:
+        # If this task is already scheduled, don't schedule it again
+        # Instead, update the scheduling parameters
+        if Schedule.objects.filter(func=taskname).exists():
+            logger.info(f"Scheduled task '{taskname}' already exists - updating!")
+
+            Schedule.objects.filter(func=taskname).update(**kwargs)
+        else:
+            logger.info(f"Creating scheduled task '{taskname}'")
+
+            Schedule.objects.create(
+                name=taskname,
+                func=taskname,
+                **kwargs
+            )
+    except (OperationalError, ProgrammingError):
+        # Required if the DB is not ready yet
+        pass
+
+
+def heartbeat():
+    """
+    Simple task which runs at 5 minute intervals,
+    so we can determine that the background worker
+    is actually running.
+
+    (There is probably a less "hacky" way of achieving this)?
+    """
+
+    try:
+        from django_q.models import Success
+        logger.warning("Could not perform heartbeat task - App registry not ready")
+    except AppRegistryNotReady:
+        return
+
+    threshold = datetime.now() - timedelta(minutes=30)
+
+    # Delete heartbeat results more than half an hour old,
+    # otherwise they just create extra noise
+    heartbeats = Success.objects.filter(
         func='InvenTree.tasks.heartbeat',
-        started__gte=past
+        started__lte=threshold
     )
 
-    # If any results are returned, then the background worker is running!
-    return results.exists()
+    heartbeats.delete()
 
 
-def check_system_health(**kwargs):
+def delete_successful_tasks():
     """
-    Check that the InvenTree system is running OK.
-
-    Returns True if all system checks pass.
+    Delete successful task logs
+    which are more than a month old.
     """
 
-    result = True
+    try:
+        from django_q.models import Success
+    except AppRegistryNotReady:
+        logger.warning("Could not perform 'delete_successful_tasks' - App registry not ready")
+        return
 
-    if not is_worker_running(**kwargs):
-        result = False
-        logger.warning(_("Background worker check failed"))
+    threshold = datetime.now() - timedelta(days=30)
 
-    if not result:
-        logger.warning(_("InvenTree system health checks failed"))
+    results = Success.objects.filter(
+        started__lte=threshold
+    )
 
-    return result
+    results.delete()
+
+
+def check_for_updates():
+    """
+    Check if there is an update for InvenTree
+    """
+
+    try:
+        import common.models
+    except AppRegistryNotReady:
+        # Apps not yet loaded!
+        return
+
+    response = requests.get('https://api.github.com/repos/inventree/inventree/releases/latest')
+
+    if not response.status_code == 200:
+        raise ValueError(f'Unexpected status code from GitHub API: {response.status_code}')
+
+    data = json.loads(response.text)
+
+    tag = data.get('tag_name', None)
+
+    if not tag:
+        raise ValueError("'tag_name' missing from GitHub response")
+
+    match = re.match(r"^.*(\d+)\.(\d+)\.(\d+).*$", tag)
+
+    if not len(match.groups()) == 3:
+        logger.warning(f"Version '{tag}' did not match expected pattern")
+        return
+
+    latest_version = [int(x) for x in match.groups()]
+
+    if not len(latest_version) == 3:
+        raise ValueError(f"Version '{tag}' is not correct format")
+
+    logger.info(f"Latest InvenTree version: '{tag}'")
+
+    # Save the version to the database
+    common.models.InvenTreeSetting.set_setting(
+        'INVENTREE_LATEST_VERSION',
+        tag,
+        None
+    )
