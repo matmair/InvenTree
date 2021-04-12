@@ -1,158 +1,84 @@
-"""
-Custom field validators for InvenTree
+""" Version information for InvenTree.
+Provides information on the current InvenTree version
 """
 
-from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-
-from moneyed import CURRENCIES
+import subprocess
+import django
+import re
 
 import common.models
 
-import re
+INVENTREE_SW_VERSION = "0.2.1 pre"
+
+# Increment this number whenever there is a significant change to the API that any clients need to know about
+INVENTREE_API_VERSION = 2
 
 
-def validate_currency_code(code):
+def inventreeInstanceName():
+    """ Returns the InstanceName settings for the current database """
+    return common.models.InvenTreeSetting.get_setting("INVENTREE_INSTANCE", "")
+
+
+def inventreeVersion():
+    """ Returns the InvenTree version string """
+    return INVENTREE_SW_VERSION
+
+
+def inventreeVersionTuple(version=None):
+    """ Return the InvenTree version string as (maj, min, sub) tuple """
+
+    if version is None:
+        version = INVENTREE_SW_VERSION
+
+    match = re.match(r"^.*(\d+)\.(\d+)\.(\d+).*$", str(version))
+
+    return [int(g) for g in match.groups()]
+
+
+def isInvenTreeUpToDate():
     """
-    Check that a given code is a valid currency code.
-    """
+    Test if the InvenTree instance is "up to date" with the latest version.
 
-    if code not in CURRENCIES:
-        raise ValidationError(_('Not a valid currency code'))
-
-
-def allowable_url_schemes():
-    """ Return the list of allowable URL schemes.
-    In addition to the default schemes allowed by Django,
-    the install configuration file (config.yaml) can specify
-    extra schemas """
-
-    # Default schemes
-    schemes = ['http', 'https', 'ftp', 'ftps']
-
-    extra = settings.EXTRA_URL_SCHEMES
-
-    for e in extra:
-        if e.lower() not in schemes:
-            schemes.append(e.lower())
-
-    return schemes
-
-
-def validate_part_name(value):
-    """ Prevent some illegal characters in part names.
-    """
-
-    for c in ['|', '#', '$', '{', '}']:
-        if c in str(value):
-            raise ValidationError(
-                _('Invalid character in part name')
-            )
-
-
-def validate_part_ipn(value):
-    """ Validate the Part IPN against regex rule """
-
-    pattern = common.models.InvenTreeSetting.get_setting('PART_IPN_REGEX')
-
-    if pattern:
-        match = re.search(pattern, value)
-
-        if match is None:
-            raise ValidationError(_('IPN must match regex pattern {pat}').format(pat=pattern))
-
-
-def validate_build_order_reference(value):
-    """
-    Validate the 'reference' field of a BuildOrder
+    A background task periodically queries GitHub for latest version,
+    and stores it to the database as INVENTREE_LATEST_VERSION
     """
 
-    pattern = common.models.InvenTreeSetting.get_setting('BUILDORDER_REFERENCE_REGEX')
+    latest = common.models.InvenTreeSetting.get_setting('INVENTREE_LATEST_VERSION', None)
 
-    if pattern:
-        match = re.search(pattern, value)
-
-        if match is None:
-            raise ValidationError(_('Reference must match pattern') + f" '{pattern}'")
-
-
-def validate_purchase_order_reference(value):
-    """
-    Validate the 'reference' field of a PurchaseOrder
-    """
-
-    pattern = common.models.InvenTreeSetting.get_setting('PURCHASEORDER_REFERENCE_REGEX')
-
-    if pattern:
-        match = re.search(pattern, value)
-
-        if match is None:
-            raise ValidationError(_('Reference must match pattern') + f" '{pattern}'")
-
-
-def validate_sales_order_reference(value):
-    """
-    Validate the 'reference' field of a SalesOrder
-    """
-
-    pattern = common.models.InvenTreeSetting.get_setting('SALESORDER_REFERENCE_REGEX')
-
-    if pattern:
-        match = re.search(pattern, value)
-
-        if match is None:
-            raise ValidationError(_('Reference must match pattern') + f" '{pattern}'")
-
-
-def validate_tree_name(value):
-    """ Prevent illegal characters in tree item names """
-
-    for c in "!@#$%^&*'\"\\/[]{}<>,|+=~`\"":
-        if c in str(value):
-            raise ValidationError(_('Illegal character in name ({x})'.format(x=c)))
-
-
-def validate_overage(value):
-    """ Validate that a BOM overage string is properly formatted.
-
-    An overage string can look like:
-
-    - An integer number ('1' / 3 / 4)
-    - A percentage ('5%' / '10 %')
-    """
-
-    value = str(value).lower().strip()
-
-    # First look for a simple integer value
-    try:
-        i = int(value)
-
-        if i < 0:
-            raise ValidationError(_("Overage value must not be negative"))
-        
-        # Looks like an integer!
+    # No record for "latest" version - we must assume we are up to date!
+    if not latest:
         return True
-    except ValueError:
-        pass
 
-    # Now look for a percentage value
-    if value.endswith('%'):
-        v = value[:-1].strip()
+    # Extract "tuple" version (Python can directly compare version tuples)
+    latest_version = inventreeVersionTuple(latest)
+    inventree_version = inventreeVersionTuple()
 
-        # Does it look like a number?
-        try:
-            f = float(v)
+    return inventree_version >= latest_version
 
-            if f < 0:
-                raise ValidationError(_("Overage value must not be negative"))
-            elif f > 100:
-                raise ValidationError(_("Overage must not exceed 100%"))
 
-            return True
-        except ValueError:
-            pass
+def inventreeApiVersion():
+    return INVENTREE_API_VERSION
 
-    raise ValidationError(
-        _("Overage must be an integer value or a percentage")
-    )
+
+def inventreeDjangoVersion():
+    """ Return the version of Django library """
+    return django.get_version()
+
+
+def inventreeCommitHash():
+    """ Returns the git commit hash for the running codebase """
+
+    try:
+        return str(subprocess.check_output('git rev-parse --short HEAD'.split()), 'utf-8').strip()
+    except:
+        return None
+
+
+def inventreeCommitDate():
+    """ Returns the git commit date for the running codebase """
+
+    try:
+        d = str(subprocess.check_output('git show -s --format=%ci'.split()), 'utf-8').strip()
+        return d.split(' ')[0]
+    except:
+        return None
