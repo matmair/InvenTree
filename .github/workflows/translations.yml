@@ -24,6 +24,7 @@ jobs:
     - name: commit changes
       run: |
         git stash
+        git remote update
         git fetch
         git checkout –-track origin/l10_base
     - name: Install Dependencies
