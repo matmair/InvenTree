@@ -50,7 +50,9 @@ jobs:
         ref: l10_base
     - name: commit changes
       run: |
-        git stash pop
+        git stash show -p
+        git stash apply
         git add InvenTree/*.po
+        git diff --name-only --diff-filter=U
         git commit -m "updated translation-file"
         git push
