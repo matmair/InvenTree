@@ -31,9 +31,11 @@ jobs:
       run: |
         cd InvenTree
         python manage.py makemessages -e py -e html -e js
-    - name: Git Auto Commit
-      uses: stefanzweifel/git-auto-commit-action@v4.10.0
-      with:
-        commit_message: updated translation-string
-        branch: l10_base
-        file_pattern: InvenTree/*.po
+    - name: commit changes
+      run: |
+        git stash
+        git checkout l10_base
+        git stash pop
+        git add InvenTree/*.po
+        git commit -m "updated translation-file"
+        git push
