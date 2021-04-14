@@ -385,7 +385,7 @@ msgstr ""
 #: build/templates/build/detail.html:31 common/models.py:696
 #: company/forms.py:131 company/templates/company/supplier_part_pricing.html:77
 #: order/forms.py:188 order/forms.py:205 order/forms.py:239 order/forms.py:261
-#: order/forms.py:278 order/models.py:593 order/models.py:784
+#: order/forms.py:278 order/models.py:594 order/models.py:785
 #: order/templates/order/order_wizard/select_parts.html:32
 #: order/templates/order/purchase_order_detail.html:193
 #: order/templates/order/sales_order_detail.html:70
@@ -395,8 +395,8 @@ msgstr ""
 #: part/forms.py:369 part/forms.py:385 part/models.py:2158
 #: part/templates/part/allocation.html:19
 #: part/templates/part/allocation.html:53
-#: part/templates/part/part_pricing.html:12
-#: part/templates/part/part_pricing.html:19
+#: part/templates/part/part_pricing.html:11
+#: part/templates/part/part_pricing.html:18
 #: part/templates/part/sale_prices.html:85
 #: report/templates/report/inventree_build_order_base.html:114
 #: report/templates/report/inventree_po_report.html:91
@@ -507,7 +507,7 @@ msgstr ""
 msgid "Build Order Reference"
 msgstr ""
 
-#: build/models.py:127 order/models.py:99 order/models.py:595
+#: build/models.py:127 order/models.py:99 order/models.py:596
 #: order/templates/order/purchase_order_detail.html:188
 #: order/templates/order/sales_order_detail.html:219 part/models.py:2167
 #: report/templates/report/inventree_po_report.html:92
@@ -532,7 +532,7 @@ msgstr ""
 #: build/models.py:152 build/templates/build/auto_allocate.html:16
 #: build/templates/build/build_base.html:86
 #: build/templates/build/detail.html:26 company/models.py:539
-#: order/models.py:637 order/models.py:669
+#: order/models.py:638 order/models.py:670
 #: order/templates/order/order_wizard/select_parts.html:30
 #: order/templates/order/purchase_order_detail.html:156
 #: order/templates/order/receive_parts.html:19
@@ -540,7 +540,7 @@ msgstr ""
 #: part/models.py:1856 part/models.py:1868 part/models.py:1886
 #: part/models.py:1961 part/models.py:2057 part/models.py:2142
 #: part/templates/part/part_app_base.html:7
-#: part/templates/part/part_pricing.html:15 part/templates/part/related.html:29
+#: part/templates/part/part_pricing.html:14 part/templates/part/related.html:29
 #: part/templates/part/set_category.html:13
 #: part/templates/part/subcategories.html:17
 #: report/templates/report/inventree_build_order_base.html:110
@@ -622,7 +622,7 @@ msgstr ""
 msgid "Creation Date"
 msgstr ""
 
-#: build/models.py:223 order/models.py:451
+#: build/models.py:223 order/models.py:452
 msgid "Target completion date"
 msgstr ""
 
@@ -670,7 +670,7 @@ msgstr ""
 #: company/models.py:133 company/models.py:372
 #: company/templates/company/navbar.html:59
 #: company/templates/company/navbar.html:62 order/models.py:123
-#: order/models.py:597 order/templates/order/po_navbar.html:29
+#: order/models.py:598 order/templates/order/po_navbar.html:29
 #: order/templates/order/po_navbar.html:32
 #: order/templates/order/purchase_order_detail.html:227
 #: order/templates/order/sales_order_detail.html:264
@@ -723,11 +723,11 @@ msgstr ""
 msgid "Allocated quantity ({n}) must not exceed available quantity ({q})"
 msgstr ""
 
-#: build/models.py:1034 order/models.py:758
+#: build/models.py:1034 order/models.py:759
 msgid "StockItem is over-allocated"
 msgstr ""
 
-#: build/models.py:1038 order/models.py:761
+#: build/models.py:1038 order/models.py:762
 msgid "Allocation quantity must be greater than zero"
 msgstr ""
 
@@ -794,7 +794,7 @@ msgid "Order required parts"
 msgstr ""
 
 #: build/templates/build/allocate.html:31
-#: company/templates/company/detail_part.html:31 order/views.py:794
+#: company/templates/company/detail_part.html:31 order/views.py:795
 #: part/templates/part/category.html:127
 msgid "Order Parts"
 msgstr ""
@@ -907,7 +907,7 @@ msgid "Build Details"
 msgstr ""
 
 #: build/templates/build/build_base.html:96
-#: build/templates/build/detail.html:59 order/models.py:445
+#: build/templates/build/detail.html:59 order/models.py:446
 #: order/templates/order/receive_parts.html:24
 #: stock/templates/stock/item_base.html:376 templates/InvenTree/search.html:236
 #: templates/js/barcode.js:119 templates/js/build.js:710
@@ -926,7 +926,7 @@ msgid "Progress"
 msgstr ""
 
 #: build/templates/build/build_base.html:128
-#: build/templates/build/detail.html:84 order/models.py:667
+#: build/templates/build/detail.html:84 order/models.py:668
 #: order/templates/order/sales_order_base.html:9
 #: order/templates/order/sales_order_base.html:33
 #: order/templates/order/sales_order_ship.html:25
@@ -1774,7 +1774,7 @@ msgstr ""
 msgid "Base Part"
 msgstr ""
 
-#: company/models.py:323 order/views.py:1372
+#: company/models.py:323 order/views.py:1373
 msgid "Select part"
 msgstr ""
 
@@ -1934,7 +1934,7 @@ msgstr ""
 msgid "Uses default currency"
 msgstr ""
 
-#: company/templates/company/detail.html:65 order/models.py:440
+#: company/templates/company/detail.html:65 order/models.py:441
 #: order/templates/order/sales_order_base.html:92 stock/models.py:413
 #: stock/models.py:414 stock/templates/stock/item_base.html:247
 #: templates/js/company.js:40 templates/js/order.js:267
@@ -2172,7 +2172,7 @@ msgid "Pricing Information"
 msgstr ""
 
 #: company/templates/company/supplier_part_pricing.html:19 company/views.py:569
-#: part/templates/part/sale_prices.html:17 part/views.py:2618
+#: part/templates/part/sale_prices.html:17 part/views.py:2642
 msgid "Add Price Break"
 msgstr ""
 
@@ -2275,15 +2275,15 @@ msgstr ""
 msgid "Delete Supplier Part"
 msgstr ""
 
-#: company/views.py:574 part/views.py:2622
+#: company/views.py:574 part/views.py:2646
 msgid "Added new price break"
 msgstr ""
 
-#: company/views.py:630 part/views.py:2666
+#: company/views.py:630 part/views.py:2690
 msgid "Edit Price Break"
 msgstr ""
 
-#: company/views.py:645 part/views.py:2680
+#: company/views.py:645 part/views.py:2704
 msgid "Delete Price Break"
 msgstr ""
 
@@ -2373,7 +2373,7 @@ msgstr ""
 msgid "Enter sales order number"
 msgstr ""
 
-#: order/forms.py:145 order/models.py:452
+#: order/forms.py:145 order/models.py:453
 msgid ""
 "Target date for order completion. Order will be overdue after this date."
 msgstr ""
@@ -2410,7 +2410,7 @@ msgstr ""
 msgid "Order notes"
 msgstr ""
 
-#: order/models.py:182 order/models.py:445
+#: order/models.py:182 order/models.py:446
 msgid "Purchase order status"
 msgstr ""
 
@@ -2465,116 +2465,116 @@ msgstr ""
 msgid "Lines can only be received against an order marked as 'Placed'"
 msgstr ""
 
-#: order/models.py:359
+#: order/models.py:360
 msgid "Received items"
 msgstr ""
 
-#: order/models.py:441
+#: order/models.py:442
 msgid "Company to which the items are being sold"
 msgstr ""
 
-#: order/models.py:447
+#: order/models.py:448
 msgid "Customer Reference "
 msgstr ""
 
-#: order/models.py:447
+#: order/models.py:448
 msgid "Customer order reference code"
 msgstr ""
 
-#: order/models.py:455 templates/js/order.js:303
+#: order/models.py:456 templates/js/order.js:303
 msgid "Shipment Date"
 msgstr ""
 
-#: order/models.py:462
+#: order/models.py:463
 msgid "shipped by"
 msgstr ""
 
-#: order/models.py:506
+#: order/models.py:507
 msgid "SalesOrder cannot be shipped as it is not currently pending"
 msgstr ""
 
-#: order/models.py:593
+#: order/models.py:594
 msgid "Item quantity"
 msgstr ""
 
-#: order/models.py:595
+#: order/models.py:596
 msgid "Line item reference"
 msgstr ""
 
-#: order/models.py:597
+#: order/models.py:598
 msgid "Line item notes"
 msgstr ""
 
-#: order/models.py:623 order/models.py:667
+#: order/models.py:624 order/models.py:668
 #: part/templates/part/allocation.html:17
 #: part/templates/part/allocation.html:45
 msgid "Order"
 msgstr ""
 
-#: order/models.py:624 order/templates/order/order_base.html:9
+#: order/models.py:625 order/templates/order/order_base.html:9
 #: order/templates/order/order_base.html:24
 #: report/templates/report/inventree_po_report.html:77
 #: stock/templates/stock/item_base.html:309 templates/js/order.js:148
 msgid "Purchase Order"
 msgstr ""
 
-#: order/models.py:638
+#: order/models.py:639
 msgid "Supplier part"
 msgstr ""
 
-#: order/models.py:641 order/templates/order/order_base.html:131
+#: order/models.py:642 order/templates/order/order_base.html:131
 #: order/templates/order/purchase_order_detail.html:207
 #: order/templates/order/receive_parts.html:22
 #: order/templates/order/sales_order_base.html:131
 msgid "Received"
 msgstr ""
 
-#: order/models.py:641
+#: order/models.py:642
 msgid "Number of items received"
 msgstr ""
 
-#: order/models.py:648 stock/models.py:506
+#: order/models.py:649 stock/models.py:506
 #: stock/templates/stock/item_base.html:316
 msgid "Purchase Price"
 msgstr ""
 
-#: order/models.py:649
+#: order/models.py:650
 msgid "Unit purchase price"
 msgstr ""
 
-#: order/models.py:743 order/models.py:745
+#: order/models.py:744 order/models.py:746
 msgid "Stock item has not been assigned"
 msgstr ""
 
-#: order/models.py:749
+#: order/models.py:750
 msgid "Cannot allocate stock item to a line with a different part"
 msgstr ""
 
-#: order/models.py:751
+#: order/models.py:752
 msgid "Cannot allocate stock to a line without a part"
 msgstr ""
 
-#: order/models.py:754
+#: order/models.py:755
 msgid "Allocation quantity cannot exceed stock quantity"
 msgstr ""
 
-#: order/models.py:764
+#: order/models.py:765
 msgid "Quantity must be 1 for serialized stock item"
 msgstr ""
 
-#: order/models.py:769
+#: order/models.py:770
 msgid "Line"
 msgstr ""
 
-#: order/models.py:780
+#: order/models.py:781
 msgid "Item"
 msgstr ""
 
-#: order/models.py:781
+#: order/models.py:782
 msgid "Select stock item to allocate"
 msgstr ""
 
-#: order/models.py:784
+#: order/models.py:785
 msgid "Enter stock allocation quantity"
 msgstr ""
 
@@ -2709,8 +2709,8 @@ msgid "Purchase Order Items"
 msgstr ""
 
 #: order/templates/order/purchase_order_detail.html:24
-#: order/templates/order/sales_order_detail.html:22 order/views.py:1108
-#: order/views.py:1191
+#: order/templates/order/sales_order_detail.html:22 order/views.py:1109
+#: order/views.py:1192
 msgid "Add Line Item"
 msgstr ""
 
@@ -3011,65 +3011,65 @@ msgstr ""
 msgid "No lines specified"
 msgstr ""
 
-#: order/views.py:1060
+#: order/views.py:1061
 #, python-brace-format
 msgid "Ordered {n} parts"
 msgstr ""
 
-#: order/views.py:1117
+#: order/views.py:1118
 msgid "Supplier part must be specified"
 msgstr ""
 
-#: order/views.py:1123
+#: order/views.py:1124
 msgid "Supplier must match for Part and Order"
 msgstr ""
 
-#: order/views.py:1242 order/views.py:1260
+#: order/views.py:1243 order/views.py:1261
 msgid "Edit Line Item"
 msgstr ""
 
-#: order/views.py:1276 order/views.py:1288
+#: order/views.py:1277 order/views.py:1289
 msgid "Delete Line Item"
 msgstr ""
 
-#: order/views.py:1281 order/views.py:1293
+#: order/views.py:1282 order/views.py:1294
 msgid "Deleted line item"
 msgstr ""
 
-#: order/views.py:1306
+#: order/views.py:1307
 msgid "Allocate Serial Numbers"
 msgstr ""
 
-#: order/views.py:1351
+#: order/views.py:1352
 #, python-brace-format
 msgid "Allocated {n} items"
 msgstr ""
 
-#: order/views.py:1367
+#: order/views.py:1368
 msgid "Select line item"
 msgstr ""
 
-#: order/views.py:1398
+#: order/views.py:1399
 msgid "No matching item for serial"
 msgstr ""
 
-#: order/views.py:1408
+#: order/views.py:1409
 msgid "is not in stock"
 msgstr ""
 
-#: order/views.py:1416
+#: order/views.py:1417
 msgid "already allocated to an order"
 msgstr ""
 
-#: order/views.py:1470
+#: order/views.py:1471
 msgid "Allocate Stock to Order"
 msgstr ""
 
-#: order/views.py:1544
+#: order/views.py:1545
 msgid "Edit Allocation Quantity"
 msgstr ""
 
-#: order/views.py:1559
+#: order/views.py:1560
 msgid "Remove allocation"
 msgstr ""
 
@@ -3799,7 +3799,7 @@ msgstr ""
 msgid "All parts"
 msgstr ""
 
-#: part/templates/part/category.html:25 part/views.py:2264
+#: part/templates/part/category.html:25 part/views.py:2288
 msgid "Create new part category"
 msgstr ""
 
@@ -4188,41 +4188,49 @@ msgstr ""
 msgid "Calculate"
 msgstr ""
 
-#: part/templates/part/part_pricing.html:8
+#: part/templates/part/part_pricing.html:7
 msgid "Pricing information for:"
 msgstr ""
 
-#: part/templates/part/part_pricing.html:24
+#: part/templates/part/part_pricing.html:23
 msgid "Supplier Pricing"
 msgstr ""
 
-#: part/templates/part/part_pricing.html:28
-#: part/templates/part/part_pricing.html:54
+#: part/templates/part/part_pricing.html:27
+#: part/templates/part/part_pricing.html:53
 msgid "Unit Cost"
 msgstr ""
 
-#: part/templates/part/part_pricing.html:34
-#: part/templates/part/part_pricing.html:60
+#: part/templates/part/part_pricing.html:33
+#: part/templates/part/part_pricing.html:59
 msgid "Total Cost"
 msgstr ""
 
-#: part/templates/part/part_pricing.html:42
+#: part/templates/part/part_pricing.html:41
 msgid "No supplier pricing available"
 msgstr ""
 
-#: part/templates/part/part_pricing.html:50
+#: part/templates/part/part_pricing.html:49
 msgid "BOM Pricing"
 msgstr ""
 
-#: part/templates/part/part_pricing.html:68
+#: part/templates/part/part_pricing.html:67
 msgid "Note: BOM pricing is incomplete for this part"
 msgstr ""
 
-#: part/templates/part/part_pricing.html:75
+#: part/templates/part/part_pricing.html:74
 msgid "No BOM pricing available"
 msgstr ""
 
-#: part/templates/part/part_pricing.html:85
+#: part/templates/part/part_pricing.html:82
+msgid "Stock Pricing"
+msgstr ""
+
+#: part/templates/part/part_pricing.html:146
+msgid "No stock pricing history is available for this part."
+msgstr ""
+
+#: part/templates/part/part_pricing.html:154
 msgid "No pricing information is available for this part."
 msgstr ""
 
@@ -4464,63 +4472,63 @@ msgstr ""
 msgid "Part Pricing"
 msgstr ""
 
-#: part/views.py:2063
+#: part/views.py:2087
 msgid "Create Part Parameter Template"
 msgstr ""
 
-#: part/views.py:2073
+#: part/views.py:2097
 msgid "Edit Part Parameter Template"
 msgstr ""
 
-#: part/views.py:2080
+#: part/views.py:2104
 msgid "Delete Part Parameter Template"
 msgstr ""
 
-#: part/views.py:2088
+#: part/views.py:2112
 msgid "Create Part Parameter"
 msgstr ""
 
-#: part/views.py:2138
+#: part/views.py:2162
 msgid "Edit Part Parameter"
 msgstr ""
 
-#: part/views.py:2152
+#: part/views.py:2176
 msgid "Delete Part Parameter"
 msgstr ""
 
-#: part/views.py:2212
+#: part/views.py:2236
 msgid "Edit Part Category"
 msgstr ""
 
-#: part/views.py:2250
+#: part/views.py:2274
 msgid "Delete Part Category"
 msgstr ""
 
-#: part/views.py:2256
+#: part/views.py:2280
 msgid "Part category was deleted"
 msgstr ""
 
-#: part/views.py:2308
+#: part/views.py:2332
 msgid "Create Category Parameter Template"
 msgstr ""
 
-#: part/views.py:2409
+#: part/views.py:2433
 msgid "Edit Category Parameter Template"
 msgstr ""
 
-#: part/views.py:2465
+#: part/views.py:2489
 msgid "Delete Category Parameter Template"
 msgstr ""
 
-#: part/views.py:2484
+#: part/views.py:2508
 msgid "Create BOM Item"
 msgstr ""
 
-#: part/views.py:2554
+#: part/views.py:2578
 msgid "Edit BOM item"
 msgstr ""
 
-#: part/views.py:2610
+#: part/views.py:2634
 msgid "Confim BOM item deletion"
 msgstr ""
 
