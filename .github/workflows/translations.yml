@@ -24,7 +24,8 @@ jobs:
     - name: commit changes
       run: |
         git stash
-        git checkout –track origin/l10_base
+        git fetch
+        git checkout –-track origin/l10_base
     - name: Install Dependencies
       run: |
           sudo apt-get update
@@ -38,7 +39,8 @@ jobs:
     - name: commit changes
       run: |
         git stash
-        git checkout –track origin/l10_base
+        git fetch
+        git checkout -–track origin/l10_base
         git stash pop
         git add InvenTree/*.po
         git commit -m "updated translation-file"
