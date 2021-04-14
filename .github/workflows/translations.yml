@@ -36,3 +36,4 @@ jobs:
       with:
         commit_message: updated translation-string
         branch: l10_base
+        file_pattern: *.po
