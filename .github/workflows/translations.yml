@@ -24,7 +24,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: get current translations
       run: |
-        git checkout origin/l10_base -- "*.po"
+        git checkout l10_base -- "*.po"
     - name: Set up Python 3.7
       uses: actions/setup-python@v1
       with:
