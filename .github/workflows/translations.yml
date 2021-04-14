@@ -21,6 +21,10 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
+    - name: commit changes
+      run: |
+        git stash
+        git checkout –track origin/l10_base
     - name: Install Dependencies
       run: |
           sudo apt-get update
@@ -34,7 +38,7 @@ jobs:
     - name: commit changes
       run: |
         git stash
-        git checkout l10_base
+        git checkout –track origin/l10_base
         git stash pop
         git add InvenTree/*.po
         git commit -m "updated translation-file"
