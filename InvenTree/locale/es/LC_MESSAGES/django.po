@@ -1,22 +1,21 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: inventree\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-04-11 22:07+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2021-04-14 10:43\n"
+"Last-Translator: \n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: inventree\n"
+"X-Crowdin-Project-ID: 450712\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: /master/InvenTree/locale/en/LC_MESSAGES/django.po\n"
+"X-Crowdin-File-ID: 86\n"
 
 #: InvenTree/api.py:64
 msgid "API endpoint not found"
@@ -170,23 +169,23 @@ msgstr ""
 
 #: InvenTree/settings.py:480
 msgid "English"
-msgstr ""
+msgstr "Inglés"
 
 #: InvenTree/settings.py:481
 msgid "French"
-msgstr ""
+msgstr "Francés"
 
 #: InvenTree/settings.py:482
 msgid "German"
-msgstr ""
+msgstr "Alemán"
 
 #: InvenTree/settings.py:483
 msgid "Polish"
-msgstr ""
+msgstr "Polaco"
 
 #: InvenTree/settings.py:484
 msgid "Turkish"
-msgstr ""
+msgstr "Turco"
 
 #: InvenTree/status.py:57
 msgid "Background worker check failed"
@@ -231,11 +230,11 @@ msgstr ""
 
 #: InvenTree/status_codes.py:176
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: InvenTree/status_codes.py:177
 msgid "Attention needed"
-msgstr ""
+msgstr "Atención necesaria"
 
 #: InvenTree/status_codes.py:178
 msgid "Damaged"
@@ -371,8 +370,7 @@ msgid "Target Date"
 msgstr ""
 
 #: build/forms.py:40 build/models.py:224
-msgid ""
-"Target date for build completion. Build will be overdue after this date."
+msgid "Target date for build completion. Build will be overdue after this date."
 msgstr ""
 
 #: build/forms.py:45 build/forms.py:87 build/forms.py:257 build/models.py:1103
@@ -568,9 +566,7 @@ msgid "Source Location"
 msgstr ""
 
 #: build/models.py:178
-msgid ""
-"Select location to take stock from for this build (leave blank to take from "
-"any stock location)"
+msgid "Select location to take stock from for this build (leave blank to take from any stock location)"
 msgstr ""
 
 #: build/models.py:183
@@ -829,8 +825,7 @@ msgid "Automatically Allocate Stock"
 msgstr ""
 
 #: build/templates/build/auto_allocate.html:10
-msgid ""
-"The following stock items will be allocated to the specified build output"
+msgid "The following stock items will be allocated to the specified build output"
 msgstr ""
 
 #: build/templates/build/auto_allocate.html:37
@@ -1912,10 +1907,8 @@ msgstr ""
 
 #: company/templates/company/delete.html:12
 #, python-format
-msgid ""
-"There are %(count)s parts sourced from this company.<br>\n"
-"If this supplier is deleted, these supplier part entries will also be "
-"deleted."
+msgid "There are %(count)s parts sourced from this company.<br>\n"
+"If this supplier is deleted, these supplier part entries will also be deleted."
 msgstr ""
 
 #: company/templates/company/detail.html:21
@@ -2370,8 +2363,7 @@ msgid "Enter sales order number"
 msgstr ""
 
 #: order/forms.py:145 order/models.py:452
-msgid ""
-"Target date for order completion. Order will be overdue after this date."
+msgid "Target date for order completion. Order will be overdue after this date."
 msgstr ""
 
 #: order/forms.py:235
@@ -2440,8 +2432,7 @@ msgid "Target Delivery Date"
 msgstr ""
 
 #: order/models.py:213
-msgid ""
-"Expected date for order delivery. Order will be overdue after this date."
+msgid "Expected date for order delivery. Order will be overdue after this date."
 msgstr ""
 
 #: order/models.py:219
@@ -2628,8 +2619,7 @@ msgid "Mark this order as complete?"
 msgstr ""
 
 #: order/templates/order/order_issue.html:7
-msgid ""
-"After placing this purchase order, line items will no longer be editable."
+msgid "After placing this purchase order, line items will no longer be editable."
 msgstr ""
 
 #: order/templates/order/order_notes.html:13
@@ -2873,9 +2863,7 @@ msgid "Sales Order Notes"
 msgstr ""
 
 #: order/templates/order/sales_order_ship.html:10
-msgid ""
-"This order has not been fully allocated. If the order is marked as shipped, "
-"it can no longer be adjusted."
+msgid "This order has not been fully allocated. If the order is marked as shipped, it can no longer be adjusted."
 msgstr ""
 
 #: order/templates/order/sales_order_ship.html:12
@@ -3588,9 +3576,7 @@ msgid "Select Related Part"
 msgstr ""
 
 #: part/models.py:2420
-msgid ""
-"Error creating relationship: check that the part is not related to itself "
-"and that the relationship is unique"
+msgid "Error creating relationship: check that the part is not related to itself and that the relationship is unique"
 msgstr ""
 
 #: part/templates/part/allocation.html:11
@@ -3621,8 +3607,7 @@ msgstr ""
 
 #: part/templates/part/bom.html:21
 #, python-format
-msgid ""
-"The BOM for <i>%(part)s</i> was last checked by %(checker)s on %(check_date)s"
+msgid "The BOM for <i>%(part)s</i> was last checked by %(checker)s on %(check_date)s"
 msgstr ""
 
 #: part/templates/part/bom.html:25
@@ -3757,8 +3742,7 @@ msgid "Requirements for BOM upload"
 msgstr ""
 
 #: part/templates/part/bom_upload/upload_file.html:21
-msgid ""
-"The BOM file must contain the required named columns as provided in the "
+msgid "The BOM file must contain the required named columns as provided in the "
 msgstr ""
 
 #: part/templates/part/bom_upload/upload_file.html:21
@@ -3775,8 +3759,7 @@ msgstr ""
 
 #: part/templates/part/bom_validate.html:6
 #, python-format
-msgid ""
-"Confirm that the Bill of Materials (BOM) is valid for:<br><i>%(part)s</i>"
+msgid "Confirm that the Bill of Materials (BOM) is valid for:<br><i>%(part)s</i>"
 msgstr ""
 
 #: part/templates/part/bom_validate.html:9
@@ -3878,8 +3861,7 @@ msgid "child categories"
 msgstr ""
 
 #: part/templates/part/category_delete.html:9
-msgid ""
-"If this category is deleted, these child categories will be moved to the"
+msgid "If this category is deleted, these child categories will be moved to the"
 msgstr ""
 
 #: part/templates/part/category_delete.html:11
@@ -3895,14 +3877,11 @@ msgid "parts"
 msgstr ""
 
 #: part/templates/part/category_delete.html:27
-msgid ""
-"If this category is deleted, these parts will be moved to the parent category"
+msgid "If this category is deleted, these parts will be moved to the parent category"
 msgstr ""
 
 #: part/templates/part/category_delete.html:29
-msgid ""
-"If this category is deleted, these parts will be moved to the top-level "
-"category Teile"
+msgid "If this category is deleted, these parts will be moved to the top-level category Teile"
 msgstr ""
 
 #: part/templates/part/category_navbar.html:18
@@ -4664,9 +4643,7 @@ msgid "Enter unique serial numbers (or leave blank)"
 msgstr ""
 
 #: stock/forms.py:169
-msgid ""
-"Destination for serialized stock (by default, will remain in current "
-"location)"
+msgid "Destination for serialized stock (by default, will remain in current location)"
 msgstr ""
 
 #: stock/forms.py:171
@@ -4847,8 +4824,7 @@ msgid "Destination Sales Order"
 msgstr ""
 
 #: stock/models.py:474
-msgid ""
-"Expiry date for stock item. Stock will be considered expired after this date"
+msgid "Expiry date for stock item. Stock will be considered expired after this date"
 msgstr ""
 
 #: stock/models.py:487
@@ -4995,9 +4971,7 @@ msgid "Stock Item Attachments"
 msgstr ""
 
 #: stock/templates/stock/item_base.html:24
-msgid ""
-"You are not in the list of owners of this item. This stock item cannot be "
-"edited."
+msgid "You are not in the list of owners of this item. This stock item cannot be edited."
 msgstr ""
 
 #: stock/templates/stock/item_base.html:31
@@ -5021,9 +4995,7 @@ msgid "This stock item is allocated to Build"
 msgstr ""
 
 #: stock/templates/stock/item_base.html:63
-msgid ""
-"This stock item is serialized - it has a unique serial number and the "
-"quantity cannot be adjusted."
+msgid "This stock item is serialized - it has a unique serial number and the quantity cannot be adjusted."
 msgstr ""
 
 #: stock/templates/stock/item_base.html:67
@@ -5031,8 +5003,7 @@ msgid "This stock item cannot be deleted as it has child items"
 msgstr ""
 
 #: stock/templates/stock/item_base.html:71
-msgid ""
-"This stock item will be automatically deleted when all stock is depleted."
+msgid "This stock item will be automatically deleted when all stock is depleted."
 msgstr ""
 
 #: stock/templates/stock/item_base.html:91
@@ -5220,9 +5191,7 @@ msgid "Add Test Data"
 msgstr ""
 
 #: stock/templates/stock/location.html:13
-msgid ""
-"You are not in the list of owners of this location. This stock location "
-"cannot be edited."
+msgid "You are not in the list of owners of this location. This stock location cannot be edited."
 msgstr ""
 
 #: stock/templates/stock/location.html:30
@@ -5755,10 +5724,8 @@ msgstr ""
 
 #: templates/InvenTree/settings/theme.html:29
 #, python-format
-msgid ""
-"\n"
-"\t\tThe CSS sheet \"%(invalid_color_theme)s.css\" for the currently selected "
-"color theme was not found.<br>\n"
+msgid "\n"
+"\t\tThe CSS sheet \"%(invalid_color_theme)s.css\" for the currently selected color theme was not found.<br>\n"
 "\t\tPlease select another color theme :)\n"
 "\t"
 msgstr ""
@@ -5909,8 +5876,7 @@ msgid "Link Barcode to Stock Item"
 msgstr ""
 
 #: templates/js/barcode.js:311
-msgid ""
-"This will remove the association between this stock item and the barcode"
+msgid "This will remove the association between this stock item and the barcode"
 msgstr ""
 
 #: templates/js/barcode.js:317
@@ -6904,3 +6870,4 @@ msgstr ""
 #: users/models.py:182
 msgid "Permission to delete items"
 msgstr ""
+
