@@ -16,6 +16,7 @@ from part.urls import part_urls
 from stock.urls import stock_urls
 from build.urls import build_urls
 from order.urls import order_urls
+from oobe.urls import oobe_urls
 from plugin.urls import get_plugin_urls
 
 from barcodes.api import barcode_api_urls
@@ -169,6 +170,8 @@ frontendpatterns = [
     re_path(r'^settings/', include(settings_urls)),
 
     re_path(r'^notifications/', include(notifications_urls)),
+
+    re_path(r'^setup/', include(oobe_urls)),
 
     re_path(r'^edit-user/', EditUserView.as_view(), name='edit-user'),
     re_path(r'^set-password/', SetPasswordView.as_view(), name='set-password'),
