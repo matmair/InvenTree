@@ -7,6 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/inventree/inventree)
 ![CI](https://github.com/inventree/inventree/actions/workflows/qc_checks.yaml/badge.svg)
 ![Docker Build](https://github.com/inventree/inventree/actions/workflows/docker.yaml/badge.svg)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmatmair%2FInvenTree.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmatmair%2FInvenTree?ref=badge_shield)
 
 [![Coveralls](https://img.shields.io/coveralls/github/inventree/InvenTree)](https://coveralls.io/github/inventree/InvenTree)
 [![Crowdin](https://badges.crowdin.net/inventree/localized.svg)](https://crowdin.com/project/inventree)
@@ -169,3 +170,6 @@ Find a full list of used third-party libraries in [our documentation](https://in
 ## :warning: License
 
 Distributed under the [MIT](https://choosealicense.com/licenses/mit/) License. See [LICENSE.txt](https://github.com/inventree/InvenTree/blob/master/LICENSE) for more information.
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmatmair%2FInvenTree.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmatmair%2FInvenTree?ref=badge_large)
