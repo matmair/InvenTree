@@ -42,7 +42,7 @@ defusedxml==0.7.1
     #   python3-openid
 diff-match-patch==20200713
     # via django-import-export
-django==3.2.15
+django==3.2.16
     # via
     #   -r requirements.in
     #   django-allauth
@@ -141,7 +141,7 @@ markuppy==1.14
     # via tablib
 markupsafe==2.1.1
     # via jinja2
-oauthlib==3.2.0
+oauthlib==3.2.1
     # via requests-oauthlib
 odfpy==1.4.1
     # via tablib
