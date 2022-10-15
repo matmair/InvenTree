@@ -41,7 +41,7 @@ jobs:
   reddit:
     runs-on: ubuntu-latest
     steps:
-      - uses: bluwy/release-for-reddit-action@4d948192aff856da22f19f9806b00b46ca384547 # pin@v1
+      - uses: bluwy/release-for-reddit-action@4b2d034b5c86a24db24363f1064149a8c2db69b4 # pin@v1
         with:
           username: ${{ secrets.REDDIT_USERNAME }}
           password: ${{ secrets.REDDIT_PASSWORD }}
