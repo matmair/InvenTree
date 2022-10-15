@@ -224,7 +224,7 @@ tinycss2==1.1.1
     #   bleach
     #   cssselect2
     #   weasyprint
-types-cryptography==3.3.23
+types-cryptography==3.3.23.1
     # via pyjwt
 uritemplate==4.1.1
     # via coreapi
