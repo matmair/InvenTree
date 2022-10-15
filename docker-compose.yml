@@ -21,7 +21,7 @@ services:
     # Note: This can be changed to a different backend if required
     inventree-dev-db:
         container_name: inventree-dev-db
-        image: postgres:13
+        image: postgres:15
         expose:
             - 5432/tcp
         environment:

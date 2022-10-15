@@ -39,7 +39,7 @@ services:
     # Use PostgreSQL as the database backend
     inventree-db:
         container_name: inventree-db
-        image: postgres:13
+        image: postgres:15
         expose:
             - ${INVENTREE_DB_PORT:-5432}/tcp
         environment:
