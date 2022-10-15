@@ -22,7 +22,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@7884fcad6b5d53d10323aee724dc68d8b9096a2e # pin@v2
       - name: Set up Python 3.9
-        uses: actions/setup-python@152ba7c4dd6521b8e9c93f72d362ce03bf6c4f20 # pin@v1
+        uses: actions/setup-python@13ae5bb136fac2878aff31522b9efb785519f984 # pin@v1
         with:
           python-version: 3.9
       - name: Install Dependencies
