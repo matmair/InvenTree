@@ -157,7 +157,7 @@ pillow==9.2.0
     #   python-barcode
     #   qrcode
     #   weasyprint
-py-moneyed==1.2
+py-moneyed==2.0
     # via
     #   -r requirements.in
     #   django-money
