@@ -17,7 +17,7 @@ jobs:
       - name: Update requirements-dev.txt
         run: pip-compile --generate-hashes --output-file=requirements-dev.txt
           requirements-dev.in -U
-      - uses: stefanzweifel/git-auto-commit-action@49620cd3ed21ee620a48530e81dba0d139c9cb80 # pin@v4
+      - uses: stefanzweifel/git-auto-commit-action@a0873a0795991933fedcac591b8736fa2c13d183 # pin@v4
         with:
           commit_message: "[Bot] Updated dependency"
           branch: dep-update
