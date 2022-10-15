@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # pin@v1
+      - uses: actions/checkout@8230315d06ad95c617244d2f265d237a1682d445 # pin@v1
       - name: Enviroment Setup
         uses: ./.github/actions/setup
         with:
@@ -44,7 +44,7 @@ jobs:
     needs: pep_style
 
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # pin@v1
+      - uses: actions/checkout@8230315d06ad95c617244d2f265d237a1682d445 # pin@v1
       - name: Enviroment Setup
         uses: ./.github/actions/setup
         with:
@@ -66,7 +66,7 @@ jobs:
     needs: pep_style
 
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # pin@v1
+      - uses: actions/checkout@8230315d06ad95c617244d2f265d237a1682d445 # pin@v1
       - name: Enviroment Setup
         uses: ./.github/actions/setup
         with:
@@ -82,7 +82,7 @@ jobs:
     needs: pep_style
 
     steps:
-      - uses: actions/checkout@7884fcad6b5d53d10323aee724dc68d8b9096a2e # pin@v2
+      - uses: actions/checkout@8230315d06ad95c617244d2f265d237a1682d445 # pin@v2
       - name: Set up Python ${{ env.python_version }}
         uses: actions/setup-python@7f80679172b057fc5e90d70d197929d454754a5a # pin@v2
         with:
@@ -113,7 +113,7 @@ jobs:
       INVENTREE_PYTHON_TEST_PASSWORD: testpassword
 
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # pin@v1
+      - uses: actions/checkout@8230315d06ad95c617244d2f265d237a1682d445 # pin@v1
       - name: Enviroment Setup
         uses: ./.github/actions/setup
         with:
@@ -143,7 +143,7 @@ jobs:
     continue-on-error: true
 
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # pin@v1
+      - uses: actions/checkout@8230315d06ad95c617244d2f265d237a1682d445 # pin@v1
       - name: Enviroment Setup
         uses: ./.github/actions/setup
         with:
@@ -164,7 +164,7 @@ jobs:
       INVENTREE_PLUGINS_ENABLED: true
 
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # pin@v1
+      - uses: actions/checkout@8230315d06ad95c617244d2f265d237a1682d445 # pin@v1
       - name: Enviroment Setup
         uses: ./.github/actions/setup
         with:
@@ -212,7 +212,7 @@ jobs:
           - 6379:6379
 
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # pin@v1
+      - uses: actions/checkout@8230315d06ad95c617244d2f265d237a1682d445 # pin@v1
       - name: Enviroment Setup
         uses: ./.github/actions/setup
         with:
@@ -257,7 +257,7 @@ jobs:
           - 3306:3306
 
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # pin@v1
+      - uses: actions/checkout@8230315d06ad95c617244d2f265d237a1682d445 # pin@v1
       - name: Enviroment Setup
         uses: ./.github/actions/setup
         with:
