@@ -27,7 +27,7 @@ jobs:
   tweet:
     runs-on: ubuntu-latest
     steps:
-      - uses: Eomm/why-don-t-you-tweet@f61f2a86c30c46528c1398a1abb1f64aa0988f69 # pin@v1
+      - uses: Eomm/why-don-t-you-tweet@5936bb1fd0096b1c2bbbb7518746638261bb4dae # pin@v1
         with:
           tweet-message: "InvenTree release ${{ github.event.release.tag_name }} is out
             now! Release notes: ${{ github.event.release.html_url }} #opensource
