@@ -190,7 +190,7 @@ qrcode[pil]==7.3.1
     #   django-allauth-2fa
 rapidfuzz==0.7.6
     # via -r requirements.in
-redis==3.5.3
+redis==4.3.4
     # via
     #   django-q
     #   django-redis
