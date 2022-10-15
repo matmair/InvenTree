@@ -89,7 +89,7 @@ jobs:
           python-version: ${{ env.python_version }}
           cache: 'pip'
       - name: Run pre-commit Checks
-        uses: pre-commit/action@9b88afc9cd57fd75b655d5c71bd38146d07135fe # pin@v2.0.3
+        uses: pre-commit/action@4835dd97624f38176d7f9f87fcce089836248ee9 # pin@v2.0.3
       - name: Check Version
         run: |
           pip install requests
