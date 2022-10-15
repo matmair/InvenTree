@@ -40,7 +40,7 @@ runs:
       # Python installs
       - name: Set up Python ${{ env.python_version }}
         if: ${{ inputs.python == 'true' }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.python_version }}
           cache: pip
