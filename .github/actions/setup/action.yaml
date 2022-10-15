@@ -58,7 +58,7 @@ runs:
       # NPM installs
       - name: Install node.js ${{ env.node_version }}
         if: ${{ inputs.npm == 'true' }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node_version }}
           cache: 'npm'
