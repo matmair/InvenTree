@@ -285,3 +285,4 @@ wheel==0.37.1 \
 # pinned when the requirements file includes hashes. Consider using the --allow-unsafe flag.
 # pip
 # setuptools
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
