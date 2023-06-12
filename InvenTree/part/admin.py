@@ -7,7 +7,7 @@ from import_export import widgets
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
 
-from company.models import SupplierPart
+import company.models
 from InvenTree.admin import InvenTreeResource
 from part import models
 from stock.models import StockLocation
@@ -42,7 +42,7 @@ class PartResource(InvenTreeResource):
     category = Field(attribute='category', column_name=_('Category ID'), widget=widgets.ForeignKeyWidget(models.PartCategory))
     category_name = Field(attribute='category__name', column_name=_('Category Name'), readonly=True)
     default_location = Field(attribute='default_location', column_name=_('Default Location ID'), widget=widgets.ForeignKeyWidget(StockLocation))
-    default_supplier = Field(attribute='default_supplier', column_name=_('Default Supplier ID'), widget=widgets.ForeignKeyWidget(SupplierPart))
+    default_supplier = Field(attribute='default_supplier', column_name=_('Default Supplier ID'), widget=widgets.ForeignKeyWidget(company.models.SupplierPart))
     variant_of = Field(attribute='variant_of', column_name=_('Variant Of'), widget=widgets.ForeignKeyWidget(models.Part))
     minimum_stock = Field(attribute='minimum_stock', column_name=_('Minimum Stock'))
 

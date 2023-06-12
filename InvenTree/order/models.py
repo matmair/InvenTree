@@ -28,11 +28,8 @@ import InvenTree.tasks
 import InvenTree.validators
 import order.validators
 import stock.models
-import users.models as UserModels
-from common.models import ProjectCode
 from common.notifications import InvenTreeNotificationBodies
 from common.settings import currency_code_default
-from company.models import Company, Contact, SupplierPart
 from InvenTree.exceptions import log_error
 from InvenTree.fields import (InvenTreeModelMoneyField, InvenTreeURLField,
                               RoundingDecimalField)
@@ -231,7 +228,7 @@ class Order(InvenTreeBarcodeMixin, InvenTreeNotesMixin, MetadataMixin, Reference
 
     description = models.CharField(max_length=250, blank=True, verbose_name=_('Description'), help_text=_('Order description (optional)'))
 
-    project_code = models.ForeignKey(ProjectCode, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_('Project Code'), help_text=_('Select project code for this order'))
+    project_code = models.ForeignKey('common.ProjectCode', on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_('Project Code'), help_text=_('Select project code for this order'))
 
     link = InvenTreeURLField(blank=True, verbose_name=_('Link'), help_text=_('Link to external page'))
 
@@ -251,7 +248,7 @@ class Order(InvenTreeBarcodeMixin, InvenTreeNotesMixin, MetadataMixin, Reference
                                    )
 
     responsible = models.ForeignKey(
-        UserModels.Owner,
+        'users.Owner',
         on_delete=models.SET_NULL,
         blank=True, null=True,
         help_text=_('User or group responsible for this order'),
@@ -260,7 +257,7 @@ class Order(InvenTreeBarcodeMixin, InvenTreeNotesMixin, MetadataMixin, Reference
     )
 
     contact = models.ForeignKey(
-        Contact,
+        'company.Contact',
         on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_('Contact'),
@@ -373,7 +370,7 @@ class PurchaseOrder(TotalPriceMixin, Order):
         return PurchaseOrderStatus.text(self.status)
 
     supplier = models.ForeignKey(
-        Company, on_delete=models.SET_NULL,
+        'company.Company', on_delete=models.SET_NULL,
         null=True,
         limit_choices_to={
             'is_supplier': True,
@@ -771,7 +768,7 @@ class SalesOrder(TotalPriceMixin, Order):
     )
 
     customer = models.ForeignKey(
-        Company,
+        'company.Company',
         on_delete=models.SET_NULL,
         null=True,
         limit_choices_to={'is_customer': True},
@@ -1189,7 +1186,7 @@ class PurchaseOrderLineItem(OrderLineItem):
             return self.part.part
 
     part = models.ForeignKey(
-        SupplierPart, on_delete=models.SET_NULL,
+        'company.SupplierPart', on_delete=models.SET_NULL,
         blank=False, null=True,
         related_name='purchase_order_line_items',
         verbose_name=_('Part'),
@@ -1730,7 +1727,7 @@ class ReturnOrder(TotalPriceMixin, Order):
     )
 
     customer = models.ForeignKey(
-        Company,
+        'company.Company',
         on_delete=models.SET_NULL,
         null=True,
         limit_choices_to={'is_customer': True},
@@ -1910,7 +1907,7 @@ class ReturnOrderLineItem(OrderLineItem):
     )
 
     item = models.ForeignKey(
-        stock.models.StockItem,
+        'stock.StockItem',
         on_delete=models.CASCADE,
         related_name='return_order_lines',
         verbose_name=_('Item'),

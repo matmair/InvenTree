@@ -68,5 +68,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(extract_purchase_price, reverse_code=migrations.RunPython.noop)
+        migrations.RunPython(extract_purchase_price, reverse_code=migrations.RunPython.noop, elidable=True,)
     ]

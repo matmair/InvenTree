@@ -219,7 +219,7 @@ class CompanyAttachment(InvenTreeAttachment):
         return os.path.join('company_files', str(self.company.pk))
 
     company = models.ForeignKey(
-        Company, on_delete=models.CASCADE,
+        'company.Company', on_delete=models.CASCADE,
         verbose_name=_('Company'),
         related_name='attachments',
     )
@@ -241,7 +241,7 @@ class Contact(MetadataMixin, models.Model):
         """Return the API URL associated with the Contcat model"""
         return reverse('api-contact-list')
 
-    company = models.ForeignKey(Company, related_name='contacts',
+    company = models.ForeignKey('company.Company', related_name='contacts',
                                 on_delete=models.CASCADE)
 
     name = models.CharField(max_length=100)
@@ -283,7 +283,7 @@ class ManufacturerPart(MetadataMixin, models.Model):
                              )
 
     manufacturer = models.ForeignKey(
-        Company,
+        'company.Company',
         on_delete=models.CASCADE,
         null=True,
         related_name='manufactured_parts',
@@ -356,7 +356,7 @@ class ManufacturerPartAttachment(InvenTreeAttachment):
         """Return the subdirectory where attachment files for the ManufacturerPart model are located"""
         return os.path.join("manufacturer_part_files", str(self.manufacturer_part.id))
 
-    manufacturer_part = models.ForeignKey(ManufacturerPart, on_delete=models.CASCADE,
+    manufacturer_part = models.ForeignKey('company.ManufacturerPart', on_delete=models.CASCADE,
                                           verbose_name=_('Manufacturer Part'), related_name='attachments')
 
 
@@ -378,7 +378,7 @@ class ManufacturerPartParameter(models.Model):
         return reverse('api-manufacturer-part-parameter-list')
 
     manufacturer_part = models.ForeignKey(
-        ManufacturerPart,
+        'company.ManufacturerPart',
         on_delete=models.CASCADE,
         related_name='parameters',
         verbose_name=_('Manufacturer Part'),
@@ -558,7 +558,7 @@ class SupplierPart(MetadataMixin, InvenTreeBarcodeMixin, common.models.MetaMixin
     )
 
     supplier = models.ForeignKey(
-        Company, on_delete=models.CASCADE,
+        'company.Company', on_delete=models.CASCADE,
         related_name='supplied_parts',
         limit_choices_to={'is_supplier': True},
         verbose_name=_('Supplier'),
@@ -572,7 +572,7 @@ class SupplierPart(MetadataMixin, InvenTreeBarcodeMixin, common.models.MetaMixin
     )
 
     manufacturer_part = models.ForeignKey(
-        ManufacturerPart, on_delete=models.CASCADE,
+        'company.ManufacturerPart', on_delete=models.CASCADE,
         blank=True, null=True,
         related_name='supplier_parts',
         verbose_name=_('Manufacturer Part'),
@@ -772,7 +772,7 @@ class SupplierPriceBreak(common.models.PriceBreak):
         """Return the API URL associated with the SupplierPriceBreak model"""
         return reverse('api-part-supplier-price-list')
 
-    part = models.ForeignKey(SupplierPart, on_delete=models.CASCADE, related_name='pricebreaks', verbose_name=_('Part'),)
+    part = models.ForeignKey('company.SupplierPart', on_delete=models.CASCADE, related_name='pricebreaks', verbose_name=_('Part'),)
 
 
 @receiver(post_save, sender=SupplierPriceBreak, dispatch_uid='post_save_supplier_price_break')

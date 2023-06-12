@@ -76,5 +76,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             fix_purchase_price,
             reverse_code=migrations.RunPython.noop,
+            elidable=True,
         )
     ]

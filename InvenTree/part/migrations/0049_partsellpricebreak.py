@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('common', '0007_colortheme'),
+        #('common', '0007_colortheme'),
         ('part', '0048_auto_20200902_1404'),
     ]
 

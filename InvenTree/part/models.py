@@ -43,7 +43,6 @@ import part.settings as part_settings
 from build import models as BuildModels
 from common.models import InvenTreeSetting
 from common.settings import currency_code_default
-from company.models import SupplierPart
 from InvenTree import helpers, validators
 from InvenTree.fields import InvenTreeURLField
 from InvenTree.helpers import (decimal2money, decimal2string, normalize,
@@ -960,7 +959,7 @@ class Part(InvenTreeBarcodeMixin, InvenTreeNotesMixin, MetadataMixin, MPTTModel)
         return None
 
     default_supplier = models.ForeignKey(
-        SupplierPart,
+        'company.SupplierPart',
         on_delete=models.SET_NULL,
         blank=True, null=True,
         verbose_name=_('Default Supplier'),
@@ -2973,7 +2972,7 @@ class PartStocktake(models.Model):
     """
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='stocktakes',
         verbose_name=_('Part'),
@@ -3115,7 +3114,7 @@ class PartAttachment(InvenTreeAttachment):
         """Returns the media subdirectory where part attachments are stored"""
         return os.path.join("part_files", str(self.part.id))
 
-    part = models.ForeignKey(Part, on_delete=models.CASCADE,
+    part = models.ForeignKey('part.Part', on_delete=models.CASCADE,
                              verbose_name=_('Part'), related_name='attachments')
 
 
@@ -3132,7 +3131,7 @@ class PartSellPriceBreak(common.models.PriceBreak):
         return reverse('api-part-sale-price-list')
 
     part = models.ForeignKey(
-        Part, on_delete=models.CASCADE,
+        'part.Part', on_delete=models.CASCADE,
         related_name='salepricebreaks',
         limit_choices_to={'salable': True},
         verbose_name=_('Part')
@@ -3152,7 +3151,7 @@ class PartInternalPriceBreak(common.models.PriceBreak):
         return reverse('api-part-internal-price-list')
 
     part = models.ForeignKey(
-        Part, on_delete=models.CASCADE,
+        'part.Part', on_delete=models.CASCADE,
         related_name='internalpricebreaks',
         verbose_name=_('Part')
     )
@@ -3175,7 +3174,7 @@ class PartStar(models.Model):
             'user'
         ]
 
-    part = models.ForeignKey(Part, on_delete=models.CASCADE, verbose_name=_('Part'), related_name='starred_users')
+    part = models.ForeignKey('part.Part', on_delete=models.CASCADE, verbose_name=_('Part'), related_name='starred_users')
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('User'), related_name='starred_parts')
 
@@ -3195,7 +3194,7 @@ class PartCategoryStar(models.Model):
             'user',
         ]
 
-    category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, verbose_name=_('Category'), related_name='starred_users')
+    category = models.ForeignKey('part.PartCategory', on_delete=models.CASCADE, verbose_name=_('Category'), related_name='starred_users')
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('User'), related_name='starred_categories')
 
@@ -3263,7 +3262,7 @@ class PartTestTemplate(MetadataMixin, models.Model):
         return helpers.generateTestKey(self.test_name)
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='test_templates',
         limit_choices_to={'trackable': True},
@@ -3551,12 +3550,12 @@ class PartParameter(MetadataMixin, models.Model):
                 self.data_numeric = None
 
     part = models.ForeignKey(
-        Part, on_delete=models.CASCADE, related_name='parameters',
+        'part.Part', on_delete=models.CASCADE, related_name='parameters',
         verbose_name=_('Part'), help_text=_('Parent Part')
     )
 
     template = models.ForeignKey(
-        PartParameterTemplate, on_delete=models.CASCADE, related_name='instances',
+        'part.PartParameterTemplate', on_delete=models.CASCADE, related_name='instances',
         verbose_name=_('Template'), help_text=_('Parameter Template')
     )
 
@@ -3609,13 +3608,13 @@ class PartCategoryParameterTemplate(MetadataMixin, models.Model):
         else:
             return f'{self.category.name} | {self.parameter_template.name}'
 
-    category = models.ForeignKey(PartCategory,
+    category = models.ForeignKey('part.PartCategory',
                                  on_delete=models.CASCADE,
                                  related_name='parameter_templates',
                                  verbose_name=_('Category'),
                                  help_text=_('Part Category'))
 
-    parameter_template = models.ForeignKey(PartParameterTemplate,
+    parameter_template = models.ForeignKey('part.PartParameterTemplate',
                                            on_delete=models.CASCADE,
                                            related_name='part_categories',
                                            verbose_name=_('Parameter Template'),
@@ -3759,7 +3758,7 @@ class BomItem(DataImportMixin, MetadataMixin, models.Model):
 
     # A link to the parent part
     # Each part will get a reverse lookup field 'bom_items'
-    part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='bom_items',
+    part = models.ForeignKey('part.Part', on_delete=models.CASCADE, related_name='bom_items',
                              verbose_name=_('Part'),
                              help_text=_('Select parent part'),
                              limit_choices_to={
@@ -3768,7 +3767,7 @@ class BomItem(DataImportMixin, MetadataMixin, models.Model):
 
     # A link to the child item (sub-part)
     # Each part will get a reverse lookup field 'used_in'
-    sub_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='used_in',
+    sub_part = models.ForeignKey('part.Part', on_delete=models.CASCADE, related_name='used_in',
                                  verbose_name=_('Sub part'),
                                  help_text=_('Select part to be used in BOM'),
                                  limit_choices_to={
@@ -4063,7 +4062,7 @@ class BomItemSubstitute(MetadataMixin, models.Model):
         return reverse('api-bom-substitute-list')
 
     bom_item = models.ForeignKey(
-        BomItem,
+        'part.BomItem',
         on_delete=models.CASCADE,
         related_name='substitutes',
         verbose_name=_('BOM Item'),
@@ -4071,7 +4070,7 @@ class BomItemSubstitute(MetadataMixin, models.Model):
     )
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='substitute_items',
         verbose_name=_('Part'),
@@ -4089,10 +4088,10 @@ class PartRelated(MetadataMixin, models.Model):
         """Metaclass defines extra model properties"""
         unique_together = ('part_1', 'part_2')
 
-    part_1 = models.ForeignKey(Part, related_name='related_parts_1',
+    part_1 = models.ForeignKey('part.Part', related_name='related_parts_1',
                                verbose_name=_('Part 1'), on_delete=models.CASCADE)
 
-    part_2 = models.ForeignKey(Part, related_name='related_parts_2',
+    part_2 = models.ForeignKey('part.Part', related_name='related_parts_2',
                                on_delete=models.CASCADE,
                                verbose_name=_('Part 2'), help_text=_('Select Related Part'))
 

@@ -20,5 +20,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(update_tree)
+        migrations.RunPython(update_tree, elidable=True,)
     ]

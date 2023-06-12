@@ -29,7 +29,6 @@ import InvenTree.ready
 import InvenTree.tasks
 import label.models
 import report.models
-from company import models as CompanyModels
 from InvenTree.fields import InvenTreeModelMoneyField, InvenTreeURLField
 from InvenTree.models import (InvenTreeAttachment, InvenTreeBarcodeMixin,
                               InvenTreeNotesMixin, InvenTreeTree,
@@ -38,7 +37,6 @@ from InvenTree.status_codes import (SalesOrderStatusGroups, StockHistoryCode,
                                     StockStatus, StockStatusGroups)
 from part import models as PartModels
 from plugin.events import trigger_event
-from users.models import Owner
 
 
 class StockLocation(InvenTreeBarcodeMixin, MetadataMixin, InvenTreeTree):
@@ -114,7 +112,7 @@ class StockLocation(InvenTreeBarcodeMixin, MetadataMixin, InvenTreeTree):
         help_text=_("Icon (optional)")
     )
 
-    owner = models.ForeignKey(Owner, on_delete=models.SET_NULL, blank=True, null=True,
+    owner = models.ForeignKey('users.Owner', on_delete=models.SET_NULL, blank=True, null=True,
                               verbose_name=_('Owner'),
                               help_text=_('Select Owner'),
                               related_name='stock_locations')
@@ -712,7 +710,7 @@ class StockItem(InvenTreeBarcodeMixin, InvenTreeNotesMixin, MetadataMixin, commo
     )
 
     customer = models.ForeignKey(
-        CompanyModels.Company,
+        'company.Company',
         on_delete=models.SET_NULL,
         null=True, blank=True,
         limit_choices_to={'is_customer': True},
@@ -824,7 +822,7 @@ class StockItem(InvenTreeBarcodeMixin, InvenTreeNotesMixin, MetadataMixin, commo
         help_text=_('Single unit purchase price at time of purchase'),
     )
 
-    owner = models.ForeignKey(Owner, on_delete=models.SET_NULL, blank=True, null=True,
+    owner = models.ForeignKey('users.Owner', on_delete=models.SET_NULL, blank=True, null=True,
                               verbose_name=_('Owner'),
                               help_text=_('Select Owner'),
                               related_name='stock_items')
@@ -2100,7 +2098,7 @@ class StockItemAttachment(InvenTreeAttachment):
         return os.path.join("stock_files", str(self.stock_item.id))
 
     stock_item = models.ForeignKey(
-        StockItem,
+        'stock.StockItem',
         on_delete=models.CASCADE,
         related_name='attachments'
     )
@@ -2147,7 +2145,7 @@ class StockItemTracking(models.Model):
     )
 
     item = models.ForeignKey(
-        StockItem,
+        'stock.StockItem',
         on_delete=models.CASCADE,
         related_name='tracking_info'
     )
@@ -2233,7 +2231,7 @@ class StockItemTestResult(MetadataMixin, models.Model):
         return InvenTree.helpers.generateTestKey(self.test)
 
     stock_item = models.ForeignKey(
-        StockItem,
+        'stock.StockItem',
         on_delete=models.CASCADE,
         related_name='test_results'
     )

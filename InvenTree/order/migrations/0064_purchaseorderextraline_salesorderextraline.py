@@ -105,5 +105,5 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
         ),
-        migrations.RunPython(convert_line_items, reverse_code=nunconvert_line_items),
+        migrations.RunPython(convert_line_items, reverse_code=nunconvert_line_items, elidable=True,),
     ]

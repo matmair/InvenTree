@@ -58,5 +58,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(assign_bom_items, reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(assign_bom_items, reverse_code=migrations.RunPython.noop, elidable=True,),
     ]

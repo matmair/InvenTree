@@ -49,5 +49,5 @@ class Migration(migrations.Migration):
             field=models.PositiveIntegerField(db_index=True, default=0, editable=False),
             preserve_default=False,
         ),
-        migrations.RunPython(update_tree, reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(update_tree, reverse_code=migrations.RunPython.noop, elidable=True, ),
     ]

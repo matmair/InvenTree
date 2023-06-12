@@ -7,8 +7,8 @@ from import_export import widgets
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
 
+import company.models
 from build.models import Build
-from company.models import Company, SupplierPart
 from InvenTree.admin import InvenTreeResource
 from order.models import PurchaseOrder, SalesOrder
 from part.models import Part
@@ -107,10 +107,10 @@ class StockItemResource(InvenTreeResource):
     status = Field(attribute='status', column_name=_('Status Code'), widget=widgets.IntegerWidget())
     location = Field(attribute='location', column_name=_('Location ID'), widget=widgets.ForeignKeyWidget(StockLocation))
     location_name = Field(attribute='location__name', column_name=_('Location Name'), readonly=True)
-    supplier_part = Field(attribute='supplier_part', column_name=_('Supplier Part ID'), widget=widgets.ForeignKeyWidget(SupplierPart))
+    supplier_part = Field(attribute='supplier_part', column_name=_('Supplier Part ID'), widget=widgets.ForeignKeyWidget(company.models.SupplierPart))
     supplier = Field(attribute='supplier_part__supplier__id', column_name=_('Supplier ID'), readonly=True, widget=widgets.IntegerWidget())
     supplier_name = Field(attribute='supplier_part__supplier__name', column_name=_('Supplier Name'), readonly=True)
-    customer = Field(attribute='customer', column_name=_('Customer ID'), widget=widgets.ForeignKeyWidget(Company))
+    customer = Field(attribute='customer', column_name=_('Customer ID'), widget=widgets.ForeignKeyWidget(company.models.Company))
     belongs_to = Field(attribute='belongs_to', column_name=_('Installed In'), widget=widgets.ForeignKeyWidget(StockItem))
     build = Field(attribute='build', column_name=_('Build ID'), widget=widgets.ForeignKeyWidget(Build))
     parent = Field(attribute='parent', column_name=_('Parent ID'), widget=widgets.ForeignKeyWidget(StockItem))

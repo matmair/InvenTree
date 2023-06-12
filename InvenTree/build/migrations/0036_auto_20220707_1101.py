@@ -60,5 +60,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             update_build_reference,
             reverse_code=migrations.RunPython.noop,
+            elidable=True,
         )
     ]

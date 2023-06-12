@@ -44,5 +44,5 @@ class Migration(migrations.Migration):
             preserve_default=False,
         ),
 
-        migrations.RunPython(update_tree, reverse_code=migrations.RunPython.noop)
+        migrations.RunPython(update_tree, reverse_code=migrations.RunPython.noop, elidable=True, )
     ]

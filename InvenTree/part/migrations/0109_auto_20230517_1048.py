@@ -145,10 +145,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(
             update_template_units,
-            reverse_code=migrations.RunPython.noop
+            reverse_code=migrations.RunPython.noop,
+            elidable=True,
         ),
         migrations.RunPython(
             update_parameter_values,
-            reverse_code=migrations.RunPython.noop
+            reverse_code=migrations.RunPython.noop,
+            elidable=True,
         )
     ]
