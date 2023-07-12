@@ -209,10 +209,6 @@ jobs:
         run: python3 ci/check_migration_files.py
       - name: Coverage Tests
         run: invoke test --coverage
-      - name: Upload Coverage Report
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
