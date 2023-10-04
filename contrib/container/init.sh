@@ -27,6 +27,10 @@ fi
 if test -f "$INVENTREE_CONFIG_FILE"; then
     echo "Loading config file : $INVENTREE_CONFIG_FILE"
 else
+    echo "src"
+    ls
+    echo "src backend"
+    ls $INVENTREE_HOME/src/backend/
     echo "Copying config file to $INVENTREE_CONFIG_FILE"
     cp $INVENTREE_HOME/src/backend/InvenTree/config_template.yaml $INVENTREE_CONFIG_FILE
 fi
