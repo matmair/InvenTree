@@ -73,8 +73,8 @@ EXPOSE 8000
 RUN mkdir -p ${INVENTREE_HOME}
 WORKDIR ${INVENTREE_HOME}
 
-COPY ./docker/requirements.txt base_requirements.txt
-COPY ./requirements.txt ./
+COPY ./requirements.txt base_requirements.txt
+COPY ../../requirements.txt ./
 
 # For ARMv7 architecture, add the piwheels repo (for cryptography library)
 # Otherwise, we have to build from source, which is difficult
@@ -92,7 +92,7 @@ RUN apk add --no-cache --virtual .build-deps \
     pip install -r base_requirements.txt -r requirements.txt --no-cache-dir && \
     apk --purge del .build-deps
 
-COPY tasks.py docker/gunicorn.conf.py docker/init.sh ./
+COPY ../../tasks.py gunicorn.conf.py init.sh ./
 
 RUN chmod +x init.sh
 
@@ -148,7 +148,7 @@ ENV INVENTREE_PY_ENV="${INVENTREE_DATA_DIR}/env"
 WORKDIR ${INVENTREE_HOME}
 
 # Entrypoint ensures that we are running in the python virtual environment
-ENTRYPOINT ["/bin/ash", "./docker/init.sh"]
+ENTRYPOINT ["/bin/ash", "./init.sh"]
 
 # Launch the development server
 CMD ["invoke", "server", "-a", "${INVENTREE_WEB_ADDR}:${INVENTREE_WEB_PORT}"]
