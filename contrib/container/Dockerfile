@@ -93,7 +93,6 @@ RUN apk add --no-cache --virtual .build-deps \
     apk --purge del .build-deps
 
 COPY gunicorn.conf.py init.sh ./
-COPY ../../tasks.py ./
 
 RUN chmod +x init.sh
 
