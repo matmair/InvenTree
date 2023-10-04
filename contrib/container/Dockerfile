@@ -92,7 +92,7 @@ RUN apk add --no-cache --virtual .build-deps \
     pip install -r base_requirements.txt -r requirements.txt --no-cache-dir && \
     apk --purge del .build-deps
 
-COPY ../../tasks.py gunicorn.conf.py init.sh ./
+COPY ./../../tasks.py gunicorn.conf.py init.sh ./
 
 RUN chmod +x init.sh
 
