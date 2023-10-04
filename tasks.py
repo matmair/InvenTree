@@ -68,7 +68,7 @@ def localDir() -> Path:
 
 def managePyDir():
     """Returns the directory of the manage.py file."""
-    return localDir().joinpath('InvenTree')
+    return localDir().joinpath('src', 'backend', 'InvenTree')
 
 
 def managePyPath():
@@ -99,7 +99,7 @@ def yarn(c, cmd, pty: bool = False):
         pty (bool, optional): Run an interactive session. Defaults to False.
     """
 
-    path = managePyDir().parent.joinpath('src').joinpath('frontend')
+    path = localDir().joinpath('src').joinpath('frontend')
     c.run(f'cd "{path}" && {cmd}', pty=pty)
 
 
@@ -152,7 +152,7 @@ def check_file_existance(filename: str, overwrite: bool = False):
 @task
 def plugins(c):
     """Installs all plugins as specified in 'plugins.txt'."""
-    from InvenTree.InvenTree.config import get_plugin_file
+    from src.backend.InvenTree.InvenTree.config import get_plugin_file
 
     plugin_file = get_plugin_file()
 
@@ -165,20 +165,20 @@ def plugins(c):
 @task(post=[plugins])
 def install(c):
     """Installs required python packages."""
-    print("Installing required python packages from 'requirements.txt'")
+    print("Installing required python packages from 'src/backend/requirements.txt'")
 
     # Install required Python packages with PIP
     c.run('pip3 install --upgrade pip')
-    c.run('pip3 install --no-cache-dir --disable-pip-version-check -U -r requirements.txt')
+    c.run('pip3 install --no-cache-dir --disable-pip-version-check -U -r src/backend/requirements.txt')
 
 
 @task(help={'tests': 'Set up test dataset at the end'})
 def setup_dev(c, tests=False):
     """Sets up everything needed for the dev environment."""
-    print("Installing required python packages from 'requirements-dev.txt'")
+    print("Installing required python packages from 'src/backend/requirements-dev.txt'")
 
     # Install required Python packages with PIP
-    c.run('pip3 install -U -r requirements-dev.txt')
+    c.run('pip3 install -U -r src/backend/requirements-dev.txt')
 
     # Install pre-commit hook
     print("Installing pre-commit for checks before git commits...")
@@ -254,7 +254,7 @@ def translate_stats(c):
     except Exception:
         print("WARNING: Translation files could not be compiled:")
 
-    path = Path('InvenTree', 'script', 'translation_stats.py')
+    path = Path('src', 'backend', 'InvenTree', 'script', 'translation_stats.py')
     c.run(f'python3 {path}')
 
 
@@ -691,7 +691,7 @@ def test(c, disable_pty=False, runtest='', migrations=False, report=False, cover
 def setup_test(c, ignore_update=False, dev=False, path="inventree-demo-dataset"):
     """Setup a testing environment."""
 
-    from InvenTree.InvenTree.config import get_media_dir
+    from src.backend.InvenTree.InvenTree.config import get_media_dir
 
     if not ignore_update:
         update(c)
@@ -742,9 +742,10 @@ def schema(c, filename='schema.yml', overwrite=False):
 @task(default=True)
 def version(c):
     """Show the current version of InvenTree."""
-    import InvenTree.InvenTree.version as InvenTreeVersion
-    from InvenTree.InvenTree.config import (get_config_file, get_media_dir,
-                                            get_static_dir)
+    import src.backend.InvenTree.InvenTree.version as InvenTreeVersion
+    from src.backend.InvenTree.InvenTree.config import (get_config_file,
+                                                        get_media_dir,
+                                                        get_static_dir)
 
     # Gather frontend version information
     _, node, yarn = node_available(versions=True)
@@ -847,7 +848,7 @@ def frontend_dev(c):
     'file': "destination to frontend-build.zip file",
     'repo': "GitHub repository, default: InvenTree/inventree",
     'extract': "Also extract and place at the correct destination, default: True",
-    'clean': "Delete old files from InvenTree/web/static/web first, default: True",
+    'clean': "Delete old files from src/backend/InvenTree/web/static/web first, default: True",
 })
 def frontend_download(c, ref=None, tag=None, file=None, repo="InvenTree/inventree", extract=True, clean=True):
     """Download a pre-build frontend from GitHub if you dont want to install nodejs on your machine.
@@ -886,7 +887,7 @@ def frontend_download(c, ref=None, tag=None, file=None, repo="InvenTree/inventre
         if not extract:
             return
 
-        dest_path = Path(__file__).parent / "InvenTree/web/static/web"
+        dest_path = Path(__file__).parent / "src/backend" / "InvenTree/web/static/web"
 
         # if clean, delete static/web directory
         if clean:

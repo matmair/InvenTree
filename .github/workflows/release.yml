@@ -17,7 +17,7 @@ jobs:
       - name: Version Check
         run: |
           pip install requests
-          python3 ci/version_check.py
+          python3 .github/scripts/version_check.py
       - name: Push to Stable Branch
         uses: ad-m/github-push-action@4dcce6dea3e3c8187237fc86b7dfdc93e5aaae58 # pin@master
         if: env.stable_release == 'true'
@@ -40,12 +40,12 @@ jobs:
         run: cd src/frontend && npm run build
       - name: Zip frontend
         run: |
-          cd InvenTree/web/static/web
+          cd src/backend/InvenTree/web/static/web
           zip -r ../frontend-build.zip *
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: InvenTree/web/static/frontend-build.zip
+          file: src/backend/InvenTree/web/static/frontend-build.zip
           asset_name: frontend-build.zip
           tag: ${{ github.ref }}
           overwrite: true
