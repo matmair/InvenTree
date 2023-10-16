@@ -1,7 +1,7 @@
 version = 1
-exclude_patterns = [  
-  "docs/docs/javascripts/**",  
-  "docs/ci/**",  
+exclude_patterns = [
+  "docs/docs/javascripts/**",
+  "docs/ci/**",
   "src/backend/InvenTree/InvenTree/static/**",
   ".github/scripts/**",
   "src/**/migrations/*.py"
