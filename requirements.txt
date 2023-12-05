@@ -8,6 +8,8 @@ asgiref==3.7.2
     # via
     #   django
     #   django-cors-headers
+async-timeout==4.0.3
+    # via redis
 attrs==23.1.0
     # via
     #   jsonschema
@@ -47,7 +49,7 @@ diff-match-patch==20230430
     # via django-import-export
 dj-rest-auth==5.0.2
     # via -r requirements.in
-django==5.0
+django==4.2.8
     # via
     #   -r requirements.in
     #   dj-rest-auth
