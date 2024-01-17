@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="images/logo/inventree.png" alt="InvenTree logo" width="200" height="auto" />
+  <img src="assets/images/logo/inventree.png" alt="InvenTree logo" width="200" height="auto" />
   <h1>InvenTree</h1>
   <p>Open Source Inventory Management System </p>
 
@@ -167,6 +167,7 @@ Find a full list of used third-party libraries in [our documentation](https://do
 <a href="https://github.com/appwrite"><img src="https://github.com/appwrite.png" width="60px" alt="Appwrite" /></a>
 <a href="https://github.com/PricelessToolkit"><img src="https://github.com/PricelessToolkit.png" width="60px" alt="" /></a>
 <a href="https://github.com/cabottech"><img src="https://github.com/cabottech.png" width="60px" alt="Cabot Technologies" /></a>
+<a href="https://github.com/markus-k"><img src="https://github.com/markus-k.png" width="60px" alt="Markus Kasten" /></a>
 </p>
 
 <p>With ongoing resources provided by:</p>

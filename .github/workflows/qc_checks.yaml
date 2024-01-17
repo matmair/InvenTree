@@ -38,9 +38,9 @@ jobs:
         with:
           filters: |
             server:
-              - 'InvenTree/**'
-              - 'requirements.txt'
-              - 'requirements-dev.txt'
+              - 'src/backend/InvenTree/**'
+              - 'src/backend/requirements.txt'
+              - 'src/backend/requirements-dev.txt'
             migrations:
               - '**/migrations/**'
               - '.github/workflows**'
@@ -62,12 +62,12 @@ jobs:
           install: true
       - name: Check Templated JS Files
         run: |
-          cd ci
+          cd .github/scripts
           python3 check_js_templates.py
       - name: Lint Javascript Files
         run: |
-          python InvenTree/manage.py prerender
-          npx eslint InvenTree/InvenTree/static_i18n/i18n/*.js
+          python src/backend/InvenTree/manage.py prerender
+          npx eslint src/backend/InvenTree/InvenTree/static_i18n/i18n/*.js
 
   pre-commit:
     name: Style [pre-commit]
@@ -87,7 +87,7 @@ jobs:
       - name: Check Version
         run: |
           pip install requests
-          python3 ci/version_check.py
+          python3 .github/scripts/version_check.py
 
   mkdocs:
     name: Style [Documentation]
@@ -177,7 +177,7 @@ jobs:
       - name: Test Translations
         run: invoke translate
       - name: Check Migration Files
-        run: python3 ci/check_migration_files.py
+        run: python3 .github/scripts/check_migration_files.py
       - name: Coverage Tests
         run: invoke test --coverage
       - name: Upload Coverage Report
@@ -409,9 +409,9 @@ jobs:
         run: cd src/frontend && npm run build
       - name: Zip frontend
         run: |
-          cd InvenTree/web/static
+          cd src/backend/InvenTree/web/static
           zip -r frontend-build.zip web/
       - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # pin@v3.1.3
         with:
           name: frontend-build
-          path: InvenTree/web/static/web
+          path: src/backend/InvenTree/web/static/web
