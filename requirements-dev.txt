@@ -39,7 +39,9 @@ importlib-metadata==6.11.0
     # via build
 isort==5.13.2
 nodeenv==1.8.0
-    # via pre-commit
+    # via
+    #   pre-commit
+    #   pyright
 packaging==24.0
     # via build
 pdfminer-six==20231228
@@ -55,6 +57,7 @@ pyproject-hooks==1.0.0
     # via
     #   build
     #   pip-tools
+pyright==1.1.355
 pyyaml==6.0.1
     # via pre-commit
 requests==2.31.0

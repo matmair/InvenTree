@@ -1,5 +1,7 @@
 """Admin classes."""
 
+from typing import List
+
 from django.contrib import admin
 from django.db.models.fields import CharField
 from django.http.request import HttpRequest
@@ -21,7 +23,7 @@ class InvenTreeResource(ModelResource):
     MAX_IMPORT_COLS = 100
 
     # List of fields which should be converted to empty strings if they are null
-    CONVERT_NULL_FIELDS = []
+    CONVERT_NULL_FIELDS: List[str] = []
 
     def import_data_inner(
         self,

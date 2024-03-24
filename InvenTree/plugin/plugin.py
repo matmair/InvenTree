@@ -23,9 +23,9 @@ class MetaBase:
     """Base class for a plugins metadata."""
 
     # Override the plugin name for each concrete plugin instance
-    NAME = ''
-    SLUG = None
-    TITLE = None
+    NAME: str = ''
+    SLUG: str | None = None
+    TITLE: str | None = None
 
     def get_meta_value(self, key: str, old_key: str = None, __default=None):
         """Reference a meta item with a key.
@@ -212,12 +212,12 @@ class InvenTreePlugin(VersionMixin, MixinBase, MetaBase):
     DO NOT USE THIS DIRECTLY, USE plugin.InvenTreePlugin
     """
 
-    AUTHOR = None
-    DESCRIPTION = None
-    PUBLISH_DATE = None
-    VERSION = None
-    WEBSITE = None
-    LICENSE = None
+    AUTHOR: str | None = None
+    DESCRIPTION: str | None = None
+    PUBLISH_DATE: str | None = None
+    VERSION: str | None = None
+    WEBSITE: str | None = None
+    LICENSE: str | None = None
 
     def __init__(self):
         """Init a plugin.

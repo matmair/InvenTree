@@ -260,7 +260,7 @@ class PluginSettingList(ListAPI):
     filterset_fields = ['plugin__active', 'plugin__key']
 
 
-def check_plugin(plugin_slug: str, plugin_pk: int) -> InvenTreePlugin:
+def check_plugin(plugin_slug: str | None, plugin_pk: int | None) -> InvenTreePlugin:
     """Check that a plugin for the provided slug exists and get the config.
 
     Args:

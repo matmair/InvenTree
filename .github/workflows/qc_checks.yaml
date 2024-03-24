@@ -88,6 +88,10 @@ jobs:
           cache: 'pip'
       - name: Run pre-commit Checks
         uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # pin@v3.0.1
+      - uses: jakebailey/pyright-action@v1
+        name: Pyright
+        with:
+          version: 1.1.xxx
       - name: Check Version
         run: |
           pip install requests
