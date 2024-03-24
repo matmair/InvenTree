@@ -6,11 +6,9 @@ import json
 import re
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
-from django.core.handlers.wsgi import WSGIRequest
 from django.db import connections
 from django.http.response import StreamingHttpResponse
 from django.test import TestCase
@@ -21,8 +19,6 @@ from rest_framework.test import APITestCase
 
 from plugin import registry
 from plugin.models import PluginConfig
-
-MyResponse = Any | WSGIRequest
 
 
 def addUserPermission(user, permission):
@@ -306,7 +302,7 @@ class InvenTreeAPITestCase(ExchangeRateMixin, UserMixin, APITestCase):
         if data is None:
             data = {}
 
-        response: MyResponse = self.client.get(url, data, format=format, **kwargs)
+        response = self.client.get(url, data, format=format, **kwargs)
 
         self.checkResponse(url, 'GET', expected_code, response)
 
@@ -318,7 +314,7 @@ class InvenTreeAPITestCase(ExchangeRateMixin, UserMixin, APITestCase):
         if data is None:
             data = {}
 
-        response: MyResponse = self.client.post(url, data=data, format=format, **kwargs)
+        response = self.client.post(url, data=data, format=format, **kwargs)
 
         self.checkResponse(url, 'POST', expected_code, response)
 
@@ -329,9 +325,7 @@ class InvenTreeAPITestCase(ExchangeRateMixin, UserMixin, APITestCase):
         if data is None:
             data = {}
 
-        response: MyResponse = self.client.delete(
-            url, data=data, format=format, **kwargs
-        )
+        response = self.client.delete(url, data=data, format=format, **kwargs)
 
         self.checkResponse(url, 'DELETE', expected_code, response)
 
@@ -339,9 +333,7 @@ class InvenTreeAPITestCase(ExchangeRateMixin, UserMixin, APITestCase):
 
     def patch(self, url, data, expected_code=None, format='json', **kwargs):
         """Issue a PATCH request."""
-        response: MyResponse = self.client.patch(
-            url, data=data, format=format, **kwargs
-        )
+        response = self.client.patch(url, data=data, format=format, **kwargs)
 
         self.checkResponse(url, 'PATCH', expected_code, response)
 
@@ -349,7 +341,7 @@ class InvenTreeAPITestCase(ExchangeRateMixin, UserMixin, APITestCase):
 
     def put(self, url, data, expected_code=None, format='json', **kwargs):
         """Issue a PUT request."""
-        response: MyResponse = self.client.put(url, data=data, format=format, **kwargs)
+        response = self.client.put(url, data=data, format=format, **kwargs)
 
         self.checkResponse(url, 'PUT', expected_code, response)
 
@@ -367,7 +359,7 @@ class InvenTreeAPITestCase(ExchangeRateMixin, UserMixin, APITestCase):
         self, url, data, expected_code=None, expected_fn=None, decode=True
     ):
         """Download a file from the server, and return an in-memory file."""
-        response: MyResponse = self.client.get(url, data=data, format='json')
+        response = self.client.get(url, data=data, format='json')
 
         self.checkResponse(url, 'DOWNLOAD_FILE', expected_code, response)
 
