@@ -11,7 +11,7 @@ from pdfminer.high_level import extract_text
 from PIL import Image
 
 from InvenTree.settings import BASE_DIR
-from InvenTree.unit_test import InvenTreeAPITestCase
+from InvenTree.unit_test import InvenTreeAPITestCase, get_plugin_config
 from label.models import PartLabel, StockItemLabel, StockLocationLabel
 from part.models import Part
 from plugin.base.label.mixins import LabelPrintingMixin
@@ -30,7 +30,7 @@ class LabelMixinTests(InvenTreeAPITestCase):
 
     def do_activate_plugin(self):
         """Activate the 'samplelabel' plugin."""
-        config = registry.get_plugin('samplelabelprinter').plugin_config()
+        config = get_plugin_config('samplelabelprinter')
         config.active = True
         config.save()
 

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from common.models import InvenTreeSetting
+from InvenTree.unit_test import get_plugin_config
 from plugin import InvenTreePlugin, registry
 from plugin.base.event.events import trigger_event
 from plugin.helpers import MixinNotImplementedError
@@ -18,7 +19,7 @@ class EventPluginSampleTests(TestCase):
     def test_run_event(self):
         """Check if the event is issued."""
         # Activate plugin
-        config = registry.get_plugin('sampleevent').plugin_config()
+        config = get_plugin_config('sampleevent')
         config.active = True
         config.save()
 

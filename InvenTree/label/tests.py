@@ -12,7 +12,7 @@ from django.urls import reverse
 
 from common.models import InvenTreeSetting
 from InvenTree.helpers import validateFilterString
-from InvenTree.unit_test import InvenTreeAPITestCase
+from InvenTree.unit_test import InvenTreeAPITestCase, get_plugin_config
 from label.models import LabelOutput
 from part.models import Part
 from plugin.registry import registry
@@ -118,13 +118,14 @@ class LabelTest(InvenTreeAPITestCase):
         InvenTreeSetting.set_setting('REPORT_ENABLE', True, None)
 
         # Set the 'debug' setting for the plugin
-        plugin = registry.get_plugin('inventreelabel')
+        plugin = get_plugin_config('inventreelabel')
         plugin.set_setting('DEBUG', True)
 
         # Print via the API (Note: will default to the builtin plugin if no plugin supplied)
         url = reverse('api-part-label-print', kwargs={'pk': label.pk})
 
         prt = Part.objects.first()
+        assert prt is not None
         part_pk = prt.pk
         part_name = prt.name
 

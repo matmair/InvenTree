@@ -4,6 +4,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from common.models import InvenTreeSetting
+from InvenTree.unit_test import get_plugin_config
 from plugin import registry
 from plugin.base.event.events import trigger_event
 
@@ -16,7 +17,7 @@ class FilteredEventPluginSampleTests(TestCase):
     def test_run_event(self):
         """Check if the event is issued."""
         # Activate plugin
-        config = registry.get_plugin('filteredsampleevent').plugin_config()
+        config = get_plugin_config('filteredsampleevent')
         config.active = True
         config.save()
 
@@ -37,7 +38,7 @@ class FilteredEventPluginSampleTests(TestCase):
     def test_ignore_event(self):
         """Check if the event is issued."""
         # Activate plugin
-        config = registry.get_plugin('filteredsampleevent').plugin_config()
+        config = get_plugin_config('filteredsampleevent')
         config.active = True
         config.save()
 

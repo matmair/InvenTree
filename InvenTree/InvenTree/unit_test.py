@@ -89,6 +89,15 @@ def getNewestMigrationFile(app, exclude_extension=True):
     return newest_file
 
 
+def get_plugin_config(plugin_slug):
+    """Return the plugin config for the specified plugin."""
+    plg = registry.get_plugin(plugin_slug)
+    assert plg is not None
+    cfg = plg.plugin_config()
+    assert cfg is not None
+    return cfg
+
+
 class UserMixin:
     """Mixin to setup a user and login for tests.
 

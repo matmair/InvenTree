@@ -8,7 +8,7 @@ from django.urls import include, path, re_path, reverse
 
 from error_report.models import Error
 
-from InvenTree.unit_test import InvenTreeTestCase
+from InvenTree.unit_test import InvenTreeTestCase, get_plugin_config
 from plugin import InvenTreePlugin
 from plugin.base.integration.mixins import PanelMixin
 from plugin.helpers import MixinNotImplementedError
@@ -367,12 +367,13 @@ class PanelMixinTests(InvenTreeTestCase):
     def test_disabled(self):
         """Test that the panels *do not load* if the plugin is not enabled."""
         plugin = registry.get_plugin('samplepanel')
+        assert plugin is not None
 
         plugin.set_setting('ENABLE_HELLO_WORLD', True)
         plugin.set_setting('ENABLE_BROKEN_PANEL', True)
 
         # Ensure that the plugin is *not* enabled
-        config = plugin.plugin_config()
+        config = get_plugin_config('samplepanel')
 
         self.assertFalse(config.active)
 
@@ -394,12 +395,10 @@ class PanelMixinTests(InvenTreeTestCase):
     @tag('cui')
     def test_enabled(self):
         """Test that the panels *do* load if the plugin is enabled."""
-        plugin = registry.get_plugin('samplepanel')
-
         self.assertEqual(len(registry.with_mixin('panel', active=True)), 0)
 
         # Ensure that the plugin is enabled
-        config = plugin.plugin_config()
+        config = get_plugin_config('samplepanel')
         config.active = True
         config.save()
 
