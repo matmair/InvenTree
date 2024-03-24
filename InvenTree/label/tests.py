@@ -118,7 +118,8 @@ class LabelTest(InvenTreeAPITestCase):
         InvenTreeSetting.set_setting('REPORT_ENABLE', True, None)
 
         # Set the 'debug' setting for the plugin
-        plugin = get_plugin_config('inventreelabel')
+        plugin = registry.get_plugin('inventreelabel')
+        assert plugin is not None
         plugin.set_setting('DEBUG', True)
 
         # Print via the API (Note: will default to the builtin plugin if no plugin supplied)
