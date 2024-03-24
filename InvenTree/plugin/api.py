@@ -1,5 +1,7 @@
 """API for the plugin app."""
 
+from __future__ import annotations
+
 from django.core.exceptions import ValidationError
 from django.urls import include, path, re_path
 from django.utils.translation import gettext_lazy as _

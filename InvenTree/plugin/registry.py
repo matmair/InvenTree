@@ -4,6 +4,8 @@
 - Manages setup and teardown of plugin class instances
 """
 
+from __future__ import annotations
+
 import imp
 import importlib
 import logging
