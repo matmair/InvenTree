@@ -85,6 +85,8 @@ def notification_settings_list(context, *args, **kwargs):
 @register.simple_tag(takes_context=True)
 def notification_list(context, *args, **kwargs):
     """List of all notification methods."""
+    if storage.liste is None:
+        return []
     return [
         {
             'slug': a.METHOD_NAME,

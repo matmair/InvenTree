@@ -87,6 +87,8 @@ class InvenTreeCoreNotificationsPlugin(
             """Return a list of target email addresses, only for users which allow email notifications."""
             allowed_users = []
 
+            if not self.targets:
+                return []
             for user in self.targets:
                 if not user.is_active:
                     # Ignore any users who have been deactivated

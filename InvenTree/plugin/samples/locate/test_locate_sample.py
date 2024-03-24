@@ -54,6 +54,7 @@ class SampleLocatePlugintests(InvenTreeAPITestCase):
 
             plugin = Wrong()
             plugin.locate_stock_location(1)
+            assert plugin is not None
 
         # Test item locator
         with self.assertRaises(MixinNotImplementedError):
