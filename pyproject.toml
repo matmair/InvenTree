@@ -82,7 +82,7 @@ sections=["FUTURE","STDLIB","DJANGO","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
 
 [tool.pyright]
 include = ["InvenTree"]
-exclude = ["**/node_modules","**/__pycache__",]
+exclude = ["**/node_modules","**/__pycache__","**/migrations/**"]
 defineConstant = { DEBUG = true }
 
 reportMissingImports = true
