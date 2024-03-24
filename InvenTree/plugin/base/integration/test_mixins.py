@@ -124,7 +124,7 @@ class UrlsMixinTest(BaseMixinDefinition, TestCase):
         self.assertEqual(mx_patterns.reverse_dict, target_pattern.reverse_dict)
 
         # resolve the view
-        self.assertEqual(mx_patterns.resolve('/testpath').func(), 'ccc')
+        self.assertEqual(mx_patterns.resolve('/testpath').func(None), 'ccc')
         self.assertEqual(mx_patterns.reverse('test'), 'testpath')
 
         # no url
