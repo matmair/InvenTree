@@ -88,6 +88,9 @@ defineConstant = { DEBUG = true }
 reportMissingImports = true
 reportMissingTypeStubs = false
 reportIncompatibleMethodOverride = false
+reportAttributeAccessIssue = false
+reportIndexIssue = false
+reportIncompatibleVariableOverride = false
 
 pythonVersion = "3.9"
 pythonPlatform = "Linux"
