@@ -467,6 +467,7 @@ class TestReportTest(ReportTest):
 
         # Now print with a valid StockItem
         item = StockItem.objects.first()
+        assert item is not None
 
         response = self.get(url, {'item': item.pk}, expected_code=200)
 
@@ -538,6 +539,7 @@ class BuildReportTest(ReportTest):
         inline = InvenTreeUserSetting.get_setting_object(
             'REPORT_INLINE', cache=False, user=self.user
         )
+        assert inline is not None
         inline.value = True
         inline.save()
 

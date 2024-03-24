@@ -171,10 +171,12 @@ class OwnerModelTest(InvenTreeTestCase):
         """Tests for the 'owner' model."""
         # Check that owner was created for user
         user_as_owner = Owner.get_owner(self.user)
+        assert user_as_owner is not None
         self.assertEqual(type(user_as_owner), Owner)
 
         # Check that owner was created for group
         group_as_owner = Owner.get_owner(self.group)
+        assert group_as_owner is not None
         self.assertEqual(type(group_as_owner), Owner)
 
         # Check name
@@ -182,11 +184,13 @@ class OwnerModelTest(InvenTreeTestCase):
 
         # Get related owners (user + group)
         related_owners = group_as_owner.get_related_owners(include_group=True)
+        assert related_owners is not None
         self.assertTrue(user_as_owner in related_owners)
         self.assertTrue(group_as_owner in related_owners)
 
         # Get related owners (only user)
         related_owners = group_as_owner.get_related_owners(include_group=False)
+        assert related_owners is not None
         self.assertTrue(user_as_owner in related_owners)
         self.assertFalse(group_as_owner in related_owners)
 

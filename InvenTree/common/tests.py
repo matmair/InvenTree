@@ -284,6 +284,7 @@ class SettingsTest(InvenTreeTestCase):
 
             # Any fields marked as 'boolean' must have a default value specified
             setting = InvenTreeSetting.get_setting_object(key)
+            assert setting is not None
 
             if setting.is_bool():
                 if setting.default_value in ['', None]:
@@ -374,6 +375,7 @@ class GlobalSettingsApiTest(InvenTreeAPITestCase):
     def test_company_name(self):
         """Test a settings object lifecycle e2e."""
         setting = InvenTreeSetting.get_setting_object('INVENTREE_COMPANY_NAME')
+        assert setting is not None
 
         # Check default value
         self.assertEqual(setting.value, 'My company name')
@@ -474,6 +476,7 @@ class UserSettingsApiTest(InvenTreeAPITestCase):
         setting = InvenTreeUserSetting.get_setting_object(
             'SEARCH_PREVIEW_SHOW_PARTS', user=self.user
         )
+        assert setting is not None
 
         # Check default values
         self.assertEqual(setting.to_native_value(), True)
@@ -520,6 +523,7 @@ class UserSettingsApiTest(InvenTreeAPITestCase):
         setting = InvenTreeUserSetting.get_setting_object(
             'DATE_DISPLAY_FORMAT', user=self.user
         )
+        assert setting is not None
 
         url = reverse('api-user-setting-detail', kwargs={'key': setting.key})
 
@@ -544,6 +548,7 @@ class UserSettingsApiTest(InvenTreeAPITestCase):
         setting = InvenTreeUserSetting.get_setting_object(
             'SEARCH_PREVIEW_RESULTS', user=self.user, cache=False
         )
+        assert setting is not None
 
         url = reverse('api-user-setting-detail', kwargs={'key': setting.key})
 
@@ -1299,6 +1304,7 @@ class CustomUnitAPITest(InvenTreeAPITestCase):
     def test_edit(self):
         """Test edit permissions for CustomUnit model."""
         unit = CustomUnit.objects.first()
+        assert unit is not None
 
         # Try to edit without permission
         self.user.is_staff = False
@@ -1326,6 +1332,7 @@ class CustomUnitAPITest(InvenTreeAPITestCase):
     def test_validation(self):
         """Test that validation works as expected."""
         unit = CustomUnit.objects.first()
+        assert unit is not None
 
         self.user.is_staff = True
         self.user.save()
