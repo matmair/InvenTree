@@ -88,15 +88,20 @@ jobs:
           cache: 'pip'
       - name: Run pre-commit Checks
         uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # pin@v3.0.1
+      - name: Check Version
+        run: |
+          pip install requests
+          python3 ci/version_check.py
+      - name: Set up Environment
+        uses: ./.github/actions/setup
+        with:
+          dev-install: true
+          install: true
       - uses: jakebailey/pyright-action@v1
         name: Pyright
         with:
           version: 1.1.355
         continue-on-error: true
-      - name: Check Version
-        run: |
-          pip install requests
-          python3 ci/version_check.py
 
   mkdocs:
     name: Style [Documentation]
