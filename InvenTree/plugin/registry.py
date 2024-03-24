@@ -132,7 +132,7 @@ class PluginsRegistry:
             try:
                 cfg.name = name
                 cfg.save()
-            except Exception as e:
+            except Exception:
                 logger.exception('Failed to update plugin name')
 
         return cfg
@@ -179,7 +179,7 @@ class PluginsRegistry:
         return plugin_func(*args, **kwargs)
 
     # region registry functions
-    def with_mixin(self, mixin: str, active=True, builtin=None):
+    def with_mixin(self, mixin: str, active: bool | None = True, builtin=None):
         """Returns reference to all plugins that have a specified mixin enabled.
 
         Args:

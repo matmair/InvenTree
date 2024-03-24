@@ -93,7 +93,7 @@ class UrlsMixinTest(BaseMixinDefinition, TestCase):
         """Setup for all tests."""
 
         class UrlsCls(UrlsMixin, InvenTreePlugin):
-            def test():
+            def test(self):
                 return 'ccc'
 
             URLS = [path('testpath', test, name='test')]
@@ -108,6 +108,7 @@ class UrlsMixinTest(BaseMixinDefinition, TestCase):
     def test_function(self):
         """Test that the mixin functions."""
         plg_name = self.mixin.plugin_name()
+        assert plg_name is not None
 
         # base_url
         target_url = f'{PLUGIN_BASE}/{plg_name}/'
@@ -117,13 +118,14 @@ class UrlsMixinTest(BaseMixinDefinition, TestCase):
         target_pattern = re_path(
             f'^{plg_name}/', include((self.mixin.urls, plg_name)), name=plg_name
         )
-        self.assertEqual(
-            self.mixin.urlpatterns.reverse_dict, target_pattern.reverse_dict
-        )
+
+        mx_patterns = self.mixin.urlpatterns
+        assert mx_patterns is not None
+        self.assertEqual(mx_patterns.reverse_dict, target_pattern.reverse_dict)
 
         # resolve the view
-        self.assertEqual(self.mixin.urlpatterns.resolve('/testpath').func(), 'ccc')
-        self.assertEqual(self.mixin.urlpatterns.reverse('test'), 'testpath')
+        self.assertEqual(mx_patterns.resolve('/testpath').func(), 'ccc')
+        self.assertEqual(mx_patterns.reverse('test'), 'testpath')
 
         # no url
         self.assertIsNone(self.mixin_nothing.urls)
@@ -412,6 +414,8 @@ class PanelMixinTests(InvenTreeTestCase):
             reverse('stock-location-detail', kwargs={'pk': 2}),
         ]
 
+        plugin = registry.get_plugin('samplepanel')
+        assert plugin is not None
         plugin.set_setting('ENABLE_HELLO_WORLD', False)
         plugin.set_setting('ENABLE_BROKEN_PANEL', False)
 

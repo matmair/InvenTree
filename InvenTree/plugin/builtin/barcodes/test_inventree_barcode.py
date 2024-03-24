@@ -61,12 +61,11 @@ class TestInvenTreeBarcode(InvenTreeAPITestCase):
         self.assertIn('Missing data: Provide one of', str(response.data['error']))
 
         # Fail with too many fields provided
+        stock_obj = stock.models.StockItem.objects.first()
+        part_obj = part.models.Part.objects.first()
+        assert stock_obj is not None and part_obj is not None
         response = self.unassign(
-            {
-                'stockitem': stock.models.StockItem.objects.first().pk,
-                'part': part.models.Part.objects.first().pk,
-            },
-            expected_code=400,
+            {'stockitem': stock_obj.pk, 'part': part_obj.pk}, expected_code=400
         )
 
         self.assertIn('Multiple conflicting fields:', str(response.data['error']))

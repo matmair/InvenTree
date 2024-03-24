@@ -52,6 +52,8 @@ class SampleValidatorPluginTest(InvenTreeTestCase):
 
         # Next, check that we can make a part instance description shorter
         prt = part.models.Part.objects.first()
+        assert prt is not None
+
         prt.description = prt.description[:-1]
         prt.save()
 
@@ -59,6 +61,7 @@ class SampleValidatorPluginTest(InvenTreeTestCase):
         self.enable_plugin(True)
 
         plg = self.get_plugin()
+        assert plg is not None
         self.assertIsNotNone(plg)
 
         plg.set_setting('BOM_ITEM_INTEGER', True)
@@ -99,6 +102,7 @@ class SampleValidatorPluginTest(InvenTreeTestCase):
         """Test the validate_ipn function."""
         self.enable_plugin(True)
         plg = self.get_plugin()
+        assert plg is not None
         self.assertIsNotNone(plg)
 
         self.part.IPN = 'LMNOP'

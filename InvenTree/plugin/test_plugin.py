@@ -194,6 +194,7 @@ class InvenTreePluginTests(TestCase):
         self.assertFalse(self.plugin_version.check_version([0, 1, 4]))
 
         plug = registry.plugins_full.get('sampleversion')
+        assert plug is not None
         self.assertEqual(plug.is_active(), False)
 
 
@@ -214,6 +215,7 @@ class RegistryTests(TestCase):
 
             # Depends on the meta set in InvenTree/plugin/mock/simple:SimplePlugin
             plg = registry.get_plugin('simple')
+            assert plg is not None
             self.assertEqual(plg.slug, 'simple')
             self.assertEqual(plg.human_name, 'SimplePlugin')
 
@@ -259,6 +261,7 @@ class RegistryTests(TestCase):
 
         # Test that plugin was installed
         plg = registry.get_plugin('zapier')
+        assert plg is not None
         self.assertEqual(plg.slug, 'zapier')
         self.assertEqual(plg.name, 'inventree_zapier')
 
@@ -275,13 +278,12 @@ class RegistryTests(TestCase):
 
         self.assertEqual(len(registry.errors), 3)
         # There should be at least one discovery error in the module `broken_file`
-        self.assertTrue(len(registry.errors.get('discovery')) > 0)
-        self.assertEqual(
-            registry.errors.get('discovery')[0]['broken_file'],
-            "name 'bb' is not defined",
-        )
+        _reg_disc = registry.errors.get('discovery')
+        assert _reg_disc is not None
+        self.assertTrue(len(_reg_disc) > 0)
+        self.assertEqual(_reg_disc[0]['broken_file'], "name 'bb' is not defined")
         # There should be at least one load error with an intentional KeyError
-        self.assertTrue(len(registry.errors.get('load')) > 0)
-        self.assertEqual(
-            registry.errors.get('load')[0]['broken_sample'], "'This is a dummy error'"
-        )
+        _reg_load = registry.errors.get('load')
+        assert _reg_load is not None
+        self.assertTrue(len(_reg_load) > 0)
+        self.assertEqual(_reg_load[0]['broken_sample'], "'This is a dummy error'")

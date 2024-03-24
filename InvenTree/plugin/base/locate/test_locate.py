@@ -71,6 +71,7 @@ class LocatePluginTests(InvenTreeAPITestCase):
         url = reverse('api-locate-plugin')
 
         item = StockItem.objects.get(pk=1)
+        assert item is not None
 
         # The sample plugin will set the 'located' metadata tag
         item.set_metadata('located', False)

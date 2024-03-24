@@ -42,6 +42,7 @@ class SampleIntegrationPluginTests(InvenTreeTestCase):
     def test_settings(self):
         """Check the SettingsMixin.check_settings function."""
         plugin = registry.get_plugin('sample')
+        assert plugin is not None
         self.assertIsNotNone(plugin)
 
         # check settings
@@ -54,6 +55,7 @@ class SampleIntegrationPluginTests(InvenTreeTestCase):
     def test_settings_validator(self):
         """Test settings validator for plugins."""
         plugin = registry.get_plugin('sample')
+        assert plugin is not None
         valid_json = '{"ts": 13}'
         not_valid_json = '{"ts""13"}'
 
