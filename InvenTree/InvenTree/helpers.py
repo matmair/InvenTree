@@ -248,11 +248,7 @@ def str2int(text, default=None):
 
 def is_bool(text):
     """Determine if a string value 'looks' like a boolean."""
-    if str2bool(text, True):
-        return True
-    elif str2bool(text, False):
-        return True
-    return False
+    return str2bool(text, True) or str2bool(text, False)
 
 
 def isNull(text):
@@ -473,7 +469,7 @@ def DownloadFile(
     return response
 
 
-def increment_serial_number(serial: str):
+def increment_serial_number(serial):
     """Given a serial number, (attempt to) generate the *next* serial number.
 
     Note: This method is exposed to custom plugins.
@@ -857,9 +853,9 @@ def hash_barcode(barcode_data):
     barcode_data = str(barcode_data).strip()
     barcode_data = remove_non_printable_characters(barcode_data)
 
-    hash = hashlib.md5(str(barcode_data).encode())
+    barcode_hash = hashlib.md5(str(barcode_data).encode())
 
-    return str(hash.hexdigest())
+    return str(barcode_hash.hexdigest())
 
 
 def hash_file(filename: Union[str, Path], storage: Union[Storage, None] = None):
@@ -870,6 +866,29 @@ def hash_file(filename: Union[str, Path], storage: Union[Storage, None] = None):
         else storage.open(str(filename), 'rb').read()
     )
     return hashlib.md5(content).hexdigest()
+
+
+def current_time(local=True):
+    """Return the current date and time as a datetime object.
+
+    - If timezone support is active, returns a timezone aware time
+    - If timezone support is not active, returns a timezone naive time
+
+    Arguments:
+        local: Return the time in the local timezone, otherwise UTC (default = True)
+
+    """
+    if settings.USE_TZ:
+        now = timezone.now()
+        now = to_local_time(now, target_tz=server_timezone() if local else 'UTC')
+        return now
+    else:
+        return datetime.datetime.now()
+
+
+def current_date(local=True):
+    """Return the current date."""
+    return current_time(local=local).date()
 
 
 def server_timezone() -> str:
