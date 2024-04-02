@@ -46,6 +46,9 @@ def get_existing_release_tags():
         tag = release['tag_name'].strip()
         match = re.match(r'^.*(\d+)\.(\d+)\.(\d+).*$', tag)
 
+        if not match:
+            continue
+
         if len(match.groups()) != 3:
             print(f"Version '{tag}' did not match expected pattern")
             continue
@@ -184,7 +187,12 @@ if __name__ == '__main__':
     print(f"Docker tags: '{docker_tags}'")
 
     # Ref: https://getridbug.com/python/how-to-set-environment-variables-in-github-actions-using-python/
-    with open(os.getenv('GITHUB_ENV'), 'a') as env_file:
+    env_file = os.getenv('GITHUB_ENV')
+    if env_file is None:  # pragma: no cover
+        print('Could not find GITHUB_ENV')
+        sys.exit(1)
+
+    with open(env_file, 'a') as env_file:
         # Construct tag string
         tags = ','.join([f'inventree/inventree:{tag}' for tag in docker_tags])
 
