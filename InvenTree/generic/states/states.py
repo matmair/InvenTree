@@ -42,6 +42,9 @@ class StatusCode(BaseEnum):
     Additionally there are helpers to access all additional attributes `text`, `label`, `color`.
     """
 
+    color: str
+    _TAG = None
+
     def __new__(cls, *args):
         """Define object out of args."""
         obj = int.__new__(cls)
@@ -113,7 +116,7 @@ class StatusCode(BaseEnum):
     @classmethod
     def items(cls):
         """All status code items."""
-        return [(x.value, x.label) for x in cls.values()]
+        return [(x.value, x.label) for x in cls.values()] if cls else []
 
     @classmethod
     def keys(cls):
