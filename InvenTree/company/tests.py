@@ -139,7 +139,7 @@ class CompanySimpleTest(TestCase):
     def test_metadata(self):
         """Unit tests for the metadata field."""
         p = Company.objects.first()
-        assert p is not None
+        assert p
         self.assertIn(p.metadata, [None, {}])
 
         self.assertIsNone(p.get_metadata('test'))

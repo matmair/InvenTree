@@ -297,6 +297,8 @@ class OrderTest(TestCase):
 
         # Ensure that received quantity and unit purchase price data are correct
         si = si.first()
+        assert si
+
         self.assertEqual(si.quantity, 10)
         self.assertEqual(si.purchase_price, Money(100, 'USD'))
 
@@ -305,6 +307,8 @@ class OrderTest(TestCase):
 
         # Ensure that received quantity and unit purchase price data are correct
         si = si.first()
+        assert si
+
         self.assertEqual(si.quantity, 0.5)
         self.assertEqual(si.purchase_price, Money(100, 'USD'))
 
@@ -342,6 +346,7 @@ class OrderTest(TestCase):
                 self.assertTrue(messages.exists())
 
             msg = messages.first()
+            assert msg
 
             self.assertEqual(msg.target_object_id, 1)
             self.assertEqual(msg.name, 'Overdue Purchase Order')

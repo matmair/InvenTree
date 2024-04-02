@@ -26,6 +26,8 @@ class TemplateTagTest(InvenTreeTestCase):
     def test_spa_bundle(self):
         """Test the 'spa_bundle' template tag."""
         resp = spa_helper.spa_bundle()
+        assert resp
+
         shipped_js = resp.split('<script type="module" src="')[1:]
         self.assertTrue(len(shipped_js) > 0)
         self.assertTrue(len(shipped_js) == 3)

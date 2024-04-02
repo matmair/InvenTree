@@ -108,7 +108,7 @@ class UrlsMixinTest(BaseMixinDefinition, TestCase):
     def test_function(self):
         """Test that the mixin functions."""
         plg_name = self.mixin.plugin_name()
-        assert plg_name is not None
+        assert plg_name
 
         # base_url
         target_url = f'{PLUGIN_BASE}/{plg_name}/'
@@ -120,7 +120,7 @@ class UrlsMixinTest(BaseMixinDefinition, TestCase):
         )
 
         mx_patterns = self.mixin.urlpatterns
-        assert mx_patterns is not None
+        assert mx_patterns
         self.assertEqual(mx_patterns.reverse_dict, target_pattern.reverse_dict)
 
         # resolve the view
@@ -369,7 +369,7 @@ class PanelMixinTests(InvenTreeTestCase):
     def test_disabled(self):
         """Test that the panels *do not load* if the plugin is not enabled."""
         plugin = registry.get_plugin('samplepanel')
-        assert plugin is not None
+        assert plugin
 
         plugin.set_setting('ENABLE_HELLO_WORLD', True)
         plugin.set_setting('ENABLE_BROKEN_PANEL', True)
@@ -415,7 +415,7 @@ class PanelMixinTests(InvenTreeTestCase):
         ]
 
         plugin = registry.get_plugin('samplepanel')
-        assert plugin is not None
+        assert plugin
         plugin.set_setting('ENABLE_HELLO_WORLD', False)
         plugin.set_setting('ENABLE_BROKEN_PANEL', False)
 

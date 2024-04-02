@@ -70,7 +70,7 @@ class UserTokenTests(InvenTreeAPITestCase):
 
         # If we re-generate a token, the value changes
         token = ApiToken.objects.filter(name='cat').first()
-        assert token is not None
+        assert token
 
         # Request the token with the same name
         data = self.get(url, data={'name': 'cat'}, expected_code=200).data
@@ -128,6 +128,8 @@ class UserTokenTests(InvenTreeAPITestCase):
 
         # Grab the token, and update
         token = ApiToken.objects.first()
+        assert token
+
         self.assertEqual(token.key, token_key)
         self.assertIsNotNone(token.last_seen)
 

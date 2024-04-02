@@ -51,6 +51,7 @@ class TestParams(TestCase):
         """Unit tests for the metadata field."""
         for model in [PartParameterTemplate]:
             p = model.objects.first()
+            assert p
 
             self.assertIsNone(p.get_metadata('test'))
             self.assertEqual(p.get_metadata('test', backup_value=123), 123)
@@ -71,6 +72,7 @@ class TestParams(TestCase):
         # Check that we can get a parameter by name
         for name in ['Length', 'Width', 'Thickness']:
             param = prt.get_parameter(name)
+            assert param
             self.assertEqual(param.template.name, name)
 
         # Check that an incorrect name returns None

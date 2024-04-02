@@ -456,6 +456,7 @@ class TestReportTest(ReportTest):
     def test_print(self):
         """Printing tests for the TestReport."""
         report = self.model.objects.first()
+        assert report
 
         url = reverse(self.print_url, kwargs={'pk': report.pk})
 
@@ -467,7 +468,7 @@ class TestReportTest(ReportTest):
 
         # Now print with a valid StockItem
         item = StockItem.objects.first()
-        assert item is not None
+        assert item
 
         response = self.get(url, {'item': item.pk}, expected_code=200)
 
@@ -511,6 +512,7 @@ class BuildReportTest(ReportTest):
     def test_print(self):
         """Printing tests for the BuildReport."""
         report = self.model.objects.first()
+        assert report
 
         url = reverse(self.print_url, kwargs={'pk': report.pk})
 
@@ -523,6 +525,7 @@ class BuildReportTest(ReportTest):
         # Now print with a valid BuildOrder
 
         build = Build.objects.first()
+        assert build
 
         response = self.get(url, {'build': build.pk})
 
@@ -539,7 +542,7 @@ class BuildReportTest(ReportTest):
         inline = InvenTreeUserSetting.get_setting_object(
             'REPORT_INLINE', cache=False, user=self.user
         )
-        assert inline is not None
+        assert inline
         inline.value = True
         inline.save()
 

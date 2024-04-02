@@ -63,7 +63,7 @@ class TestInvenTreeBarcode(InvenTreeAPITestCase):
         # Fail with too many fields provided
         stock_obj = stock.models.StockItem.objects.first()
         part_obj = part.models.Part.objects.first()
-        assert stock_obj is not None and part_obj is not None
+        assert stock_obj is not None and part_obj
         response = self.unassign(
             {'stockitem': stock_obj.pk, 'part': part_obj.pk}, expected_code=400
         )

@@ -20,7 +20,7 @@ class CoreNotificationTestTests(BaseNotificationIntegrationTest):
 
         # enable plugin and set mail setting to true
         plugin = registry.get_plugin('inventreecorenotificationsplugin')
-        assert plugin is not None
+        assert plugin
         plugin.set_setting('ENABLE_NOTIFICATION_EMAILS', True)
         NotificationUserSetting.set_setting(
             key='NOTIFICATION_METHOD_MAIL',

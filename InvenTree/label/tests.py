@@ -70,6 +70,7 @@ class LabelTest(InvenTreeAPITestCase):
         """Test label rendering."""
         labels = PartLabel.objects.all()
         part = Part.objects.first()
+        assert part
 
         for label in labels:
             url = reverse('api-part-label-print', kwargs={'pk': label.pk})
@@ -119,14 +120,14 @@ class LabelTest(InvenTreeAPITestCase):
 
         # Set the 'debug' setting for the plugin
         plugin = registry.get_plugin('inventreelabel')
-        assert plugin is not None
+        assert plugin
         plugin.set_setting('DEBUG', True)
 
         # Print via the API (Note: will default to the builtin plugin if no plugin supplied)
         url = reverse('api-part-label-print', kwargs={'pk': label.pk})
 
         prt = Part.objects.first()
-        assert prt is not None
+        assert prt
         part_pk = prt.pk
         part_name = prt.name
 

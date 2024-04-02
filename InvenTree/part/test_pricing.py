@@ -157,6 +157,8 @@ class PartPricingTests(InvenTreeTestCase):
 
         pricing.update_pricing()
 
+        assert pricing.overall_min and pricing.overall_max
+
         self.assertAlmostEqual(float(pricing.overall_min.amount), 2.015, places=2)
         self.assertAlmostEqual(float(pricing.overall_max.amount), 3.06, places=2)
 
@@ -337,6 +339,13 @@ class PartPricingTests(InvenTreeTestCase):
 
         min_cost_aud = convert_money(pricing.purchase_cost_min, 'AUD')
         max_cost_cad = convert_money(pricing.purchase_cost_max, 'CAD')
+
+        assert (
+            min_cost_aud
+            and max_cost_cad
+            and pricing.purchase_cost_min
+            and pricing.purchase_cost_max
+        )
 
         # Min cost in AUD = $2 AUD per metre
         self.assertAlmostEqual(float(min_cost_aud.amount), 2, places=2)

@@ -92,9 +92,9 @@ def getNewestMigrationFile(app, exclude_extension=True):
 def get_plugin_config(plugin_slug):
     """Return the plugin config for the specified plugin."""
     plg = registry.get_plugin(plugin_slug)
-    assert plg is not None
+    assert plg
     cfg = plg.plugin_config()
-    assert cfg is not None
+    assert cfg
     return cfg
 
 

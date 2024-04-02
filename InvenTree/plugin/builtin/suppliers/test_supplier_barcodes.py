@@ -53,7 +53,7 @@ class SupplierBarcodeTests(InvenTreeAPITestCase):
         self.assertEqual(result.data['plugin'], 'DigiKeyPlugin')
 
         supplier_part_data = result.data.get('supplierpart')
-        assert supplier_part_data is not None
+        assert supplier_part_data
         self.assertIn('pk', supplier_part_data)
 
         supplier_part = SupplierPart.objects.get(pk=supplier_part_data['pk'])
@@ -67,7 +67,7 @@ class SupplierBarcodeTests(InvenTreeAPITestCase):
         self.assertEqual(result.data['plugin'], 'DigiKeyPlugin')
 
         supplier_part_data = result.data.get('supplierpart')
-        assert supplier_part_data is not None
+        assert supplier_part_data
         self.assertIn('pk', supplier_part_data)
 
         supplier_part = SupplierPart.objects.get(pk=supplier_part_data['pk'])
@@ -84,7 +84,7 @@ class SupplierBarcodeTests(InvenTreeAPITestCase):
         )
 
         supplier_part_data = result.data.get('supplierpart')
-        assert supplier_part_data is not None
+        assert supplier_part_data
         self.assertIn('pk', supplier_part_data)
 
         supplier_part = SupplierPart.objects.get(pk=supplier_part_data['pk'])
@@ -97,7 +97,7 @@ class SupplierBarcodeTests(InvenTreeAPITestCase):
         )
 
         supplier_part_data = result.data.get('supplierpart')
-        assert supplier_part_data is not None
+        assert supplier_part_data
         self.assertIn('pk', supplier_part_data)
         supplier_part = SupplierPart.objects.get(pk=supplier_part_data['pk'])
         self.assertEqual(supplier_part.SKU, '2')
@@ -111,7 +111,7 @@ class SupplierBarcodeTests(InvenTreeAPITestCase):
         self.assertEqual(result.data['plugin'], 'LCSCPlugin')
 
         supplier_part_data = result.data.get('supplierpart')
-        assert supplier_part_data is not None
+        assert supplier_part_data
         self.assertIn('pk', supplier_part_data)
 
         supplier_part = SupplierPart.objects.get(pk=supplier_part_data['pk'])
@@ -126,7 +126,7 @@ class SupplierBarcodeTests(InvenTreeAPITestCase):
         self.assertEqual(result.data['plugin'], 'TMEPlugin')
 
         supplier_part_data = result.data.get('supplierpart')
-        assert supplier_part_data is not None
+        assert supplier_part_data
         self.assertIn('pk', supplier_part_data)
         supplier_part = SupplierPart.objects.get(pk=supplier_part_data['pk'])
         self.assertEqual(supplier_part.SKU, 'WBP-302')
@@ -140,7 +140,7 @@ class SupplierBarcodeTests(InvenTreeAPITestCase):
         self.assertEqual(result.data['plugin'], 'TMEPlugin')
 
         supplier_part_data = result.data.get('supplierpart')
-        assert supplier_part_data is not None
+        assert supplier_part_data
         self.assertIn('pk', supplier_part_data)
 
         supplier_part = SupplierPart.objects.get(pk=supplier_part_data['pk'])

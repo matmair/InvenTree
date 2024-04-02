@@ -1346,6 +1346,7 @@ class TestInstanceName(InvenTreeTestCase):
 
         # The site should also be changed
         site_obj = Site.objects.all().order_by('id').first()
+        assert site_obj
         self.assertEqual(site_obj.name, 'Testing title')
 
     @override_settings(SITE_URL=None)
@@ -1365,6 +1366,7 @@ class TestInstanceName(InvenTreeTestCase):
             from django.contrib.sites.models import Site
 
             site_obj = Site.objects.all().order_by('id').first()
+            assert site_obj
             self.assertEqual(site_obj.domain, 'http://127.1.2.3')
         except Exception:
             pass

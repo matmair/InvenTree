@@ -87,6 +87,7 @@ class TestManufacturerField(MigratorTestCase):
         parts = SupplierPart.objects.filter(manufacturer=acme)
         self.assertEqual(parts.count(), 1)
         part = parts.first()
+        assert part
 
         # Checks on the SupplierPart object
         self.assertEqual(part.manufacturer_name, 'ACME')
@@ -209,6 +210,7 @@ class TestManufacturerPart(MigratorTestCase):
         self.assertEqual(manufacturer_parts.count(), 4)
 
         manufacturer_part = manufacturer_parts.first()
+        assert manufacturer_part
         self.assertEqual(manufacturer_part.MPN, 'MUR-CAP-123456')
 
 
@@ -305,11 +307,13 @@ class TestAddressMigration(MigratorTestCase):
 
         c1 = Company.objects.filter(name='Company 1').first()
         c2 = Company.objects.filter(name='Company 2').first()
+        assert c1 and c2
 
         self.assertEqual(len(Address.objects.all()), 2)
 
         a1 = Address.objects.filter(company=c1.pk).first()
         a2 = Address.objects.filter(company=c2.pk).first()
+        assert a1 and a2
 
         self.assertEqual(a1.line1, self.short_l1)
         self.assertEqual(a1.line2, '')

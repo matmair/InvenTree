@@ -23,6 +23,7 @@ class TestForwardMigrations(MigratorTestCase):
 
         # Extract one part object to investigate
         p = Part.objects.all().last()
+        assert p
 
         # Initially some fields are not present
         with self.assertRaises(AttributeError):

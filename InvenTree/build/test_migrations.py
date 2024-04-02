@@ -42,6 +42,7 @@ class TestForwardMigrations(MigratorTestCase):
 
         # Check that the part object now has an assembly field
         part = Part.objects.all().first()
+        assert part
         part.assembly = True
         part.save()
         part.assembly = False
@@ -262,6 +263,7 @@ class TestBuildLineCreation(MigratorTestCase):
             )
 
         item = BuildItem.objects.first()
+        assert item
 
         # Check that the "build" field has been removed
         with self.assertRaises(AttributeError):

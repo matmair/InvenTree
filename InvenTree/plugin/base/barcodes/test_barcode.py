@@ -64,7 +64,7 @@ class BarcodeAPITest(InvenTreeAPITestCase):
     def test_find_part(self):
         """Test that we can lookup a part based on ID."""
         part = Part.objects.first()
-        assert part is not None
+        assert part
 
         response = self.post(
             self.scan_url, {'barcode': f'{{"part": {part.pk}}}'}, expected_code=200
@@ -85,7 +85,7 @@ class BarcodeAPITest(InvenTreeAPITestCase):
     def test_find_stock_item(self):
         """Test that we can lookup a stock item based on ID."""
         item = StockItem.objects.first()
-        assert item is not None
+        assert item
 
         response = self.post(
             self.scan_url, {'barcode': item.format_barcode()}, expected_code=200
@@ -299,7 +299,7 @@ class SOAllocateTest(InvenTreeAPITestCase):
 
         # Test with a barcode that matches a *different* stock item
         item = StockItem.objects.exclude(pk=self.stock_item.pk).first()
-        assert item is not None
+        assert item
         item.assign_barcode(barcode_data='123456789')
 
         result = self.postBarcode(

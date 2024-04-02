@@ -153,6 +153,7 @@ class NotificationUserSettingTests(BaseNotificationIntegrationTest):
         # make sure the array fits
         array = storage.get_usersettings(self.user)
         setting = NotificationUserSetting.objects.all().first()
+        assert setting
 
         # assertions for settings
         self.assertEqual(setting.name, 'Enable test notifications')

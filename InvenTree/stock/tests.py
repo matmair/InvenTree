@@ -430,6 +430,7 @@ class StockTest(StockTestBase):
 
         # Check that a tracking item was added
         track = StockItemTracking.objects.filter(item=it).latest('id')
+        assert track.notes
 
         self.assertEqual(track.tracking_type, StockHistoryCode.STOCK_COUNT)
         self.assertIn('Counted items', track.notes)
@@ -450,6 +451,7 @@ class StockTest(StockTestBase):
 
         # Check that a tracking item was added
         track = StockItemTracking.objects.filter(item=it).latest('id')
+        assert track.notes
 
         self.assertEqual(track.tracking_type, StockHistoryCode.STOCK_ADD)
         self.assertIn('Added some items', track.notes)
@@ -480,6 +482,7 @@ class StockTest(StockTestBase):
 
         # Check that a tracking item was added
         track = StockItemTracking.objects.filter(item=ait).latest('id')
+        assert track.notes
 
         self.assertEqual(
             track.tracking_type, StockHistoryCode.SHIPPED_AGAINST_SALES_ORDER
@@ -537,6 +540,7 @@ class StockTest(StockTestBase):
 
         # Check that a tracking item was added
         track = StockItemTracking.objects.filter(item=ait).latest('id')
+        assert track.notes
 
         self.assertEqual(track.tracking_type, StockHistoryCode.RETURNED_FROM_CUSTOMER)
         self.assertIn('Stock removed from customer', track.notes)
@@ -557,6 +561,7 @@ class StockTest(StockTestBase):
 
         # Check that a tracking item was added
         track = StockItemTracking.objects.filter(item=it).latest('id')
+        assert track.notes
 
         self.assertEqual(track.tracking_type, StockHistoryCode.STOCK_REMOVE)
         self.assertIn('Removed some items', track.notes)
@@ -672,6 +677,7 @@ class StockTest(StockTestBase):
 
         item_next = item.get_next_serialized_item()
         item_prev = item.get_next_serialized_item(reverse=True)
+        assert item_next and item_prev
 
         self.assertEqual(item_next.serial_int, 101)
         self.assertEqual(item_prev.serial_int, 99)
@@ -975,6 +981,7 @@ class VariantTest(StockTestBase):
 
         # Create a new serial number
         n = variant.get_latest_serial_number()
+        assert n
 
         item = StockItem(part=variant, quantity=1, serial=n)
 

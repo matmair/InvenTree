@@ -90,11 +90,11 @@ class PluginDetailAPITest(PluginMixin, InvenTreeAPITestCase):
     def test_plugin_activate(self):
         """Test the plugin activate."""
         test_plg = self.plugin_confs.first()
-        assert test_plg is not None
+        assert test_plg
 
         def assert_plugin_active(self, active):
             plgs = PluginConfig.objects.all().first()
-            assert plgs is not None
+            assert plgs
             self.assertEqual(plgs.active, active)
 
         # Should not work - not a superuser
@@ -136,7 +136,7 @@ class PluginDetailAPITest(PluginMixin, InvenTreeAPITestCase):
         url = reverse('admin:plugin_pluginconfig_changelist')
 
         test_plg = self.plugin_confs.first()
-        assert test_plg is not None
+        assert test_plg
 
         # deactivate plugin
         response = self.client.post(
@@ -186,7 +186,7 @@ class PluginDetailAPITest(PluginMixin, InvenTreeAPITestCase):
         """Test the PluginConfig model."""
         # check mixin registry
         plg = self.plugin_confs.first()
-        assert plg is not None
+        assert plg
         mixin_dict = plg.mixins()
         self.assertIn('base', mixin_dict)
         self.assertDictContainsSubset(
@@ -196,7 +196,7 @@ class PluginDetailAPITest(PluginMixin, InvenTreeAPITestCase):
         # check reload on save
         with self.assertWarns(Warning) as cm:
             plg_inactive = self.plugin_confs.filter(active=False).first()
-            assert plg_inactive is not None
+            assert plg_inactive
             plg_inactive.active = True
             plg_inactive.save()
         self.assertEqual(cm.warning.args[0], 'A reload was triggered')
@@ -226,7 +226,7 @@ class PluginDetailAPITest(PluginMixin, InvenTreeAPITestCase):
 
         # Activate the 'sample' plugin via the API
         cfg = PluginConfig.objects.filter(key='sample').first()
-        assert cfg is not None
+        assert cfg
         url = reverse('api-plugin-detail-activate', kwargs={'pk': cfg.pk})
         self.client.patch(url, {})
 
