@@ -93,7 +93,7 @@ jobs:
       - name: Check Version
         run: |
           pip install requests==2.31.0
-          python3 github/scripts/version_check.py
+          python3 .github/scripts/version_check.py
       - name: Set up Environment
         uses: ./.github/actions/setup
         with:
