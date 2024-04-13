@@ -2,12 +2,10 @@
 
 from django.contrib import admin
 
-from import_export.admin import ImportExportModelAdmin
-
 import common.models
 
 
-class SettingsAdmin(ImportExportModelAdmin):
+class SettingsAdmin(admin.ModelAdmin):
     """Admin settings for InvenTreeSetting."""
 
     list_display = ('key', 'value')
@@ -19,7 +17,7 @@ class SettingsAdmin(ImportExportModelAdmin):
         return []
 
 
-class UserSettingsAdmin(ImportExportModelAdmin):
+class UserSettingsAdmin(admin.ModelAdmin):
     """Admin settings for InvenTreeUserSetting."""
 
     list_display = ('key', 'value', 'user')
@@ -31,7 +29,7 @@ class UserSettingsAdmin(ImportExportModelAdmin):
         return []
 
 
-class WebhookAdmin(ImportExportModelAdmin):
+class WebhookAdmin(admin.ModelAdmin):
     """Admin settings for Webhook."""
 
     list_display = ('endpoint_id', 'name', 'active', 'user')
@@ -70,7 +68,7 @@ class NewsFeedEntryAdmin(admin.ModelAdmin):
 admin.site.register(common.models.InvenTreeSetting, SettingsAdmin)
 admin.site.register(common.models.InvenTreeUserSetting, UserSettingsAdmin)
 admin.site.register(common.models.WebhookEndpoint, WebhookAdmin)
-admin.site.register(common.models.WebhookMessage, ImportExportModelAdmin)
+admin.site.register(common.models.WebhookMessage, admin.ModelAdmin)
 admin.site.register(common.models.NotificationEntry, NotificationEntryAdmin)
 admin.site.register(common.models.NotificationMessage, NotificationMessageAdmin)
 admin.site.register(common.models.NewsFeedEntry, NewsFeedEntryAdmin)
