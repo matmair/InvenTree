@@ -23,7 +23,6 @@ InvenTree relies on the following Python libraries:
 | [pygments](https://pypi.org/project/Pygments/) | BSD | Syntax highlighting |
 | [tablib](https://pypi.org/project/tablib/) | MIT | Data import/export |
 | [django-crispy-forms](https://pypi.org/project/django-crispy-forms/) | MIT | Advanced form rendering |
-| [django-import-export](https://pypi.org/project/django-import-export/) | BSD | Data import/export in admin interface |
 | [django-cleanup](https://pypi.org/project/django-cleanup/) | MIT | Automated cleanup of django media files |
 | [rapidfuzz](https://pypi.org/project/rapidfuzz/) | MIT | Fuzzy string matching |
 | [django-stdimage](https://pypi.org/project/django-stdimage/) | MIT | Advanced image fields for django |
