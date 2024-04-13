@@ -367,10 +367,9 @@ class StockLocationList(APIDownloadMixin, ListCreateAPI):
 
     def download_queryset(self, queryset, export_format):
         """Download the filtered queryset as a data file."""
-        dataset = LocationResource().export(queryset=queryset)
-        filedata = dataset.export(export_format)
+        # TODO implement exporter
+        filedata = {}
         filename = f'InvenTree_Locations.{export_format}'
-
         return DownloadFile(filedata, filename)
 
     def get_queryset(self, *args, **kwargs):
@@ -1046,12 +1045,9 @@ class StockList(APIDownloadMixin, ListCreateDestroyAPIView):
 
         Uses the APIDownloadMixin mixin class
         """
-        dataset = StockItemResource().export(queryset=queryset)
-
-        filedata = dataset.export(export_format)
-
+        # TODO implement exporter
+        filedata = {}
         filename = f'InvenTree_StockItems_{InvenTree.helpers.current_date().strftime("%d-%b-%Y")}.{export_format}'
-
         return DownloadFile(filedata, filename)
 
     def list(self, request, *args, **kwargs):

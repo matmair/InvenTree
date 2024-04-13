@@ -238,8 +238,8 @@ class CategoryList(CategoryMixin, APIDownloadMixin, ListCreateAPI):
 
     def download_queryset(self, queryset, export_format):
         """Download the filtered queryset as a data file."""
-        dataset = PartCategoryResource().export(queryset=queryset)
-        filedata = dataset.export(export_format)
+        # TODO implement exporter
+        filedata = {}
         filename = f'InvenTree_Categories.{export_format}'
 
         return DownloadFile(filedata, filename)
@@ -1207,9 +1207,8 @@ class PartList(PartMixin, APIDownloadMixin, ListCreateAPI):
 
     def download_queryset(self, queryset, export_format):
         """Download the filtered queryset as a data file."""
-        dataset = PartResource().export(queryset=queryset)
-
-        filedata = dataset.export(export_format)
+        # TODO implement exporter
+        filedata = {}
         filename = f'InvenTree_Parts.{export_format}'
 
         return DownloadFile(filedata, filename)

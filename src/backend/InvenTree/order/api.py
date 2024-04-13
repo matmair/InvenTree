@@ -261,9 +261,8 @@ class PurchaseOrderList(PurchaseOrderMixin, APIDownloadMixin, ListCreateAPI):
 
     def download_queryset(self, queryset, export_format):
         """Download the filtered queryset as a file."""
-        dataset = PurchaseOrderResource().export(queryset=queryset)
-
-        filedata = dataset.export(export_format)
+        # TODO implement exporter
+        filedata = {}
 
         filename = f'InvenTree_PurchaseOrders.{export_format}'
 
@@ -554,9 +553,8 @@ class PurchaseOrderLineItemList(
 
     def download_queryset(self, queryset, export_format):
         """Download the requested queryset as a file."""
-        dataset = PurchaseOrderLineItemResource().export(queryset=queryset)
-
-        filedata = dataset.export(export_format)
+        # TODO implement exporter
+        filedata = {}
 
         filename = f'InvenTree_PurchaseOrderItems.{export_format}'
 
@@ -605,8 +603,8 @@ class PurchaseOrderExtraLineList(GeneralExtraLineList, ListCreateAPI):
 
     def download_queryset(self, queryset, export_format):
         """Download this queryset as a file."""
-        dataset = PurchaseOrderExtraLineResource().export(queryset=queryset)
-        filedata = dataset.export(export_format)
+        # TODO implement exporter
+        filedata = {}
         filename = f'InvenTree_ExtraPurchaseOrderLines.{export_format}'
 
         return DownloadFile(filedata, filename)
@@ -701,10 +699,8 @@ class SalesOrderList(SalesOrderMixin, APIDownloadMixin, ListCreateAPI):
 
     def download_queryset(self, queryset, export_format):
         """Download this queryset as a file."""
-        dataset = SalesOrderResource().export(queryset=queryset)
-
-        filedata = dataset.export(export_format)
-
+        # TODO implement exporter
+        filedata = {}
         filename = f'InvenTree_SalesOrders.{export_format}'
 
         return DownloadFile(filedata, filename)
@@ -846,9 +842,8 @@ class SalesOrderLineItemList(SalesOrderLineItemMixin, APIDownloadMixin, ListCrea
 
     def download_queryset(self, queryset, export_format):
         """Download the requested queryset as a file."""
-        dataset = SalesOrderLineItemResource().export(queryset=queryset)
-        filedata = dataset.export(export_format)
-
+        # TODO implement exporter
+        filedata = {}
         filename = f'InvenTree_SalesOrderItems.{export_format}'
 
         return DownloadFile(filedata, filename)
@@ -874,8 +869,8 @@ class SalesOrderExtraLineList(GeneralExtraLineList, ListCreateAPI):
 
     def download_queryset(self, queryset, export_format):
         """Download this queryset as a file."""
-        dataset = SalesOrderExtraLineResource().export(queryset=queryset)
-        filedata = dataset.export(export_format)
+        # TODO implement exporter
+        filedata = {}
         filename = f'InvenTree_ExtraSalesOrderLines.{export_format}'
 
         return DownloadFile(filedata, filename)
@@ -1165,8 +1160,8 @@ class ReturnOrderList(ReturnOrderMixin, APIDownloadMixin, ListCreateAPI):
 
     def download_queryset(self, queryset, export_format):
         """Download this queryset as a file."""
-        dataset = ReturnOrderResource().export(queryset=queryset)
-        filedata = dataset.export(export_format)
+        # TODO implement exporter
+        filedata = {}
         filename = f'InvenTree_ReturnOrders.{export_format}'
 
         return DownloadFile(filedata, filename)
