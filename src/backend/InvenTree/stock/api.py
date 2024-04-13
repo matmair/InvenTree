@@ -368,7 +368,7 @@ class StockLocationList(APIDownloadMixin, ListCreateAPI):
     def download_queryset(self, queryset, export_format):
         """Download the filtered queryset as a data file."""
         # TODO implement exporter
-        filedata = {}
+        filedata = ''.encode()
         filename = f'InvenTree_Locations.{export_format}'
         return DownloadFile(filedata, filename)
 
@@ -1046,7 +1046,7 @@ class StockList(APIDownloadMixin, ListCreateDestroyAPIView):
         Uses the APIDownloadMixin mixin class
         """
         # TODO implement exporter
-        filedata = {}
+        filedata = ''.encode()
         filename = f'InvenTree_StockItems_{InvenTree.helpers.current_date().strftime("%d-%b-%Y")}.{export_format}'
         return DownloadFile(filedata, filename)
 

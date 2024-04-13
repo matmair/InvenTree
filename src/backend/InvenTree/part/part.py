@@ -21,8 +21,6 @@ def MakePartTemplate(fmt):
         fmt = 'csv'
 
     # TODO implement exporter
-    data = {}
-
+    data = ''.encode()
     filename = 'InvenTree_Part_Template.' + fmt
-
     return DownloadFile(data, filename)

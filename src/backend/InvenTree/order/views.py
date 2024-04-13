@@ -296,8 +296,7 @@ class SalesOrderExport(AjaxView):
         filename = f'{str(order)} - {order.customer.name}.{export_format}'
 
         # TODO implement exporter
-        filedata = {}
-
+        filedata = ''.encode()
         return DownloadFile(filedata, filename)
 
 
@@ -322,8 +321,7 @@ class PurchaseOrderExport(AjaxView):
         filename = f'{str(order)} - {order.supplier.name}.{export_format}'
 
         # TODO implement exporter
-        filedata = {}
-
+        filedata = ''.encode()
         return DownloadFile(filedata, filename)
 
 

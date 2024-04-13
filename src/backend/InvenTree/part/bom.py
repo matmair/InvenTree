@@ -26,10 +26,8 @@ def MakeBomTemplate(fmt):
         fmt = 'csv'
 
     # TODO implement exporter
-    data = {}
-
+    data = ''.encode()
     filename = 'InvenTree_BOM_Template.' + fmt
-
     return DownloadFile(data, filename)
 
 
@@ -88,9 +86,9 @@ def ExportBom(
 
     add_items(top_level_items, 1, cascade)
 
-    dataset = BomItemResource().export(
-        queryset=bom_items, cascade=cascade, include_pricing=pricing_data
-    )
+    # TODO implement exporter
+    # BomItemResource().export(queryset=bom_items, cascade=cascade, include_pricing=pricing_data)
+    dataset = {}
 
     def add_columns_to_dataset(columns, column_size):
         try:
@@ -314,7 +312,8 @@ def ExportBom(
         # Add supplier columns to dataset
         add_columns_to_dataset(manufacturer_cols, len(bom_items))
 
-    data = dataset.export(fmt)
+    # TODO fix
+    data = ''.encode()
 
     filename = f'{part.full_name}_BOM.{fmt}'
 

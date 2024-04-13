@@ -239,9 +239,8 @@ class CategoryList(CategoryMixin, APIDownloadMixin, ListCreateAPI):
     def download_queryset(self, queryset, export_format):
         """Download the filtered queryset as a data file."""
         # TODO implement exporter
-        filedata = {}
+        filedata = ''.encode()
         filename = f'InvenTree_Categories.{export_format}'
-
         return DownloadFile(filedata, filename)
 
     filter_backends = SEARCH_ORDER_FILTER
@@ -1208,9 +1207,8 @@ class PartList(PartMixin, APIDownloadMixin, ListCreateAPI):
     def download_queryset(self, queryset, export_format):
         """Download the filtered queryset as a data file."""
         # TODO implement exporter
-        filedata = {}
+        filedata = ''.encode()
         filename = f'InvenTree_Parts.{export_format}'
-
         return DownloadFile(filedata, filename)
 
     def list(self, request, *args, **kwargs):

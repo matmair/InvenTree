@@ -262,10 +262,8 @@ class PurchaseOrderList(PurchaseOrderMixin, APIDownloadMixin, ListCreateAPI):
     def download_queryset(self, queryset, export_format):
         """Download the filtered queryset as a file."""
         # TODO implement exporter
-        filedata = {}
-
+        filedata = ''.encode()
         filename = f'InvenTree_PurchaseOrders.{export_format}'
-
         return DownloadFile(filedata, filename)
 
     def filter_queryset(self, queryset):
@@ -554,10 +552,8 @@ class PurchaseOrderLineItemList(
     def download_queryset(self, queryset, export_format):
         """Download the requested queryset as a file."""
         # TODO implement exporter
-        filedata = {}
-
+        filedata = ''.encode()
         filename = f'InvenTree_PurchaseOrderItems.{export_format}'
-
         return DownloadFile(filedata, filename)
 
     filter_backends = SEARCH_ORDER_FILTER_ALIAS
@@ -604,9 +600,8 @@ class PurchaseOrderExtraLineList(GeneralExtraLineList, ListCreateAPI):
     def download_queryset(self, queryset, export_format):
         """Download this queryset as a file."""
         # TODO implement exporter
-        filedata = {}
+        filedata = ''.encode()
         filename = f'InvenTree_ExtraPurchaseOrderLines.{export_format}'
-
         return DownloadFile(filedata, filename)
 
 
@@ -700,9 +695,8 @@ class SalesOrderList(SalesOrderMixin, APIDownloadMixin, ListCreateAPI):
     def download_queryset(self, queryset, export_format):
         """Download this queryset as a file."""
         # TODO implement exporter
-        filedata = {}
+        filedata = ''.encode()
         filename = f'InvenTree_SalesOrders.{export_format}'
-
         return DownloadFile(filedata, filename)
 
     def filter_queryset(self, queryset):
@@ -843,9 +837,8 @@ class SalesOrderLineItemList(SalesOrderLineItemMixin, APIDownloadMixin, ListCrea
     def download_queryset(self, queryset, export_format):
         """Download the requested queryset as a file."""
         # TODO implement exporter
-        filedata = {}
+        filedata = ''.encode()
         filename = f'InvenTree_SalesOrderItems.{export_format}'
-
         return DownloadFile(filedata, filename)
 
     filter_backends = SEARCH_ORDER_FILTER
@@ -870,9 +863,8 @@ class SalesOrderExtraLineList(GeneralExtraLineList, ListCreateAPI):
     def download_queryset(self, queryset, export_format):
         """Download this queryset as a file."""
         # TODO implement exporter
-        filedata = {}
+        filedata = ''.encode()
         filename = f'InvenTree_ExtraSalesOrderLines.{export_format}'
-
         return DownloadFile(filedata, filename)
 
 
@@ -1161,9 +1153,8 @@ class ReturnOrderList(ReturnOrderMixin, APIDownloadMixin, ListCreateAPI):
     def download_queryset(self, queryset, export_format):
         """Download this queryset as a file."""
         # TODO implement exporter
-        filedata = {}
+        filedata = ''.encode()
         filename = f'InvenTree_ReturnOrders.{export_format}'
-
         return DownloadFile(filedata, filename)
 
     filter_backends = SEARCH_ORDER_FILTER_ALIAS
