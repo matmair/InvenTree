@@ -158,9 +158,8 @@ class BuildList(APIDownloadMixin, ListCreateAPI):
 
     def download_queryset(self, queryset, export_format):
         """Download the queryset data as a file."""
-        dataset = build.admin.BuildResource().export(queryset=queryset)
-
-        filedata = dataset.export(export_format)
+        # TODO implement exporter
+        filedata = {}
         filename = f"InvenTree_BuildOrders.{export_format}"
 
         return DownloadFile(filedata, filename)
