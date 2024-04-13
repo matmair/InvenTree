@@ -39,15 +39,6 @@ from InvenTree.status_codes import (
     SalesOrderStatusGroups,
 )
 from order import models, serializers
-from order.admin import (
-    PurchaseOrderExtraLineResource,
-    PurchaseOrderLineItemResource,
-    PurchaseOrderResource,
-    ReturnOrderResource,
-    SalesOrderExtraLineResource,
-    SalesOrderLineItemResource,
-    SalesOrderResource,
-)
 from part.models import Part
 from users.models import Owner
 

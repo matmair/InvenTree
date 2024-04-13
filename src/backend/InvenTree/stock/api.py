@@ -64,7 +64,6 @@ from order.serializers import (
 )
 from part.models import BomItem, Part, PartCategory
 from part.serializers import PartBriefSerializer
-from stock.admin import LocationResource, StockItemResource
 from stock.models import (
     StockItem,
     StockItemAttachment,

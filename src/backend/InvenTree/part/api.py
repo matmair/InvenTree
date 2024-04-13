@@ -57,7 +57,6 @@ from InvenTree.status_codes import (
     PurchaseOrderStatusGroups,
     SalesOrderStatusGroups,
 )
-from part.admin import PartCategoryResource, PartResource
 from stock.models import StockLocation
 
 from . import serializers as part_serializers

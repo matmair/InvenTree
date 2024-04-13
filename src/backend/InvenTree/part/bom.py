@@ -10,7 +10,6 @@ from django.utils.translation import gettext as _
 from company.models import ManufacturerPart, SupplierPart
 from InvenTree.helpers import DownloadFile, GetExportFormats, normalize, str2bool
 
-from .admin import BomItemResource
 from .models import BomItem, BomItemSubstitute, Part
 
 
@@ -26,13 +25,8 @@ def MakeBomTemplate(fmt):
     if not IsValidBOMFormat(fmt):
         fmt = 'csv'
 
-    # Create an "empty" queryset, essentially.
-    # This will then export just the row headers!
-    query = BomItem.objects.filter(pk=None)
-
-    dataset = BomItemResource().export(queryset=query, importing=True)
-
-    data = dataset.export(fmt)
+    # TODO implement exporter
+    data = {}
 
     filename = 'InvenTree_BOM_Template.' + fmt
 

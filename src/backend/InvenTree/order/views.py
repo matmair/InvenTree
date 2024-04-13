@@ -23,7 +23,6 @@ from part.views import PartPricing
 from plugin.views import InvenTreePluginViewMixin
 
 from . import forms as order_forms
-from .admin import PurchaseOrderLineItemResource, SalesOrderLineItemResource
 from .models import (
     PurchaseOrder,
     PurchaseOrderLineItem,
@@ -296,9 +295,8 @@ class SalesOrderExport(AjaxView):
 
         filename = f'{str(order)} - {order.customer.name}.{export_format}'
 
-        dataset = SalesOrderLineItemResource().export(queryset=order.lines.all())
-
-        filedata = dataset.export(format=export_format)
+        # TODO implement exporter
+        filedata = {}
 
         return DownloadFile(filedata, filename)
 
@@ -323,9 +321,8 @@ class PurchaseOrderExport(AjaxView):
 
         filename = f'{str(order)} - {order.supplier.name}.{export_format}'
 
-        dataset = PurchaseOrderLineItemResource().export(queryset=order.lines.all())
-
-        filedata = dataset.export(format=export_format)
+        # TODO implement exporter
+        filedata = {}
 
         return DownloadFile(filedata, filename)
 

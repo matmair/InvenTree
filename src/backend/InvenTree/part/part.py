@@ -5,7 +5,6 @@ Primarily Part import tools.
 
 from InvenTree.helpers import DownloadFile, GetExportFormats
 
-from .admin import PartImportResource
 from .models import Part
 
 
@@ -21,13 +20,8 @@ def MakePartTemplate(fmt):
     if not IsValidPartFormat(fmt):
         fmt = 'csv'
 
-    # Create an "empty" queryset, essentially.
-    # This will then export just the row headers!
-    query = Part.objects.filter(pk=None)
-
-    dataset = PartImportResource().export(queryset=query, importing=True)
-
-    data = dataset.export(fmt)
+    # TODO implement exporter
+    data = {}
 
     filename = 'InvenTree_Part_Template.' + fmt
 
