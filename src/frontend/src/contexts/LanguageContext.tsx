@@ -34,6 +34,7 @@ export const getSupportedLanguages = (): Record<string, string> => {
     it: t`Italian`,
     ja: t`Japanese`,
     ko: t`Korean`,
+    lv: t`Latvian`,
     nl: t`Dutch`,
     no: t`Norwegian`,
     pl: t`Polish`,
@@ -100,6 +101,7 @@ export function LanguageContext({ children }: { children: JSX.Element }) {
         // Clear out cached table column names
         useLocalState.getState().clearTableColumnNames();
       })
+      /* istanbul ignore next */
       .catch((err) => {
         console.error('Failed loading translations', err);
         if (isMounted.current) setLoadedState('error');
@@ -114,6 +116,7 @@ export function LanguageContext({ children }: { children: JSX.Element }) {
     return <LoadingOverlay visible={true} />;
   }
 
+  /* istanbul ignore next */
   if (loadedState === 'error') {
     return (
       <Text>

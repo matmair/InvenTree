@@ -20,10 +20,10 @@ import { IconCheck, IconDots, IconRefresh } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 
 import { api } from '../../App';
 import { AddItemButton } from '../../components/buttons/AddItemButton';
+import { YesNoButton } from '../../components/buttons/YesNoButton';
 import {
   ActionDropdown,
   DeleteItemAction,
@@ -31,8 +31,10 @@ import {
 } from '../../components/items/ActionDropdown';
 import { InfoItem } from '../../components/items/InfoItem';
 import { UnavailableIndicator } from '../../components/items/UnavailableIndicator';
-import { YesNoButton } from '../../components/items/YesNoButton';
-import { DetailDrawer } from '../../components/nav/DetailDrawer';
+import {
+  DetailDrawer,
+  DetailDrawerLink
+} from '../../components/nav/DetailDrawer';
 import {
   StatusRenderer,
   TableStatusRenderer
@@ -289,9 +291,10 @@ function MachineDrawer({
             <InfoItem name={t`Machine Type`}>
               <Group spacing="xs">
                 {machineType ? (
-                  <Link to={`../type-${machine?.machine_type}`}>
-                    <Text>{machineType.name}</Text>
-                  </Link>
+                  <DetailDrawerLink
+                    to={`../type-${machine?.machine_type}`}
+                    text={machineType.name}
+                  />
                 ) : (
                   <Text>{machine?.machine_type}</Text>
                 )}
@@ -301,9 +304,10 @@ function MachineDrawer({
             <InfoItem name={t`Machine Driver`}>
               <Group spacing="xs">
                 {machineDriver ? (
-                  <Link to={`../driver-${machine?.driver}`}>
-                    <Text>{machineDriver.name}</Text>
-                  </Link>
+                  <DetailDrawerLink
+                    to={`../driver-${machine?.driver}`}
+                    text={machineDriver.name}
+                  />
                 ) : (
                   <Text>{machine?.driver}</Text>
                 )}

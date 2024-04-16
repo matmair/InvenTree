@@ -8,7 +8,7 @@ export type TableColumn<T = any> = {
   sortable?: boolean; // Whether the column is sortable
   switchable?: boolean; // Whether the column is switchable
   hidden?: boolean; // Whether the column is hidden
-  render?: (record: T) => any; // A custom render function
+  render?: (record: T, index?: number) => any; // A custom render function
   filter?: any; // A custom filter function
   filtering?: boolean; // Whether the column is filterable
   width?: number; // The width of the column
@@ -16,4 +16,5 @@ export type TableColumn<T = any> = {
   ellipsis?: boolean; // Whether the column should be ellipsized
   textAlignment?: 'left' | 'center' | 'right'; // The text alignment of the column
   cellsStyle?: any; // The style of the cells in the column
+  extra?: any; // Extra data to pass to the render function
 };

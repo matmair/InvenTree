@@ -40,6 +40,7 @@ export enum ApiEndpoints {
   news = 'news/',
   global_status = 'generic/status/',
   version = 'version/',
+  license = 'license/',
   sso_providers = 'auth/providers/',
   group_list = 'user/group/',
   owner_list = 'user/owner/',
@@ -60,9 +61,12 @@ export enum ApiEndpoints {
   part_parameter_template_list = 'part/parameter/template/',
   part_thumbs_list = 'part/thumbs/',
   part_pricing_get = 'part/:id/pricing/',
+  part_pricing_internal = 'part/internal-price/',
+  part_pricing_sale = 'part/sale-price/',
   part_stocktake_list = 'part/stocktake/',
   category_list = 'part/category/',
   category_tree = 'part/category/tree/',
+  category_parameter_list = 'part/category/parameters/',
   related_part_list = 'part/related/',
   part_attachment_list = 'part/attachment/',
   part_test_template_list = 'part/test-template/',
@@ -73,6 +77,7 @@ export enum ApiEndpoints {
   address_list = 'company/address/',
   company_attachment_list = 'company/attachment/',
   supplier_part_list = 'company/part/',
+  supplier_part_pricing_list = 'company/price-break/',
   manufacturer_part_list = 'company/part/manufacturer/',
   manufacturer_part_attachment_list = 'company/part/manufacturer/attachment/',
   manufacturer_part_parameter_list = 'company/part/manufacturer/parameter/',
@@ -84,16 +89,33 @@ export enum ApiEndpoints {
   stock_location_tree = 'stock/location/tree/',
   stock_attachment_list = 'stock/attachment/',
   stock_test_result_list = 'stock/test/',
+  stock_transfer = 'stock/transfer/',
+  stock_remove = 'stock/remove/',
+  stock_add = 'stock/add/',
+  stock_count = 'stock/count/',
+  stock_change_status = 'stock/change_status/',
+  stock_merge = 'stock/merge/',
+  stock_assign = 'stock/assign/',
+  stock_status = 'stock/status/',
+  stock_install = 'stock/:id/install',
 
   // Order API endpoints
   purchase_order_list = 'order/po/',
   purchase_order_line_list = 'order/po-line/',
   purchase_order_attachment_list = 'order/po/attachment/',
+  purchase_order_receive = 'order/po/:id/receive/',
+
   sales_order_list = 'order/so/',
+  sales_order_line_list = 'order/so-line/',
   sales_order_attachment_list = 'order/so/attachment/',
   sales_order_shipment_list = 'order/so/shipment/',
+
   return_order_list = 'order/ro/',
   return_order_attachment_list = 'order/ro/attachment/',
+
+  // Template API endpoints
+  label_list = 'label/:variant/',
+  report_list = 'report/:variant/',
 
   // Plugin API endpoints
   plugin_list = 'plugins/',

@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
-import { YesNoButton } from '../../components/items/YesNoButton';
+import { YesNoButton } from '../../components/buttons/YesNoButton';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
@@ -95,7 +95,7 @@ export function PartCategoryTable({ parentId }: { parentId?: any }) {
     pk: selectedCategory,
     title: t`Edit Part Category`,
     fields: partCategoryFields({}),
-    onFormSuccess: table.refreshTable
+    onFormSuccess: (record: any) => table.updateRecord(record)
   });
 
   const tableActions = useMemo(() => {
@@ -105,7 +105,7 @@ export function PartCategoryTable({ parentId }: { parentId?: any }) {
       <AddItemButton
         tooltip={t`Add Part Category`}
         onClick={() => newCategory.open()}
-        disabled={!can_add}
+        hidden={!can_add}
       />
     ];
   }, [user]);
@@ -143,8 +143,7 @@ export function PartCategoryTable({ parentId }: { parentId?: any }) {
           tableFilters: tableFilters,
           tableActions: tableActions,
           rowActions: rowActions,
-          onRowClick: (record) =>
-            navigate(getDetailUrl(ModelType.partcategory, record.pk))
+          modelType: ModelType.partcategory
         }}
       />
     </>

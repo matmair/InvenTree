@@ -3,8 +3,8 @@ import { Text } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
+import { YesNoButton } from '../../components/buttons/YesNoButton';
 import { ApiFormFieldSet } from '../../components/forms/fields/ApiFormField';
-import { YesNoButton } from '../../components/items/YesNoButton';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { UserRoles } from '../../enums/Roles';
 import {
@@ -19,6 +19,7 @@ import { TableColumn } from '../Column';
 import { DescriptionColumn, PartColumn } from '../ColumnRenderers';
 import { InvenTreeTable } from '../InvenTreeTable';
 import { RowDeleteAction, RowEditAction } from '../RowActions';
+import { TableHoverCard } from '../TableHoverCard';
 
 /**
  * Construct a table listing parameters for a given part
@@ -65,13 +66,23 @@ export function PartParameterTable({ partId }: { partId: any }) {
             return <YesNoButton value={record.data} />;
           }
 
-          if (record.data_numeric) {
-            // TODO: Numeric data
+          let extra: any[] = [];
+
+          if (
+            template.units &&
+            record.data_numeric &&
+            record.data_numeric != record.data
+          ) {
+            extra.push(`${record.data_numeric} [${template.units}]`);
           }
 
-          // TODO: Units
-
-          return record.data;
+          return (
+            <TableHoverCard
+              value={record.data}
+              extra={extra}
+              title={t`Internal Units`}
+            />
+          );
         }
       },
       {
@@ -84,7 +95,9 @@ export function PartParameterTable({ partId }: { partId: any }) {
 
   const partParameterFields: ApiFormFieldSet = useMemo(() => {
     return {
-      part: {},
+      part: {
+        disabled: true
+      },
       template: {},
       data: {}
     };
@@ -94,6 +107,7 @@ export function PartParameterTable({ partId }: { partId: any }) {
     url: ApiEndpoints.part_parameter_list,
     title: t`New Part Parameter`,
     fields: partParameterFields,
+    focus: 'template',
     initialData: {
       part: partId
     },

@@ -2,6 +2,8 @@ import { Trans } from '@lingui/macro';
 import { Button, Card, Stack, TextInput } from '@mantine/core';
 import { Group, Text } from '@mantine/core';
 import { Accordion } from '@mantine/core';
+import { spotlight } from '@mantine/spotlight';
+import { IconAlien } from '@tabler/icons-react';
 import { ReactNode, useMemo, useState } from 'react';
 
 import { OptionsApiForm } from '../../components/forms/ApiForm';
@@ -10,7 +12,7 @@ import { StylishText } from '../../components/items/StylishText';
 import { StatusRenderer } from '../../components/render/StatusRenderer';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
-import { partCategoryFields, partFields } from '../../forms/PartForms';
+import { partCategoryFields, usePartFields } from '../../forms/PartForms';
 import { useCreateStockItem } from '../../forms/StockForms';
 import {
   useCreateApiFormModal,
@@ -28,10 +30,13 @@ function ApiFormsPlayground() {
     fields: fields
   });
 
+  const createPartFields = usePartFields({ create: true });
+  const editPartFields = usePartFields({ create: false });
+
   const newPart = useCreateApiFormModal({
     url: ApiEndpoints.part_list,
     title: 'Create Part',
-    fields: partFields({}),
+    fields: createPartFields,
     initialData: {
       description: 'A part created via the API'
     }
@@ -41,7 +46,7 @@ function ApiFormsPlayground() {
     url: ApiEndpoints.part_list,
     pk: 1,
     title: 'Edit Part',
-    fields: partFields({ editing: true })
+    fields: editPartFields
   });
 
   const newAttachment = useCreateApiFormModal({
@@ -62,7 +67,7 @@ function ApiFormsPlayground() {
   const [name, setName] = useState('Hello');
 
   const partFieldsState: any = useMemo<any>(() => {
-    const fields = partFields({});
+    const fields = editPartFields;
     fields.name = {
       ...fields.name,
       value: name,
@@ -164,6 +169,38 @@ function StatusLabelPlayground() {
   );
 }
 
+// Sample for spotlight actions
+function SpotlighPlayground() {
+  return (
+    <Button
+      variant="outline"
+      onClick={() => {
+        spotlight.registerActions([
+          {
+            id: 'secret-action-1',
+            title: 'Secret action',
+            description: 'It was registered with a button click',
+            icon: <IconAlien size="1.2rem" />,
+            onTrigger: () => console.log('Secret')
+          },
+          {
+            id: 'secret-action-2',
+            title: 'Another secret action',
+            description:
+              'You can register multiple actions with just one command',
+            icon: <IconAlien size="1.2rem" />,
+            onTrigger: () => console.log('Secret')
+          }
+        ]);
+        console.log('registed');
+        spotlight.open();
+      }}
+    >
+      Register extra actions
+    </Button>
+  );
+}
+
 /** Construct a simple accordion group with title and content */
 function PlaygroundArea({
   title,
@@ -203,6 +240,10 @@ export default function Playground() {
         <PlaygroundArea
           title="Status labels"
           content={<StatusLabelPlayground />}
+        />
+        <PlaygroundArea
+          title="Spotlight actions"
+          content={<SpotlighPlayground />}
         />
       </Accordion>
     </>
