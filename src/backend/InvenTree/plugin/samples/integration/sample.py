@@ -2,13 +2,38 @@
 
 import json
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
 
+from backend.InvenTree.common.models import NotificationMessage
+from backend.InvenTree.InvenTree.helpers import TaggedObjectRelatedField
+from rest_framework import serializers
+
+from InvenTree.mixins import ListAPI
 from plugin import InvenTreePlugin
 from plugin.mixins import AppMixin, NavigationMixin, SettingsMixin, UrlsMixin
+
+
+class CustomSerializer(serializers.ModelSerializer):
+    """Custom serializer for checking metadata."""
+
+    target_object = TaggedObjectRelatedField(read_only=True)
+
+    class Meta:
+        """Meta class for CustomSerializer."""
+
+        model = NotificationMessage
+        fields = ['pk', 'message', 'target_object']
+
+
+class CustomView(ListAPI):
+    """Custom view for ContentType."""
+
+    serializer_class = CustomSerializer
+    queryset = NotificationMessage.objects.all()
 
 
 def validate_json(value):
@@ -45,6 +70,7 @@ class SampleIntegrationPlugin(
         return [
             path('hi/', self.view_test, name='hi'),
             path('ho/', include(he_urls), name='ho'),
+            path('abcdef/', CustomView.as_view(), name='abcdef'),
         ]
 
     SETTINGS = {

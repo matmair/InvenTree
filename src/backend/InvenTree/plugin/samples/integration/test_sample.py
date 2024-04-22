@@ -37,6 +37,13 @@ class SampleIntegrationPluginTests(InvenTreeTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+        # Test options for Content-Type
+        response = self.client.options('/plugin/sample/abcdef/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Allow'], 'GET, HEAD, OPTIONS')
+        self.assertIn('GET', response.data['actions'])
+        print('response.data', response.data)
+
         self.assertEqual(response.content, b'Hi there testuser this works')
 
     def test_settings(self):
