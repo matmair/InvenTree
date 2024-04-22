@@ -26,6 +26,7 @@ import regex
 from bleach import clean
 from djmoney.money import Money
 from PIL import Image
+from rest_framework import serializers
 
 import InvenTree.version
 from common.settings import currency_code_default
@@ -1011,3 +1012,16 @@ def pui_url(subpath: str) -> str:
     if not subpath.startswith('/'):
         subpath = '/' + subpath
     return f'/{settings.FRONTEND_URL_BASE}{subpath}'
+
+
+class TaggedObjectRelatedField(serializers.RelatedField):
+    """A custom field to use for the `tagged_object` generic relationship."""
+
+    def to_representation(self, value):
+        """Serialize tagged objects to a simple textual representation."""
+        if hasattr(value, 'get_api_url'):
+            return f'{value.get_api_url()}{value.id}/'
+        if hasattr(value, 'get_absolute_url'):  # pragma: no cover
+            return value.get_absolute_url()
+        else:  # pragma: no cover
+            return value.id
