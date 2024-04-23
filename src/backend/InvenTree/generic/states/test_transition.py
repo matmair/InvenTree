@@ -5,9 +5,6 @@ from InvenTree.unit_test import InvenTreeTestCase
 from .transition import StateTransitionMixin, TransitionMethod, storage
 
 # Global variables to determine which transition classes raises an exception
-global raise_storage
-global raise_function
-
 raise_storage = False
 raise_function = False
 
@@ -91,7 +88,7 @@ class TransitionTests(InvenTreeTestCase):
                 if raise_function:
                     return 1234
                 else:
-                    return False
+                    return False  # pragma: no cover # Return false to keep other transitions working
 
         storage.collect()
         assert storage.list
