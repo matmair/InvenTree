@@ -1,13 +1,5 @@
 import { t } from '@lingui/macro';
-import {
-  Badge,
-  Grid,
-  Group,
-  LoadingOverlay,
-  Skeleton,
-  Stack,
-  Text
-} from '@mantine/core';
+import { Grid, LoadingOverlay, Skeleton, Stack } from '@mantine/core';
 import {
   IconBookmarks,
   IconBuilding,
@@ -32,13 +24,11 @@ import {
 } from '@tabler/icons-react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { ReactNode, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { api } from '../../App';
 import { DetailsField, DetailsTable } from '../../components/details/Details';
-import DetailsBadge, {
-  DetailsBadgeProps
-} from '../../components/details/DetailsBadge';
+import DetailsBadge from '../../components/details/DetailsBadge';
 import { DetailsImage } from '../../components/details/DetailsImage';
 import { ItemDetailsGrid } from '../../components/details/ItemDetails';
 import { PartIcons } from '../../components/details/PartIcons';
@@ -68,7 +58,10 @@ import {
 } from '../../forms/StockForms';
 import { InvenTreeIcon } from '../../functions/icons';
 import { getDetailUrl } from '../../functions/urls';
-import { useEditApiFormModal } from '../../hooks/UseForm';
+import {
+  useCreateApiFormModal,
+  useEditApiFormModal
+} from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
 import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
@@ -84,6 +77,7 @@ import { ManufacturerPartTable } from '../../tables/purchasing/ManufacturerPartT
 import { SupplierPartTable } from '../../tables/purchasing/SupplierPartTable';
 import { SalesOrderTable } from '../../tables/sales/SalesOrderTable';
 import { StockItemTable } from '../../tables/stock/StockItemTable';
+import PartPricingPanel from './PartPricingPanel';
 
 /**
  * Detail view for a single Part instance
@@ -92,6 +86,7 @@ export default function PartDetail() {
   const { id } = useParams();
 
   const user = useUserState();
+  const navigate = useNavigate();
 
   const [treeOpen, setTreeOpen] = useState(false);
 
@@ -453,7 +448,9 @@ export default function PartDetail() {
           </Grid.Col>
           <Grid.Col span={8}>
             <Stack spacing="xs">
-              <PartIcons part={part} />
+              <table>
+                <PartIcons part={part} />
+              </table>
               <DetailsTable fields={tl} item={part} />
             </Stack>
           </Grid.Col>
@@ -528,8 +525,9 @@ export default function PartDetail() {
       },
       {
         name: 'pricing',
-        label: t`Pricing`,
-        icon: <IconCurrencyDollar />
+        label: t`Part Pricing`,
+        icon: <IconCurrencyDollar />,
+        content: part ? <PartPricingPanel part={part} /> : <Skeleton />
       },
       {
         name: 'manufacturers',
@@ -660,7 +658,8 @@ export default function PartDetail() {
         label={t`In Production` + `: ${part.building}`}
         color="blue"
         visible={part.building > 0}
-      />
+      />,
+      <DetailsBadge label={t`Inactive`} color="red" visible={!part.active} />
     ];
   }, [part, instanceQuery]);
 
@@ -672,6 +671,20 @@ export default function PartDetail() {
     title: t`Edit Part`,
     fields: partFields,
     onFormSuccess: refreshInstance
+  });
+
+  const duplicatePart = useCreateApiFormModal({
+    url: ApiEndpoints.part_list,
+    title: t`Add Part`,
+    fields: partFields,
+    initialData: {
+      ...part
+    },
+    onFormSuccess: (response: any) => {
+      if (response.pk) {
+        navigate(getDetailUrl(ModelType.part, response.pk));
+      }
+    }
   });
 
   const stockActionProps: StockOperationProps = useMemo(() => {
@@ -691,10 +704,10 @@ export default function PartDetail() {
         actions={[
           ViewBarcodeAction({}),
           LinkBarcodeAction({
-            hidden: part?.barcode_hash
+            hidden: part?.barcode_hash || !user.hasChangeRole(UserRoles.part)
           }),
           UnlinkBarcodeAction({
-            hidden: !part?.barcode_hash
+            hidden: !part?.barcode_hash || !user.hasChangeRole(UserRoles.part)
           })
         ]}
       />,
@@ -733,7 +746,8 @@ export default function PartDetail() {
         icon={<IconDots />}
         actions={[
           DuplicateItemAction({
-            hidden: !user.hasAddRole(UserRoles.part)
+            hidden: !user.hasAddRole(UserRoles.part),
+            onClick: () => duplicatePart.open()
           }),
           EditItemAction({
             hidden: !user.hasChangeRole(UserRoles.part),
@@ -749,6 +763,7 @@ export default function PartDetail() {
 
   return (
     <>
+      {duplicatePart.modal}
       {editPart.modal}
       <Stack spacing="xs">
         <LoadingOverlay visible={instanceQuery.isFetching} />
