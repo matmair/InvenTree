@@ -88,47 +88,27 @@ msgstr "Il valore '{name}' non è nel formato del pattern"
 msgid "Provided value does not match required pattern: "
 msgstr "Il valore fornito non corrisponde al modello richiesto: "
 
-#: InvenTree/forms.py:128
-msgid "Enter password"
-msgstr "Inserire la password"
-
-#: InvenTree/forms.py:129
-msgid "Enter new password"
-msgstr "Inserire una nuova password"
-
-#: InvenTree/forms.py:138
-msgid "Confirm password"
-msgstr "Conferma la password"
-
-#: InvenTree/forms.py:139
-msgid "Confirm new password"
-msgstr "Conferma la nuova password"
-
-#: InvenTree/forms.py:143
-msgid "Old password"
-msgstr "Vecchia password"
-
-#: InvenTree/forms.py:182
+#: InvenTree/forms.py:63
 msgid "Email (again)"
 msgstr "Email (ancora)"
 
-#: InvenTree/forms.py:186
+#: InvenTree/forms.py:67
 msgid "Email address confirmation"
 msgstr "Conferma indirizzo email"
 
-#: InvenTree/forms.py:209
+#: InvenTree/forms.py:90
 msgid "You must type the same email each time."
 msgstr "È necessario digitare la stessa e-mail ogni volta."
 
-#: InvenTree/forms.py:253 InvenTree/forms.py:261
+#: InvenTree/forms.py:134 InvenTree/forms.py:142
 msgid "The provided primary email address is not valid."
 msgstr "L'indirizzo email principale fornito non è valido."
 
-#: InvenTree/forms.py:268
+#: InvenTree/forms.py:149
 msgid "The provided email domain is not approved."
 msgstr "L'indirizzo di posta elettronica fornito non è approvato."
 
-#: InvenTree/forms.py:395
+#: InvenTree/forms.py:266
 msgid "Registration is disabled."
 msgstr "La registrazione è disabilitata."
 
@@ -707,8 +687,6 @@ msgstr "Inviato"
 
 #: InvenTree/status_codes.py:14 InvenTree/status_codes.py:151
 #: InvenTree/status_codes.py:169 generic/states/tests.py:19
-#: order/templates/order/order_base.html:158
-#: order/templates/order/sales_order_base.html:161
 msgid "Complete"
 msgstr "Completo"
 
@@ -766,7 +744,7 @@ msgstr "In quarantena"
 msgid "Legacy stock tracking entry"
 msgstr "Voce di tracciamento stock preesistente"
 
-#: InvenTree/status_codes.py:93 templates/js/translated/stock.js:544
+#: InvenTree/status_codes.py:93
 msgid "Stock item created"
 msgstr "Elemento stock creato"
 
@@ -858,7 +836,7 @@ msgstr "Ricevuto contro l'ordine di acquisto"
 msgid "Returned against Return Order"
 msgstr "Restituito contro l'ordine di ritorno"
 
-#: InvenTree/status_codes.py:141 templates/js/translated/table_filters.js:375
+#: InvenTree/status_codes.py:141
 msgid "Sent to customer"
 msgstr "Inviato al cliente"
 
@@ -3684,9 +3662,7 @@ msgstr "Queste notizie sull'elemento sono state lette?"
 #: report/templates/report/inventree_bill_of_materials_report.html:126
 #: report/templates/report/inventree_bill_of_materials_report.html:148
 #: report/templates/report/inventree_return_order_report_base.html:35
-#: stock/templates/stock/item_base.html:133 templates/503.html:31
-#: templates/hover_image.html:7 templates/hover_image.html:9
-#: templates/modals.html:6
+#: templates/503.html:31
 msgid "Image"
 msgstr "Immagine"
 
@@ -3812,18 +3788,11 @@ msgstr ""
 msgid "Task keyword arguments"
 msgstr ""
 
-#: common/views.py:84 order/templates/order/order_wizard/po_upload.html:51
-#: order/templates/order/purchase_order_detail.html:24 order/views.py:118
-#: part/templates/part/import_wizard/part_upload.html:58 part/views.py:109
-#: templates/patterns/wizard/upload.html:37
+#: common/views.py:84
 msgid "Upload File"
 msgstr "Carica file"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "Abbina Campi"
 
@@ -3839,14 +3808,7 @@ msgstr "Corrispondenza campi non riuscita"
 msgid "Parts imported"
 msgstr "Articoli importati"
 
-#: common/views.py:494 order/templates/order/order_wizard/match_fields.html:27
-#: order/templates/order/order_wizard/match_parts.html:19
-#: order/templates/order/order_wizard/po_upload.html:49
-#: part/templates/part/import_wizard/match_fields.html:27
-#: part/templates/part/import_wizard/match_references.html:19
-#: part/templates/part/import_wizard/part_upload.html:56
-#: templates/patterns/wizard/match_fields.html:26
-#: templates/patterns/wizard/upload.html:35
+#: common/views.py:494
 msgid "Previous Step"
 msgstr "Passaggio Precedente"
 
@@ -4142,7 +4104,7 @@ msgstr "L'articolo del costruttore collegato deve riferirsi alla stesso articolo
 #: order/templates/order/order_base.html:136 part/bom.py:272 part/bom.py:310
 #: part/serializers.py:499 plugin/builtin/suppliers/digikey.py:25
 #: plugin/builtin/suppliers/lcsc.py:26 plugin/builtin/suppliers/mouser.py:24
-#: plugin/builtin/suppliers/tme.py:26 stock/templates/stock/item_base.html:224
+#: plugin/builtin/suppliers/tme.py:26
 #: templates/email/overdue_purchase_order.html:16
 #: templates/js/translated/company.js:350
 #: templates/js/translated/company.js:511
@@ -4791,13 +4753,11 @@ msgstr "Filtri"
 #: label/templates/label/part/part_label.html:31
 #: label/templates/label/stockitem/qr.html:21
 #: label/templates/label/stocklocation/qr.html:20
-#: templates/allauth_2fa/setup.html:18
 msgid "QR Code"
 msgstr ""
 
 #: label/templates/label/part/part_label_code128.html:31
 #: label/templates/label/stocklocation/qr_and_text.html:31
-#: templates/qr_code.html:7
 msgid "QR code"
 msgstr ""
 
@@ -4945,7 +4905,6 @@ msgstr ""
 #: order/templates/order/order_base.html:9
 #: order/templates/order/order_base.html:18
 #: report/templates/report/inventree_po_report_base.html:14
-#: stock/templates/stock/item_base.html:176
 #: templates/email/overdue_purchase_order.html:15
 #: templates/js/translated/part.js:1745 templates/js/translated/pricing.js:804
 #: templates/js/translated/purchase_order.js:168
@@ -5945,8 +5904,7 @@ msgstr "Scorta Minima"
 msgid "Used In"
 msgstr "Utilizzato In"
 
-#: part/admin.py:150 part/templates/part/part_base.html:241 stock/admin.py:231
-#: templates/js/translated/part.js:714 templates/js/translated/part.js:2152
+#: part/admin.py:150 stock/admin.py:231
 msgid "Building"
 msgstr "In Costruzione"
 
@@ -5968,8 +5926,7 @@ msgstr "ID principale"
 msgid "Parent Name"
 msgstr "Nome Principale"
 
-#: part/admin.py:318 part/templates/part/category.html:88
-#: part/templates/part/category.html:101
+#: part/admin.py:318
 msgid "Category Path"
 msgstr "Percorso Categoria"
 
@@ -6107,6 +6064,10 @@ msgstr "Posizione Predefinita"
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
 msgstr "Giacenze Totali"
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
+msgstr "SKU"
 
 #: part/forms.py:49
 msgid "Input quantity for price calculation"
@@ -8370,8 +8331,6 @@ msgid "Name for the Plugin Package - can also contain a version indicator"
 msgstr "Nome per il Pacchetto Plugin - può anche contenere un indicatore di versione"
 
 #: plugin/serializers.py:99
-#: templates/InvenTree/settings/plugin_settings.html:42
-#: templates/js/translated/plugin.js:86
 msgid "Version"
 msgstr "Versione"
 
@@ -8572,17 +8531,43 @@ msgstr "File risorsa descrizione"
 msgid "stock location query filters (comma-separated list of key=value pairs)"
 msgstr ""
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr "Distinta base"
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr "Materiali necessari"
+
+#: report/templates/report/inventree_build_order_base.html:98
+#: report/templates/report/inventree_po_report_base.html:40
+#: report/templates/report/inventree_so_report_base.html:40
+#: report/templates/report/inventree_test_report_base.html:84
+#: report/templates/report/inventree_test_report_base.html:163
+msgid "Part image"
+msgstr ""
+
+#: report/templates/report/inventree_build_order_base.html:121
+msgid "Issued"
+msgstr "Emesso"
 
 #: report/templates/report/inventree_build_order_base.html:146
 msgid "Required For"
 msgstr "Richiesto Per"
 
+#: report/templates/report/inventree_build_order_base.html:152
+msgid "Issued By"
+msgstr "Inviato da"
+
 #: report/templates/report/inventree_po_report_base.html:15
 msgid "Supplier was deleted"
 msgstr "Il fornitore è stato eliminato"
+
+#: report/templates/report/inventree_po_report_base.html:22
+#: report/templates/report/inventree_return_order_report_base.html:19
+#: report/templates/report/inventree_so_report_base.html:22
+msgid "Line Items"
+msgstr "Elementi Riga"
 
 #: report/templates/report/inventree_po_report_base.html:30
 #: report/templates/report/inventree_so_report_base.html:30
@@ -8661,7 +8646,6 @@ msgid "No result"
 msgstr "Nessun risultato"
 
 #: report/templates/report/inventree_test_report_base.html:154
-#: stock/templates/stock/stock_sidebar.html:16
 msgid "Installed Items"
 msgstr "Elementi installati"
 
@@ -8695,14 +8679,17 @@ msgstr "ID Posizione"
 msgid "Location Name"
 msgstr "Nome Ubicazione"
 
-#: stock/admin.py:64 stock/templates/stock/location.html:131
-#: stock/templates/stock/location.html:137
+#: stock/admin.py:64
 msgid "Location Path"
 msgstr "Percorso Ubicazione"
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
 msgstr "ID Elemento Stock"
+
+#: stock/admin.py:163
+msgid "Batch"
+msgstr "Lotto"
 
 #: stock/admin.py:168
 msgid "Status Code"
@@ -8879,28 +8866,28 @@ msgstr "Gli articoli di magazzino non possono essere ubicati in posizioni di mag
 msgid "Stock item cannot be created for virtual parts"
 msgstr "Non è possibile creare un elemento di magazzino per articoli virtuali"
 
-#: stock/models.py:670
+#: stock/models.py:673
 #, python-brace-format
 msgid "Part type ('{self.supplier_part.part}') must be {self.part}"
 msgstr ""
 
-#: stock/models.py:680 stock/models.py:693
+#: stock/models.py:683 stock/models.py:696
 msgid "Quantity must be 1 for item with a serial number"
 msgstr "La quantità deve essere 1 per elementi con un numero di serie"
 
-#: stock/models.py:683
+#: stock/models.py:686
 msgid "Serial number cannot be set if quantity greater than 1"
 msgstr "Il numero di serie non può essere impostato se la quantità è maggiore di 1"
 
-#: stock/models.py:707
+#: stock/models.py:710
 msgid "Item cannot belong to itself"
 msgstr "L'elemento non può appartenere a se stesso"
 
-#: stock/models.py:712
+#: stock/models.py:715
 msgid "Item must have a build reference if is_building=True"
 msgstr "L'elemento deve avere un riferimento di costruzione se is_building=True"
 
-#: stock/models.py:725
+#: stock/models.py:728
 msgid "Build reference does not point to the same part object"
 msgstr "Il riferimento di costruzione non punta allo stesso oggetto dell'articolo"
 
@@ -9682,8 +9669,7 @@ msgstr "Autenticazione Fallita"
 msgid "You have been logged out from InvenTree."
 msgstr "Sei stato disconnesso da InvenTree."
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr "Accedi"
 
@@ -14226,3 +14212,1885 @@ msgstr "Permessi per modificare gli elementi"
 msgid "Permission to delete items"
 msgstr "Autorizzazione ad eliminare gli elementi"
 
+#~ msgid "Enter password"
+#~ msgstr "Inserire la password"
+
+#~ msgid "Enter new password"
+#~ msgstr "Inserire una nuova password"
+
+#~ msgid "Confirm password"
+#~ msgstr "Conferma la password"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Conferma la nuova password"
+
+#~ msgid "Old password"
+#~ msgstr "Vecchia password"
+
+#~ msgid "Unknown database"
+#~ msgstr "Database sconosciuto"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Modifica informazioni utente"
+
+#~ msgid "Set Password"
+#~ msgstr "Imposta Password"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Le password devono coincidere"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Password inserita non corretta"
+
+#~ msgid "System Information"
+#~ msgstr "Informazioni sistema"
+
+#~ msgid "About InvenTree"
+#~ msgstr "Informazioni Su InvenTree"
+
+#~ msgid "Part thumbnail"
+#~ msgstr "Anteprima parte"
+
+#~ msgid "Barcode actions"
+#~ msgstr "Azioni Barcode"
+
+#~ msgid "Show QR Code"
+#~ msgstr "Mostra QR Code"
+
+#~ msgid "Unlink Barcode"
+#~ msgstr "Scollega Codice a Barre"
+
+#~ msgid "Link Barcode"
+#~ msgstr "Collega Codice a Barre"
+
+#~ msgid "Print actions"
+#~ msgstr "Azioni di stampa"
+
+#~ msgid "Print build order report"
+#~ msgstr "Stampa report ordine di produzione"
+
+#~ msgid "Build actions"
+#~ msgstr "Azioni Produzione"
+
+#~ msgid "Edit Build"
+#~ msgstr "Modica Produzione"
+
+#~ msgid "Cancel Build"
+#~ msgstr "Annulla Produzione"
+
+#~ msgid "Duplicate Build"
+#~ msgstr "Duplica Produzione"
+
+#~ msgid "Delete Build"
+#~ msgstr "Elimina Produzione"
+
+#~ msgid "Complete Build"
+#~ msgstr "Completa Produzione"
+
+#~ msgid "Build Description"
+#~ msgstr "Descrizione Produzione"
+
+#~ msgid "No build outputs have been created for this build order"
+#~ msgstr "Nessun output di produzione è stato creato per questo ordine di produzione"
+
+#~ msgid "Build Order is ready to mark as completed"
+#~ msgstr "L'ordine di produzione è pronto per essere contrassegnato come completato"
+
+#~ msgid "Build Order cannot be completed as outstanding outputs remain"
+#~ msgstr "L'ordine di produzione non può essere completato poiché gli output rimangono in sospeso"
+
+#~ msgid "Required build quantity has not yet been completed"
+#~ msgstr "La quantità di produzione richiesta non è stata completata"
+
+#~ msgid "Stock has not been fully allocated to this Build Order"
+#~ msgstr "Lo stock non è stato completamente assegnato a questo ordine di produzione"
+
+#, python-format
+#~ msgid "This build was due on %(target)s"
+#~ msgstr "Questa produzione era in scadenza il %(target)s"
+
+#~ msgid "Overdue"
+#~ msgstr "In ritardo"
+
+#~ msgid "Completed Outputs"
+#~ msgstr "Outputs Completati"
+
+#~ msgid "Priority"
+#~ msgstr "Priorità"
+
+#~ msgid "Delete Build Order"
+#~ msgstr "Elimina ordine di produzione"
+
+#~ msgid "Build Order QR Code"
+#~ msgstr "Genera Codice QR Ordine di produzione"
+
+#~ msgid "Link Barcode to Build Order"
+#~ msgstr "Collega il codice a barre all'ordine di produzione"
+
+#~ msgid "Build Details"
+#~ msgstr "Dettagli della Produzione"
+
+#~ msgid "Stock Source"
+#~ msgstr "Risorse di magazzino"
+
+#~ msgid "Stock can be taken from any available location."
+#~ msgstr "Lo stock può essere prelevato da qualsiasi posizione disponibile."
+
+#~ msgid "Destination location not specified"
+#~ msgstr "Posizione di destinazione non specificata"
+
+#~ msgid "Allocated Parts"
+#~ msgstr "Articoli Assegnati"
+
+#~ msgid "Created"
+#~ msgstr "Creato"
+
+#~ msgid "No target date set"
+#~ msgstr "Nessuna data di destinazione impostata"
+
+#~ msgid "Completed"
+#~ msgstr "Completato"
+
+#~ msgid "Build not complete"
+#~ msgstr "Build Completata"
+
+#~ msgid "Child Build Orders"
+#~ msgstr "Ordine di Produzione Subordinato"
+
+#~ msgid "Allocate Stock to Build"
+#~ msgstr "Assegna Scorte alla Produzione"
+
+#~ msgid "Automatically allocate stock to build"
+#~ msgstr "Assegna automaticamente le scorte per la produzione"
+
+#~ msgid "Auto Allocate"
+#~ msgstr "Assegnazione Automatica"
+
+#~ msgid "Manually allocate stock to build"
+#~ msgstr "Assegna manualmente le scorte per la produzione"
+
+#~ msgid "Allocate Stock"
+#~ msgstr "Assegna Scorte"
+
+#~ msgid "Order required parts"
+#~ msgstr "Ordina articoli richiesti"
+
+#~ msgid "Order Parts"
+#~ msgstr "Ordine Articoli"
+
+#~ msgid "Incomplete Build Outputs"
+#~ msgstr "Produzione Incompleta"
+
+#~ msgid "Create new build output"
+#~ msgstr "Crea nuova produzione"
+
+#~ msgid "New Build Output"
+#~ msgstr "Nuova Produzione"
+
+#~ msgid "Completed Build Outputs"
+#~ msgstr "Produzioni Completate"
+
+#~ msgid "Attachments"
+#~ msgstr "Allegati"
+
+#~ msgid "Build Notes"
+#~ msgstr "Genera Note"
+
+#~ msgid "New Build Order"
+#~ msgstr "Nuovo Ordine di Produzione"
+
+#~ msgid "Build Order Details"
+#~ msgstr "Dettagli Ordine di Produzione"
+
+#~ msgid "Incomplete Outputs"
+#~ msgstr "Output Incompleti"
+
+#~ msgid "Create Purchase Order"
+#~ msgstr "Crea ordine d'acquisto"
+
+#~ msgid "Company actions"
+#~ msgstr "Azioni Azienda"
+
+#~ msgid "Edit company information"
+#~ msgstr "Modifica le informazioni dell'azienda"
+
+#~ msgid "Edit Company"
+#~ msgstr "Modifica azienda"
+
+#~ msgid "Delete company"
+#~ msgstr "Elimina azienda"
+
+#~ msgid "Delete Company"
+#~ msgstr "Elimina Azienda"
+
+#~ msgid "Upload new image"
+#~ msgstr "Carica nuova immagine"
+
+#~ msgid "Download image from URL"
+#~ msgstr "Scarica immagine dall'URL"
+
+#~ msgid "Delete image"
+#~ msgstr "Elimina immagine"
+
+#~ msgid "Uses default currency"
+#~ msgstr "Valuta predefinita"
+
+#~ msgid "Phone"
+#~ msgstr "Telefono"
+
+#~ msgid "Remove"
+#~ msgstr "Rimuovi"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "Articoli fornitore"
+
+#~ msgid "Create new supplier part"
+#~ msgstr "Crea nuovo fornitore"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "Nuovo fornitore articolo"
+
+#~ msgid "Manufacturer Parts"
+#~ msgstr "Articoli Produttore"
+
+#~ msgid "Create new manufacturer part"
+#~ msgstr "Crea nuovo articolo produttore"
+
+#~ msgid "New Manufacturer Part"
+#~ msgstr "Nuovo Produttore Articoli"
+
+#~ msgid "Supplier Stock"
+#~ msgstr "Giacenza Fornitore"
+
+#~ msgid "Create new purchase order"
+#~ msgstr "Crea nuovo ordine di acquisto"
+
+#~ msgid "New Purchase Order"
+#~ msgstr "Nuovo Ordine di Acquisto"
+
+#~ msgid "Create new sales order"
+#~ msgstr "Crea nuovo ordine di vendita"
+
+#~ msgid "New Sales Order"
+#~ msgstr "Nuovo Ordine di Vendita"
+
+#~ msgid "Assigned Stock"
+#~ msgstr "Assegna Giacenza"
+
+#~ msgid "Create new return order"
+#~ msgstr "Crea nuovo ordine di reso"
+
+#~ msgid "New Return Order"
+#~ msgstr "Nuovo Ordine Di Reso"
+
+#~ msgid "Company Notes"
+#~ msgstr "Note Dell'Azienda"
+
+#~ msgid "Company Contacts"
+#~ msgstr "Contatti Azienda"
+
+#~ msgid "Add Contact"
+#~ msgstr "Aggiungi contatti"
+
+#~ msgid "Manufacturers"
+#~ msgstr "Produttori"
+
+#~ msgid "Order part"
+#~ msgstr "Articoli ordinati"
+
+#~ msgid "Edit manufacturer part"
+#~ msgstr "Modifica articolo produttore"
+
+#~ msgid "Delete manufacturer part"
+#~ msgstr "Cancella articolo produttore"
+
+#~ msgid "Internal Part"
+#~ msgstr "Articolo interno"
+
+#~ msgid "No manufacturer information available"
+#~ msgstr "Nessuna informazione sul produttore disponibile"
+
+#~ msgid "Parameters"
+#~ msgstr "Parametri"
+
+#~ msgid "New Parameter"
+#~ msgstr "Nuovo Parametro"
+
+#~ msgid "Manufactured Parts"
+#~ msgstr "Articoli Prodotti"
+
+#~ msgid "Supplied Parts"
+#~ msgstr "Articoli Forniti"
+
+#~ msgid "Supplied Stock Items"
+#~ msgstr "Elementi in Giacenza Forniti"
+
+#~ msgid "Assigned Stock Items"
+#~ msgstr "Elementi in Giacenza Impegnati"
+
+#~ msgid "Contacts"
+#~ msgstr "Contatti"
+
+#~ msgid "Order Part"
+#~ msgstr "Ordine Articolo"
+
+#~ msgid "Update Availability"
+#~ msgstr "Aggiorna Disponibilità"
+
+#~ msgid "Edit Supplier Part"
+#~ msgstr "Modifica fornitore articolo"
+
+#~ msgid "Duplicate Supplier Part"
+#~ msgstr "Duplica Articoli Fornitore"
+
+#~ msgid "Delete Supplier Part"
+#~ msgstr "Cancella Articolo Fornitore"
+
+#~ msgid "Delete Supplier  Part"
+#~ msgstr "Elimina Articolo Fornitore"
+
+#~ msgid "No supplier information available"
+#~ msgstr "Nessuna informazione sul fornitore disponibile"
+
+#~ msgid "Supplier Part Stock"
+#~ msgstr "Fornitore articolo in giacenza"
+
+#~ msgid "Create new stock item"
+#~ msgstr "Crea nuova allocazione magazzino"
+
+#~ msgid "New Stock Item"
+#~ msgstr "Nuovo Elemento in giacenza"
+
+#~ msgid "Supplier Part Orders"
+#~ msgstr "Ordini articoli fornitore"
+
+#~ msgid "Pricing Information"
+#~ msgstr "Informazioni Prezzi"
+
+#~ msgid "Add Price Break"
+#~ msgstr "Aggiungi riduzione prezzo"
+
+#~ msgid "Supplier Part Pricing"
+#~ msgstr "Prezzo articolo del fornitore"
+
+#~ msgid "New Supplier"
+#~ msgstr "Nuovo Fornitore"
+
+#~ msgid "New Manufacturer"
+#~ msgstr "Nuovo Produttore"
+
+#~ msgid "Customers"
+#~ msgstr "Clienti"
+
+#~ msgid "New Customer"
+#~ msgstr "Nuovo cliente"
+
+#~ msgid "Companies"
+#~ msgstr "Aziende"
+
+#~ msgid "New Company"
+#~ msgstr "Nuova Azienda"
+
+#~ msgid "Print purchase order report"
+#~ msgstr "Stampa report ordine acquisto"
+
+#~ msgid "Export order to file"
+#~ msgstr "Esportare File Ordine"
+
+#~ msgid "Order actions"
+#~ msgstr "Azioni Ordine"
+
+#~ msgid "Edit order"
+#~ msgstr "Modifica ordine"
+
+#~ msgid "Cancel order"
+#~ msgstr "Annulla l'ordine"
+
+#~ msgid "Duplicate order"
+#~ msgstr "Duplica Ordine"
+
+#~ msgid "Mark order as complete"
+#~ msgstr "Contrassegna ordine come completato"
+
+#~ msgid "Complete Order"
+#~ msgstr "Completa l'ordine"
+
+#~ msgid "Order Reference"
+#~ msgstr "Riferimento ordine"
+
+#~ msgid "Order Description"
+#~ msgstr "Descrizione Dell'Ordine"
+
+#~ msgid "Order Status"
+#~ msgstr "Stato dell'ordine"
+
+#~ msgid "No suppplier information available"
+#~ msgstr "Nessuna informazione sul fornitore disponibile"
+
+#~ msgid "Completed Line Items"
+#~ msgstr "Elementi della linea completati"
+
+#~ msgid "Incomplete"
+#~ msgstr "Incompleto"
+
+#~ msgid "Total cost"
+#~ msgstr "Costo totale"
+
+#~ msgid "Total cost could not be calculated"
+#~ msgstr "Il costo totale non può essere calcolato"
+
+#~ msgid "Missing selections for the following required columns"
+#~ msgstr "Selezione mancante per le seguenti colonne richieste"
+
+#~ msgid "Duplicate selections found, see below. Fix them then retry submitting."
+#~ msgstr "Selezioni duplicate trovate, vedi sotto. Correggi le selezioni e riprova."
+
+#~ msgid "Submit Selections"
+#~ msgstr "Invia Selezione"
+
+#~ msgid "File Fields"
+#~ msgstr "Campi File"
+
+#~ msgid "Remove column"
+#~ msgstr "Elimina colonna"
+
+#~ msgid "Duplicate selection"
+#~ msgstr "Duplica selezionati"
+
+#~ msgid "Remove row"
+#~ msgstr "Elimina riga"
+
+#~ msgid "Errors exist in the submitted data"
+#~ msgstr "Errori esistenti nei dati inviati"
+
+#~ msgid "Row"
+#~ msgstr "Riga"
+
+#~ msgid "Select Supplier Part"
+#~ msgstr "Seleziona l'articolo del fornitore"
+
+#~ msgid "Return to Orders"
+#~ msgstr "Ritorna agli Ordini"
+
+#~ msgid "Upload File for Purchase Order"
+#~ msgstr "Carica il file per l'Ordine di Acquisto"
+
+#~ msgid "Order is already processed. Files cannot be uploaded."
+#~ msgstr "L'ordine è già elaborato. Non è possibile caricare i file."
+
+#, python-format
+#~ msgid "Step %(step)s of %(count)s"
+#~ msgstr "Passo %(step)s di %(count)s"
+
+#~ msgid "Received Stock"
+#~ msgstr "Stock Ricevuto"
+
+#~ msgid "Purchase Order Items"
+#~ msgstr "Elementi D'Ordine D'Acquisto"
+
+#~ msgid "Add Line Item"
+#~ msgstr "Aggiungi Elemento Riga"
+
+#~ msgid "Receive Line Items"
+#~ msgstr "Ricevi Oggetti Riga"
+
+#~ msgid "Extra Lines"
+#~ msgstr "Linee Extra"
+
+#~ msgid "Add Extra Line"
+#~ msgstr "Aggiungi Linea Extra"
+
+#~ msgid "Received Items"
+#~ msgstr "Elementi Ricevuti"
+
+#~ msgid "Order Notes"
+#~ msgstr "Note dell'Ordine"
+
+#~ msgid "Print return order report"
+#~ msgstr "Stampa rapporto ordine di reso"
+
+#~ msgid "Print packing list"
+#~ msgstr "Stampa lista d'imballaggio"
+
+#~ msgid "Customer Reference"
+#~ msgstr "Riferimento Cliente"
+
+#~ msgid "Total Cost"
+#~ msgstr "Costo Totale"
+
+#~ msgid "Order Details"
+#~ msgstr "Dettagli dell'ordine"
+
+#~ msgid "Print sales order report"
+#~ msgstr "Stampa il rapporto dell'ordine delle vendite"
+
+#~ msgid "Ship Items"
+#~ msgstr "Spedisci oggetti"
+
+#~ msgid "Complete Sales Order"
+#~ msgstr "Completa Ordine Di Vendita"
+
+#~ msgid "This Sales Order has not been fully allocated"
+#~ msgstr "Questo Ordine di Vendita non è stato assegnato completamente"
+
+#~ msgid "Completed Shipments"
+#~ msgstr "Spedizioni Completate"
+
+#~ msgid "Sales Order Items"
+#~ msgstr "Elementi Ordine di Vendita"
+
+#~ msgid "Pending Shipments"
+#~ msgstr "Spedizione in sospeso"
+
+#~ msgid "Actions"
+#~ msgstr "Azioni"
+
+#~ msgid "New Shipment"
+#~ msgstr "Nuova spedizione"
+
+#~ msgid "Match Supplier Parts"
+#~ msgstr "Corrispondenza Articoli del Fornitore"
+
+#~ msgid "Sales order not found"
+#~ msgstr "Ordine di Vendita non trovato"
+
+#~ msgid "Price not found"
+#~ msgstr "Prezzo non trovato"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price}"
+#~ msgstr "Aggiornato {part} prezzo unitario a {price}"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price} and quantity to {qty}"
+#~ msgstr "Aggiornato {part} unità prezzo a {price} e quantità a {qty}"
+
+#~ msgid "You do not have permission to edit the BOM."
+#~ msgstr "Non hai il permesso di modificare la distinta base."
+
+#~ msgid "Perform stocktake for this part category"
+#~ msgstr "Esegui inventario per questa categoria articolo"
+
+#~ msgid "You are subscribed to notifications for this category"
+#~ msgstr "Sei iscritto alle notifiche di questa categoria"
+
+#~ msgid "Subscribe to notifications for this category"
+#~ msgstr "Sottoscrivi notifiche per questa categoria"
+
+#~ msgid "Category Actions"
+#~ msgstr "Azioni Categoria"
+
+#~ msgid "Edit category"
+#~ msgstr "Modifica categoria"
+
+#~ msgid "Edit Category"
+#~ msgstr "Modifica Categoria"
+
+#~ msgid "Delete Category"
+#~ msgstr "Cancella categoria"
+
+#~ msgid "Top level part category"
+#~ msgstr "Categoria articolo di livello superiore"
+
+#~ msgid "Subcategories"
+#~ msgstr "Sottocategorie"
+
+#~ msgid "Parts (Including subcategories)"
+#~ msgstr "Articoli (incluse le sottocategorie)"
+
+#~ msgid "Create new part"
+#~ msgstr "Crea nuovo articolo"
+
+#~ msgid "New Part"
+#~ msgstr "Nuovo articolo"
+
+#~ msgid "Part Parameters"
+#~ msgstr "Parametri articolo"
+
+#~ msgid "New Category"
+#~ msgstr "Nuova categoria"
+
+#~ msgid "Import Parts"
+#~ msgstr "Importa Articoli"
+
+#, python-format
+#~ msgid "Make a copy of part '%(full_name)s'."
+#~ msgstr "Crea una copia dell'articolo '%(full_name)s'."
+
+#~ msgid "Possible Matching Parts"
+#~ msgstr "Possibili articoli corrispondenti"
+
+#~ msgid "The new part may be a duplicate of these existing parts"
+#~ msgstr "Il nuovo articolo potrebbe essere un duplicato di questi articoli esistenti"
+
+#, python-format
+#~ msgid "%(full_name)s - <em>%(desc)s</em> (%(match_per)s%% match)"
+#~ msgstr "%(full_name)s - <em>%(desc)s</em> (%(match_per)s%% match)"
+
+#~ msgid "Part Stock"
+#~ msgstr "Articolo Stock"
+
+#~ msgid "Refresh scheduling data"
+#~ msgstr "Aggiorna i dati di pianificazione"
+
+#~ msgid "Refresh"
+#~ msgstr "Aggiorna"
+
+#~ msgid "Add stocktake information"
+#~ msgstr "Aggiungi informazioni inventario"
+
+#~ msgid "Part Test Templates"
+#~ msgstr "Modelli Articoli Test"
+
+#~ msgid "Add Test Template"
+#~ msgstr "Aggiungi Modelli Test"
+
+#~ msgid "Sales Order Allocations"
+#~ msgstr "Assegnazione Ordine Di Vendita"
+
+#~ msgid "Part Notes"
+#~ msgstr "Note Articolo"
+
+#~ msgid "Part Variants"
+#~ msgstr "Varianti articolo"
+
+#~ msgid "Create new variant"
+#~ msgstr "Crea nuova variante"
+
+#~ msgid "New Variant"
+#~ msgstr "Nuova variante"
+
+#~ msgid "Add new parameter"
+#~ msgstr "Aggiungi un nuovo parametro"
+
+#~ msgid "Related Parts"
+#~ msgstr "Articoli correlati"
+
+#~ msgid "Add Related"
+#~ msgstr "Aggiungi Correlato"
+
+#~ msgid "Export actions"
+#~ msgstr "Esporta azioni"
+
+#~ msgid "Export BOM"
+#~ msgstr "Esporta Distinta Base"
+
+#~ msgid "Print BOM Report"
+#~ msgstr "Stampa il report Distinta Base"
+
+#~ msgid "BOM actions"
+#~ msgstr "Azioni Distinta Base"
+
+#~ msgid "Upload BOM"
+#~ msgstr "Carica Distinta Base"
+
+#~ msgid "Validate BOM"
+#~ msgstr "Valida Distinta Base"
+
+#~ msgid "Add BOM Item"
+#~ msgstr "Aggiungi elemento Distinta Base"
+
+#~ msgid "Assemblies"
+#~ msgstr "Assembla"
+
+#~ msgid "Part Builds"
+#~ msgstr "Articoli prodotti"
+
+#~ msgid "Build Order Allocations"
+#~ msgstr "Costruisci le ubicazioni degli ordini"
+
+#~ msgid "Part Suppliers"
+#~ msgstr "Fornitori articoli"
+
+#~ msgid "Part Manufacturers"
+#~ msgstr "Componenti Produttori"
+
+#~ msgid "Insufficient privileges."
+#~ msgstr "Privilegi insufficienti."
+
+#~ msgid "Return to Parts"
+#~ msgstr "Ritorna agli Articoli"
+
+#~ msgid "Import Parts from File"
+#~ msgstr "Importa Articoli da File"
+
+#~ msgid "Requirements for part import"
+#~ msgstr "Requisiti per l'importazione di prodotto"
+
+#~ msgid "The part import file must contain the required named columns as provided in the "
+#~ msgstr "Il file articolo importato deve contenere le colonne con nome richiesto come indicato nella "
+
+#~ msgid "Part Import Template"
+#~ msgstr "Modello Articolo Importato"
+
+#~ msgid "Download Part Import Template"
+#~ msgstr "Scarica il Modello Articolo Importato"
+
+#~ msgid "Format"
+#~ msgstr "Formato"
+
+#~ msgid "Select file format"
+#~ msgstr "Seleziona il formato del file"
+
+#~ msgid "Part List"
+#~ msgstr "Elenco Articolo"
+
+#~ msgid "You are subscribed to notifications for this part"
+#~ msgstr "Sei iscritto alle notifiche per questo articolo"
+
+#~ msgid "Subscribe to notifications for this part"
+#~ msgstr "Sottoscrivi le notifiche per questo articolo"
+
+#~ msgid "Print Label"
+#~ msgstr "Stampa Etichetta"
+
+#~ msgid "Show pricing information"
+#~ msgstr "Mostra informazioni sui prezzi"
+
+#~ msgid "Stock actions"
+#~ msgstr "Azioni magazzino"
+
+#~ msgid "Count part stock"
+#~ msgstr "Conta articoli magazzino"
+
+#~ msgid "Transfer part stock"
+#~ msgstr "Trasferisci giacenza"
+
+#~ msgid "Part actions"
+#~ msgstr "Azioni articolo"
+
+#~ msgid "Duplicate part"
+#~ msgstr "Duplica articolo"
+
+#~ msgid "Edit part"
+#~ msgstr "Modifica articolo"
+
+#~ msgid "Delete part"
+#~ msgstr "Cancella articolo"
+
+#~ msgid "Part is a template part (variants can be made from this part)"
+#~ msgstr "L'articolo è una articolo modello (le varianti possono essere fatte da questo articolo)"
+
+#~ msgid "Part can be assembled from other parts"
+#~ msgstr "L'articolo può essere assemblato da altri articoli"
+
+#~ msgid "Part can be used in assemblies"
+#~ msgstr "L'articolo può essere utilizzato negli assemblaggi"
+
+#~ msgid "Part stock is tracked by serial number"
+#~ msgstr "Lo stock dell'articolo è tracciato dal numero di serie"
+
+#~ msgid "Part can be purchased from external suppliers"
+#~ msgstr "L'articolo può essere acquistato da fornitori esterni"
+
+#~ msgid "Part can be sold to customers"
+#~ msgstr "La parte può essere venduta ai clienti"
+
+#~ msgid "Part is not active"
+#~ msgstr "L'articolo non è attivo"
+
+#~ msgid "Inactive"
+#~ msgstr "Inattivo"
+
+#~ msgid "Part is virtual (not a physical part)"
+#~ msgstr "L'Articolo è virtuale (non è un articolo fisico)"
+
+#~ msgid "Show Part Details"
+#~ msgstr "Mostra i Dettagli Articolo"
+
+#~ msgid "Allocated to Build Orders"
+#~ msgstr "Assegnato agli Ordini di Produzione"
+
+#~ msgid "Allocated to Sales Orders"
+#~ msgstr "Assegnato agli Ordini di Vendita"
+
+#~ msgid "Can Build"
+#~ msgstr "Puoi produrre"
+
+#~ msgid "Minimum stock level"
+#~ msgstr "Livello minimo di giacenza"
+
+#~ msgid "Price Range"
+#~ msgstr "Fascia di Prezzo"
+
+#~ msgid "Latest Serial Number"
+#~ msgstr "Ultimo Numero Di Serie"
+
+#~ msgid "Search for serial number"
+#~ msgstr "Ricerca per numero seriale"
+
+#~ msgid "Supplier Pricing"
+#~ msgstr "Prezzo del Fornitore"
+
+#~ msgid "Unit Cost"
+#~ msgstr "Costo Unitario"
+
+#~ msgid "No supplier pricing available"
+#~ msgstr "Nessun prezzo del fornitore disponibile"
+
+#~ msgid "BOM Pricing"
+#~ msgstr "Prezzi Distinta Base"
+
+#~ msgid "Unit Purchase Price"
+#~ msgstr "Prezzo di Acquisto Unitario"
+
+#~ msgid "Total Purchase Price"
+#~ msgstr "Prezzo Totale D'Acquisto"
+
+#~ msgid "No BOM pricing available"
+#~ msgstr "Nessun prezzo distinta base disponibile"
+
+#~ msgid "Internal Price"
+#~ msgstr "Prezzo interno"
+
+#~ msgid "No pricing information is available for this part."
+#~ msgstr "Nessuna informazione sul prezzo è disponibile per questo articolo."
+
+#~ msgid "Scheduled Quantity"
+#~ msgstr "Quantità Programmata"
+
+#~ msgid "Variants"
+#~ msgstr "Varianti"
+
+#~ msgid "Stock"
+#~ msgstr "Magazzino"
+
+#~ msgid "Pricing"
+#~ msgstr "Prezzi"
+
+#~ msgid "Scheduling"
+#~ msgstr "Programmazione"
+
+#~ msgid "Test Templates"
+#~ msgstr "Modelli test"
+
+#~ msgid "Select from existing images"
+#~ msgstr "Seleziona da immagini esistenti"
+
+#~ msgid "Pricing Overview"
+#~ msgstr "Panoramica prezzi"
+
+#~ msgid "Refresh Part Pricing"
+#~ msgstr "Aggiorna prezzo articolo"
+
+#~ msgid "Edit"
+#~ msgstr "Modifica"
+
+#~ msgid "Price Category"
+#~ msgstr "Categoria prezzo"
+
+#~ msgid "Minimum"
+#~ msgstr "Minimo"
+
+#~ msgid "Maximum"
+#~ msgstr "Massimo"
+
+#~ msgid "Internal Pricing"
+#~ msgstr "Prezzo interno"
+
+#~ msgid "Purchase History"
+#~ msgstr "Cronologia acquisti"
+
+#~ msgid "Variant Pricing"
+#~ msgstr "Variazione prezzo"
+
+#~ msgid "Overall Pricing"
+#~ msgstr "Prezzi Totali"
+
+#~ msgid "Sale History"
+#~ msgstr "Storico vendite"
+
+#~ msgid "Sale price data is not available for this part"
+#~ msgstr "I dati del prezzo di vendita non sono disponibili per questo prodotto"
+
+#~ msgid "Price range data is not available for this part."
+#~ msgstr "I dati della fascia di prezzo non sono disponibili per questo prodotto."
+
+#~ msgid "Jump to overview"
+#~ msgstr "Torna al riepilogo"
+
+#~ msgid "Add Internal Price Break"
+#~ msgstr "Aggiungi prezzo interno d'nterruzione"
+
+#~ msgid "Sale Pricing"
+#~ msgstr "Prezzo di Vendita"
+
+#~ msgid "Add Sell Price Break"
+#~ msgstr "Aggiungi Prezzo Ribassato di Vendita"
+
+#~ msgid "No Stock"
+#~ msgstr "Nessuna giacenza"
+
+#~ msgid "Low Stock"
+#~ msgstr "Disponibilità scarsa"
+
+#~ msgid "Return to BOM"
+#~ msgstr "Ritorna alla Distinta Base"
+
+#~ msgid "Upload Bill of Materials"
+#~ msgstr "Carica la Fattura dei Materiali"
+
+#~ msgid "BOM upload requirements"
+#~ msgstr "Distinta Base caricamento richiesto"
+
+#~ msgid "Upload BOM File"
+#~ msgstr "Carica file Distinta Base"
+
+#~ msgid "Submit BOM Data"
+#~ msgstr "Invia Dati Distinta Base"
+
+#~ msgid "Requirements for BOM upload"
+#~ msgstr "Requisiti per il caricamento Distinta Base"
+
+#~ msgid "The BOM file must contain the required named columns as provided in the "
+#~ msgstr "Il file Distinta Base deve contenere le colonne con nome richiesto come indicato nella "
+
+#~ msgid "BOM Upload Template"
+#~ msgstr "Carica Modello Distinta Base"
+
+#~ msgid "Each part must already exist in the database"
+#~ msgstr "Ogni articolo deve essere già presente nel database"
+
+#~ msgid "Create new part variant"
+#~ msgstr "Crea nuove varianti dell'articolo"
+
+#~ msgid "Match References"
+#~ msgstr "Riferimenti Corrispondenza"
+
+#~ msgid "Select Part Image"
+#~ msgstr "Seleziona l'immagine dell'Articolo"
+
+#~ msgid "Updated part image"
+#~ msgstr "Immagine articolo aggiornata"
+
+#~ msgid "Part image not found"
+#~ msgstr "Immagine articolo non trovata"
+
+#~ msgid "Test name"
+#~ msgstr "Nome Test"
+
+#~ msgid "Stock Tracking Information"
+#~ msgstr "Informazioni di Tracciamento Magazzino"
+
+#~ msgid "Child Stock Items"
+#~ msgstr "Elementi Secondari Magazzino"
+
+#~ msgid "This stock item does not have any child items"
+#~ msgstr "Questo elemento di magazzino non ha nessun elemento secondario"
+
+#~ msgid "Test Data"
+#~ msgstr "Dati di Test"
+
+#~ msgid "Test Report"
+#~ msgstr "Rapporto del Test"
+
+#~ msgid "Delete Test Data"
+#~ msgstr "Elimina Dati di Test"
+
+#~ msgid "Add Test Data"
+#~ msgstr "Aggiungi Dati Di Test"
+
+#~ msgid "Stock Item Notes"
+#~ msgstr "Note Elemento di magazzino"
+
+#~ msgid "Installed Stock Items"
+#~ msgstr "Elementi di magazzino installati"
+
+#~ msgid "Install Stock Item"
+#~ msgstr "Installa Elemento Magazzino"
+
+#~ msgid "Delete all test results for this stock item"
+#~ msgstr "Elimina tutti i risultati del test per questo elemento di magazzino"
+
+#~ msgid "Locate stock item"
+#~ msgstr "Individua elemento di magazzino"
+
+#~ msgid "Printing actions"
+#~ msgstr "Impostazioni di stampa"
+
+#~ msgid "Stock adjustment actions"
+#~ msgstr "Azioni adeguamento giacenza"
+
+#~ msgid "Count stock"
+#~ msgstr "Conta giacenza"
+
+#~ msgid "Add stock"
+#~ msgstr "Aggiungi giacenza"
+
+#~ msgid "Remove stock"
+#~ msgstr "Rimuovi giacenza"
+
+#~ msgid "Serialize stock"
+#~ msgstr "Serializza magazzino"
+
+#~ msgid "Transfer stock"
+#~ msgstr "Trasferisci giacenza"
+
+#~ msgid "Assign to customer"
+#~ msgstr "Assegna al cliente"
+
+#~ msgid "Return to stock"
+#~ msgstr "Torna al magazzino"
+
+#~ msgid "Uninstall stock item"
+#~ msgstr "Disinstalla elemento di magazzino"
+
+#~ msgid "Uninstall"
+#~ msgstr "Disinstalla"
+
+#~ msgid "Install stock item"
+#~ msgstr "Installa elementi stock"
+
+#~ msgid "Install"
+#~ msgstr "Installa"
+
+#~ msgid "Convert to variant"
+#~ msgstr "Converti in variante"
+
+#~ msgid "Duplicate stock item"
+#~ msgstr "Duplica elemento di magazzino"
+
+#~ msgid "Edit stock item"
+#~ msgstr "Modifica elemento di magazzino"
+
+#~ msgid "Delete stock item"
+#~ msgstr "Cancella elemento di magazzino"
+
+#~ msgid "Build"
+#~ msgstr "Produzione"
+
+#~ msgid "Parent Item"
+#~ msgstr "Elemento principale"
+
+#~ msgid "No manufacturer set"
+#~ msgstr "Nessun produttore impostato"
+
+#~ msgid "You are not in the list of owners of this item. This stock item cannot be edited."
+#~ msgstr "Non sei nell'elenco dei proprietari di questo elemento. Questo elemento di magazzino non può essere modificato."
+
+#~ msgid "Read only"
+#~ msgstr "Sola lettura"
+
+#~ msgid "This stock item is unavailable"
+#~ msgstr "Elemento di magazzino non disponibile"
+
+#~ msgid "This stock item is in production and cannot be edited."
+#~ msgstr "Questo elemento di magazzino è in produzione e non può essere modificato."
+
+#~ msgid "Edit the stock item from the build view."
+#~ msgstr "Modifica l'elemento di magazzino dalla visualizzazione generata."
+
+#~ msgid "This stock item is allocated to Sales Order"
+#~ msgstr "Questo elemento di magazzino è stato assegnato all'Ordine di Vendita"
+
+#~ msgid "This stock item is allocated to Build Order"
+#~ msgstr "Questo elemento di magazzino è stato assegnato all'Ordine di Produzione"
+
+#~ msgid "previous page"
+#~ msgstr "pagina precedente"
+
+#~ msgid "Navigate to previous serial number"
+#~ msgstr "Vai al numero di serie precedente"
+
+#~ msgid "next page"
+#~ msgstr "pagina successiva"
+
+#~ msgid "Navigate to next serial number"
+#~ msgstr "Vai al numero di serie successivo"
+
+#~ msgid "Available Quantity"
+#~ msgstr "Quantità Disponibile"
+
+#~ msgid "Tests"
+#~ msgstr "Test"
+
+#, python-format
+#~ msgid "This StockItem expired on %(item.expiry_date)s"
+#~ msgstr "Questo Elemento Stock è scaduto il %(item.expiry_date)s"
+
+#, python-format
+#~ msgid "This StockItem expires on %(item.expiry_date)s"
+#~ msgstr "Questo Elemento Stock scade il %(item.expiry_date)s"
+
+#~ msgid "No stocktake performed"
+#~ msgstr "Nessun inventario eseguito"
+
+#~ msgid "Select one of the part variants listed below."
+#~ msgstr "Selezionare una delle varianti dell'articolo elencate sotto."
+
+#~ msgid "Warning"
+#~ msgstr "Attenzione"
+
+#~ msgid "This action cannot be easily undone"
+#~ msgstr "Questa azione non può essere facilmente annullata"
+
+#~ msgid "Create serialized items from this stock item."
+#~ msgstr "Crea elementi serializzati da questo elemento di magazzino."
+
+#~ msgid "Select quantity to serialize, and unique serial numbers."
+#~ msgstr "Seleziona la quantità da serializzare e i numeri di serie univoci."
+
+#~ msgid "Perform stocktake for this stock location"
+#~ msgstr "Esegui inventario per questa ubicazione di magazzino"
+
+#~ msgid "Locate stock location"
+#~ msgstr "Individua ubicazione di magazzino"
+
+#~ msgid "Scan stock items into this location"
+#~ msgstr "Scansiona gli elementi in magazzino in questa ubicazione"
+
+#~ msgid "Scan In Stock Items"
+#~ msgstr "Scansiona Elementi Stock"
+
+#~ msgid "Scan stock container into this location"
+#~ msgstr "Scansiona il contenitore magazzino in questa posizione"
+
+#~ msgid "Scan In Container"
+#~ msgstr "Scansiona container"
+
+#~ msgid "Location actions"
+#~ msgstr "Azioni posizione"
+
+#~ msgid "Edit location"
+#~ msgstr "Modifica la posizione"
+
+#~ msgid "Delete location"
+#~ msgstr "Elimina la posizione"
+
+#~ msgid "Top level stock location"
+#~ msgstr "Posizione stock di livello superiore"
+
+#~ msgid "Location Owner"
+#~ msgstr "Proprietario Posizione"
+
+#~ msgid "You are not in the list of owners of this location. This stock location cannot be edited."
+#~ msgstr "Non sei nell'elenco dei proprietari di questa posizione. Questa posizione di giacenza non può essere modificata."
+
+#~ msgid "Sublocations"
+#~ msgstr "Sottoallocazioni"
+
+#~ msgid "Create new stock location"
+#~ msgstr "Crea nuova posizione di magazzino"
+
+#~ msgid "New Location"
+#~ msgstr "Nuova Posizione"
+
+#~ msgid "Loading..."
+#~ msgstr "Caricamento..."
+
+#~ msgid "Stock Tracking"
+#~ msgstr "Rilevamento Stock"
+
+#~ msgid "Allocations"
+#~ msgstr "Assegnazioni"
+
+#~ msgid "Child Items"
+#~ msgstr "Elementi secondari"
+
+#~ msgid "Index"
+#~ msgstr "Indice"
+
+#~ msgid "Notification History"
+#~ msgstr "Cronologia Notifiche"
+
+#~ msgid "Delete Notifications"
+#~ msgstr "Cancella Notifiche"
+
+#~ msgid "Pending Notifications"
+#~ msgstr "Notifiche In Attesa"
+
+#~ msgid "Mark all as read"
+#~ msgstr "Segna tutte come lette"
+
+#~ msgid "Notifications"
+#~ msgstr "Notifiche"
+
+#~ msgid "Delete all read notifications"
+#~ msgstr "Elimina tutte le notifiche lette"
+
+#~ msgid "Inbox"
+#~ msgstr "Posta"
+
+#~ msgid "History"
+#~ msgstr "Cronologia"
+
+#~ msgid "Search Results"
+#~ msgstr "Risultati della Ricerca"
+
+#~ msgid "Barcode Settings"
+#~ msgstr "Impostazioni codice a barre"
+
+#~ msgid "Build Order Settings"
+#~ msgstr "Impostazione Ordine di Produzione"
+
+#~ msgid "Category Settings"
+#~ msgstr "Impostazioni categoria"
+
+#~ msgid "Server Settings"
+#~ msgstr "Impostazioni Server"
+
+#~ msgid "Label Settings"
+#~ msgstr "Impostazioni Etichetta"
+
+#~ msgid "Login Settings"
+#~ msgstr "Impostazioni di accesso"
+
+#~ msgid "Outgoing email has not been configured. Some login and sign-up features may not work correctly!"
+#~ msgstr "L'email in uscita non è stata configurata. Alcune funzioni di login e di registrazione potrebbero non funzionare correttamente!"
+
+#~ msgid "Signup"
+#~ msgstr "Registrati"
+
+#~ msgid "Single Sign On"
+#~ msgstr "Accesso singolo"
+
+#~ msgid "Settings"
+#~ msgstr "Impostazioni"
+
+#~ msgid "URLs"
+#~ msgstr "URL"
+
+#, python-format
+#~ msgid "The Base-URL for this plugin is <a href=\"/%(base)s\" target=\"_blank\"><strong>%(base)s</strong></a>."
+#~ msgstr "L'URL di base per questo plugin è <a href=\"/%(base)s\" target=\"_blank\"><strong>%(base)s</strong></a>."
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Open in new tab"
+#~ msgstr "Apri in una nuova scheda"
+
+#~ msgid "Notification Settings"
+#~ msgstr "Impostazioni Notifiche"
+
+#~ msgid "Slug"
+#~ msgstr "Slug"
+
+#~ msgid "Part Settings"
+#~ msgstr "Impostazioni articolo"
+
+#~ msgid "Part Import"
+#~ msgstr "Importa Articolo"
+
+#~ msgid "Import Part"
+#~ msgstr "Importa Articolo"
+
+#~ msgid "Part Parameter Templates"
+#~ msgstr "Modelli parametro articolo"
+
+#~ msgid "Stocktake Settings"
+#~ msgstr "Impostazioni Inventario"
+
+#~ msgid "Stocktake Reports"
+#~ msgstr "Report Inventario"
+
+#~ msgid "Plugin Settings"
+#~ msgstr "Impostazioni Plugin"
+
+#~ msgid "Changing the settings below require you to immediately restart the server. Do not change this while under active usage."
+#~ msgstr "Cambiando le impostazioni qui sotto, si richiede di riavviare immediatamente il server. Non cambiare le impostazioni durante l'utilizzo."
+
+#~ msgid "Plugins"
+#~ msgstr "Plugin"
+
+#~ msgid "Install Plugin"
+#~ msgstr "Installa Plugin"
+
+#~ msgid "External plugins are not enabled for this InvenTree installation"
+#~ msgstr "I plugin esterni non sono abilitati per questa installazione InvenTree"
+
+#~ msgid "Plugin Error Stack"
+#~ msgstr "Plugin Errore Stack"
+
+#~ msgid "Stage"
+#~ msgstr "Stage"
+
+#~ msgid "Message"
+#~ msgstr "Messaggio"
+
+#~ msgid "Plugin information"
+#~ msgstr "Informazioni Plugin"
+
+#~ msgid "no version information supplied"
+#~ msgstr "nessuna informazione di versione fornita"
+
+#~ msgid "License"
+#~ msgstr "Licenza"
+
+#~ msgid "The code information is pulled from the latest git commit for this plugin. It might not reflect official version numbers or information but the actual code running."
+#~ msgstr "Le informazioni sul codice vengono prelevate dall'ultimo commit git per questo plugin. Potrebbe non riflettere numeri di versione ufficiali o informazioni ma il codice effettivo in esecuzione."
+
+#~ msgid "Package information"
+#~ msgstr "Informazioni Pacchetto"
+
+#~ msgid "Installation method"
+#~ msgstr "Metodo d'installazione"
+
+#~ msgid "This plugin was installed as a package"
+#~ msgstr "Questo plugin è stato installato come pacchetto"
+
+#~ msgid "This plugin was found in a local server path"
+#~ msgstr "Questo plugin è stato trovato in un percorso server locale"
+
+#~ msgid "Installation path"
+#~ msgstr "Percorso d'installazione"
+
+#~ msgid "Builtin"
+#~ msgstr "Integrato"
+
+#~ msgid "This is a builtin plugin which cannot be disabled"
+#~ msgstr "Questo è un plugin integrato che non può essere disabilitato"
+
+#~ msgid "Sample"
+#~ msgstr "Esempio"
+
+#~ msgid "Commit Author"
+#~ msgstr "Autore Commit"
+
+#~ msgid "Commit Date"
+#~ msgstr "Data d'impegno"
+
+#~ msgid "Commit Hash"
+#~ msgstr "Commit Hash"
+
+#~ msgid "Commit Message"
+#~ msgstr "Commit Messaggio"
+
+#~ msgid "Purchase Order Settings"
+#~ msgstr "Impostazioni Ordine di Acquisto"
+
+#~ msgid "Pricing Settings"
+#~ msgstr "Impostazioni Prezzi"
+
+#~ msgid "Exchange Rates"
+#~ msgstr "Tassi di cambio"
+
+#~ msgid "Update Now"
+#~ msgstr "Aggiorna Ora"
+
+#~ msgid "Last Update"
+#~ msgstr "Ultimo Aggiornamento"
+
+#~ msgid "Never"
+#~ msgstr "Mai"
+
+#~ msgid "Project Codes"
+#~ msgstr "Codice del progetto"
+
+#~ msgid "New Project Code"
+#~ msgstr "Nuovo Codice Del Progetto"
+
+#~ msgid "Report Settings"
+#~ msgstr "Impostazioni Report"
+
+#~ msgid "Return Order Settings"
+#~ msgstr "Impostazioni Ordine Di Reso"
+
+#~ msgid "No value set"
+#~ msgstr "Nessun valore impostato"
+
+#~ msgid "Edit setting"
+#~ msgstr "Modifica impostazioni"
+
+#~ msgid "User Settings"
+#~ msgstr "Impostazioni Utente"
+
+#~ msgid "Account"
+#~ msgstr "Profilo"
+
+#~ msgid "Home Page"
+#~ msgstr "Home Page"
+
+#~ msgid "Search"
+#~ msgstr "Cerca"
+
+#~ msgid "Reporting"
+#~ msgstr "Rapporti"
+
+#~ msgid "Global Settings"
+#~ msgstr "Impostazioni Globali"
+
+#~ msgid "Server"
+#~ msgstr "Server"
+
+#~ msgid "Categories"
+#~ msgstr "Categorie"
+
+#~ msgid "Sales Order Settings"
+#~ msgstr "Impostazioni Ordine di Vendita"
+
+#~ msgid "Stock Settings"
+#~ msgstr "Impostazioni Magazzino"
+
+#~ msgid "Account Settings"
+#~ msgstr "Impostazioni Account"
+
+#~ msgid "Change Password"
+#~ msgstr "Modifica Password"
+
+#~ msgid "Username"
+#~ msgstr "Nome utente"
+
+#~ msgid "First Name"
+#~ msgstr "Nome"
+
+#~ msgid "Last Name"
+#~ msgstr "Cognome"
+
+#~ msgid "The following email addresses are associated with your account:"
+#~ msgstr "I seguenti indirizzi email sono associati con il tuo account:"
+
+#~ msgid "Verified"
+#~ msgstr "Verificato"
+
+#~ msgid "Unverified"
+#~ msgstr "Non verificato"
+
+#~ msgid "Primary"
+#~ msgstr "Principale"
+
+#~ msgid "Make Primary"
+#~ msgstr "Rendi principale"
+
+#~ msgid "Re-send Verification"
+#~ msgstr "Re-invia il codice di verifica"
+
+#~ msgid "Warning:"
+#~ msgstr "Attenzione:"
+
+#~ msgid "You currently do not have any email address set up. You should really add an email address so you can receive notifications, reset your password, etc."
+#~ msgstr "Al momento non hai nessun indirizzo email impostato. Dovresti aggiungere un indirizzo email in modo da poter ricevere notifiche, reimpostare la password, ecc."
+
+#~ msgid "Add Email Address"
+#~ msgstr "Aggiungi indirizzo email"
+
+#~ msgid "Add Email"
+#~ msgstr "Aggiungi Email"
+
+#~ msgid "Multifactor"
+#~ msgstr "Multifattore"
+
+#~ msgid "You have these factors available:"
+#~ msgstr "Sono disponibili questi fattori:"
+
+#~ msgid "TOTP"
+#~ msgstr "TOTP"
+
+#~ msgid "Static"
+#~ msgstr "Statico"
+
+#~ msgid "Multifactor authentication is not configured for your account"
+#~ msgstr "L'autenticazione multifattore non è configurata per il tuo account"
+
+#~ msgid "Change factors"
+#~ msgstr "Cambia fattori"
+
+#~ msgid "Setup multifactor"
+#~ msgstr "Imposta multifattore"
+
+#~ msgid "Remove multifactor"
+#~ msgstr "Rimuovi multifattore"
+
+#~ msgid "Active Sessions"
+#~ msgstr "Sessioni Attive"
+
+#~ msgid "Log out active sessions (except this one)"
+#~ msgstr "Disconnetti le sessioni attive (tranne questa)"
+
+#~ msgid "Log Out Active Sessions"
+#~ msgstr "Disconnetti Sessioni Attive"
+
+#~ msgid "<em>unknown on unknown</em>"
+#~ msgstr "<em>sconosciuto su sconosciuto</em>"
+
+#~ msgid "<em>unknown</em>"
+#~ msgstr "<em>sconosciuto</em>"
+
+#~ msgid "IP Address"
+#~ msgstr "Indirizzo IP"
+
+#~ msgid "Device"
+#~ msgstr "Dispositivo"
+
+#~ msgid "Last Activity"
+#~ msgstr "Ultima attività"
+
+#, python-format
+#~ msgid "%(time)s ago (this session)"
+#~ msgstr "%(time)s fa (questa sessione)"
+
+#, python-format
+#~ msgid "%(time)s ago"
+#~ msgstr "%(time)s fa"
+
+#~ msgid "Display Settings"
+#~ msgstr "Impostazioni Schermo"
+
+#~ msgid "Theme Settings"
+#~ msgstr "Impostazioni tema"
+
+#~ msgid "Select theme"
+#~ msgstr "Seleziona tema"
+
+#~ msgid "Set Theme"
+#~ msgstr "Imposta Tema"
+
+#~ msgid "Language Settings"
+#~ msgstr "Impostazioni Lingua"
+
+#~ msgid "Select language"
+#~ msgstr "Selezionare lingua"
+
+#, python-format
+#~ msgid "%(lang_translated)s%% translated"
+#~ msgstr "%(lang_translated)s%% tradotto"
+
+#~ msgid "No translations available"
+#~ msgstr "Nessuna traduzione disponibile"
+
+#~ msgid "Set Language"
+#~ msgstr "Imposta Lingua"
+
+#~ msgid "Some languages are not complete"
+#~ msgstr "Alcune lingue non sono complete"
+
+#~ msgid "and hidden."
+#~ msgstr "e nascosto."
+
+#~ msgid "Show them too"
+#~ msgstr "Mostra anche loro"
+
+#~ msgid "Help the translation efforts!"
+#~ msgstr "Aiuta gli sforzi di traduzione!"
+
+#~ msgid "Native language translation of the web application is community contributed via crowdin. Contributions are welcomed and encouraged."
+#~ msgstr "La traduzione in lingua nativa dell'applicazione web riceve contributi tramite community crowdin. I Contributi sono accolti favorevolmente e incoraggiati."
+
+#~ msgid "InvenTree Translation Project"
+#~ msgstr "InvenTree Progetto di Traduzione"
+
+#~ msgid "Home Page Settings"
+#~ msgstr "Impostazioni Home Page"
+
+#~ msgid "Search Settings"
+#~ msgstr "Impostazioni di ricerca"
+
+#~ msgid "You can sign in to your account using any of the following third party accounts:"
+#~ msgstr "Puoi accedere al tuo account utilizzando uno dei seguenti account di terze parti:"
+
+#~ msgid "There are no social network accounts connected to this account."
+#~ msgstr "Non ci sono account di social network connessi a questo account."
+
+#~ msgid "InvenTree Version"
+#~ msgstr "Versione di InvenTree"
+
+#~ msgid "Development Version"
+#~ msgstr "Versione di Sviluppo"
+
+#~ msgid "Up to Date"
+#~ msgstr "Aggiornato"
+
+#~ msgid "Update Available"
+#~ msgstr "Aggiornamento Disponibile"
+
+#~ msgid "InvenTree Documentation"
+#~ msgstr "Documentazione InvenTree"
+
+#~ msgid "API Version"
+#~ msgstr "Versione API"
+
+#~ msgid "Python Version"
+#~ msgstr "Versione di Python"
+
+#~ msgid "Django Version"
+#~ msgstr "Versione Django"
+
+#~ msgid "View Code on GitHub"
+#~ msgstr "Visualizza codice sorgente su GitHub"
+
+#~ msgid "Credits"
+#~ msgstr "Crediti"
+
+#~ msgid "Mobile App"
+#~ msgstr "App Mobile"
+
+#~ msgid "Submit Bug Report"
+#~ msgstr "Invia Segnalazione Bug"
+
+#~ msgid "copy to clipboard"
+#~ msgstr "copia negli appunti"
+
+#~ msgid "copy version information"
+#~ msgstr "copia informazioni versione"
+
+#~ msgid "Confirm Email Address"
+#~ msgstr "Conferma l'indirizzo e-mail"
+
+#, python-format
+#~ msgid "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an email address for user %(user_display)s."
+#~ msgstr "Si prega di confermare che <a href=\"mailto:%(email)s\">%(email)s</a> è un indirizzo email per l'utente %(user_display)s."
+
+#~ msgid "Confirm"
+#~ msgstr "Conferma"
+
+#, python-format
+#~ msgid "This email confirmation link expired or is invalid. Please <a href=\"%(email_url)s\">issue a new email confirmation request</a>."
+#~ msgstr "Questo link di conferma email è scaduto o non è valido. Per favore<a href=\"%(email_url)s\">inoltra una nuova richiesta di conferma email</a>."
+
+#~ msgid "Sign In"
+#~ msgstr "Accedi"
+
+#~ msgid "Not a member?"
+#~ msgstr "Non sei ancora iscritto?"
+
+#~ msgid "Sign Up"
+#~ msgstr "Registrati"
+
+#~ msgid "Forgot Password?"
+#~ msgstr "Password dimenticata?"
+
+#~ msgid "or log in with"
+#~ msgstr "o accedi con"
+
+#~ msgid "Sign Out"
+#~ msgstr "Esci"
+
+#~ msgid "Are you sure you want to sign out?"
+#~ msgstr "Sei sicuro di voler uscire?"
+
+#~ msgid "Return to Site"
+#~ msgstr "Ritorna al Sito"
+
+#~ msgid "Password Reset"
+#~ msgstr "Reimposta Password"
+
+#~ msgid "Forgotten your password? Enter your email address below, and we'll send you an email allowing you to reset it."
+#~ msgstr "Hai dimenticato la password? Inserisci il tuo indirizzo e-mail qui sotto, e ti invieremo una e-mail che ti permetterà di reimpostarla."
+
+#~ msgid "Reset My Password"
+#~ msgstr "Reimposta la Mia Password"
+
+#~ msgid "This function is currently disabled. Please contact an administrator."
+#~ msgstr "Questa funzione è attualmente disabilitata. Contatta un amministratore."
+
+#~ msgid "Bad Token"
+#~ msgstr "Token Errato"
+
+#, python-format
+#~ msgid "The password reset link was invalid, possibly because it has already been used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</a>."
+#~ msgstr "Il link di reset della password non era valido, forse perché è già stato utilizzato. Si prega di richiedere un <a href=\"%(passwd_reset_url)s\">nuovo reset della password</a>."
+
+#~ msgid "Change password"
+#~ msgstr "Cambia password"
+
+#~ msgid "Your password is now changed."
+#~ msgstr "La tua password è stata modificata."
+
+#, python-format
+#~ msgid "Already have an account? Then please <a href=\"%(login_url)s\">sign in</a>."
+#~ msgstr "Hai già un account? Allora <a href=\"%(login_url)s\">accedi</a>."
+
+#~ msgid "Use a SSO-provider for signup"
+#~ msgstr "Usa un SSO-provider per la registrazione"
+
+#~ msgid "Sign Up Closed"
+#~ msgstr "Registrazione Chiusa"
+
+#~ msgid "Sign up is currently closed."
+#~ msgstr "L'iscrizione è attualmente chiusa."
+
+#~ msgid "Return to login page"
+#~ msgstr "Torna alla pagina di login"
+
+#~ msgid "View in administration panel"
+#~ msgstr "Visualizza nel pannello di amministrazione"
+
+#~ msgid "Two-Factor Authentication"
+#~ msgstr "Autenticazione a Due Fattori"
+
+#~ msgid "Authenticate"
+#~ msgstr "Autenticazione"
+
+#~ msgid "Two-Factor Authentication Backup Tokens"
+#~ msgstr "Token Di Backup Dell'Autenticazione A Due Fattori"
+
+#~ msgid "Backup tokens have been generated, but are not revealed here for security reasons. Press the button below to generate new ones."
+#~ msgstr "I token di backup sono stati generati, ma non vengono rivelati qui per motivi di sicurezza. Premi il pulsante qui sotto per generarne di nuovi."
+
+#~ msgid "No backup tokens are available. Press the button below to generate some."
+#~ msgstr "Nessun token di backup disponibile. Premi il pulsante qui sotto per generarne alcuni."
+
+#~ msgid "Generate Tokens"
+#~ msgstr "Genera token"
+
+#~ msgid "Disable Two-Factor Authentication"
+#~ msgstr "Disabilita Autenticazione a Due Fattori"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Sei sicuro?"
+
+#~ msgid "Disable 2FA"
+#~ msgstr "Disabilita l'autenticazione a due fattori"
+
+#~ msgid "Setup Two-Factor Authentication"
+#~ msgstr "Imposta l'Autenticazione a Due Fattori"
+
+#~ msgid "Step 1"
+#~ msgstr "Passaggio 1"
+
+#~ msgid "Scan the QR code below with a token generator of your choice (for instance Google Authenticator)."
+#~ msgstr "Scansiona il codice QR qui sotto con un generatore di token di tua scelta (per esempio Google Authenticator)."
+
+#~ msgid "Step 2"
+#~ msgstr "Passaggio 2"
+
+#~ msgid "Input a token generated by the app:"
+#~ msgstr "Inserisci un token generato dall'app:"
+
+#~ msgid "Verify"
+#~ msgstr "Verifica"
+
+#~ msgid "Add Link"
+#~ msgstr "Aggiungi Collegamento"
+
+#~ msgid "Add Attachment"
+#~ msgstr "Aggiungi allegato"
+
+#~ msgid "Barcode Identifier"
+#~ msgstr "Codice a Barre Identificativo"
+
+#~ msgid "Scan Barcode"
+#~ msgstr "Scansiona codice a barre"
+
+#~ msgid "Close"
+#~ msgstr "Chiudi"
+
+#~ msgid "Form errors exist"
+#~ msgstr "Esistono errori nel modulo"
+
+#~ msgid "Submit"
+#~ msgstr "Invia"
+
+#~ msgid "Notifications will load here"
+#~ msgstr "Le notifiche verranno caricate qui"
+
+#~ msgid "Buy"
+#~ msgstr "Acquista"
+
+#~ msgid "Sell"
+#~ msgstr "Vendi"
+
+#~ msgid "Show Notifications"
+#~ msgstr "Mostra Notifiche"
+
+#~ msgid "New Notifications"
+#~ msgstr "Nuove Notifiche"
+
+#~ msgid "Logout"
+#~ msgstr "Esci"
+
+#~ msgid "Save"
+#~ msgstr "Salva"
+
+#~ msgid "Show all notifications and history"
+#~ msgstr "Mostra tutte le notifiche e la cronologia"
+
+#~ msgid "QR data not provided"
+#~ msgstr "Dati QR non forniti"
+
+#~ msgid "You were logged out successfully."
+#~ msgstr "Sei stato disconnesso con successo."
+
+#~ msgid "Log in again"
+#~ msgstr "Accedi di nuovo"
+
+#~ msgid "Show full search results"
+#~ msgstr "Visualizza tutti i risultati di ricerca"
+
+#~ msgid "Clear search"
+#~ msgstr "Cancella ricerca"
+
+#~ msgid "Close search menu"
+#~ msgstr "Chiudi menu di ricerca"
+
+#~ msgid "Social Network Login Failure"
+#~ msgstr "Errore Accesso Social Network"
+
+#~ msgid "Account Login Failure"
+#~ msgstr "Accesso Account Fallito"
+
+#~ msgid "An error occurred while attempting to login via your social network account."
+#~ msgstr "Si è verificato un errore durante il tentativo di accedere tramite il tuo account di social network."
+
+#~ msgid "Contact your system administrator for further information."
+#~ msgstr "Contatta l'amministratore di sistema per maggiori informazioni."
+
+#, python-format
+#~ msgid "Connect %(provider)s"
+#~ msgstr "Connetti %(provider)s"
+
+#, python-format
+#~ msgid "You are about to connect a new third party account from %(provider)s."
+#~ msgstr "Stai per connettere un nuovo account di terze parti da %(provider)s."
+
+#, python-format
+#~ msgid "Sign In Via %(provider)s"
+#~ msgstr "Accedi Via %(provider)s"
+
+#, python-format
+#~ msgid "You are about to sign in using a third party account from %(provider)s."
+#~ msgstr "Stai per accedere utilizzando un account di terze parti da %(provider)s."
+
+#~ msgid "Continue"
+#~ msgstr "Continua"
+
+#~ msgid "Instance Name"
+#~ msgstr "Nome istanza"
+
+#~ msgid "Database"
+#~ msgstr "Database"
+
+#~ msgid "Server is running in debug mode"
+#~ msgstr "Server in esecuzione in modalità debug"
+
+#~ msgid "Docker Mode"
+#~ msgstr "Modalità Docker"
+
+#~ msgid "Server is deployed using docker"
+#~ msgstr "Il server è distribuito utilizzando docker"
+
+#~ msgid "Plugin Support"
+#~ msgstr "Supporto Plugin"
+
+#~ msgid "Plugin support enabled"
+#~ msgstr "Supporto Plugin Abilitato"
+
+#~ msgid "Plugin support disabled"
+#~ msgstr "Supporto plugin disabilitato"
+
+#~ msgid "Server status"
+#~ msgstr "Stato del Server"
+
+#~ msgid "Healthy"
+#~ msgstr "In Buono stato"
+
+#~ msgid "Issues detected"
+#~ msgstr "Problemi rilevati"
+
+#~ msgid "Background Worker"
+#~ msgstr "Lavoratore di base"
+
+#~ msgid "Background worker not running"
+#~ msgstr "Processo in background non in esecuzione"
+
+#~ msgid "Email Settings"
+#~ msgstr "Impostazioni e-mail"
+
+#~ msgid "Email settings not configured"
+#~ msgstr "Impostazioni dell'email non configurate"
+
+#~ msgid "Yes"
+#~ msgstr "Si"
+
+#~ msgid "No"
+#~ msgstr "No"

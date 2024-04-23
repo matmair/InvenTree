@@ -15,10 +15,6 @@ def health_status(request):
     - Not required for AJAX requests
     - Do not provide if it is already provided to the context
     """
-    if request.path.endswith('.js'):
-        # Do not provide to script requests
-        return {}  # pragma: no cover
-
     if hasattr(request, '_inventree_health_status'):
         # Do not duplicate efforts
         return {}

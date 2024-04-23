@@ -10,7 +10,6 @@ from error_report.models import Error
 
 from InvenTree.unit_test import InvenTreeTestCase
 from plugin import InvenTreePlugin
-from plugin.base.integration.mixins import PanelMixin
 from plugin.helpers import MixinNotImplementedError
 from plugin.mixins import (
     APICallMixin,
@@ -19,7 +18,6 @@ from plugin.mixins import (
     SettingsMixin,
     UrlsMixin,
 )
-from plugin.registry import registry
 from plugin.urls import PLUGIN_BASE
 
 

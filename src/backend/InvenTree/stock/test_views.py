@@ -11,8 +11,8 @@ from stock.models import StockItem, StockLocation
 from users.models import Owner
 
 
-class StockViewTestCase(InvenTreeTestCase):
-    """Mixin for Stockview tests."""
+class StockOwnershipTest(InvenTreeTestCase):
+    """Tests for stock ownership views."""
 
     fixtures = ['category', 'part', 'company', 'location', 'supplier_part', 'stock']
 

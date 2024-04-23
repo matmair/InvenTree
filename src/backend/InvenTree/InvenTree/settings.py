@@ -19,7 +19,6 @@ import django.conf.locale
 import django.core.exceptions
 from django.core.validators import URLValidator
 from django.http import Http404
-from django.utils.translation import gettext_lazy as _
 
 import moneyed
 import pytz

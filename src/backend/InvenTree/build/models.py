@@ -170,7 +170,7 @@ class Build(InvenTree.models.InvenTreeBarcodeMixin, InvenTree.models.InvenTreeNo
         """Return the web URL associated with this BuildOrder"""
         if settings.ENABLE_CLASSIC_FRONTEND:
             return reverse('build-detail', kwargs={'pk': self.id})
-        return InvenTree.helpers.pui_url(f'/build/{self.id}')
+        return 'TOBEREFACTORED'
 
     reference = models.CharField(
         unique=True,

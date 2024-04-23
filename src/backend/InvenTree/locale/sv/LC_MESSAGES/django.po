@@ -88,47 +88,27 @@ msgstr "Värdet '{name}' visas inte i mönsterformat"
 msgid "Provided value does not match required pattern: "
 msgstr "Det angivna värdet matchar inte det obligatoriska mönstret: "
 
-#: InvenTree/forms.py:128
-msgid "Enter password"
-msgstr "Ange lösenord"
-
-#: InvenTree/forms.py:129
-msgid "Enter new password"
-msgstr "Ange nytt lösenord"
-
-#: InvenTree/forms.py:138
-msgid "Confirm password"
-msgstr "Bekräfta lösenord"
-
-#: InvenTree/forms.py:139
-msgid "Confirm new password"
-msgstr "Bekräfta nytt lösenord"
-
-#: InvenTree/forms.py:143
-msgid "Old password"
-msgstr "Tidigare lösenord"
-
-#: InvenTree/forms.py:182
+#: InvenTree/forms.py:63
 msgid "Email (again)"
 msgstr "E-post (igen)"
 
-#: InvenTree/forms.py:186
+#: InvenTree/forms.py:67
 msgid "Email address confirmation"
 msgstr "Bekräfta e-postadress"
 
-#: InvenTree/forms.py:209
+#: InvenTree/forms.py:90
 msgid "You must type the same email each time."
 msgstr "Du måste ange samma e-post varje gång."
 
-#: InvenTree/forms.py:253 InvenTree/forms.py:261
+#: InvenTree/forms.py:134 InvenTree/forms.py:142
 msgid "The provided primary email address is not valid."
 msgstr "Den angivna primära e-postadressen är inte giltig."
 
-#: InvenTree/forms.py:268
+#: InvenTree/forms.py:149
 msgid "The provided email domain is not approved."
 msgstr "Den angivna e-postdomänen är inte godkänd."
 
-#: InvenTree/forms.py:395
+#: InvenTree/forms.py:266
 msgid "Registration is disabled."
 msgstr "Registrering är stängd."
 
@@ -707,8 +687,6 @@ msgstr "Placerad"
 
 #: InvenTree/status_codes.py:14 InvenTree/status_codes.py:151
 #: InvenTree/status_codes.py:169 generic/states/tests.py:19
-#: order/templates/order/order_base.html:158
-#: order/templates/order/sales_order_base.html:161
 msgid "Complete"
 msgstr "Slutför"
 
@@ -766,7 +744,7 @@ msgstr "I karantän"
 msgid "Legacy stock tracking entry"
 msgstr "Spårningspost för äldre lager"
 
-#: InvenTree/status_codes.py:93 templates/js/translated/stock.js:544
+#: InvenTree/status_codes.py:93
 msgid "Stock item created"
 msgstr "Lagerpost skapad"
 
@@ -858,7 +836,7 @@ msgstr ""
 msgid "Returned against Return Order"
 msgstr ""
 
-#: InvenTree/status_codes.py:141 templates/js/translated/table_filters.js:375
+#: InvenTree/status_codes.py:141
 msgid "Sent to customer"
 msgstr "Skickat till kund"
 
@@ -3684,9 +3662,7 @@ msgstr ""
 #: report/templates/report/inventree_bill_of_materials_report.html:126
 #: report/templates/report/inventree_bill_of_materials_report.html:148
 #: report/templates/report/inventree_return_order_report_base.html:35
-#: stock/templates/stock/item_base.html:133 templates/503.html:31
-#: templates/hover_image.html:7 templates/hover_image.html:9
-#: templates/modals.html:6
+#: templates/503.html:31
 msgid "Image"
 msgstr "Bild"
 
@@ -3812,18 +3788,11 @@ msgstr ""
 msgid "Task keyword arguments"
 msgstr ""
 
-#: common/views.py:84 order/templates/order/order_wizard/po_upload.html:51
-#: order/templates/order/purchase_order_detail.html:24 order/views.py:118
-#: part/templates/part/import_wizard/part_upload.html:58 part/views.py:109
-#: templates/patterns/wizard/upload.html:37
+#: common/views.py:84
 msgid "Upload File"
 msgstr ""
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr ""
 
@@ -3839,14 +3808,7 @@ msgstr ""
 msgid "Parts imported"
 msgstr ""
 
-#: common/views.py:494 order/templates/order/order_wizard/match_fields.html:27
-#: order/templates/order/order_wizard/match_parts.html:19
-#: order/templates/order/order_wizard/po_upload.html:49
-#: part/templates/part/import_wizard/match_fields.html:27
-#: part/templates/part/import_wizard/match_references.html:19
-#: part/templates/part/import_wizard/part_upload.html:56
-#: templates/patterns/wizard/match_fields.html:26
-#: templates/patterns/wizard/upload.html:35
+#: common/views.py:494
 msgid "Previous Step"
 msgstr ""
 
@@ -4142,7 +4104,7 @@ msgstr ""
 #: order/templates/order/order_base.html:136 part/bom.py:272 part/bom.py:310
 #: part/serializers.py:499 plugin/builtin/suppliers/digikey.py:25
 #: plugin/builtin/suppliers/lcsc.py:26 plugin/builtin/suppliers/mouser.py:24
-#: plugin/builtin/suppliers/tme.py:26 stock/templates/stock/item_base.html:224
+#: plugin/builtin/suppliers/tme.py:26
 #: templates/email/overdue_purchase_order.html:16
 #: templates/js/translated/company.js:350
 #: templates/js/translated/company.js:511
@@ -4791,13 +4753,11 @@ msgstr ""
 #: label/templates/label/part/part_label.html:31
 #: label/templates/label/stockitem/qr.html:21
 #: label/templates/label/stocklocation/qr.html:20
-#: templates/allauth_2fa/setup.html:18
 msgid "QR Code"
 msgstr "QR-kod"
 
 #: label/templates/label/part/part_label_code128.html:31
 #: label/templates/label/stocklocation/qr_and_text.html:31
-#: templates/qr_code.html:7
 msgid "QR code"
 msgstr "QR-kod"
 
@@ -4945,7 +4905,6 @@ msgstr ""
 #: order/templates/order/order_base.html:9
 #: order/templates/order/order_base.html:18
 #: report/templates/report/inventree_po_report_base.html:14
-#: stock/templates/stock/item_base.html:176
 #: templates/email/overdue_purchase_order.html:15
 #: templates/js/translated/part.js:1745 templates/js/translated/pricing.js:804
 #: templates/js/translated/purchase_order.js:168
@@ -5945,8 +5904,7 @@ msgstr ""
 msgid "Used In"
 msgstr ""
 
-#: part/admin.py:150 part/templates/part/part_base.html:241 stock/admin.py:231
-#: templates/js/translated/part.js:714 templates/js/translated/part.js:2152
+#: part/admin.py:150 stock/admin.py:231
 msgid "Building"
 msgstr ""
 
@@ -5968,8 +5926,7 @@ msgstr ""
 msgid "Parent Name"
 msgstr ""
 
-#: part/admin.py:318 part/templates/part/category.html:88
-#: part/templates/part/category.html:101
+#: part/admin.py:318
 msgid "Category Path"
 msgstr ""
 
@@ -6106,6 +6063,10 @@ msgstr ""
 #: part/bom.py:171 part/serializers.py:822
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
+msgstr ""
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
 msgstr ""
 
 #: part/forms.py:49
@@ -8370,8 +8331,6 @@ msgid "Name for the Plugin Package - can also contain a version indicator"
 msgstr ""
 
 #: plugin/serializers.py:99
-#: templates/InvenTree/settings/plugin_settings.html:42
-#: templates/js/translated/plugin.js:86
 msgid "Version"
 msgstr "Version"
 
@@ -8572,16 +8531,42 @@ msgstr ""
 msgid "stock location query filters (comma-separated list of key=value pairs)"
 msgstr ""
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
+msgstr ""
+
+#: report/templates/report/inventree_build_order_base.html:98
+#: report/templates/report/inventree_po_report_base.html:40
+#: report/templates/report/inventree_so_report_base.html:40
+#: report/templates/report/inventree_test_report_base.html:84
+#: report/templates/report/inventree_test_report_base.html:163
+msgid "Part image"
+msgstr ""
+
+#: report/templates/report/inventree_build_order_base.html:121
+msgid "Issued"
 msgstr ""
 
 #: report/templates/report/inventree_build_order_base.html:146
 msgid "Required For"
 msgstr ""
 
+#: report/templates/report/inventree_build_order_base.html:152
+msgid "Issued By"
+msgstr "Utfärdad av"
+
 #: report/templates/report/inventree_po_report_base.html:15
 msgid "Supplier was deleted"
+msgstr ""
+
+#: report/templates/report/inventree_po_report_base.html:22
+#: report/templates/report/inventree_return_order_report_base.html:19
+#: report/templates/report/inventree_so_report_base.html:22
+msgid "Line Items"
 msgstr ""
 
 #: report/templates/report/inventree_po_report_base.html:30
@@ -8661,7 +8646,6 @@ msgid "No result"
 msgstr ""
 
 #: report/templates/report/inventree_test_report_base.html:154
-#: stock/templates/stock/stock_sidebar.html:16
 msgid "Installed Items"
 msgstr ""
 
@@ -8695,13 +8679,16 @@ msgstr ""
 msgid "Location Name"
 msgstr ""
 
-#: stock/admin.py:64 stock/templates/stock/location.html:131
-#: stock/templates/stock/location.html:137
+#: stock/admin.py:64
 msgid "Location Path"
 msgstr ""
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
+msgstr ""
+
+#: stock/admin.py:163
+msgid "Batch"
 msgstr ""
 
 #: stock/admin.py:168
@@ -8879,28 +8866,28 @@ msgstr ""
 msgid "Stock item cannot be created for virtual parts"
 msgstr ""
 
-#: stock/models.py:670
+#: stock/models.py:673
 #, python-brace-format
 msgid "Part type ('{self.supplier_part.part}') must be {self.part}"
 msgstr ""
 
-#: stock/models.py:680 stock/models.py:693
+#: stock/models.py:683 stock/models.py:696
 msgid "Quantity must be 1 for item with a serial number"
 msgstr ""
 
-#: stock/models.py:683
+#: stock/models.py:686
 msgid "Serial number cannot be set if quantity greater than 1"
 msgstr ""
 
-#: stock/models.py:707
+#: stock/models.py:710
 msgid "Item cannot belong to itself"
 msgstr ""
 
-#: stock/models.py:712
+#: stock/models.py:715
 msgid "Item must have a build reference if is_building=True"
 msgstr ""
 
-#: stock/models.py:725
+#: stock/models.py:728
 msgid "Build reference does not point to the same part object"
 msgstr ""
 
@@ -9682,8 +9669,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr "Du har blivit utloggad från InvenTree."
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr ""
 
@@ -14226,3 +14212,487 @@ msgstr ""
 msgid "Permission to delete items"
 msgstr ""
 
+#~ msgid "Enter password"
+#~ msgstr "Ange lösenord"
+
+#~ msgid "Enter new password"
+#~ msgstr "Ange nytt lösenord"
+
+#~ msgid "Confirm password"
+#~ msgstr "Bekräfta lösenord"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Bekräfta nytt lösenord"
+
+#~ msgid "Old password"
+#~ msgstr "Tidigare lösenord"
+
+#~ msgid "Unknown database"
+#~ msgstr "Okänd databas"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Redigera användarinformation"
+
+#~ msgid "Set Password"
+#~ msgstr "Ställ in lösenord"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Lösenorden måste matcha"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Felaktigt lösenord angivet"
+
+#~ msgid "System Information"
+#~ msgstr "Systeminformation"
+
+#~ msgid "About InvenTree"
+#~ msgstr "Om InvenTree"
+
+#~ msgid "Show QR Code"
+#~ msgstr "Visa QR-kod"
+
+#~ msgid "Edit Build"
+#~ msgstr "Redigera bygge"
+
+#~ msgid "Cancel Build"
+#~ msgstr "Avbryt bygge"
+
+#~ msgid "Delete Build"
+#~ msgstr "Ta bort bygge"
+
+#~ msgid "Complete Build"
+#~ msgstr "Färdigställ bygget"
+
+#~ msgid "Build Description"
+#~ msgstr "Byggbeskrivning"
+
+#~ msgid "Overdue"
+#~ msgstr "Försenad"
+
+#~ msgid "Created"
+#~ msgstr "Skapad"
+
+#~ msgid "Completed"
+#~ msgstr "Slutförd"
+
+#~ msgid "Order required parts"
+#~ msgstr "Beställ obligatoriska delar"
+
+#~ msgid "Order Parts"
+#~ msgstr "Beställ delar"
+
+#~ msgid "Attachments"
+#~ msgstr "Bilagor"
+
+#~ msgid "Build Notes"
+#~ msgstr "Bygganteckningar"
+
+#~ msgid "New Build Order"
+#~ msgstr "Ny byggorder"
+
+#~ msgid "Edit Company"
+#~ msgstr "Redigera företag"
+
+#~ msgid "Delete company"
+#~ msgstr "Radera företag"
+
+#~ msgid "Delete Company"
+#~ msgstr "Radera företag"
+
+#~ msgid "Delete image"
+#~ msgstr "Radera bild"
+
+#~ msgid "Phone"
+#~ msgstr "Telefon"
+
+#~ msgid "Add Contact"
+#~ msgstr "Lägg till kontakt"
+
+#~ msgid "Manufacturers"
+#~ msgstr "Tillverkare"
+
+#~ msgid "Parameters"
+#~ msgstr "Parametrar"
+
+#~ msgid "Contacts"
+#~ msgstr "Kontakter"
+
+#~ msgid "Addresses"
+#~ msgstr "Adresser"
+
+#~ msgid "New Supplier"
+#~ msgstr "Ny leverantör"
+
+#~ msgid "Customers"
+#~ msgstr "Kunder"
+
+#~ msgid "New Customer"
+#~ msgstr "Ny kund"
+
+#~ msgid "Order Status"
+#~ msgstr "Orderstatus"
+
+#~ msgid "Row"
+#~ msgstr "Rad"
+
+#, python-format
+#~ msgid "Step %(step)s of %(count)s"
+#~ msgstr "Steg %(step)s av %(count)s"
+
+#~ msgid "Edit category"
+#~ msgstr "Redigera kategori"
+
+#~ msgid "Edit Category"
+#~ msgstr "Redigera kategori"
+
+#~ msgid "Delete Category"
+#~ msgstr "Radera kategori"
+
+#~ msgid "Subcategories"
+#~ msgstr "Underkategorier"
+
+#~ msgid "New Category"
+#~ msgstr "Ny kategori"
+
+#~ msgid "Select file format"
+#~ msgstr "Välj filformat"
+
+#~ msgid "Edit"
+#~ msgstr "Redigera"
+
+#~ msgid "Build"
+#~ msgstr "Bygg"
+
+#~ msgid "Edit Stock Status"
+#~ msgstr "Redigera lagerstatus"
+
+#~ msgid "Warning"
+#~ msgstr "Varning"
+
+#~ msgid "Loading..."
+#~ msgstr "Laddar..."
+
+#~ msgid "Settings"
+#~ msgstr "Inställningar"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Never"
+#~ msgstr "Aldrig"
+
+#~ msgid "Project Codes"
+#~ msgstr "Projektkoder"
+
+#~ msgid "New Project Code"
+#~ msgstr "Ny projektkod"
+
+#~ msgid "No project codes found"
+#~ msgstr "Inga projektkoder hittades"
+
+#~ msgid "Edit Project Code"
+#~ msgstr "Redigera projektkod"
+
+#~ msgid "Delete Project Code"
+#~ msgstr "Radera projektkod"
+
+#~ msgid "Edit Template"
+#~ msgstr "Redigera mall"
+
+#~ msgid "Delete Template"
+#~ msgstr "Radera mall"
+
+#~ msgid "User Settings"
+#~ msgstr "Användarinställningar"
+
+#~ msgid "Account"
+#~ msgstr "Konto"
+
+#~ msgid "Search"
+#~ msgstr "Sök"
+
+#~ msgid "Labels"
+#~ msgstr "Etiketter"
+
+#~ msgid "Categories"
+#~ msgstr "Kategorier"
+
+#~ msgid "Account Settings"
+#~ msgstr "Kontoinställningar"
+
+#~ msgid "Change Password"
+#~ msgstr "Ändra lösenord"
+
+#~ msgid "Username"
+#~ msgstr "Användarnamn"
+
+#~ msgid "First Name"
+#~ msgstr "Förnamn"
+
+#~ msgid "Last Name"
+#~ msgstr "Efternamn"
+
+#~ msgid "Warning:"
+#~ msgstr "Varning:"
+
+#~ msgid "Add Email Address"
+#~ msgstr "Lägg till e-postadress"
+
+#~ msgid "Active Sessions"
+#~ msgstr "Aktiva sessioner"
+
+#~ msgid "Log Out Active Sessions"
+#~ msgstr "Logga ut aktiva sessioner"
+
+#~ msgid "IP Address"
+#~ msgstr "IP-adress"
+
+#~ msgid "Device"
+#~ msgstr "Enhet"
+
+#~ msgid "Last Activity"
+#~ msgstr "Senaste aktivitet"
+
+#, python-format
+#~ msgid "%(time)s ago"
+#~ msgstr "%(time)s sedan"
+
+#~ msgid "Select theme"
+#~ msgstr "Välj tema"
+
+#~ msgid "Select language"
+#~ msgstr "Välj språk"
+
+#~ msgid "Confirm Email Address"
+#~ msgstr "Bekräfta e-postadress"
+
+#~ msgid "Confirm"
+#~ msgstr "Bekräfta"
+
+#~ msgid "Sign In"
+#~ msgstr "Logga in"
+
+#~ msgid "Sign Up"
+#~ msgstr "Registrera dig"
+
+#~ msgid "Forgot Password?"
+#~ msgstr "Glömt lösenord?"
+
+#~ msgid "or log in with"
+#~ msgstr "eller logga in med"
+
+#~ msgid "Reset My Password"
+#~ msgstr "Återställ mitt lösenord"
+
+#~ msgid "Change password"
+#~ msgstr "Ändra lösenord"
+
+#~ msgid "Two-Factor Authentication"
+#~ msgstr "Tvåfaktorsautentisering"
+
+#~ msgid "Authenticate"
+#~ msgstr "Autentisera"
+
+#~ msgid "Disable Two-Factor Authentication"
+#~ msgstr "Inaktivera Tvåfaktorsautentisering"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Är du säker?"
+
+#~ msgid "Disable 2FA"
+#~ msgstr "Inaktivera 2FA"
+
+#~ msgid "Add Link"
+#~ msgstr "Lägg till länk"
+
+#~ msgid "Add Attachment"
+#~ msgstr "Lägg till bilaga"
+
+#~ msgid "Error code"
+#~ msgstr "Felkod"
+
+#~ msgid "Delete Attachments"
+#~ msgstr "Radera bilagor"
+
+#~ msgid "Delete attachments"
+#~ msgstr "Radera bilagor"
+
+#~ msgid "No attachments found"
+#~ msgstr "Inga bilagor hittades"
+
+#~ msgid "Edit Attachment"
+#~ msgstr "Redigera bilaga"
+
+#~ msgid "Edit attachment"
+#~ msgstr "Redigera bilaga"
+
+#~ msgid "Delete attachment"
+#~ msgstr "Radera bilaga"
+
+#~ msgid "Server error"
+#~ msgstr "Serverfel"
+
+#~ msgid "Add new Company"
+#~ msgstr "Lägg till nytt företag"
+
+#~ msgid "Create New Contact"
+#~ msgstr "Skapa ny kontakt"
+
+#~ msgid "Edit Contact"
+#~ msgstr "Redigera kontakt"
+
+#~ msgid "Role"
+#~ msgstr "Roll"
+
+#~ msgid "Delete Contacts"
+#~ msgstr "Radera kontakter"
+
+#~ msgid "No contacts found"
+#~ msgstr "Inga kontakter hittades"
+
+#~ msgid "Phone Number"
+#~ msgstr "Telefonnummer"
+
+#~ msgid "Email Address"
+#~ msgstr "E-postadress"
+
+#~ msgid "Delete Contact"
+#~ msgstr "Radera kontakt"
+
+#~ msgid "Create New Address"
+#~ msgstr "Skapa ny adress"
+
+#~ msgid "Edit Address"
+#~ msgstr "Redigera adress"
+
+#~ msgid "Delete Addresses"
+#~ msgstr "Radera adresser"
+
+#~ msgid "No addresses found"
+#~ msgstr "Inga adresser hittades"
+
+#~ msgid "Delete Address"
+#~ msgstr "Radera adress"
+
+#~ msgid "Print Labels"
+#~ msgstr "Skriv ut etiketter"
+
+#~ msgid "Add new filter"
+#~ msgstr "Lägg till nytt filter"
+
+#~ msgid "Clear all filters"
+#~ msgstr "Rensa alla filter"
+
+#~ msgid "Create filter"
+#~ msgstr "Skapa filter"
+
+#~ msgid "No results found"
+#~ msgstr "Inga resultat hittades"
+
+#~ msgid "Searching"
+#~ msgstr "Söker"
+
+#~ msgid "YES"
+#~ msgstr "JA"
+
+#~ msgid "NO"
+#~ msgstr "NEJ"
+
+#~ msgid "No Labels Found"
+#~ msgstr "Inga etiketter hittades"
+
+#~ msgid "Print label"
+#~ msgstr "Skriv ut etikett"
+
+#~ msgid "Print labels"
+#~ msgstr "Skriv ut etiketter"
+
+#~ msgid "Print"
+#~ msgstr "Skriv ut"
+
+#~ msgid "Cancel"
+#~ msgstr "Avbryt"
+
+#~ msgid "Mark as unread"
+#~ msgstr "Markera som oläst"
+
+#~ msgid "Mark as read"
+#~ msgstr "Markera som läst"
+
+#~ msgid "No category"
+#~ msgstr "Ingen kategori"
+
+#~ msgid "No subcategories found"
+#~ msgstr "Inga underkategorier hittades"
+
+#~ msgid "Enable"
+#~ msgstr "Aktivera"
+
+#~ msgid "Disable"
+#~ msgstr "Inaktivera"
+
+#~ msgid "Stock Status"
+#~ msgstr "Lagerstatus"
+
+#~ msgid "Add barcode"
+#~ msgstr "Lägg till streckkod"
+
+#~ msgid "Add Customer"
+#~ msgstr "Lägg till kund"
+
+#~ msgid "Invalid Customer"
+#~ msgstr "Ogiltig kund"
+
+#~ msgid "Invoice"
+#~ msgstr "Faktura"
+
+#~ msgid "result"
+#~ msgstr "resultat"
+
+#~ msgid "No changes"
+#~ msgstr "Inga ändringar"
+
+#~ msgid "Serial number"
+#~ msgstr "Serienummer"
+
+#~ msgid "Stock status"
+#~ msgstr "Lagerstatus"
+
+#~ msgid "rows per page"
+#~ msgstr "rader per sida"
+
+#~ msgid "Showing all rows"
+#~ msgstr "Visar alla rader"
+
+#~ msgid "Showing"
+#~ msgstr "Visar"
+
+#~ msgid "to"
+#~ msgstr "till"
+
+#~ msgid "of"
+#~ msgstr "av"
+
+#~ msgid "rows"
+#~ msgstr "rader"
+
+#~ msgid "Columns"
+#~ msgstr "Kolumner"
+
+#~ msgid "Save"
+#~ msgstr "Spara"
+
+#~ msgid "Log in again"
+#~ msgstr "Logga in igen"
+
+#~ msgid "Continue"
+#~ msgstr "Fortsätt"
+
+#~ msgid "Database"
+#~ msgstr "Databas"
+
+#~ msgid "Yes"
+#~ msgstr "Ja"
+
+#~ msgid "No"
+#~ msgstr "Nej"

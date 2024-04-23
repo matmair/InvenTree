@@ -88,47 +88,27 @@ msgstr "Waarde '{name}' verschijnt niet in patroonformaat"
 msgid "Provided value does not match required pattern: "
 msgstr "Opgegeven waarde komt niet overeen met vereist patroon: "
 
-#: InvenTree/forms.py:128
-msgid "Enter password"
-msgstr "Voer wachtwoord in"
-
-#: InvenTree/forms.py:129
-msgid "Enter new password"
-msgstr "Voer een nieuw wachtwoord in"
-
-#: InvenTree/forms.py:138
-msgid "Confirm password"
-msgstr "Wachtwoord bevestigen"
-
-#: InvenTree/forms.py:139
-msgid "Confirm new password"
-msgstr "Nieuw wachtwoord bevestigen"
-
-#: InvenTree/forms.py:143
-msgid "Old password"
-msgstr "Oude wachtwoord"
-
-#: InvenTree/forms.py:182
+#: InvenTree/forms.py:63
 msgid "Email (again)"
 msgstr "E-mailadres (opnieuw)"
 
-#: InvenTree/forms.py:186
+#: InvenTree/forms.py:67
 msgid "Email address confirmation"
 msgstr "E-mailadres bevestiging"
 
-#: InvenTree/forms.py:209
+#: InvenTree/forms.py:90
 msgid "You must type the same email each time."
 msgstr "Er moet hetzelfde e-mailadres ingevoerd worden."
 
-#: InvenTree/forms.py:253 InvenTree/forms.py:261
+#: InvenTree/forms.py:134 InvenTree/forms.py:142
 msgid "The provided primary email address is not valid."
 msgstr "Het opgegeven primaire e-mailadres is ongeldig."
 
-#: InvenTree/forms.py:268
+#: InvenTree/forms.py:149
 msgid "The provided email domain is not approved."
 msgstr "Het ingevoerde e-maildomein is niet goedgekeurd."
 
-#: InvenTree/forms.py:395
+#: InvenTree/forms.py:266
 msgid "Registration is disabled."
 msgstr "Registratie is uitgeschakeld."
 
@@ -707,8 +687,6 @@ msgstr "Geplaatst"
 
 #: InvenTree/status_codes.py:14 InvenTree/status_codes.py:151
 #: InvenTree/status_codes.py:169 generic/states/tests.py:19
-#: order/templates/order/order_base.html:158
-#: order/templates/order/sales_order_base.html:161
 msgid "Complete"
 msgstr "Voltooid"
 
@@ -766,7 +744,7 @@ msgstr "In quarantaine geplaatst"
 msgid "Legacy stock tracking entry"
 msgstr "Verouderde volgcode"
 
-#: InvenTree/status_codes.py:93 templates/js/translated/stock.js:544
+#: InvenTree/status_codes.py:93
 msgid "Stock item created"
 msgstr "Voorraaditem gemaakt"
 
@@ -858,7 +836,7 @@ msgstr "Ontvangen onder verkooporder"
 msgid "Returned against Return Order"
 msgstr "Geretourneerd onder retourorder"
 
-#: InvenTree/status_codes.py:141 templates/js/translated/table_filters.js:375
+#: InvenTree/status_codes.py:141
 msgid "Sent to customer"
 msgstr "Naar klant verzonden"
 
@@ -3684,9 +3662,7 @@ msgstr ""
 #: report/templates/report/inventree_bill_of_materials_report.html:126
 #: report/templates/report/inventree_bill_of_materials_report.html:148
 #: report/templates/report/inventree_return_order_report_base.html:35
-#: stock/templates/stock/item_base.html:133 templates/503.html:31
-#: templates/hover_image.html:7 templates/hover_image.html:9
-#: templates/modals.html:6
+#: templates/503.html:31
 msgid "Image"
 msgstr "Afbeelding"
 
@@ -3812,18 +3788,11 @@ msgstr ""
 msgid "Task keyword arguments"
 msgstr ""
 
-#: common/views.py:84 order/templates/order/order_wizard/po_upload.html:51
-#: order/templates/order/purchase_order_detail.html:24 order/views.py:118
-#: part/templates/part/import_wizard/part_upload.html:58 part/views.py:109
-#: templates/patterns/wizard/upload.html:37
+#: common/views.py:84
 msgid "Upload File"
 msgstr "Upload Bestand"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "Vergelijk Velden"
 
@@ -3839,14 +3808,7 @@ msgstr ""
 msgid "Parts imported"
 msgstr "Geïmporteerde onderdelen"
 
-#: common/views.py:494 order/templates/order/order_wizard/match_fields.html:27
-#: order/templates/order/order_wizard/match_parts.html:19
-#: order/templates/order/order_wizard/po_upload.html:49
-#: part/templates/part/import_wizard/match_fields.html:27
-#: part/templates/part/import_wizard/match_references.html:19
-#: part/templates/part/import_wizard/part_upload.html:56
-#: templates/patterns/wizard/match_fields.html:26
-#: templates/patterns/wizard/upload.html:35
+#: common/views.py:494
 msgid "Previous Step"
 msgstr "Vorige Stap"
 
@@ -4142,7 +4104,7 @@ msgstr "Gekoppeld fabrikant onderdeel moet verwijzen naar hetzelfde basis onderd
 #: order/templates/order/order_base.html:136 part/bom.py:272 part/bom.py:310
 #: part/serializers.py:499 plugin/builtin/suppliers/digikey.py:25
 #: plugin/builtin/suppliers/lcsc.py:26 plugin/builtin/suppliers/mouser.py:24
-#: plugin/builtin/suppliers/tme.py:26 stock/templates/stock/item_base.html:224
+#: plugin/builtin/suppliers/tme.py:26
 #: templates/email/overdue_purchase_order.html:16
 #: templates/js/translated/company.js:350
 #: templates/js/translated/company.js:511
@@ -4791,13 +4753,11 @@ msgstr ""
 #: label/templates/label/part/part_label.html:31
 #: label/templates/label/stockitem/qr.html:21
 #: label/templates/label/stocklocation/qr.html:20
-#: templates/allauth_2fa/setup.html:18
 msgid "QR Code"
 msgstr ""
 
 #: label/templates/label/part/part_label_code128.html:31
 #: label/templates/label/stocklocation/qr_and_text.html:31
-#: templates/qr_code.html:7
 msgid "QR code"
 msgstr ""
 
@@ -4945,7 +4905,6 @@ msgstr ""
 #: order/templates/order/order_base.html:9
 #: order/templates/order/order_base.html:18
 #: report/templates/report/inventree_po_report_base.html:14
-#: stock/templates/stock/item_base.html:176
 #: templates/email/overdue_purchase_order.html:15
 #: templates/js/translated/part.js:1745 templates/js/translated/pricing.js:804
 #: templates/js/translated/purchase_order.js:168
@@ -5945,8 +5904,7 @@ msgstr ""
 msgid "Used In"
 msgstr ""
 
-#: part/admin.py:150 part/templates/part/part_base.html:241 stock/admin.py:231
-#: templates/js/translated/part.js:714 templates/js/translated/part.js:2152
+#: part/admin.py:150 stock/admin.py:231
 msgid "Building"
 msgstr ""
 
@@ -5968,8 +5926,7 @@ msgstr ""
 msgid "Parent Name"
 msgstr ""
 
-#: part/admin.py:318 part/templates/part/category.html:88
-#: part/templates/part/category.html:101
+#: part/admin.py:318
 msgid "Category Path"
 msgstr ""
 
@@ -6107,6 +6064,10 @@ msgstr "Standaard locatie"
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
 msgstr "Totale Voorraad"
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
+msgstr "SKU"
 
 #: part/forms.py:49
 msgid "Input quantity for price calculation"
@@ -8370,8 +8331,6 @@ msgid "Name for the Plugin Package - can also contain a version indicator"
 msgstr ""
 
 #: plugin/serializers.py:99
-#: templates/InvenTree/settings/plugin_settings.html:42
-#: templates/js/translated/plugin.js:86
 msgid "Version"
 msgstr ""
 
@@ -8572,17 +8531,43 @@ msgstr ""
 msgid "stock location query filters (comma-separated list of key=value pairs)"
 msgstr ""
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr ""
+
+#: report/templates/report/inventree_build_order_base.html:98
+#: report/templates/report/inventree_po_report_base.html:40
+#: report/templates/report/inventree_so_report_base.html:40
+#: report/templates/report/inventree_test_report_base.html:84
+#: report/templates/report/inventree_test_report_base.html:163
+msgid "Part image"
+msgstr "Afbeelding onderdeel"
+
+#: report/templates/report/inventree_build_order_base.html:121
+msgid "Issued"
+msgstr "Uitgegeven"
 
 #: report/templates/report/inventree_build_order_base.html:146
 msgid "Required For"
 msgstr "Vereist Voor"
 
+#: report/templates/report/inventree_build_order_base.html:152
+msgid "Issued By"
+msgstr "Uitgegeven door"
+
 #: report/templates/report/inventree_po_report_base.html:15
 msgid "Supplier was deleted"
 msgstr ""
+
+#: report/templates/report/inventree_po_report_base.html:22
+#: report/templates/report/inventree_return_order_report_base.html:19
+#: report/templates/report/inventree_so_report_base.html:22
+msgid "Line Items"
+msgstr "Artikelen"
 
 #: report/templates/report/inventree_po_report_base.html:30
 #: report/templates/report/inventree_so_report_base.html:30
@@ -8661,7 +8646,6 @@ msgid "No result"
 msgstr ""
 
 #: report/templates/report/inventree_test_report_base.html:154
-#: stock/templates/stock/stock_sidebar.html:16
 msgid "Installed Items"
 msgstr ""
 
@@ -8695,14 +8679,17 @@ msgstr ""
 msgid "Location Name"
 msgstr ""
 
-#: stock/admin.py:64 stock/templates/stock/location.html:131
-#: stock/templates/stock/location.html:137
+#: stock/admin.py:64
 msgid "Location Path"
 msgstr ""
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
 msgstr ""
+
+#: stock/admin.py:163
+msgid "Batch"
+msgstr "Batch"
 
 #: stock/admin.py:168
 msgid "Status Code"
@@ -8879,28 +8866,28 @@ msgstr ""
 msgid "Stock item cannot be created for virtual parts"
 msgstr ""
 
-#: stock/models.py:670
+#: stock/models.py:673
 #, python-brace-format
 msgid "Part type ('{self.supplier_part.part}') must be {self.part}"
 msgstr ""
 
-#: stock/models.py:680 stock/models.py:693
+#: stock/models.py:683 stock/models.py:696
 msgid "Quantity must be 1 for item with a serial number"
 msgstr ""
 
-#: stock/models.py:683
+#: stock/models.py:686
 msgid "Serial number cannot be set if quantity greater than 1"
 msgstr ""
 
-#: stock/models.py:707
+#: stock/models.py:710
 msgid "Item cannot belong to itself"
 msgstr ""
 
-#: stock/models.py:712
+#: stock/models.py:715
 msgid "Item must have a build reference if is_building=True"
 msgstr ""
 
-#: stock/models.py:725
+#: stock/models.py:728
 msgid "Build reference does not point to the same part object"
 msgstr ""
 
@@ -9682,8 +9669,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr ""
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr ""
 
@@ -14226,3 +14212,629 @@ msgstr ""
 msgid "Permission to delete items"
 msgstr ""
 
+#~ msgid "Enter password"
+#~ msgstr "Voer wachtwoord in"
+
+#~ msgid "Enter new password"
+#~ msgstr "Voer een nieuw wachtwoord in"
+
+#~ msgid "Confirm password"
+#~ msgstr "Wachtwoord bevestigen"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Nieuw wachtwoord bevestigen"
+
+#~ msgid "Old password"
+#~ msgstr "Oude wachtwoord"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Gebruikersgegevens bewerken"
+
+#~ msgid "Set Password"
+#~ msgstr "Wachtwoord instellen"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Wachtwoordvelden komen niet overeen"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Onjuist wachtwoord opgegeven"
+
+#~ msgid "System Information"
+#~ msgstr "Systeeminformatie"
+
+#~ msgid "About InvenTree"
+#~ msgstr "Over InvenTree"
+
+#~ msgid "Part thumbnail"
+#~ msgstr "Miniatuurweergave van onderdeel"
+
+#~ msgid "Barcode actions"
+#~ msgstr "Barcode acties"
+
+#~ msgid "Show QR Code"
+#~ msgstr "QR-code weergeven"
+
+#~ msgid "Unlink Barcode"
+#~ msgstr "Barcode loskoppelen"
+
+#~ msgid "Link Barcode"
+#~ msgstr "Koppel Barcode"
+
+#~ msgid "Print actions"
+#~ msgstr "Afdruk acties"
+
+#~ msgid "Print build order report"
+#~ msgstr "Print productieorderrapport"
+
+#~ msgid "Build actions"
+#~ msgstr "Productie acties"
+
+#~ msgid "Edit Build"
+#~ msgstr "Bewerk Productie"
+
+#~ msgid "Cancel Build"
+#~ msgstr "Annuleer Productie"
+
+#~ msgid "Duplicate Build"
+#~ msgstr "Dupliceer Bouw"
+
+#~ msgid "Delete Build"
+#~ msgstr "Verwijder Productie"
+
+#~ msgid "Complete Build"
+#~ msgstr "Voltooi Productie"
+
+#~ msgid "Build Description"
+#~ msgstr "Productiebeschrijving"
+
+#~ msgid "No build outputs have been created for this build order"
+#~ msgstr "Er zijn geen productuitvoeren aangemaakt voor deze productieorder"
+
+#~ msgid "Build Order is ready to mark as completed"
+#~ msgstr "Productieorder is gereed om te markeren als voltooid"
+
+#~ msgid "Build Order cannot be completed as outstanding outputs remain"
+#~ msgstr "Productieorder kan niet worden voltooid omdat er nog producties openstaan"
+
+#~ msgid "Required build quantity has not yet been completed"
+#~ msgstr "Vereiste Producthoeveelheid is nog niet bereikt"
+
+#~ msgid "Stock has not been fully allocated to this Build Order"
+#~ msgstr "Voorraad is niet volledig toegewezen aan deze productieorder"
+
+#, python-format
+#~ msgid "This build was due on %(target)s"
+#~ msgstr "Deze productie was verwacht op %(target)s"
+
+#~ msgid "Overdue"
+#~ msgstr "Achterstallig"
+
+#~ msgid "Completed Outputs"
+#~ msgstr "Voltooide Uitvoeren"
+
+#~ msgid "Priority"
+#~ msgstr "Prioriteit"
+
+#~ msgid "Build Details"
+#~ msgstr "Productie details"
+
+#~ msgid "Stock Source"
+#~ msgstr "Voorraadbron"
+
+#~ msgid "Stock can be taken from any available location."
+#~ msgstr "Voorraad kan worden genomen van elke beschikbare locatie."
+
+#~ msgid "Destination location not specified"
+#~ msgstr "Bestemmingslocatie niet opgegeven"
+
+#~ msgid "Allocated Parts"
+#~ msgstr "Toegewezen Onderdelen"
+
+#~ msgid "Created"
+#~ msgstr "Gecreëerd"
+
+#~ msgid "No target date set"
+#~ msgstr "Geen doeldatum ingesteld"
+
+#~ msgid "Completed"
+#~ msgstr "Voltooid"
+
+#~ msgid "Build not complete"
+#~ msgstr "Productie niet compleet"
+
+#~ msgid "Child Build Orders"
+#~ msgstr "Onderliggende Productieorders"
+
+#~ msgid "Allocate Stock to Build"
+#~ msgstr "Voorraad toewijzen aan Product"
+
+#~ msgid "Deallocate stock"
+#~ msgstr "Voorraad niet meer toewijzen"
+
+#~ msgid "Deallocate Stock"
+#~ msgstr "Voorraad niet meer toewijzen"
+
+#~ msgid "Automatically allocate stock to build"
+#~ msgstr "Automatisch voorraad toewijzen aan productie"
+
+#~ msgid "Auto Allocate"
+#~ msgstr "Automatisch Toewijzen"
+
+#~ msgid "Manually allocate stock to build"
+#~ msgstr "Handmatig voorraad toewijzen aan productie"
+
+#~ msgid "Allocate Stock"
+#~ msgstr "Voorraad Toewijzen"
+
+#~ msgid "Order required parts"
+#~ msgstr "Vereiste onderdelen bestellen"
+
+#~ msgid "Order Parts"
+#~ msgstr "Onderdelen bestellen"
+
+#~ msgid "Incomplete Build Outputs"
+#~ msgstr "Onvolledige Productieuitvoeren"
+
+#~ msgid "Create new build output"
+#~ msgstr "Nieuwe productieuitvoer aanmaken"
+
+#~ msgid "New Build Output"
+#~ msgstr "Nieuwe Productieuitvoer"
+
+#~ msgid "Consumed Stock"
+#~ msgstr "Verbruikte voorraad"
+
+#~ msgid "Completed Build Outputs"
+#~ msgstr "Voltooide Productieuitvoeren"
+
+#~ msgid "Attachments"
+#~ msgstr "Bijlagen"
+
+#~ msgid "Build Notes"
+#~ msgstr "Productie notities"
+
+#~ msgid "New Build Order"
+#~ msgstr "Nieuwe Productieorder"
+
+#~ msgid "Build Order Details"
+#~ msgstr "Productieorderdetails"
+
+#~ msgid "Incomplete Outputs"
+#~ msgstr "Onvolledige Productieuitvoeren"
+
+#~ msgid "Create Purchase Order"
+#~ msgstr "Inkooporder aanmaken"
+
+#~ msgid "Edit company information"
+#~ msgstr "Bedrijfsinformatie bewerken"
+
+#~ msgid "Edit Company"
+#~ msgstr "Bedrijf bewerken"
+
+#~ msgid "Delete company"
+#~ msgstr "Bedrijf verwijderen"
+
+#~ msgid "Delete Company"
+#~ msgstr "Bedrijf verwijderen"
+
+#~ msgid "Upload new image"
+#~ msgstr "Nieuwe afbeelding uploaden"
+
+#~ msgid "Download image from URL"
+#~ msgstr "Afbeelding downloaden van URL"
+
+#~ msgid "Uses default currency"
+#~ msgstr "Gebruik standaard valuta"
+
+#~ msgid "Phone"
+#~ msgstr "Telefoon"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "Leveranciersonderdeel"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "Nieuw leveranciers onderdeel"
+
+#~ msgid "Manufacturer Parts"
+#~ msgstr "Fabrikant onderdelen"
+
+#~ msgid "Create new manufacturer part"
+#~ msgstr "Maak nieuw fabrikant onderdeel"
+
+#~ msgid "New Manufacturer Part"
+#~ msgstr "Nieuw fabrikant onderdeel"
+
+#~ msgid "Create new purchase order"
+#~ msgstr "Nieuwe inkooporder aanmaken"
+
+#~ msgid "New Purchase Order"
+#~ msgstr "Nieuwe Inkooporder"
+
+#~ msgid "Create new sales order"
+#~ msgstr "Nieuwe inkooporder aanmaken"
+
+#~ msgid "New Sales Order"
+#~ msgstr "Nieuwe Verkooporder"
+
+#~ msgid "Company Notes"
+#~ msgstr "Opmerkingen Bedrijf"
+
+#~ msgid "Manufacturers"
+#~ msgstr "Fabrikanten"
+
+#~ msgid "Order part"
+#~ msgstr "Order onderdeel"
+
+#~ msgid "Edit manufacturer part"
+#~ msgstr "Fabrikant onderdeel bewerken"
+
+#~ msgid "Delete manufacturer part"
+#~ msgstr "Fabrikant onderdeel verwijderen"
+
+#~ msgid "Internal Part"
+#~ msgstr "Intern onderdeel"
+
+#~ msgid "No manufacturer information available"
+#~ msgstr "Geen fabrikanten informatie beschikbaar"
+
+#~ msgid "Parameters"
+#~ msgstr "Parameters"
+
+#~ msgid "New Parameter"
+#~ msgstr "Nieuwe Parameter"
+
+#~ msgid "Manufactured Parts"
+#~ msgstr "Gefabriceerde onderdelen"
+
+#~ msgid "Supplied Parts"
+#~ msgstr "Geleverde Onderdelen"
+
+#~ msgid "Supplied Stock Items"
+#~ msgstr "Geleverde Voorraadartikelen"
+
+#~ msgid "Assigned Stock Items"
+#~ msgstr "Toegewezen Voorraadartikelen"
+
+#~ msgid "Order Part"
+#~ msgstr "Order Onderdeel"
+
+#~ msgid "Edit Supplier Part"
+#~ msgstr "Bewerk Leveranciers onderdeel"
+
+#~ msgid "Duplicate Supplier Part"
+#~ msgstr "Dupliceer Leveranciers onderdeel"
+
+#~ msgid "Delete Supplier  Part"
+#~ msgstr "Verwijder leveranciers onderdeel"
+
+#~ msgid "No supplier information available"
+#~ msgstr "Geen leveranciersinformatie beschikbaar"
+
+#~ msgid "Create new stock item"
+#~ msgstr "Nieuw voorraadartikel aanmaken"
+
+#~ msgid "New Stock Item"
+#~ msgstr "Nieuw Voorraadartikel"
+
+#~ msgid "Supplier Part Orders"
+#~ msgstr "Leverancier Onderdelenorders"
+
+#~ msgid "Pricing Information"
+#~ msgstr "Prijsinformatie"
+
+#~ msgid "New Manufacturer"
+#~ msgstr "Nieuwe fabrikant"
+
+#~ msgid "Customers"
+#~ msgstr "Klanten"
+
+#~ msgid "New Customer"
+#~ msgstr "Nieuwe Klant"
+
+#~ msgid "Companies"
+#~ msgstr "Bedrijven"
+
+#~ msgid "New Company"
+#~ msgstr "Nieuw Bedrijf"
+
+#~ msgid "Print purchase order report"
+#~ msgstr "Print rapport inkooporder"
+
+#~ msgid "Export order to file"
+#~ msgstr "Exporteer order naar bestand"
+
+#~ msgid "Order actions"
+#~ msgstr "Order acties"
+
+#~ msgid "Edit order"
+#~ msgstr "Order bewerken"
+
+#~ msgid "Cancel order"
+#~ msgstr "Order annuleren"
+
+#~ msgid "Mark order as complete"
+#~ msgstr "Order markeren als voltooid"
+
+#~ msgid "Complete Order"
+#~ msgstr "Order Voltooien"
+
+#~ msgid "Order Reference"
+#~ msgstr "Order Referentie"
+
+#~ msgid "Order Description"
+#~ msgstr "Order Beschrijving"
+
+#~ msgid "Order Status"
+#~ msgstr "Order Status"
+
+#~ msgid "No suppplier information available"
+#~ msgstr "Geen leveranciersinformatie beschikbaar"
+
+#~ msgid "Completed Line Items"
+#~ msgstr "Afgeronde artikelen"
+
+#~ msgid "Incomplete"
+#~ msgstr "Incompleet"
+
+#~ msgid "Total cost"
+#~ msgstr "Totale kosten"
+
+#~ msgid "Total cost could not be calculated"
+#~ msgstr "Totale kosten konden niet worden berekend"
+
+#~ msgid "Submit Selections"
+#~ msgstr "Dien Selecties In"
+
+#~ msgid "Remove row"
+#~ msgstr "Rij verwijderen"
+
+#~ msgid "Errors exist in the submitted data"
+#~ msgstr "Er zijn fouten in de ingediende gegevens"
+
+#~ msgid "Row"
+#~ msgstr "Rij"
+
+#~ msgid "Select Supplier Part"
+#~ msgstr "Selecteer Leveranciersonderdeel"
+
+#~ msgid "Return to Orders"
+#~ msgstr "Terug naar Orders"
+
+#~ msgid "Upload File for Purchase Order"
+#~ msgstr "Bestand uploaden voor Inkooporder"
+
+#~ msgid "Order is already processed. Files cannot be uploaded."
+#~ msgstr "Order is al verwerkt. Bestanden kunnen niet meer worden geüpload."
+
+#~ msgid "Received Stock"
+#~ msgstr "Ontvangen Voorraadartikelen"
+
+#~ msgid "Purchase Order Items"
+#~ msgstr "Inkooporder Artikelen"
+
+#~ msgid "Add Line Item"
+#~ msgstr "Artikel toevoegen"
+
+#~ msgid "Extra Lines"
+#~ msgstr "Extra Regels"
+
+#~ msgid "Add Extra Line"
+#~ msgstr "Extra Regel Toevoegen"
+
+#~ msgid "Received Items"
+#~ msgstr "Ontvangen Artikelen"
+
+#~ msgid "Order Notes"
+#~ msgstr "Ordernotities"
+
+#~ msgid "Print packing list"
+#~ msgstr "Pakbon afdrukken"
+
+#~ msgid "Customer Reference"
+#~ msgstr "Klantreferentie"
+
+#~ msgid "Print sales order report"
+#~ msgstr "Print verkooporderrapport"
+
+#~ msgid "Complete Sales Order"
+#~ msgstr "Voltooi Verkooporder"
+
+#~ msgid "This Sales Order has not been fully allocated"
+#~ msgstr "Deze Verkooporder is niet volledig toegewezen"
+
+#~ msgid "Completed Shipments"
+#~ msgstr "Voltooide Verzendingen"
+
+#~ msgid "Sales Order Items"
+#~ msgstr "Verkooporder Artikelen"
+
+#~ msgid "Pending Shipments"
+#~ msgstr "Verzendingen in behandeling"
+
+#~ msgid "Actions"
+#~ msgstr "Acties"
+
+#~ msgid "New Shipment"
+#~ msgstr "Nieuwe Verzending"
+
+#~ msgid "Match Supplier Parts"
+#~ msgstr "Leveranciersonderdelen Vergelijken"
+
+#~ msgid "Sales order not found"
+#~ msgstr "Verkooporder niet gevonden"
+
+#~ msgid "Price not found"
+#~ msgstr "Prijs niet gevonden"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price}"
+#~ msgstr "{part} stukprijs bijgewerkt naar {price}"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price} and quantity to {qty}"
+#~ msgstr "{part} stukprijs bijgewerkt naar {price} en aantal naar {qty}"
+
+#~ msgid "You do not have permission to edit the BOM."
+#~ msgstr "U heeft geen toestemming om de stuklijst te bewerken."
+
+#~ msgid "Edit category"
+#~ msgstr "Categorie bewerken"
+
+#~ msgid "Edit Category"
+#~ msgstr "Categorie bewerken"
+
+#~ msgid "Delete Category"
+#~ msgstr "Categorie verwijderen"
+
+#~ msgid "Part Parameters"
+#~ msgstr "Onderdeel Parameters"
+
+#~ msgid "New Category"
+#~ msgstr "Nieuwe Categorie"
+
+#~ msgid "Sales Order Allocations"
+#~ msgstr "Verkoopordertoewijzingen"
+
+#~ msgid "Add new parameter"
+#~ msgstr "Een parameter toevoegen"
+
+#~ msgid "Assemblies"
+#~ msgstr "Assemblages"
+
+#~ msgid "Build Order Allocations"
+#~ msgstr "Productieordertoewijzingen"
+
+#~ msgid "Part Manufacturers"
+#~ msgstr "Onderdeelfabrikanten"
+
+#~ msgid "Format"
+#~ msgstr "Formaat"
+
+#~ msgid "Select file format"
+#~ msgstr "Selecteer bestandsindeling"
+
+#~ msgid "Print Label"
+#~ msgstr "Label afdrukken"
+
+#~ msgid "Stock actions"
+#~ msgstr "Voorraad acties"
+
+#~ msgid "Part can be assembled from other parts"
+#~ msgstr "Onderdeel kan vanuit andere onderdelen worden samengesteld"
+
+#~ msgid "Part can be used in assemblies"
+#~ msgstr "Onderdeel kan gebruikt worden voor assemblages"
+
+#~ msgid "Allocated to Build Orders"
+#~ msgstr "Toegewezen aan Productieorder"
+
+#~ msgid "Allocated to Sales Orders"
+#~ msgstr "Toegewezen aan verkooporders"
+
+#~ msgid "Stock"
+#~ msgstr "Voorraad"
+
+#~ msgid "Select from existing images"
+#~ msgstr "Selecteer uit bestaande afbeeldingen"
+
+#~ msgid "Select Part Image"
+#~ msgstr "Selecteer afbeelding onderdeel"
+
+#~ msgid "Updated part image"
+#~ msgstr "Afbeelding onderdeel bijgewerkt"
+
+#~ msgid "Part image not found"
+#~ msgstr "Afbeelding van onderdeel niet gevonden"
+
+#~ msgid "Count stock"
+#~ msgstr "Voorraad tellen"
+
+#~ msgid "Transfer stock"
+#~ msgstr "Voorraad overzetten"
+
+#~ msgid "Build"
+#~ msgstr "Product"
+
+#~ msgid "No manufacturer set"
+#~ msgstr "Geen fabrikant geselecteerd"
+
+#~ msgid "This stock item is allocated to Sales Order"
+#~ msgstr "Dit voorraadartikel is toegewezen aan Verkooporder"
+
+#~ msgid "This stock item is allocated to Build Order"
+#~ msgstr "Dit voorraadartikel is toegewezen aan Productieorder"
+
+#~ msgid "previous page"
+#~ msgstr "vorige pagina"
+
+#~ msgid "next page"
+#~ msgstr "volgende pagina"
+
+#~ msgid "Location actions"
+#~ msgstr "Locatie acties"
+
+#~ msgid "Edit location"
+#~ msgstr "Bewerk locatie"
+
+#~ msgid "You are not in the list of owners of this location. This stock location cannot be edited."
+#~ msgstr "U staat niet in de lijst van eigenaars van deze locatie. Deze voorraadlocatie kan niet worden bewerkt."
+
+#~ msgid "Sublocations"
+#~ msgstr "Sublocaties"
+
+#~ msgid "Create new stock location"
+#~ msgstr "Maak nieuwe voorraadlocatie"
+
+#~ msgid "New Location"
+#~ msgstr "Nieuwe Locatie"
+
+#~ msgid "Build Order Settings"
+#~ msgstr "Productieorderinstellingen"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Message"
+#~ msgstr "Bericht"
+
+#~ msgid "This plugin was installed as a package"
+#~ msgstr "Deze plugin is als pakket geïnstalleerd"
+
+#~ msgid "Commit Message"
+#~ msgstr "Bericht indienen"
+
+#~ msgid "Purchase Order Settings"
+#~ msgstr "Inkooporder Instellingen"
+
+#~ msgid "Home Page"
+#~ msgstr "Startpagina"
+
+#~ msgid "Sales Order Settings"
+#~ msgstr "Verkooporder Instellingen"
+
+#~ msgid "Language Settings"
+#~ msgstr "Taalinstellingen"
+
+#~ msgid "Select language"
+#~ msgstr "Taal selecteren"
+
+#~ msgid "Set Language"
+#~ msgstr "Taal instellen"
+
+#~ msgid "Some languages are not complete"
+#~ msgstr "Een aantal talen zijn nog niet compleet"
+
+#~ msgid "Home Page Settings"
+#~ msgstr "Startpagina Instellingen"
+
+#~ msgid "Confirm"
+#~ msgstr "Bevestigen"
+
+#~ msgid "Close"
+#~ msgstr "Sluit"
+
+#~ msgid "Buy"
+#~ msgstr "Inkoop"
+
+#~ msgid "Sell"
+#~ msgstr "Verkoop"

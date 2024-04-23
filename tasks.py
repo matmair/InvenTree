@@ -448,7 +448,7 @@ def migrate(c):
 
 
 @task(
-    post=[clean_settings, translate_stats],
+    post=[clean_settings],
     help={
         'skip_backup': 'Skip database backup step (advanced users)',
         'frontend': 'Force frontend compilation/download step (ignores INVENTREE_DOCKER)',
@@ -793,7 +793,7 @@ def render_js_files(c):
     manage(c, 'test InvenTree.ci_render_js')
 
 
-@task(post=[translate_stats, static, server])
+@task(post=[static, server])
 def test_translations(c):
     """Add a fictional language to test if each component is ready for translations."""
     import django

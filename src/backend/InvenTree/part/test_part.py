@@ -2,7 +2,6 @@
 
 import os
 
-from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -11,14 +10,8 @@ from django.test.utils import override_settings
 from allauth.account.models import EmailAddress
 
 import part.settings
-from common.models import (
-    InvenTreeSetting,
-    InvenTreeUserSetting,
-    NotificationEntry,
-    NotificationMessage,
-)
+from common.models import InvenTreeSetting, NotificationEntry, NotificationMessage
 from common.notifications import UIMessageNotification, storage
-from InvenTree import version
 from InvenTree.templatetags import inventree_extras
 from InvenTree.unit_test import InvenTreeTestCase
 

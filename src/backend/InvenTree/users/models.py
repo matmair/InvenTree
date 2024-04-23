@@ -356,7 +356,6 @@ class RuleSet(models.Model):
             'admin_logentry',
             'contenttypes_contenttype',
             # Models which currently do not require permissions
-            'common_colortheme',
             'common_customunit',
             'common_inventreesetting',
             'common_inventreeusersetting',

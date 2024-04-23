@@ -88,47 +88,27 @@ msgstr "A(z) '{name}' érték nem a szükséges minta szerinti"
 msgid "Provided value does not match required pattern: "
 msgstr "A megadott érték nem felel meg a szükséges mintának: "
 
-#: InvenTree/forms.py:128
-msgid "Enter password"
-msgstr "Jelszó megadása"
-
-#: InvenTree/forms.py:129
-msgid "Enter new password"
-msgstr "Új jelszó megadása"
-
-#: InvenTree/forms.py:138
-msgid "Confirm password"
-msgstr "Jelszó megerősítése"
-
-#: InvenTree/forms.py:139
-msgid "Confirm new password"
-msgstr "Új jelszó megerősítése"
-
-#: InvenTree/forms.py:143
-msgid "Old password"
-msgstr "Régi jelszó"
-
-#: InvenTree/forms.py:182
+#: InvenTree/forms.py:63
 msgid "Email (again)"
 msgstr "Email (újra)"
 
-#: InvenTree/forms.py:186
+#: InvenTree/forms.py:67
 msgid "Email address confirmation"
 msgstr "Email cím megerősítés"
 
-#: InvenTree/forms.py:209
+#: InvenTree/forms.py:90
 msgid "You must type the same email each time."
 msgstr "Mindig ugyanazt az email címet kell beírni."
 
-#: InvenTree/forms.py:253 InvenTree/forms.py:261
+#: InvenTree/forms.py:134 InvenTree/forms.py:142
 msgid "The provided primary email address is not valid."
 msgstr "A megadott elsődleges email cím nem valós."
 
-#: InvenTree/forms.py:268
+#: InvenTree/forms.py:149
 msgid "The provided email domain is not approved."
 msgstr "A megadott email domain nincs jóváhagyva."
 
-#: InvenTree/forms.py:395
+#: InvenTree/forms.py:266
 msgid "Registration is disabled."
 msgstr "Regisztráció le van tiltva."
 
@@ -707,8 +687,6 @@ msgstr "Kiküldve"
 
 #: InvenTree/status_codes.py:14 InvenTree/status_codes.py:151
 #: InvenTree/status_codes.py:169 generic/states/tests.py:19
-#: order/templates/order/order_base.html:158
-#: order/templates/order/sales_order_base.html:161
 msgid "Complete"
 msgstr "Kész"
 
@@ -766,7 +744,7 @@ msgstr "Karanténban"
 msgid "Legacy stock tracking entry"
 msgstr "Örökölt készlet követési bejegyzés"
 
-#: InvenTree/status_codes.py:93 templates/js/translated/stock.js:544
+#: InvenTree/status_codes.py:93
 msgid "Stock item created"
 msgstr "Készlet tétel létrehozva"
 
@@ -858,7 +836,7 @@ msgstr "Megrendelésre érkezett"
 msgid "Returned against Return Order"
 msgstr "Visszavéve"
 
-#: InvenTree/status_codes.py:141 templates/js/translated/table_filters.js:375
+#: InvenTree/status_codes.py:141
 msgid "Sent to customer"
 msgstr "Vevőnek kiszállítva"
 
@@ -1520,7 +1498,8 @@ msgstr "Hiányos foglalás elfogadása"
 
 #: build/serializers.py:512
 msgid "Complete outputs if stock has not been fully allocated"
-msgstr "Kimenetek befejezése akkor is ha a készlet nem\n"
+msgstr ""
+"Kimenetek befejezése akkor is ha a készlet nem\n"
 "lett teljesen lefoglalva"
 
 #: build/serializers.py:592
@@ -3685,9 +3664,7 @@ msgstr "Elolvasva?"
 #: report/templates/report/inventree_bill_of_materials_report.html:126
 #: report/templates/report/inventree_bill_of_materials_report.html:148
 #: report/templates/report/inventree_return_order_report_base.html:35
-#: stock/templates/stock/item_base.html:133 templates/503.html:31
-#: templates/hover_image.html:7 templates/hover_image.html:9
-#: templates/modals.html:6
+#: templates/503.html:31
 msgid "Image"
 msgstr "Kép"
 
@@ -3813,18 +3790,11 @@ msgstr "Kulcsszó paraméterek"
 msgid "Task keyword arguments"
 msgstr "Feladat kulcsszó paraméterek"
 
-#: common/views.py:84 order/templates/order/order_wizard/po_upload.html:51
-#: order/templates/order/purchase_order_detail.html:24 order/views.py:118
-#: part/templates/part/import_wizard/part_upload.html:58 part/views.py:109
-#: templates/patterns/wizard/upload.html:37
+#: common/views.py:84
 msgid "Upload File"
 msgstr "Fájl feltöltése"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "Mezők egyeztetése"
 
@@ -3840,14 +3810,7 @@ msgstr "Mezők egyeztetése sikertelen"
 msgid "Parts imported"
 msgstr "Importált alkatrészek"
 
-#: common/views.py:494 order/templates/order/order_wizard/match_fields.html:27
-#: order/templates/order/order_wizard/match_parts.html:19
-#: order/templates/order/order_wizard/po_upload.html:49
-#: part/templates/part/import_wizard/match_fields.html:27
-#: part/templates/part/import_wizard/match_references.html:19
-#: part/templates/part/import_wizard/part_upload.html:56
-#: templates/patterns/wizard/match_fields.html:26
-#: templates/patterns/wizard/upload.html:35
+#: common/views.py:494
 msgid "Previous Step"
 msgstr "Előző lépés"
 
@@ -4143,7 +4106,7 @@ msgstr "Kapcsolódó gyártói alkatrésznek ugyanarra a kiindulási alkatrészr
 #: order/templates/order/order_base.html:136 part/bom.py:272 part/bom.py:310
 #: part/serializers.py:499 plugin/builtin/suppliers/digikey.py:25
 #: plugin/builtin/suppliers/lcsc.py:26 plugin/builtin/suppliers/mouser.py:24
-#: plugin/builtin/suppliers/tme.py:26 stock/templates/stock/item_base.html:224
+#: plugin/builtin/suppliers/tme.py:26
 #: templates/email/overdue_purchase_order.html:16
 #: templates/js/translated/company.js:350
 #: templates/js/translated/company.js:511
@@ -4792,13 +4755,11 @@ msgstr "Szűrők"
 #: label/templates/label/part/part_label.html:31
 #: label/templates/label/stockitem/qr.html:21
 #: label/templates/label/stocklocation/qr.html:20
-#: templates/allauth_2fa/setup.html:18
 msgid "QR Code"
 msgstr "QR kód"
 
 #: label/templates/label/part/part_label_code128.html:31
 #: label/templates/label/stocklocation/qr_and_text.html:31
-#: templates/qr_code.html:7
 msgid "QR code"
 msgstr "QR kód"
 
@@ -4946,7 +4907,6 @@ msgstr ""
 #: order/templates/order/order_base.html:9
 #: order/templates/order/order_base.html:18
 #: report/templates/report/inventree_po_report_base.html:14
-#: stock/templates/stock/item_base.html:176
 #: templates/email/overdue_purchase_order.html:15
 #: templates/js/translated/part.js:1745 templates/js/translated/pricing.js:804
 #: templates/js/translated/purchase_order.js:168
@@ -5946,8 +5906,7 @@ msgstr "Minimális készlet"
 msgid "Used In"
 msgstr "Felhasználva ebben"
 
-#: part/admin.py:150 part/templates/part/part_base.html:241 stock/admin.py:231
-#: templates/js/translated/part.js:714 templates/js/translated/part.js:2152
+#: part/admin.py:150 stock/admin.py:231
 msgid "Building"
 msgstr "Gyártásban"
 
@@ -5969,8 +5928,7 @@ msgstr "Szülő ID"
 msgid "Parent Name"
 msgstr "Szülő neve"
 
-#: part/admin.py:318 part/templates/part/category.html:88
-#: part/templates/part/category.html:101
+#: part/admin.py:318
 msgid "Category Path"
 msgstr "Kategória elérési út"
 
@@ -6108,6 +6066,10 @@ msgstr "Alapértelmezett hely"
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
 msgstr "Teljes készlet"
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
+msgstr "SKU"
 
 #: part/forms.py:49
 msgid "Input quantity for price calculation"
@@ -8371,8 +8333,6 @@ msgid "Name for the Plugin Package - can also contain a version indicator"
 msgstr "Plugin csomag neve - verzió megjelölést is tartalmazhat"
 
 #: plugin/serializers.py:99
-#: templates/InvenTree/settings/plugin_settings.html:42
-#: templates/js/translated/plugin.js:86
 msgid "Version"
 msgstr "Verzió"
 
@@ -8573,17 +8533,43 @@ msgstr "Asset fájl leírása"
 msgid "stock location query filters (comma-separated list of key=value pairs)"
 msgstr "készlethely lekérdezés szűrők (vesszővel elválasztott kulcs=érték párok)"
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr "Alkatrészjegyzék"
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr "Szükséges alapanyagok"
+
+#: report/templates/report/inventree_build_order_base.html:98
+#: report/templates/report/inventree_po_report_base.html:40
+#: report/templates/report/inventree_so_report_base.html:40
+#: report/templates/report/inventree_test_report_base.html:84
+#: report/templates/report/inventree_test_report_base.html:163
+msgid "Part image"
+msgstr "Alkatrész képe"
+
+#: report/templates/report/inventree_build_order_base.html:121
+msgid "Issued"
+msgstr "Kiküldve"
 
 #: report/templates/report/inventree_build_order_base.html:146
 msgid "Required For"
 msgstr "Szükséges ehhez"
 
+#: report/templates/report/inventree_build_order_base.html:152
+msgid "Issued By"
+msgstr "Kiállította"
+
 #: report/templates/report/inventree_po_report_base.html:15
 msgid "Supplier was deleted"
 msgstr "Beszállító törölve lett"
+
+#: report/templates/report/inventree_po_report_base.html:22
+#: report/templates/report/inventree_return_order_report_base.html:19
+#: report/templates/report/inventree_so_report_base.html:22
+msgid "Line Items"
+msgstr "Sortételek"
 
 #: report/templates/report/inventree_po_report_base.html:30
 #: report/templates/report/inventree_so_report_base.html:30
@@ -8662,7 +8648,6 @@ msgid "No result"
 msgstr "Nincs eredmény"
 
 #: report/templates/report/inventree_test_report_base.html:154
-#: stock/templates/stock/stock_sidebar.html:16
 msgid "Installed Items"
 msgstr "Beépített tételek"
 
@@ -8696,14 +8681,17 @@ msgstr "Hely ID"
 msgid "Location Name"
 msgstr "Hely neve"
 
-#: stock/admin.py:64 stock/templates/stock/location.html:131
-#: stock/templates/stock/location.html:137
+#: stock/admin.py:64
 msgid "Location Path"
 msgstr "Hely elérési út"
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
 msgstr "Készlet tétel ID"
+
+#: stock/admin.py:163
+msgid "Batch"
+msgstr "Batch"
 
 #: stock/admin.py:168
 msgid "Status Code"
@@ -8880,28 +8868,28 @@ msgstr "A szerkezeti raktári helyre nem lehet készletet felvenni!"
 msgid "Stock item cannot be created for virtual parts"
 msgstr "Virtuális alkatrészből nem lehet készletet létrehozni"
 
-#: stock/models.py:670
+#: stock/models.py:673
 #, python-brace-format
 msgid "Part type ('{self.supplier_part.part}') must be {self.part}"
 msgstr "A beszállítói alkatrész típusa ('{self.supplier_part.part}') mindenképpen {self.part} kellene, hogy legyen"
 
-#: stock/models.py:680 stock/models.py:693
+#: stock/models.py:683 stock/models.py:696
 msgid "Quantity must be 1 for item with a serial number"
 msgstr "Mennyiség 1 kell legyen a sorozatszámmal rendelkező tételnél"
 
-#: stock/models.py:683
+#: stock/models.py:686
 msgid "Serial number cannot be set if quantity greater than 1"
 msgstr "Nem lehet sorozatszámot megadni ha a mennyiség több mint egy"
 
-#: stock/models.py:707
+#: stock/models.py:710
 msgid "Item cannot belong to itself"
 msgstr "A tétel nem tartozhat saját magához"
 
-#: stock/models.py:712
+#: stock/models.py:715
 msgid "Item must have a build reference if is_building=True"
 msgstr "A tételnek kell legyen gyártási azonosítója ha az is_bulding igaz"
 
-#: stock/models.py:725
+#: stock/models.py:728
 msgid "Build reference does not point to the same part object"
 msgstr "Gyártási azonosító nem ugyanarra az alkatrész objektumra mutat"
 
@@ -9683,8 +9671,7 @@ msgstr "Hitelesítési hiba"
 msgid "You have been logged out from InvenTree."
 msgstr "Kijelentkeztél az InvenTreeből."
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr "Bejelentkezés"
 
@@ -14227,3 +14214,4440 @@ msgstr "Jogosultság tételek szerkesztéséhez"
 msgid "Permission to delete items"
 msgstr "Jogosultság tételek törléséhez"
 
+#~ msgid "Enter password"
+#~ msgstr "Jelszó megadása"
+
+#~ msgid "Enter new password"
+#~ msgstr "Új jelszó megadása"
+
+#~ msgid "Confirm password"
+#~ msgstr "Jelszó megerősítése"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Új jelszó megerősítése"
+
+#~ msgid "Old password"
+#~ msgstr "Régi jelszó"
+
+#~ msgid "Unknown database"
+#~ msgstr "Ismeretlen adatbázis"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Felhasználói információ módosítása"
+
+#~ msgid "Set Password"
+#~ msgstr "Jelszó beállítása"
+
+#~ msgid "Password fields must match"
+#~ msgstr "A jelszavaknak egyeznie kell"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Rossz jelszó lett megadva"
+
+#~ msgid "System Information"
+#~ msgstr "Rendszerinformáció"
+
+#~ msgid "About InvenTree"
+#~ msgstr "Verzió információk"
+
+#~ msgid "Part thumbnail"
+#~ msgstr "Alkatrész bélyegkép"
+
+#~ msgid "Barcode actions"
+#~ msgstr "Vonalkód műveletek"
+
+#~ msgid "Show QR Code"
+#~ msgstr "QR kód megjelenítése"
+
+#~ msgid "Unlink Barcode"
+#~ msgstr "Vonalkód leválasztása"
+
+#~ msgid "Link Barcode"
+#~ msgstr "Vonalkód hozzárendelése"
+
+#~ msgid "Print actions"
+#~ msgstr "Nyomtatási műveletek"
+
+#~ msgid "Print build order report"
+#~ msgstr "Gyártási riport nyomtatása"
+
+#~ msgid "Build actions"
+#~ msgstr "Gyártási műveletek"
+
+#~ msgid "Edit Build"
+#~ msgstr "Gyártás szerkesztése"
+
+#~ msgid "Cancel Build"
+#~ msgstr "Gyártás törlése"
+
+#~ msgid "Duplicate Build"
+#~ msgstr "Gyártás másolása"
+
+#~ msgid "Delete Build"
+#~ msgstr "Gyártás törlése"
+
+#~ msgid "Complete Build"
+#~ msgstr "Gyártás befejezése"
+
+#~ msgid "Build Description"
+#~ msgstr "Gyártás leírása"
+
+#~ msgid "No build outputs have been created for this build order"
+#~ msgstr "Ehhez a gyártási utasításhoz nem készült kimenet"
+
+#~ msgid "Build Order is ready to mark as completed"
+#~ msgstr "Gyártási utasítás elkészültnek jelölhető"
+
+#~ msgid "Build Order cannot be completed as outstanding outputs remain"
+#~ msgstr "Befejezetlen gyártási kimenetek vannak"
+
+#~ msgid "Required build quantity has not yet been completed"
+#~ msgstr "Szükséges gyártási mennyiség még nincs meg"
+
+#~ msgid "Stock has not been fully allocated to this Build Order"
+#~ msgstr "Még nincs lefoglalva a szükséges készlet"
+
+#, python-format
+#~ msgid "This build was due on %(target)s"
+#~ msgstr "Ez a gyártás %(target)s-n volt esedékes"
+
+#~ msgid "Overdue"
+#~ msgstr "Késésben"
+
+#~ msgid "Completed Outputs"
+#~ msgstr "Befejezett kimenetek"
+
+#~ msgid "Priority"
+#~ msgstr "Prioritás"
+
+#~ msgid "Delete Build Order"
+#~ msgstr "Gyártási utasítás törlése"
+
+#~ msgid "Build Order QR Code"
+#~ msgstr "Gyártási utasítás QR kódja"
+
+#~ msgid "Link Barcode to Build Order"
+#~ msgstr "Vonalkód gyártáshoz rendelése"
+
+#~ msgid "Build Details"
+#~ msgstr "Gyártás részletei"
+
+#~ msgid "Stock Source"
+#~ msgstr "Készlet forrás"
+
+#~ msgid "Stock can be taken from any available location."
+#~ msgstr "Készlet bármely rendelkezésre álló helyről felhasználható."
+
+#~ msgid "Destination location not specified"
+#~ msgstr "A cél hely nincs megadva"
+
+#~ msgid "Allocated Parts"
+#~ msgstr "Lefoglalt alkatrészek"
+
+#~ msgid "Created"
+#~ msgstr "Létrehozva"
+
+#~ msgid "No target date set"
+#~ msgstr "Nincs céldátum beállítva"
+
+#~ msgid "Completed"
+#~ msgstr "Kész"
+
+#~ msgid "Build not complete"
+#~ msgstr "Gyártás nincs kész"
+
+#~ msgid "Child Build Orders"
+#~ msgstr "Alárendelt gyártások"
+
+#~ msgid "Allocate Stock to Build"
+#~ msgstr "Készlet foglalása gyártáshoz"
+
+#~ msgid "Deallocate stock"
+#~ msgstr "Készlet felszabadítása"
+
+#~ msgid "Deallocate Stock"
+#~ msgstr "Készlet felszabadítása"
+
+#~ msgid "Automatically allocate stock to build"
+#~ msgstr "Automatikus készlet foglalás a gyártáshoz"
+
+#~ msgid "Auto Allocate"
+#~ msgstr "Automata foglalás"
+
+#~ msgid "Manually allocate stock to build"
+#~ msgstr "Manuális készlet foglalás a gyártáshoz"
+
+#~ msgid "Allocate Stock"
+#~ msgstr "Készlet foglalása"
+
+#~ msgid "Order required parts"
+#~ msgstr "Szükséges alkatrészek rendelése"
+
+#~ msgid "Order Parts"
+#~ msgstr "Alkatrész rendelés"
+
+#~ msgid "Incomplete Build Outputs"
+#~ msgstr "Befejezetlen gyártási kimenetek"
+
+#~ msgid "Create new build output"
+#~ msgstr "Új gyártási kimenet létrehozása"
+
+#~ msgid "New Build Output"
+#~ msgstr "Új gyártási kimenet"
+
+#~ msgid "Consumed Stock"
+#~ msgstr "Felhasznált készlet"
+
+#~ msgid "Completed Build Outputs"
+#~ msgstr "Befejezett gyártási kimenetek"
+
+#~ msgid "Attachments"
+#~ msgstr "Mellékletek"
+
+#~ msgid "Build Notes"
+#~ msgstr "Gyártási megjegyzések"
+
+#~ msgid "Allocation Complete"
+#~ msgstr "Lefoglalás kész"
+
+#~ msgid "All lines have been fully allocated"
+#~ msgstr "Minden sor rendben lefoglalva"
+
+#~ msgid "New Build Order"
+#~ msgstr "Új gyártási utasítás"
+
+#~ msgid "Build Order Details"
+#~ msgstr "Gyártási utasítás részletei"
+
+#~ msgid "Incomplete Outputs"
+#~ msgstr "Befejezetlen kimenetek"
+
+#~ msgid "Create Purchase Order"
+#~ msgstr "Beszerzési rendelés létrehozása"
+
+#~ msgid "Company actions"
+#~ msgstr "Cég műveletek"
+
+#~ msgid "Edit company information"
+#~ msgstr "Cég adatainak szerkesztése"
+
+#~ msgid "Edit Company"
+#~ msgstr "Cég szerkesztése"
+
+#~ msgid "Delete company"
+#~ msgstr "Cég törlése"
+
+#~ msgid "Delete Company"
+#~ msgstr "Cég törlése"
+
+#~ msgid "Upload new image"
+#~ msgstr "Új kép feltöltése"
+
+#~ msgid "Download image from URL"
+#~ msgstr "Kép letöltése URL-ről"
+
+#~ msgid "Delete image"
+#~ msgstr "Kép törlése"
+
+#~ msgid "Uses default currency"
+#~ msgstr "Alapértelmezett pénznemet használja"
+
+#~ msgid "Phone"
+#~ msgstr "Telefonszám"
+
+#~ msgid "Remove Image"
+#~ msgstr "Kép eltávolítása"
+
+#~ msgid "Remove associated image from this company"
+#~ msgstr "Céghez rendelt kép eltávolítása"
+
+#~ msgid "Remove"
+#~ msgstr "Törlés"
+
+#~ msgid "Upload Image"
+#~ msgstr "Kép feltöltése"
+
+#~ msgid "Download Image"
+#~ msgstr "Kép letöltése"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "Beszállítói alkatrészek"
+
+#~ msgid "Create new supplier part"
+#~ msgstr "Új beszállítói alkatrész létrehozása"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "Új beszállítói alkatrész"
+
+#~ msgid "Manufacturer Parts"
+#~ msgstr "Gyártói alkatrészek"
+
+#~ msgid "Create new manufacturer part"
+#~ msgstr "Új gyártói alkatrész létrehozása"
+
+#~ msgid "New Manufacturer Part"
+#~ msgstr "Új gyártói alkatrész"
+
+#~ msgid "Supplier Stock"
+#~ msgstr "Beszállítói készlet"
+
+#~ msgid "Create new purchase order"
+#~ msgstr "Beszerzési rendelés létrehozása"
+
+#~ msgid "New Purchase Order"
+#~ msgstr "Új beszerzési rendelés"
+
+#~ msgid "Create new sales order"
+#~ msgstr "Vevői rendelés létrehozása"
+
+#~ msgid "New Sales Order"
+#~ msgstr "Új vevői rendelés"
+
+#~ msgid "Assigned Stock"
+#~ msgstr "Hozzárendelt készlet"
+
+#~ msgid "Create new return order"
+#~ msgstr "Visszavétel létrehozása"
+
+#~ msgid "New Return Order"
+#~ msgstr "Új visszavétel"
+
+#~ msgid "Company Notes"
+#~ msgstr "Cég megjegyzések"
+
+#~ msgid "Company Contacts"
+#~ msgstr "Cég névjegyek"
+
+#~ msgid "Add Contact"
+#~ msgstr "Névjegy hozzáadása"
+
+#~ msgid "Company addresses"
+#~ msgstr "Cég címei"
+
+#~ msgid "Add Address"
+#~ msgstr "Cím hozzáadása"
+
+#~ msgid "Manufacturers"
+#~ msgstr "Gyártók"
+
+#~ msgid "Order part"
+#~ msgstr "Alkatrész rendelés"
+
+#~ msgid "Edit manufacturer part"
+#~ msgstr "Gyártói alkatrész szerkesztése"
+
+#~ msgid "Delete manufacturer part"
+#~ msgstr "Gyártói alkatrész törlése"
+
+#~ msgid "Internal Part"
+#~ msgstr "Belső alkatrész"
+
+#~ msgid "No manufacturer information available"
+#~ msgstr "Nincs elérhető gyártói információ"
+
+#~ msgid "Parameters"
+#~ msgstr "Paraméterek"
+
+#~ msgid "New Parameter"
+#~ msgstr "Új paraméter"
+
+#~ msgid "Add Parameter"
+#~ msgstr "Paraméter hozzáadása"
+
+#~ msgid "Manufactured Parts"
+#~ msgstr "Gyártott alkatrészek"
+
+#~ msgid "Supplied Parts"
+#~ msgstr "Szállított alkatrészek"
+
+#~ msgid "Supplied Stock Items"
+#~ msgstr "Szállított készlet tételek"
+
+#~ msgid "Assigned Stock Items"
+#~ msgstr "Hozzárendelt készlet tételek"
+
+#~ msgid "Contacts"
+#~ msgstr "Névjegyek"
+
+#~ msgid "Addresses"
+#~ msgstr "Címek"
+
+#~ msgid "Supplier part actions"
+#~ msgstr "Beszállítói alkatrész műveletek"
+
+#~ msgid "Order Part"
+#~ msgstr "Alkatrész rendelése"
+
+#~ msgid "Update Availability"
+#~ msgstr "Elérhetőség frissítése"
+
+#~ msgid "Edit Supplier Part"
+#~ msgstr "Beszállítói alkatrész szerkesztése"
+
+#~ msgid "Duplicate Supplier Part"
+#~ msgstr "Beszállítói alkatrész másolása"
+
+#~ msgid "Delete Supplier Part"
+#~ msgstr "Beszállítói alkatrész törlése"
+
+#~ msgid "Delete Supplier  Part"
+#~ msgstr "Beszállítói alkatrész törlése"
+
+#~ msgid "No supplier information available"
+#~ msgstr "Nincs elérhető beszállítói információ"
+
+#~ msgid "Supplier Part Stock"
+#~ msgstr "Beszállítói készlet"
+
+#~ msgid "Create new stock item"
+#~ msgstr "Új készlet tétel létrehozása"
+
+#~ msgid "New Stock Item"
+#~ msgstr "Új készlet tétel"
+
+#~ msgid "Supplier Part Orders"
+#~ msgstr "Beszállítói alkatrész rendelések"
+
+#~ msgid "Pricing Information"
+#~ msgstr "Árinformációk"
+
+#~ msgid "Add Price Break"
+#~ msgstr "Ársáv hozzáadása"
+
+#~ msgid "Supplier Part QR Code"
+#~ msgstr "Beszállítói alkatrész QR kód"
+
+#~ msgid "Link Barcode to Supplier Part"
+#~ msgstr "Vonalkód hozzárendelése a beszállítói alkatrészhez"
+
+#~ msgid "Update Part Availability"
+#~ msgstr "Alkatrész elérhetőség frissítése"
+
+#~ msgid "Supplier Part Pricing"
+#~ msgstr "Beszállító alkatrész árazás"
+
+#~ msgid "New Supplier"
+#~ msgstr "Új beszállító"
+
+#~ msgid "New Manufacturer"
+#~ msgstr "Új gyártó"
+
+#~ msgid "Customers"
+#~ msgstr "Vevők"
+
+#~ msgid "New Customer"
+#~ msgstr "Új vevő"
+
+#~ msgid "Companies"
+#~ msgstr "Cégek"
+
+#~ msgid "New Company"
+#~ msgstr "Új cég"
+
+#~ msgid "Print purchase order report"
+#~ msgstr "Beszerzési rendelés nyomtatása"
+
+#~ msgid "Export order to file"
+#~ msgstr "Rendelés exportálása fájlba"
+
+#~ msgid "Order actions"
+#~ msgstr "Rendelés műveletek"
+
+#~ msgid "Edit order"
+#~ msgstr "Rendelés szerkesztése"
+
+#~ msgid "Cancel order"
+#~ msgstr "Rendelés törlése"
+
+#~ msgid "Duplicate order"
+#~ msgstr "Rendelés másolása"
+
+#~ msgid "Issue Order"
+#~ msgstr "Rendelés kiküldése"
+
+#~ msgid "Mark order as complete"
+#~ msgstr "Rendelés teljesítettnek jelölése"
+
+#~ msgid "Complete Order"
+#~ msgstr "Rendelés befejezése"
+
+#~ msgid "Supplier part thumbnail"
+#~ msgstr "Beszállítói alkatrész bélyegkép"
+
+#~ msgid "Order Reference"
+#~ msgstr "Rendelés azonosítója"
+
+#~ msgid "Order Description"
+#~ msgstr "Rendelés leírása"
+
+#~ msgid "Order Status"
+#~ msgstr "Rendelés állapota"
+
+#~ msgid "No suppplier information available"
+#~ msgstr "Nincs elérhető beszállítói információ"
+
+#~ msgid "Completed Line Items"
+#~ msgstr "Kész sortételek"
+
+#~ msgid "Incomplete"
+#~ msgstr "Hiányos"
+
+#~ msgid "Total cost"
+#~ msgstr "Teljes költség"
+
+#~ msgid "Total cost could not be calculated"
+#~ msgstr "A teljes költség nem számolható"
+
+#~ msgid "Purchase Order QR Code"
+#~ msgstr "Beszerzési rendelés QR kódja"
+
+#~ msgid "Link Barcode to Purchase Order"
+#~ msgstr "Vonalkód hozzáadása a beszerzési rendeléshez"
+
+#~ msgid "Missing selections for the following required columns"
+#~ msgstr "Hiányzó kiválasztás a következő oszlopokhoz"
+
+#~ msgid "Duplicate selections found, see below. Fix them then retry submitting."
+#~ msgstr "Többszörös kiválasztás található, lásd lentebb. Javítsd őket aztán próbáld újraküldeni."
+
+#~ msgid "Submit Selections"
+#~ msgstr "Kiválasztás küldése"
+
+#~ msgid "File Fields"
+#~ msgstr "Fájl mezők"
+
+#~ msgid "Remove column"
+#~ msgstr "Oszlop eltávolítása"
+
+#~ msgid "Duplicate selection"
+#~ msgstr "Kijelöltek másolása"
+
+#~ msgid "Remove row"
+#~ msgstr "Sor törlése"
+
+#~ msgid "Errors exist in the submitted data"
+#~ msgstr "Hibák vannak a küldött adatokban"
+
+#~ msgid "Row"
+#~ msgstr "Sor"
+
+#~ msgid "Select Supplier Part"
+#~ msgstr "Beszállítói alkatrész kiválasztása"
+
+#~ msgid "Return to Orders"
+#~ msgstr "Vissza a rendelésekhez"
+
+#~ msgid "Upload File for Purchase Order"
+#~ msgstr "Fájl feltöltése a beszerzési megrendeléshez"
+
+#~ msgid "Order is already processed. Files cannot be uploaded."
+#~ msgstr "A rendelést már feldolgozták. Így már nem lehet fájlokat feltölteni."
+
+#, python-format
+#~ msgid "Step %(step)s of %(count)s"
+#~ msgstr "%(step)s/%(count)s. lépés"
+
+#~ msgid "Received Stock"
+#~ msgstr "Beérkezett készlet"
+
+#~ msgid "Purchase Order Items"
+#~ msgstr "Beszerzési rendelés tételei"
+
+#~ msgid "Add Line Item"
+#~ msgstr "Sortétel hozzáadása"
+
+#~ msgid "Receive Line Items"
+#~ msgstr "Sortételek bevételezése"
+
+#~ msgid "Extra Lines"
+#~ msgstr "Egyéb tételek"
+
+#~ msgid "Add Extra Line"
+#~ msgstr "Egyéb tétel hozzáadása"
+
+#~ msgid "Received Items"
+#~ msgstr "Érkezett tételek"
+
+#~ msgid "Order Notes"
+#~ msgstr "Rendelés megjegyzések"
+
+#~ msgid "Customer logo thumbnail"
+#~ msgstr "Vevő logó bélyegkép"
+
+#~ msgid "Print return order report"
+#~ msgstr "Visszavételi riport nyomtatása"
+
+#~ msgid "Print packing list"
+#~ msgstr "Csomagolási lista nyomtatása"
+
+#~ msgid "Customer Reference"
+#~ msgstr "Vevői azonosító"
+
+#~ msgid "Total Cost"
+#~ msgstr "Teljes költség"
+
+#~ msgid "Return Order QR Code"
+#~ msgstr "Visszavétel QR kódja"
+
+#~ msgid "Link Barcode to Return Order"
+#~ msgstr "Vonalkód visszavételhez rendelése"
+
+#~ msgid "Order Details"
+#~ msgstr "Visszavétel részletei"
+
+#~ msgid "Print sales order report"
+#~ msgstr "Vevői rendelés nyomtatása"
+
+#~ msgid "Ship Items"
+#~ msgstr "Tételek kiszállítása"
+
+#~ msgid "Complete Sales Order"
+#~ msgstr "Vevői rendelés befejezése, minden kiszállítva"
+
+#~ msgid "This Sales Order has not been fully allocated"
+#~ msgstr "Ehhez a vevői rendeléshez nincs minden alkatrész lefoglalva"
+
+#~ msgid "Completed Shipments"
+#~ msgstr "Kész szállítmányok"
+
+#~ msgid "Sales Order QR Code"
+#~ msgstr "Vevő rendelés QR kódja"
+
+#~ msgid "Link Barcode to Sales Order"
+#~ msgstr "Vonalkód hozzáadása a vevői rendeléshez"
+
+#~ msgid "Sales Order Items"
+#~ msgstr "Vevői rendelés tételek"
+
+#~ msgid "Pending Shipments"
+#~ msgstr "Függő szállítmányok"
+
+#~ msgid "Actions"
+#~ msgstr "Műveletek"
+
+#~ msgid "New Shipment"
+#~ msgstr "Új szállítmány"
+
+#~ msgid "Match Supplier Parts"
+#~ msgstr "Beszállítói alkatrészek egyeztetése"
+
+#~ msgid "Sales order not found"
+#~ msgstr "Vevő rendelés nem találhtó"
+
+#~ msgid "Price not found"
+#~ msgstr "Nem található ár"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price}"
+#~ msgstr "A {part} egységára {price}-ra módosítva"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price} and quantity to {qty}"
+#~ msgstr "A {part} alkatrész módosított egységára {price} mennyisége pedig {qty}"
+
+#~ msgid "You do not have permission to edit the BOM."
+#~ msgstr "Nincs jogosultságod az alkatrészjegyzék szerkesztéséhez."
+
+#~ msgid "The BOM this part has been changed, and must be validated"
+#~ msgstr "A alkatrészhez tartozó alkatrészjegyzék megváltozott és jóvá kell hagyni"
+
+#, python-format
+#~ msgid "This BOM was last checked by %(checker)s on %(check_date)s"
+#~ msgstr "Ezt az alkatrészjegyzéket utoljára %(checker)s ellenőrizte %(check_date)s-n"
+
+#~ msgid "This BOM has not been validated."
+#~ msgstr "Ez az alkatrészjegyzék még nincs jóváhagyva."
+
+#~ msgid "Perform stocktake for this part category"
+#~ msgstr "Alkatrész kategória leltározása"
+
+#~ msgid "You are subscribed to notifications for this category"
+#~ msgstr "Értesítések beállítva erre a kategóriára"
+
+#~ msgid "Subscribe to notifications for this category"
+#~ msgstr "Értesítések kérése erre a kategóriára"
+
+#~ msgid "Category Actions"
+#~ msgstr "Kategória műveletek"
+
+#~ msgid "Edit category"
+#~ msgstr "Kategória szerkesztése"
+
+#~ msgid "Edit Category"
+#~ msgstr "Kategória szerkesztése"
+
+#~ msgid "Delete Category"
+#~ msgstr "Kategória törlése"
+
+#~ msgid "Top level part category"
+#~ msgstr "Legfelső szintű alkatrész kategória"
+
+#~ msgid "Subcategories"
+#~ msgstr "Alkategóriák"
+
+#~ msgid "Parts (Including subcategories)"
+#~ msgstr "Alkatrészek száma (alkategóriákkal együtt)"
+
+#~ msgid "Create new part"
+#~ msgstr "Alkatrész létrehozása"
+
+#~ msgid "New Part"
+#~ msgstr "Új alkatrész"
+
+#~ msgid "Part Parameters"
+#~ msgstr "Alkatrész paraméterek"
+
+#~ msgid "Create new part category"
+#~ msgstr "Alkatrész kategória létrehozása"
+
+#~ msgid "New Category"
+#~ msgstr "Új kategória"
+
+#~ msgid "Import Parts"
+#~ msgstr "Alkatrészek importálása"
+
+#, python-format
+#~ msgid "Make a copy of part '%(full_name)s'."
+#~ msgstr "Másolat készítése a '%(full_name)s' alkatrészről."
+
+#~ msgid "Possible Matching Parts"
+#~ msgstr "Valószínűleg egyező alkatrész"
+
+#~ msgid "The new part may be a duplicate of these existing parts"
+#~ msgstr "Az új alkatrész lehet hogy másodpéldánya ezeknek a létezőknek"
+
+#, python-format
+#~ msgid "%(full_name)s - <em>%(desc)s</em> (%(match_per)s%% match)"
+#~ msgstr "%(full_name)s - <em>%(desc)s</em> (%(match_per)s%% egyezik)"
+
+#~ msgid "Part Stock"
+#~ msgstr "Alkatrész készlet"
+
+#~ msgid "Refresh scheduling data"
+#~ msgstr "Ütemezési adatok frissítése"
+
+#~ msgid "Refresh"
+#~ msgstr "Frissítés"
+
+#~ msgid "Add stocktake information"
+#~ msgstr "Leltár információ hozzáadása"
+
+#~ msgid "Part Test Templates"
+#~ msgstr "Alkatrész teszt sablonok"
+
+#~ msgid "Add Test Template"
+#~ msgstr "Teszt sablon hozzáadása"
+
+#~ msgid "Sales Order Allocations"
+#~ msgstr "Vevői rendeléshez foglalások"
+
+#~ msgid "Part Notes"
+#~ msgstr "Alkatrész megjegyzések"
+
+#~ msgid "Part Variants"
+#~ msgstr "Alkatrész változatok"
+
+#~ msgid "Create new variant"
+#~ msgstr "Új változat létrehozása"
+
+#~ msgid "New Variant"
+#~ msgstr "Új változat"
+
+#~ msgid "Add new parameter"
+#~ msgstr "Paraméter hozzáadása"
+
+#~ msgid "Related Parts"
+#~ msgstr "Kapcsolódó alkatrészek"
+
+#~ msgid "Add Related"
+#~ msgstr "Kapcsolódó hozzáadása"
+
+#~ msgid "Export actions"
+#~ msgstr "Exportálási műveletek"
+
+#~ msgid "Export BOM"
+#~ msgstr "Alkatrészjegyzék exportálása"
+
+#~ msgid "Print BOM Report"
+#~ msgstr "Alkatrészjegyzék riport nyomtatása"
+
+#~ msgid "BOM actions"
+#~ msgstr "Alkatrészjegyzék műveletek"
+
+#~ msgid "Upload BOM"
+#~ msgstr "Alkatrészjegyzék feltöltése"
+
+#~ msgid "Validate BOM"
+#~ msgstr "Alkatrészjegyzék jóváhagyása"
+
+#~ msgid "Add BOM Item"
+#~ msgstr "Alkatrészjegyzék tétel hozzáadása"
+
+#~ msgid "Assemblies"
+#~ msgstr "Gyártmányok"
+
+#~ msgid "Part Builds"
+#~ msgstr "Alkatrész gyártások"
+
+#~ msgid "Build Order Allocations"
+#~ msgstr "Gyártáshoz foglalások"
+
+#~ msgid "Part Suppliers"
+#~ msgstr "Alkatrész beszállítók"
+
+#~ msgid "Part Manufacturers"
+#~ msgstr "Alkatrész gyártók"
+
+#~ msgid "Related Part"
+#~ msgstr "Kapcsolódó alkatrész"
+
+#~ msgid "Add Related Part"
+#~ msgstr "Kapcsolódó alkatrész hozzáadása"
+
+#~ msgid "Add Test Result Template"
+#~ msgstr "Teszt eredmény sablon hozzáadása"
+
+#~ msgid "Insufficient privileges."
+#~ msgstr "Nincs megfelelő jogosultság."
+
+#~ msgid "Return to Parts"
+#~ msgstr "Vissza az alkatrészekhez"
+
+#~ msgid "Import Parts from File"
+#~ msgstr "Alkatrészek importálása fájlból"
+
+#~ msgid "Requirements for part import"
+#~ msgstr "Követelmények az alkatrész importáláshoz"
+
+#~ msgid "The part import file must contain the required named columns as provided in the "
+#~ msgstr "Az alkatrész import fájlnak tartalmaznia kell a szükséges elnevezéssel ellátott oszlopokat ahogy ebben van "
+
+#~ msgid "Part Import Template"
+#~ msgstr "Alkatrész import sablon"
+
+#~ msgid "Download Part Import Template"
+#~ msgstr "Alkatrész import sablon letöltése"
+
+#~ msgid "Format"
+#~ msgstr "Formátum"
+
+#~ msgid "Select file format"
+#~ msgstr "Fájlfomátum kiválasztása"
+
+#~ msgid "Part List"
+#~ msgstr "Alkatrész lista"
+
+#~ msgid "You are subscribed to notifications for this part"
+#~ msgstr "Értesítések beállítva erre az alkatrészre"
+
+#~ msgid "Subscribe to notifications for this part"
+#~ msgstr "Értesítések kérése erre az alkatrészre"
+
+#~ msgid "Print Label"
+#~ msgstr "Címke nyomtatása"
+
+#~ msgid "Show pricing information"
+#~ msgstr "Árinformációk megjelenítése"
+
+#~ msgid "Stock actions"
+#~ msgstr "Készlet műveletek"
+
+#~ msgid "Count part stock"
+#~ msgstr "Készlet számolása"
+
+#~ msgid "Transfer part stock"
+#~ msgstr "Készlet áthelyezése"
+
+#~ msgid "Part actions"
+#~ msgstr "Készlet műveletek"
+
+#~ msgid "Duplicate part"
+#~ msgstr "Alkatrész másolása"
+
+#~ msgid "Edit part"
+#~ msgstr "Alkatrész szerkesztése"
+
+#~ msgid "Delete part"
+#~ msgstr "Alkatrész törlése"
+
+#~ msgid "Part is a template part (variants can be made from this part)"
+#~ msgstr "Sablon alkatrész (változatok létrehozhatók belőle)"
+
+#~ msgid "Part can be assembled from other parts"
+#~ msgstr "Ez az alkatrész gyártható másik alkatrészekből"
+
+#~ msgid "Part can be used in assemblies"
+#~ msgstr "Használható más alkatrészek gyártásához"
+
+#~ msgid "Part stock is tracked by serial number"
+#~ msgstr "Készlet sorozatszám alapján követendő"
+
+#~ msgid "Part can be purchased from external suppliers"
+#~ msgstr "Beszállítótól rendelhető"
+
+#~ msgid "Part can be sold to customers"
+#~ msgstr "Vevő által rendelhető, eladható"
+
+#~ msgid "Part is not active"
+#~ msgstr "Az alkatrész nem aktív"
+
+#~ msgid "Inactive"
+#~ msgstr "Inaktív"
+
+#~ msgid "Part is virtual (not a physical part)"
+#~ msgstr "Virtuális (nem kézzelfogható alkatrész)"
+
+#~ msgid "Show Part Details"
+#~ msgstr "Alkatrész részletei"
+
+#~ msgid "Allocated to Build Orders"
+#~ msgstr "Gyártáshoz lefoglalva"
+
+#~ msgid "Allocated to Sales Orders"
+#~ msgstr "Vevő rendeléshez lefoglalva"
+
+#~ msgid "Can Build"
+#~ msgstr "Gyártható"
+
+#~ msgid "Minimum stock level"
+#~ msgstr "Minimális készlet"
+
+#~ msgid "Price Range"
+#~ msgstr "Ártartomány"
+
+#~ msgid "Latest Serial Number"
+#~ msgstr "Legutolsó sorozatszám"
+
+#~ msgid "Search for serial number"
+#~ msgstr "Sorozatszámra keresés"
+
+#~ msgid "Part QR Code"
+#~ msgstr "Alkatrész QR kódja"
+
+#~ msgid "Link Barcode to Part"
+#~ msgstr "Vonalkód hozzárendelése az alkatrészhez"
+
+#~ msgid "Calculate"
+#~ msgstr "Számítás"
+
+#~ msgid "Remove associated image from this part"
+#~ msgstr "Alkatrészhez rendelt kép eltávolítása"
+
+#~ msgid "No matching images found"
+#~ msgstr "Nincs egyező kép"
+
+#~ msgid "Hide Part Details"
+#~ msgstr "Részletek elrejtése"
+
+#~ msgid "Supplier Pricing"
+#~ msgstr "Beszállítói ár"
+
+#~ msgid "Unit Cost"
+#~ msgstr "Egység költség"
+
+#~ msgid "No supplier pricing available"
+#~ msgstr "Nincs beszállítói árinfomáció"
+
+#~ msgid "BOM Pricing"
+#~ msgstr "Alkatrészjegyzék árazás"
+
+#~ msgid "Unit Purchase Price"
+#~ msgstr "Beszerzési egységár"
+
+#~ msgid "Total Purchase Price"
+#~ msgstr "Teljes beszerzési ár"
+
+#~ msgid "No BOM pricing available"
+#~ msgstr "Nincs alkatrészjegyzék árinfomáció"
+
+#~ msgid "Internal Price"
+#~ msgstr "Belső ár"
+
+#~ msgid "No pricing information is available for this part."
+#~ msgstr "Az alkatrészhez nem áll rendelkezésre árinformáció."
+
+#~ msgid "Scheduled Quantity"
+#~ msgstr "Ütemezett mennyiség"
+
+#~ msgid "Variants"
+#~ msgstr "Változatok"
+
+#~ msgid "Stock"
+#~ msgstr "Készlet"
+
+#~ msgid "Pricing"
+#~ msgstr "Árazás"
+
+#~ msgid "Scheduling"
+#~ msgstr "Ütemezés"
+
+#~ msgid "Test Templates"
+#~ msgstr "Teszt sablonok"
+
+#~ msgid "Select from existing images"
+#~ msgstr "Válassz a meglévő képek közül"
+
+#~ msgid "Pricing Overview"
+#~ msgstr "Ár áttekintés"
+
+#~ msgid "Refresh Part Pricing"
+#~ msgstr "Árazás frissítése"
+
+#~ msgid "Override Part Pricing"
+#~ msgstr "Alkatrész árazás felülbírálása"
+
+#~ msgid "Edit"
+#~ msgstr "Szerkesztés"
+
+#~ msgid "Price Category"
+#~ msgstr "Árkategória"
+
+#~ msgid "Minimum"
+#~ msgstr "Minimum"
+
+#~ msgid "Maximum"
+#~ msgstr "Maximum"
+
+#~ msgid "Internal Pricing"
+#~ msgstr "Belső árazás"
+
+#~ msgid "Purchase History"
+#~ msgstr "Beszerzési előzmények"
+
+#~ msgid "Variant Pricing"
+#~ msgstr "Alkatrészváltozat árazás"
+
+#~ msgid "Pricing Overrides"
+#~ msgstr "Árazás felülbírálások"
+
+#~ msgid "Overall Pricing"
+#~ msgstr "Általános árazás"
+
+#~ msgid "Sale History"
+#~ msgstr "Eladási előzmények"
+
+#~ msgid "Sale price data is not available for this part"
+#~ msgstr "Nincsenek eladási ár adatok ehhez az alkatrészhez"
+
+#~ msgid "Price range data is not available for this part."
+#~ msgstr "Nincsenek ársáv adatok ehhez az alkatrészhez."
+
+#~ msgid "Jump to overview"
+#~ msgstr "Ugrás az áttekintéshez"
+
+#~ msgid "Add Internal Price Break"
+#~ msgstr "Belső ársáv hozzáadása"
+
+#~ msgid "Sale Pricing"
+#~ msgstr "Eladási ár"
+
+#~ msgid "Add Sell Price Break"
+#~ msgstr "Eladási ársáv hozzáadása"
+
+#~ msgid "Update Pricing"
+#~ msgstr "Árazás Frissítése"
+
+#~ msgid "No Stock"
+#~ msgstr "Nincs készlet"
+
+#~ msgid "Low Stock"
+#~ msgstr "Alacsony készlet"
+
+#~ msgid "Return to BOM"
+#~ msgstr "Vissza az alkarészjegyzékhez"
+
+#~ msgid "Upload Bill of Materials"
+#~ msgstr "Alkatrészjegyzék feltöltése"
+
+#~ msgid "BOM upload requirements"
+#~ msgstr "Alkatrészjegyzék feltöltési követelmények"
+
+#~ msgid "Upload BOM File"
+#~ msgstr "Alkatrészjegyzék fájl feltöltése"
+
+#~ msgid "Submit BOM Data"
+#~ msgstr "Alkatrészjegyzék adatok küldése"
+
+#~ msgid "Requirements for BOM upload"
+#~ msgstr "Követelmények az alkatrészjegyzék feltöltéséhez"
+
+#~ msgid "The BOM file must contain the required named columns as provided in the "
+#~ msgstr "Az alkatrészjegyzék fájlnak tartalmaznia kell a szükséges elnevezéssel ellátott oszlopokat ahogy ebben van "
+
+#~ msgid "BOM Upload Template"
+#~ msgstr "Alkatrészjegyzék feltöltési sablon"
+
+#~ msgid "Each part must already exist in the database"
+#~ msgstr "Minden egyes alkatrésznek léteznie kell már az adatbázisban"
+
+#~ msgid "Create new part variant"
+#~ msgstr "Alkatrész változat létrehozása"
+
+#~ msgid "Create a new variant part from this template"
+#~ msgstr "Új alkatrészváltozat létrehozása ebből a sablonból"
+
+#~ msgid "Match References"
+#~ msgstr "Azonosítók egyeztetése"
+
+#, python-brace-format
+#~ msgid "Can't import part {new_part.name} because there is no category assigned"
+#~ msgstr "Az {new_part.name} alkatrész importja sikertelen, mert nincsen kategória hozzárendelve"
+
+#~ msgid "Select Part Image"
+#~ msgstr "Válassz képet az alkatrészhez"
+
+#~ msgid "Updated part image"
+#~ msgstr "Alkatrész képe frissítve"
+
+#~ msgid "Part image not found"
+#~ msgstr "Az alkatrész képe nem található"
+
+#~ msgid "Test name"
+#~ msgstr "Teszt neve"
+
+#~ msgid "Stock Tracking Information"
+#~ msgstr "Készlettörténeti információk"
+
+#~ msgid "Child Stock Items"
+#~ msgstr "Al-készlet tételek"
+
+#~ msgid "This stock item does not have any child items"
+#~ msgstr "Ez a készlet tétel nem tartalmaz egy altételt sem"
+
+#~ msgid "Test Data"
+#~ msgstr "Teszt adatok"
+
+#~ msgid "Test Report"
+#~ msgstr "Teszt riport"
+
+#~ msgid "Delete Test Data"
+#~ msgstr "Teszt adatok törlése"
+
+#~ msgid "Add Test Data"
+#~ msgstr "Teszt adatok hozzáadása"
+
+#~ msgid "Stock Item Notes"
+#~ msgstr "Készlet tétel megjegyzések"
+
+#~ msgid "Installed Stock Items"
+#~ msgstr "Beépített készlet tételek"
+
+#~ msgid "Install Stock Item"
+#~ msgstr "Készlet tétel beépítése"
+
+#~ msgid "Delete all test results for this stock item"
+#~ msgstr "Készlet tétel összes teszt eredményének törlése"
+
+#~ msgid "Add Test Result"
+#~ msgstr "Teszt eredmény hozzáadása"
+
+#~ msgid "Locate stock item"
+#~ msgstr "Készlet tétel keresése"
+
+#~ msgid "Scan to Location"
+#~ msgstr "Áthelyezés kódolvasással"
+
+#~ msgid "Printing actions"
+#~ msgstr "Nyomtatási műveletek"
+
+#~ msgid "Stock adjustment actions"
+#~ msgstr "Készlet módosítási műveletek"
+
+#~ msgid "Count stock"
+#~ msgstr "Leltározás"
+
+#~ msgid "Add stock"
+#~ msgstr "Készlet növelése"
+
+#~ msgid "Remove stock"
+#~ msgstr "Készlet csökkentése"
+
+#~ msgid "Serialize stock"
+#~ msgstr "Sorozatszámok előállítása"
+
+#~ msgid "Transfer stock"
+#~ msgstr "Készlet áthelyezése"
+
+#~ msgid "Assign to customer"
+#~ msgstr "Vevőhöz rendelése"
+
+#~ msgid "Return to stock"
+#~ msgstr "Visszavétel készletre"
+
+#~ msgid "Uninstall stock item"
+#~ msgstr "Készlet tétel kiszedése"
+
+#~ msgid "Uninstall"
+#~ msgstr "Kiszedés"
+
+#~ msgid "Install stock item"
+#~ msgstr "Készlet tétel beépítése"
+
+#~ msgid "Install"
+#~ msgstr "Beépítés"
+
+#~ msgid "Convert to variant"
+#~ msgstr "Változattá alakítás"
+
+#~ msgid "Duplicate stock item"
+#~ msgstr "Készlet tétel másolása"
+
+#~ msgid "Edit stock item"
+#~ msgstr "Készlet tétel szerkesztése"
+
+#~ msgid "Delete stock item"
+#~ msgstr "Készlet tétel törlése"
+
+#~ msgid "Build"
+#~ msgstr "Gyártás"
+
+#~ msgid "Parent Item"
+#~ msgstr "Szülő tétel"
+
+#~ msgid "No manufacturer set"
+#~ msgstr "Nincs beállítva gyártó"
+
+#~ msgid "You are not in the list of owners of this item. This stock item cannot be edited."
+#~ msgstr "Úgytűnik nem vagy ennek a tételnek a tulajdonosa. Ezt így nem tudod módosítani."
+
+#~ msgid "Read only"
+#~ msgstr "Csak olvasható"
+
+#~ msgid "This stock item is unavailable"
+#~ msgstr "Ez a készlet tétel nem elérhető"
+
+#~ msgid "This stock item is in production and cannot be edited."
+#~ msgstr "Ez a készlet tétel éppen gyártás alatt van és itt még nem szerkeszthető."
+
+#~ msgid "Edit the stock item from the build view."
+#~ msgstr "A tétel szerkesztése most csak a gyártási nézetből lehetséges."
+
+#~ msgid "This stock item is allocated to Sales Order"
+#~ msgstr "Foglalva ehhez a vevői rendeléshez"
+
+#~ msgid "This stock item is allocated to Build Order"
+#~ msgstr "Foglalva ehhez a gyártási utasításhoz"
+
+#~ msgid "This stock item is serialized. It has a unique serial number and the quantity cannot be adjusted"
+#~ msgstr "Ez a készlet tétel egyedi követésre kötelezett. Egyedi sorozatszámmal rendelkezik így a mennyiség nem módosítható"
+
+#~ msgid "previous page"
+#~ msgstr "előző oldal"
+
+#~ msgid "Navigate to previous serial number"
+#~ msgstr "Menj az előző sorozatszámhoz"
+
+#~ msgid "next page"
+#~ msgstr "követkető oldal"
+
+#~ msgid "Navigate to next serial number"
+#~ msgstr "Menj a következő sorozatszámhoz"
+
+#~ msgid "Available Quantity"
+#~ msgstr "Elérhető mennyiség"
+
+#~ msgid "No location set"
+#~ msgstr "Nincs beállítva hely"
+
+#~ msgid "Tests"
+#~ msgstr "Tesztek"
+
+#, python-format
+#~ msgid "This StockItem expired on %(item.expiry_date)s"
+#~ msgstr "Ez a készlet tétel lejárt %(item.expiry_date)s-n"
+
+#, python-format
+#~ msgid "This StockItem expires on %(item.expiry_date)s"
+#~ msgstr "Ez a készlet tétel lejár %(item.expiry_date)s-n"
+
+#~ msgid "No stocktake performed"
+#~ msgstr "Még nem volt leltározva"
+
+#~ msgid "stock item"
+#~ msgstr "készlet tétel"
+
+#~ msgid "Edit Stock Status"
+#~ msgstr "Készlet állapot szerkesztése"
+
+#~ msgid "Stock Item QR Code"
+#~ msgstr "Készlet tétel QR kódja"
+
+#~ msgid "Link Barcode to Stock Item"
+#~ msgstr "Vonalkód hozzárendelése a készlet tételhez"
+
+#~ msgid "Select one of the part variants listed below."
+#~ msgstr "Válassz a lenti alkatrész változatok közül"
+
+#~ msgid "Warning"
+#~ msgstr "Figyelem"
+
+#~ msgid "This action cannot be easily undone"
+#~ msgstr "Ez a művelet nem vonható vissza könnyen"
+
+#~ msgid "Convert Stock Item"
+#~ msgstr "Készlet tétel konvertálása"
+
+#~ msgid "Return to Stock"
+#~ msgstr "Visszavétel készletre"
+
+#~ msgid "Create serialized items from this stock item."
+#~ msgstr "Sorszámozott készletek létrehozása ebből a készlet tételből."
+
+#~ msgid "Select quantity to serialize, and unique serial numbers."
+#~ msgstr "Válassz mennyiséget és egyedi sorozatszámokat a sorozatszámozáshoz."
+
+#~ msgid "Perform stocktake for this stock location"
+#~ msgstr "Készlethely leltározása"
+
+#~ msgid "Locate stock location"
+#~ msgstr "Készlet hely keresése"
+
+#~ msgid "Scan stock items into this location"
+#~ msgstr "Készlet bevételezése erre a helyre"
+
+#~ msgid "Scan In Stock Items"
+#~ msgstr "Készlet vonalkódok beolvasása"
+
+#~ msgid "Scan stock container into this location"
+#~ msgstr "Készlet tároló bevételezése erre a helyre"
+
+#~ msgid "Scan In Container"
+#~ msgstr "Tároló vonalkód beolvasása"
+
+#~ msgid "Location actions"
+#~ msgstr "Hely műveletek"
+
+#~ msgid "Edit location"
+#~ msgstr "Hely szerkesztése"
+
+#~ msgid "Delete location"
+#~ msgstr "Hely törlése"
+
+#~ msgid "Top level stock location"
+#~ msgstr "Legfelső szintű készlet hely"
+
+#~ msgid "Location Owner"
+#~ msgstr "Hely tulajdonosa"
+
+#~ msgid "You are not in the list of owners of this location. This stock location cannot be edited."
+#~ msgstr "Úgytűnik nem vagy ennek a készlethelynek a tulajdonosa. Ezt így nem tudod módosítani."
+
+#~ msgid "Sublocations"
+#~ msgstr "Alhelyek"
+
+#~ msgid "Create new stock location"
+#~ msgstr "Új készlet hely létrehozása"
+
+#~ msgid "New Location"
+#~ msgstr "Új hely"
+
+#~ msgid "stock location"
+#~ msgstr "készlet hely"
+
+#~ msgid "Scanned stock container into this location"
+#~ msgstr "Készlet tároló bevételezve erre a helyre"
+
+#~ msgid "Stock Location QR Code"
+#~ msgstr "Készlet hely QR kódja"
+
+#~ msgid "Link Barcode to Stock Location"
+#~ msgstr "Vonalkód hozzárendelése a készlet helyhez"
+
+#~ msgid "Loading..."
+#~ msgstr "Betöltés..."
+
+#~ msgid "Stock Tracking"
+#~ msgstr "Készlettörténet"
+
+#~ msgid "Allocations"
+#~ msgstr "Foglalások"
+
+#~ msgid "Child Items"
+#~ msgstr "Gyermek tételek"
+
+#~ msgid "Index"
+#~ msgstr "Index"
+
+#~ msgid "Subscribed Parts"
+#~ msgstr "Értesítésre beállított alkatrészek"
+
+#~ msgid "Subscribed Categories"
+#~ msgstr "Értesítésre beállított kategóriák"
+
+#~ msgid "Latest Parts"
+#~ msgstr "Legújabb alkatrészek"
+
+#~ msgid "BOM Waiting Validation"
+#~ msgstr "Jóváhagyásra váró alkatrészjegyzék"
+
+#~ msgid "Recently Updated"
+#~ msgstr "Nemrég frissítve"
+
+#~ msgid "Depleted Stock"
+#~ msgstr "Kimerült készlet"
+
+#~ msgid "Required for Build Orders"
+#~ msgstr "Gyártáshoz szükséges"
+
+#~ msgid "Expired Stock"
+#~ msgstr "Lejárt készlet"
+
+#~ msgid "Stale Stock"
+#~ msgstr "Állott készlet"
+
+#~ msgid "Build Orders In Progress"
+#~ msgstr "Folyamatban lévő gyártások"
+
+#~ msgid "Overdue Build Orders"
+#~ msgstr "Késésben lévő gyártások"
+
+#~ msgid "Outstanding Purchase Orders"
+#~ msgstr "Kintlévő beszerzési rendelések"
+
+#~ msgid "Overdue Purchase Orders"
+#~ msgstr "Késésben lévő beszerzések"
+
+#~ msgid "Outstanding Sales Orders"
+#~ msgstr "Függő vevői rendelések"
+
+#~ msgid "Overdue Sales Orders"
+#~ msgstr "Késésben lévő vevői rendelések"
+
+#~ msgid "InvenTree News"
+#~ msgstr "InvenTree hírek"
+
+#~ msgid "Current News"
+#~ msgstr "Jelenlegi hírek"
+
+#~ msgid "Notification History"
+#~ msgstr "Értesítések előzményei"
+
+#~ msgid "Delete Notifications"
+#~ msgstr "Értesítések törlése"
+
+#~ msgid "Pending Notifications"
+#~ msgstr "Függő értesítések"
+
+#~ msgid "Mark all as read"
+#~ msgstr "Mind megjelölése olvasottként"
+
+#~ msgid "Notifications"
+#~ msgstr "Értesítések"
+
+#~ msgid "No unread notifications found"
+#~ msgstr "Nem találhatók olvasatlan értesítések"
+
+#~ msgid "No notification history found"
+#~ msgstr "Nem található régebbi értesítés"
+
+#~ msgid "Delete all read notifications"
+#~ msgstr "Olvasott értesítések törlése"
+
+#~ msgid "Delete Notification"
+#~ msgstr "Értesítés törlése"
+
+#~ msgid "Inbox"
+#~ msgstr "Olvasatlan"
+
+#~ msgid "History"
+#~ msgstr "Előzmények"
+
+#~ msgid "Search Results"
+#~ msgstr "Keresési eredmények"
+
+#~ msgid "Barcode Settings"
+#~ msgstr "Vonalkód beállítások"
+
+#~ msgid "Build Order Settings"
+#~ msgstr "Gyártási utasítás bellításai"
+
+#~ msgid "Category Settings"
+#~ msgstr "Kategória beállítások"
+
+#~ msgid "Server Settings"
+#~ msgstr "Kiszolgáló beállítások"
+
+#~ msgid "Label Settings"
+#~ msgstr "Címke beállítások"
+
+#~ msgid "Login Settings"
+#~ msgstr "Belépési beállítások"
+
+#~ msgid "Outgoing email has not been configured. Some login and sign-up features may not work correctly!"
+#~ msgstr "Kimenő email nincs beállítva. Néhány bejelentkezési és regisztrációs funkció nem fog megfelelően működni!"
+
+#~ msgid "Signup"
+#~ msgstr "Regisztráció"
+
+#~ msgid "Single Sign On"
+#~ msgstr "Single Sign On (SSO)"
+
+#~ msgid "Settings"
+#~ msgstr "Beállítások"
+
+#~ msgid "URLs"
+#~ msgstr "URL-ek"
+
+#, python-format
+#~ msgid "The Base-URL for this plugin is <a href=\"/%(base)s\" target=\"_blank\"><strong>%(base)s</strong></a>."
+#~ msgstr "Az alap URL-je ennek a pluginnak <a href=\"/%(base)s\" target=\"_blank\"><strong>%(base)s</strong></a>."
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Open in new tab"
+#~ msgstr "Megnyitás új fülön"
+
+#~ msgid "Notification Settings"
+#~ msgstr "Értesítési beállítások"
+
+#~ msgid "Slug"
+#~ msgstr "URL kompatibilis név (Slug)"
+
+#~ msgid "Part Settings"
+#~ msgstr "Alkatrész beállítások"
+
+#~ msgid "Part Import"
+#~ msgstr "Alkatrész importálás"
+
+#~ msgid "Import Part"
+#~ msgstr "Alkatrész importálása"
+
+#~ msgid "Part Parameter Templates"
+#~ msgstr "Alkatrész paraméter sablonok"
+
+#~ msgid "Stocktake Settings"
+#~ msgstr "Leltár beállítások"
+
+#~ msgid "Stocktake Reports"
+#~ msgstr "Leltár riportok"
+
+#~ msgid "Physical Units"
+#~ msgstr "Fizikai mértékegység"
+
+#~ msgid "Add Unit"
+#~ msgstr "Mértékegység hozzáadása"
+
+#~ msgid "Plugin Settings"
+#~ msgstr "Plugin beállítások"
+
+#~ msgid "Changing the settings below require you to immediately restart the server. Do not change this while under active usage."
+#~ msgstr "Az alábbi beállítások módosításához a kiszolgáló azonnali újraindítása szükséges. Aktív használat közben ne változtass ezeken."
+
+#~ msgid "Plugins"
+#~ msgstr "Pluginok"
+
+#~ msgid "Install Plugin"
+#~ msgstr "Plugin Telepítése"
+
+#~ msgid "Reload Plugins"
+#~ msgstr "Pluginok újratöltése"
+
+#~ msgid "External plugins are not enabled for this InvenTree installation"
+#~ msgstr "Külső pluginok nincsenek engedélyezve"
+
+#~ msgid "Plugin Error Stack"
+#~ msgstr "Plugin hibatároló"
+
+#~ msgid "Stage"
+#~ msgstr "Szakasz"
+
+#~ msgid "Message"
+#~ msgstr "Üzenet"
+
+#~ msgid "Plugin information"
+#~ msgstr "Plugin információ"
+
+#~ msgid "no version information supplied"
+#~ msgstr "nincs megadva verzió információ"
+
+#~ msgid "License"
+#~ msgstr "Licenc"
+
+#~ msgid "The code information is pulled from the latest git commit for this plugin. It might not reflect official version numbers or information but the actual code running."
+#~ msgstr "A kódinformáció a plugin legújabb git commitjából származik. Előfordulhat, hogy ez nem a hivatalos verziószámokat vagy információkat, hanem a ténylegesen futó kódot tükrözi."
+
+#~ msgid "Package information"
+#~ msgstr "Csomag információ"
+
+#~ msgid "Installation method"
+#~ msgstr "Telepítési mód"
+
+#~ msgid "This plugin was installed as a package"
+#~ msgstr "Ez a plugin csomagként lett telepítve"
+
+#~ msgid "This plugin was found in a local server path"
+#~ msgstr "Ez a plugin a lokális kiszolgáló útvonalon található"
+
+#~ msgid "Installation path"
+#~ msgstr "Telepítési útvonal"
+
+#~ msgid "Builtin"
+#~ msgstr "Beépített"
+
+#~ msgid "This is a builtin plugin which cannot be disabled"
+#~ msgstr "Ez egy beépített plugin amit nem lehet letiltani"
+
+#~ msgid "Sample"
+#~ msgstr "Minta"
+
+#~ msgid "This is a sample plugin"
+#~ msgstr "Ez egy minta plugin"
+
+#~ msgid "Commit Author"
+#~ msgstr "Commit szerzője"
+
+#~ msgid "Commit Date"
+#~ msgstr "Commit dátuma"
+
+#~ msgid "Commit Hash"
+#~ msgstr "Commit hash"
+
+#~ msgid "Commit Message"
+#~ msgstr "Commit üzenet"
+
+#~ msgid "Purchase Order Settings"
+#~ msgstr "Beszerzési rendelés beállításai"
+
+#~ msgid "Pricing Settings"
+#~ msgstr "Árazási beállítások"
+
+#~ msgid "Exchange Rates"
+#~ msgstr "Árfolyamok"
+
+#~ msgid "Update Now"
+#~ msgstr "Frissítés most"
+
+#~ msgid "Last Update"
+#~ msgstr "Utolsó frissítés"
+
+#~ msgid "Never"
+#~ msgstr "Soha"
+
+#~ msgid "Project Code Settings"
+#~ msgstr "Projektszám beállítások"
+
+#~ msgid "Project Codes"
+#~ msgstr "Projektszámok"
+
+#~ msgid "New Project Code"
+#~ msgstr "Új projektszám"
+
+#~ msgid "Report Settings"
+#~ msgstr "Riport beállítások"
+
+#~ msgid "Return Order Settings"
+#~ msgstr "Visszavétel bellításai"
+
+#~ msgid "No value set"
+#~ msgstr "Nincsenek értékek"
+
+#~ msgid "Edit setting"
+#~ msgstr "Beállítások módosítása"
+
+#~ msgid "Edit Plugin Setting"
+#~ msgstr "Plugin beállítások módosítása"
+
+#~ msgid "Edit Notification Setting"
+#~ msgstr "Értesítési beállítások szerkesztése"
+
+#~ msgid "Edit Global Setting"
+#~ msgstr "Általános beállítások szerkesztése"
+
+#~ msgid "Edit User Setting"
+#~ msgstr "Felhasználói beállítások szerkesztése"
+
+#~ msgid "Rate"
+#~ msgstr "Árfolyam"
+
+#~ msgid "Edit Custom Unit"
+#~ msgstr "Egyedi mértékegység szerkesztése"
+
+#~ msgid "Delete Custom Unit"
+#~ msgstr "Egyedi mértékegység törlése"
+
+#~ msgid "New Custom Unit"
+#~ msgstr "Új egyedi mértékegység"
+
+#~ msgid "No project codes found"
+#~ msgstr "Nem találhatók projektszámok"
+
+#~ msgid "group"
+#~ msgstr "csoport"
+
+#~ msgid "Edit Project Code"
+#~ msgstr "Projektszám szerkesztése"
+
+#~ msgid "Delete Project Code"
+#~ msgstr "Projektszám törlése"
+
+#~ msgid "No category parameter templates found"
+#~ msgstr "Nincs kategória paraméter sablon"
+
+#~ msgid "Edit Template"
+#~ msgstr "Sablon szerkesztése"
+
+#~ msgid "Delete Template"
+#~ msgstr "Sablon törlése"
+
+#~ msgid "Edit Category Parameter Template"
+#~ msgstr "Kategória paraméter sablon szerkesztése"
+
+#~ msgid "Delete Category Parameter Template"
+#~ msgstr "Kategória paraméter sablon törlése"
+
+#~ msgid "Create Category Parameter Template"
+#~ msgstr "Kategória paraméter sablon létrehozása"
+
+#~ msgid "Create Part Parameter Template"
+#~ msgstr "Alkatrész paraméter sablon létrehozása"
+
+#~ msgid "No stock location types found"
+#~ msgstr "Nem találhatók készlethely típusok"
+
+#~ msgid "Location count"
+#~ msgstr "Készlethely mennyiség"
+
+#~ msgid "Edit Location Type"
+#~ msgstr "Készlethely típus szerkesztése"
+
+#~ msgid "Delete Location type"
+#~ msgstr "Készlethely típus törlése"
+
+#~ msgid "Delete Location Type"
+#~ msgstr "Készlethely típus törlése"
+
+#~ msgid "New Location Type"
+#~ msgstr "Új készlethely típus"
+
+#~ msgid "User Settings"
+#~ msgstr "Felhasználói beállítások"
+
+#~ msgid "Account"
+#~ msgstr "Felhasználó"
+
+#~ msgid "Display"
+#~ msgstr "Megjelenítés"
+
+#~ msgid "Home Page"
+#~ msgstr "Főoldal"
+
+#~ msgid "Search"
+#~ msgstr "Keresés"
+
+#~ msgid "Reporting"
+#~ msgstr "Riportolás"
+
+#~ msgid "Global Settings"
+#~ msgstr "Általános beállítások"
+
+#~ msgid "Server"
+#~ msgstr "Kiszolgáló"
+
+#~ msgid "Labels"
+#~ msgstr "Címkék"
+
+#~ msgid "Categories"
+#~ msgstr "Kategóriák"
+
+#~ msgid "Sales Order Settings"
+#~ msgstr "Vevő rendelés beállításai"
+
+#~ msgid "Stock Settings"
+#~ msgstr "Készlet beállítások"
+
+#~ msgid "Stock Location Types"
+#~ msgstr "Készlethely típusok"
+
+#~ msgid "Account Settings"
+#~ msgstr "Fiókbeállítások"
+
+#~ msgid "Change Password"
+#~ msgstr "Jelszó módosítása"
+
+#~ msgid "Username"
+#~ msgstr "Felhasználónév"
+
+#~ msgid "First Name"
+#~ msgstr "Keresztnév"
+
+#~ msgid "Last Name"
+#~ msgstr "Vezetéknév"
+
+#~ msgid "The following email addresses are associated with your account:"
+#~ msgstr "A következő email címek vannak hozzárendelve a felhasználódhoz:"
+
+#~ msgid "Verified"
+#~ msgstr "Ellenőrizve"
+
+#~ msgid "Unverified"
+#~ msgstr "Nem ellenőrzött"
+
+#~ msgid "Primary"
+#~ msgstr "Elsődleges"
+
+#~ msgid "Make Primary"
+#~ msgstr "Legyen elsődleges"
+
+#~ msgid "Re-send Verification"
+#~ msgstr "Megerősítés újraküldése"
+
+#~ msgid "Warning:"
+#~ msgstr "Figyelem:"
+
+#~ msgid "You currently do not have any email address set up. You should really add an email address so you can receive notifications, reset your password, etc."
+#~ msgstr "Jelenleg nincs beállítva e-mail címed. Fel kellene venned egy e-mail címet, hogy értesítéseket kaphass, visszaállíthasd jelszavad, stb."
+
+#~ msgid "Add Email Address"
+#~ msgstr "Email cím hozzáadása"
+
+#~ msgid "Add Email"
+#~ msgstr "Email hozzáadása"
+
+#~ msgid "Multifactor"
+#~ msgstr "Többfaktoros"
+
+#~ msgid "You have these factors available:"
+#~ msgstr "Ezek a faktorok állnak rendelkezésre:"
+
+#~ msgid "TOTP"
+#~ msgstr "TOTP"
+
+#~ msgid "Static"
+#~ msgstr "Statikus"
+
+#~ msgid "Multifactor authentication is not configured for your account"
+#~ msgstr "Többfaktoros autentikáció nincs beállítva a fiókodhoz"
+
+#~ msgid "Change factors"
+#~ msgstr "Faktor módosítása"
+
+#~ msgid "Setup multifactor"
+#~ msgstr "Többfaktor beállítása"
+
+#~ msgid "Remove multifactor"
+#~ msgstr "Többfaktor törlése"
+
+#~ msgid "Active Sessions"
+#~ msgstr "Aktív kapcsolatok"
+
+#~ msgid "Log out active sessions (except this one)"
+#~ msgstr "Aktív kapcsolatok bontása (kivéve ezt)"
+
+#~ msgid "Log Out Active Sessions"
+#~ msgstr "Aktív kapcsolatok bontása"
+
+#~ msgid "<em>unknown on unknown</em>"
+#~ msgstr "<em>ismeretlen az ismeretlenre</em>"
+
+#~ msgid "<em>unknown</em>"
+#~ msgstr "<em>ismeretlen</em>"
+
+#~ msgid "IP Address"
+#~ msgstr "IP cím"
+
+#~ msgid "Device"
+#~ msgstr "Eszköz"
+
+#~ msgid "Last Activity"
+#~ msgstr "Legutóbbi tevékenységek"
+
+#, python-format
+#~ msgid "%(time)s ago (this session)"
+#~ msgstr "%(time)s óta (ez a munkamenet)"
+
+#, python-format
+#~ msgid "%(time)s ago"
+#~ msgstr "%(time)s óta"
+
+#~ msgid "Do you really want to remove the selected email address?"
+#~ msgstr "Biztosan törölni szeretnéd a kiválasztott email címet?"
+
+#~ msgid "Display Settings"
+#~ msgstr "Megjelenítési beállítások"
+
+#~ msgid "Theme Settings"
+#~ msgstr "Téma beállítások"
+
+#~ msgid "Select theme"
+#~ msgstr "Téma választása"
+
+#~ msgid "Set Theme"
+#~ msgstr "Téma beállítása"
+
+#~ msgid "Language Settings"
+#~ msgstr "Nyelvi beállítások"
+
+#~ msgid "Select language"
+#~ msgstr "Nyelv kiválasztása"
+
+#, python-format
+#~ msgid "%(lang_translated)s%% translated"
+#~ msgstr "%(lang_translated)s%%-ban lefordítva"
+
+#~ msgid "No translations available"
+#~ msgstr "Nem áll rendelkezésre fordítás"
+
+#~ msgid "Set Language"
+#~ msgstr "Nyelv beállítása"
+
+#~ msgid "Some languages are not complete"
+#~ msgstr "Néhány nyelv nem teljes"
+
+#~ msgid "Show only sufficient"
+#~ msgstr "Csak a szükséges megjelenítése"
+
+#~ msgid "and hidden."
+#~ msgstr "és rejtett."
+
+#~ msgid "Show them too"
+#~ msgstr "Mutasd őket is"
+
+#~ msgid "Help the translation efforts!"
+#~ msgstr "Segítsd a fordítási munkát!"
+
+#~ msgid "Native language translation of the web application is community contributed via crowdin. Contributions are welcomed and encouraged."
+#~ msgstr "A web alkalmazás fordítása közösségi munkában zajlik a crowdin-en. Szívesen fogadjuk és bátorítjuk a közreműködést."
+
+#~ msgid "InvenTree Translation Project"
+#~ msgstr "InvenTree fordítási projekt"
+
+#~ msgid "Home Page Settings"
+#~ msgstr "Főoldal beállításai"
+
+#~ msgid "Search Settings"
+#~ msgstr "Keresési beállítások"
+
+#~ msgid "Single Sign On Accounts"
+#~ msgstr "SSO fiókok"
+
+#~ msgid "You can sign in to your account using any of the following third party accounts:"
+#~ msgstr "Fiókodba a következő harmadik fél fiókjainak bármelyikével bejelentkezhetsz:"
+
+#~ msgid "There are no social network accounts connected to this account."
+#~ msgstr "Jelenleg nincs ehhez a fiókhoz kapcsolódó közösségi fiókod."
+
+#~ msgid "Add SSO Account"
+#~ msgstr "SSO fiók Hozzáadása"
+
+#~ msgid "Single Sign On is not enabled for this server"
+#~ msgstr "SSO nincs engedélyezve ezen a szerveren"
+
+#~ msgid "InvenTree Version"
+#~ msgstr "InvenTree verzió"
+
+#~ msgid "Development Version"
+#~ msgstr "Fejlesztői verzió"
+
+#~ msgid "Up to Date"
+#~ msgstr "Naprakész"
+
+#~ msgid "Update Available"
+#~ msgstr "Frissítés elérhető"
+
+#~ msgid "Commit Branch"
+#~ msgstr "Commit branch"
+
+#~ msgid "InvenTree Documentation"
+#~ msgstr "Inventree dokumentáció"
+
+#~ msgid "API Version"
+#~ msgstr "API verzió"
+
+#~ msgid "Python Version"
+#~ msgstr "Python verzió"
+
+#~ msgid "Django Version"
+#~ msgstr "Django verzió"
+
+#~ msgid "View Code on GitHub"
+#~ msgstr "Megtekintés a GitHubon"
+
+#~ msgid "Credits"
+#~ msgstr "Közreműködők"
+
+#~ msgid "Mobile App"
+#~ msgstr "Mobil alkalmazás"
+
+#~ msgid "Submit Bug Report"
+#~ msgstr "Hibabejelentés küldése"
+
+#~ msgid "copy to clipboard"
+#~ msgstr "vágólapra másolás"
+
+#~ msgid "copy version information"
+#~ msgstr "verzió információk másolása"
+
+#~ msgid "InvenTree logo"
+#~ msgstr "InvenTree logó"
+
+#~ msgid "Confirm Email Address"
+#~ msgstr "Email cím megerősítése"
+
+#, python-format
+#~ msgid "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an email address for user %(user_display)s."
+#~ msgstr "Erősítsd meg hogy a <a href=\"mailto:%(email)s\">%(email)s</a> email a %(user_display)s felhasználó email címe."
+
+#~ msgid "Confirm"
+#~ msgstr "Megerősítés"
+
+#, python-format
+#~ msgid "This email confirmation link expired or is invalid. Please <a href=\"%(email_url)s\">issue a new email confirmation request</a>."
+#~ msgstr "Ez az email megerősítő link lejárt vagy hibás. <a href=\"%(email_url)s\">Klikk ide az új megerősítési kérelem elküldéséhez</a>."
+
+#~ msgid "Sign In"
+#~ msgstr "Bejelentkezés"
+
+#~ msgid "Not a member?"
+#~ msgstr "Még nem vagy regisztrálva?"
+
+#~ msgid "Sign Up"
+#~ msgstr "Regisztráció"
+
+#~ msgid "Forgot Password?"
+#~ msgstr "Elfelejtett jelszó?"
+
+#~ msgid "or log in with"
+#~ msgstr "vagy jelentkezz be a"
+
+#~ msgid "Sign Out"
+#~ msgstr "Kijelentkezés"
+
+#~ msgid "Are you sure you want to sign out?"
+#~ msgstr "Biztosan ki akarsz jelentkezni?"
+
+#~ msgid "Return to Site"
+#~ msgstr "Vissza az alkalmazáshoz"
+
+#~ msgid "Password Reset"
+#~ msgstr "Jelszó visszaállítása"
+
+#~ msgid "Forgotten your password? Enter your email address below, and we'll send you an email allowing you to reset it."
+#~ msgstr "Elfelejtetted a jelszavad? Írd be az e-mail címed lentebb, és küldünk egy emailt, ami lehetővé teszi a jelszó visszaállítását."
+
+#~ msgid "Reset My Password"
+#~ msgstr "Új jelszót kérek"
+
+#~ msgid "This function is currently disabled. Please contact an administrator."
+#~ msgstr "Ez a funkció jelenleg le van tiltva. Vedd fel a kapcsolatot a rendszergazdával."
+
+#~ msgid "Bad Token"
+#~ msgstr "Rossz token"
+
+#, python-format
+#~ msgid "The password reset link was invalid, possibly because it has already been used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</a>."
+#~ msgstr "A jelszó visszaállításhoz használt link nem volt érvényes, valószínűleg már fel lett használva. Kérlek kérj <a href=\"%(passwd_reset_url)s\">jelszó visszaállítás</a>t."
+
+#~ msgid "Change password"
+#~ msgstr "Jelszó módosítása"
+
+#~ msgid "Your password is now changed."
+#~ msgstr "A jelszavad sikeresen megváltozott."
+
+#, python-format
+#~ msgid "Already have an account? Then please <a href=\"%(login_url)s\">sign in</a>."
+#~ msgstr "Van már fiókod? akkor kérlek <a href=\"%(login_url)s\">jelentkezz be</a>."
+
+#~ msgid "Use a SSO-provider for signup"
+#~ msgstr "Használj SSO kiszolgálót a regisztrációhoz"
+
+#~ msgid "Sign Up Closed"
+#~ msgstr "Regisztráció lezárva"
+
+#~ msgid "Sign up is currently closed."
+#~ msgstr "A regisztráció jelenleg zárva."
+
+#~ msgid "Return to login page"
+#~ msgstr "Vissza a bejelentkezéshez"
+
+#~ msgid "View in administration panel"
+#~ msgstr "Adminisztrációs panel megnyitása"
+
+#~ msgid "Two-Factor Authentication"
+#~ msgstr "Kétlépcsős hitelesítés"
+
+#~ msgid "Authenticate"
+#~ msgstr "Hitelesítés"
+
+#~ msgid "Two-Factor Authentication Backup Tokens"
+#~ msgstr "Kétlépcsős hitelesítés tartalék tokenek"
+
+#~ msgid "Backup tokens have been generated, but are not revealed here for security reasons. Press the button below to generate new ones."
+#~ msgstr "Tartalék tokenek lettek előállítva, de biztonsági okokból itt nem jelennek meg. Nyomd meg a gombot lentebb újabbak létrehozáhához."
+
+#~ msgid "No backup tokens are available. Press the button below to generate some."
+#~ msgstr "Nincsenek másodlagos tokenek. Nyomd meg a lenti gombot a létrehozásukhoz."
+
+#~ msgid "Generate Tokens"
+#~ msgstr "Tokenek generálása"
+
+#~ msgid "Disable Two-Factor Authentication"
+#~ msgstr "Kétlépcsős hitelesítés letiltása"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Biztos vagy benne?"
+
+#~ msgid "Disable 2FA"
+#~ msgstr "Többfaktoros autentikáció kikapcsolása"
+
+#~ msgid "Setup Two-Factor Authentication"
+#~ msgstr "Kétlépcsős hitelesítés beállítása"
+
+#~ msgid "Step 1"
+#~ msgstr "1. lépés"
+
+#~ msgid "Scan the QR code below with a token generator of your choice (for instance Google Authenticator)."
+#~ msgstr "Olvasd be a lenti QR kódot egy kiválaszott token generátorral (például a Google Authenticator-ral)."
+
+#~ msgid "Step 2"
+#~ msgstr "2. lépés"
+
+#~ msgid "Input a token generated by the app:"
+#~ msgstr "Írd be az app által létrehozott tokent:"
+
+#~ msgid "Verify"
+#~ msgstr "Ellenőrzés"
+
+#~ msgid "Add Link"
+#~ msgstr "Link hozzáadása"
+
+#~ msgid "Add Attachment"
+#~ msgstr "Melléklet hozzáadása"
+
+#~ msgid "Barcode Identifier"
+#~ msgstr "Vonalkód azonosító"
+
+#~ msgid "No Response"
+#~ msgstr "Nincs válasz"
+
+#~ msgid "No response from the InvenTree server"
+#~ msgstr "Nincs válasz az InvenTree kiszolgálótól"
+
+#~ msgid "Error 400: Bad request"
+#~ msgstr "Error 400: Rossz kérelem"
+
+#~ msgid "API request returned error code 400"
+#~ msgstr "Az API kérelem 400-as hibakódot adott vissza"
+
+#~ msgid "Error 401: Not Authenticated"
+#~ msgstr "Error 401: Nincs hitelesítve"
+
+#~ msgid "Authentication credentials not supplied"
+#~ msgstr "Hitelesítési adatok nem lettek megadva"
+
+#~ msgid "Error 403: Permission Denied"
+#~ msgstr "Error 403: Hozzáférés megtagadva"
+
+#~ msgid "You do not have the required permissions to access this function"
+#~ msgstr "Nincs meg a szükséges jogosultságod, hogy elérd ezt a funkciót"
+
+#~ msgid "Error 404: Resource Not Found"
+#~ msgstr "Error 404: Erőforrás nem található"
+
+#~ msgid "The requested resource could not be located on the server"
+#~ msgstr "A kért erőforrás nem található a kiszolgálón"
+
+#~ msgid "Error 405: Method Not Allowed"
+#~ msgstr "Error 405: Metódus nincs engedélyezve"
+
+#~ msgid "HTTP method not allowed at URL"
+#~ msgstr "HTTP metódus nincs engedélyezve ezen az URL-n"
+
+#~ msgid "Error 408: Timeout"
+#~ msgstr "Error 408: Időtúllépés"
+
+#~ msgid "Connection timeout while requesting data from server"
+#~ msgstr "Időtúllépés a kiszolgálótól való adatlekérés közben"
+
+#~ msgid "Error 503: Service Unavailable"
+#~ msgstr "Hiba 503: A szolgáltatás átmenetileg nem elérhető"
+
+#~ msgid "The server is currently unavailable"
+#~ msgstr "A szerver átmenetileg nem elérhető"
+
+#~ msgid "Unhandled Error Code"
+#~ msgstr "Nem kezelt hibakód"
+
+#~ msgid "Error code"
+#~ msgstr "Hibakód"
+
+#~ msgid "All selected attachments will be deleted"
+#~ msgstr "Az összes kijelölt melléklet törlésre kerül"
+
+#~ msgid "Delete Attachments"
+#~ msgstr "Mellékletek törlése"
+
+#~ msgid "Delete attachments"
+#~ msgstr "Mellékletek törlése"
+
+#~ msgid "Attachment actions"
+#~ msgstr "Mellékletek műveletei"
+
+#~ msgid "No attachments found"
+#~ msgstr "Nem találhatók mellékletek"
+
+#~ msgid "Edit Attachment"
+#~ msgstr "Melléklet szerkesztése"
+
+#~ msgid "Upload Date"
+#~ msgstr "Feltöltés dátuma"
+
+#~ msgid "Edit attachment"
+#~ msgstr "Melléklet szerkesztése"
+
+#~ msgid "Delete attachment"
+#~ msgstr "Melléklet törlése"
+
+#~ msgid "Scan barcode data here using barcode scanner"
+#~ msgstr "Vonalkód beolvasása ide a kódolvasó használatával"
+
+#~ msgid "Enter barcode data"
+#~ msgstr "Add meg a vonalkódot"
+
+#~ msgid "Scan barcode using connected webcam"
+#~ msgstr "Vonalkód beolvasása webkamerával"
+
+#~ msgid "Enter optional notes for stock transfer"
+#~ msgstr "Megjegyzések a készlet áthelyezéshez"
+
+#~ msgid "Enter notes"
+#~ msgstr "Írd be a megjegyzéseket"
+
+#~ msgid "Server error"
+#~ msgstr "Kiszolgálóhiba"
+
+#~ msgid "Unknown response from server"
+#~ msgstr "Ismeretlen válasz a kiszolgálótól"
+
+#~ msgid "Invalid server response"
+#~ msgstr "Érvénytelen válasz a szervertől"
+
+#~ msgid "Scan barcode data"
+#~ msgstr "Vonalkód beolvasása"
+
+#~ msgid "Scan Barcode"
+#~ msgstr "Vonalkód beolvasása"
+
+#~ msgid "No URL in response"
+#~ msgstr "Nincs URL a válaszban"
+
+#~ msgid "This will remove the link to the associated barcode"
+#~ msgstr "Ez törli a vonalkód hozzárendelést"
+
+#~ msgid "Unlink"
+#~ msgstr "Leválasztás"
+
+#~ msgid "Remove stock item"
+#~ msgstr "Készlet tétel törlése"
+
+#~ msgid "Scan Stock Items Into Location"
+#~ msgstr "Készlet bevételezése adott helyre"
+
+#~ msgid "Scan stock item barcode to check in to this location"
+#~ msgstr "Készlet tétel vonalkód beolvasása, amit bevételezzünk erre a helyre"
+
+#~ msgid "Check In"
+#~ msgstr "Bevételezés"
+
+#~ msgid "No barcode provided"
+#~ msgstr "Nincs vonalkód beolvasva"
+
+#~ msgid "Stock Item already scanned"
+#~ msgstr "Készlet tétel már beolvasva"
+
+#~ msgid "Stock Item already in this location"
+#~ msgstr "Készlet tétel már ezen a helyen van"
+
+#~ msgid "Added stock item"
+#~ msgstr "Hozzáadott készlet tétel"
+
+#~ msgid "Barcode does not match valid stock item"
+#~ msgstr "Vonalkód nem egyezik egy ismert készlet tétellel sem"
+
+#~ msgid "Scan Stock Container Into Location"
+#~ msgstr "Készlet tároló bevételezése adott helyre"
+
+#~ msgid "Scan stock container barcode to check in to this location"
+#~ msgstr "Készlet tároló vonalkód beolvasása, amit bevételezzünk erre a helyre"
+
+#~ msgid "Barcode does not match valid stock location"
+#~ msgstr "A vonalkód nem egyezik egy ismert hellyel sem"
+
+#~ msgid "Check Into Location"
+#~ msgstr "Készlet áthelyezése a leolvasott helyre"
+
+#~ msgid "Barcode does not match a valid location"
+#~ msgstr "A vonalkód nem egyezik egy ismert hellyel sem"
+
+#~ msgid "Create BOM Item"
+#~ msgstr "Alkatrészjegyzék tétel létrehozása"
+
+#~ msgid "Display row data"
+#~ msgstr "Sor adatok mutatása"
+
+#~ msgid "Row Data"
+#~ msgstr "Sor adat"
+
+#~ msgid "Close"
+#~ msgstr "Bezárás"
+
+#~ msgid "Download BOM Template"
+#~ msgstr "Alkarészjegyzék sablon letöltése"
+
+#~ msgid "Multi Level BOM"
+#~ msgstr "Többszintű alkatrészjegyzék"
+
+#~ msgid "Include BOM data for subassemblies"
+#~ msgstr "Alszerelvények alkatrészlistáinak felhasználása"
+
+#~ msgid "Levels"
+#~ msgstr "Szintek"
+
+#~ msgid "Select maximum number of BOM levels to export (0 = all levels)"
+#~ msgstr "Válaszd ki a maximum alkatrészjegyzék szintet amit exportáljunk (0=összes szintet)"
+
+#~ msgid "Include Alternative Parts"
+#~ msgstr "Alternatív alkatrészekkel együtt"
+
+#~ msgid "Include alternative parts in exported BOM"
+#~ msgstr "Alternatív alkatrészek megjelenítése az exportált alkatrészjegyzékben"
+
+#~ msgid "Include Parameter Data"
+#~ msgstr "Paraméter adattal együtt"
+
+#~ msgid "Include part parameter data in exported BOM"
+#~ msgstr "Alkatrész paraméter adatok megjelenítése az exportált alkatrészjegyzékben"
+
+#~ msgid "Include Stock Data"
+#~ msgstr "Készlet adatokkal együtt"
+
+#~ msgid "Include part stock data in exported BOM"
+#~ msgstr "Készlet adatok megjelenítése az exportált alkatrészjegyzékben"
+
+#~ msgid "Include Manufacturer Data"
+#~ msgstr "Gyártói adatokkal együtt"
+
+#~ msgid "Include part manufacturer data in exported BOM"
+#~ msgstr "Gyártói adatok megjelenítése az exportált alkatrészjegyzékben"
+
+#~ msgid "Include Supplier Data"
+#~ msgstr "Beszállítói adatokkal együtt"
+
+#~ msgid "Include part supplier data in exported BOM"
+#~ msgstr "Beszállítói adatok megjelenítése az exportált alkatrészjegyzékben"
+
+#~ msgid "Include Pricing Data"
+#~ msgstr "Ár adatokkal együtt"
+
+#~ msgid "Include part pricing data in exported BOM"
+#~ msgstr "Ár adatok megjelenítése az exportált alkatrészjegyzékben"
+
+#~ msgid "Remove substitute part"
+#~ msgstr "Helyettesítő alkatrész törlése"
+
+#~ msgid "Select and add a new substitute part using the input below"
+#~ msgstr "Válassz és adj hozzá új helyettesítő alkatrészt a lenti mezőben"
+
+#~ msgid "Are you sure you wish to remove this substitute part link?"
+#~ msgstr "Biztosan törölni akarod ezt a helyettesítő alkatrész hozzárendelést?"
+
+#~ msgid "Remove Substitute Part"
+#~ msgstr "Helyettesítő alkatrész törlése"
+
+#~ msgid "Add Substitute"
+#~ msgstr "Helyettesítő hozzáadása"
+
+#~ msgid "Edit BOM Item Substitutes"
+#~ msgstr "Alkatrészjegyzék tétel helyettesítők szerkesztése"
+
+#~ msgid "All selected BOM items will be deleted"
+#~ msgstr "Az összes kijelölt alkatrészjegyzék tétel törlésre kerül"
+
+#~ msgid "Delete selected BOM items?"
+#~ msgstr "Töröljük a kiválasztott alkatrészjegyzék tételeket?"
+
+#~ msgid "Delete items"
+#~ msgstr "Tételek törlése"
+
+#~ msgid "Load BOM for subassembly"
+#~ msgstr "Alkatrészjegyzék betöltése az al-gyártmányhoz"
+
+#~ msgid "Substitutes Available"
+#~ msgstr "Vannak helyettesítők"
+
+#~ msgid "Variant stock allowed"
+#~ msgstr "Készletváltozatok engedélyezve"
+
+#~ msgid "Substitutes"
+#~ msgstr "Helyettesítõk"
+
+#~ msgid "BOM pricing is complete"
+#~ msgstr "Alkatrészjegyzék árazása teljes"
+
+#~ msgid "BOM pricing is incomplete"
+#~ msgstr "Alkatrészjegyzék árazása nem teljes"
+
+#~ msgid "No pricing available"
+#~ msgstr "Nincsenek árak"
+
+#~ msgid "No Stock Available"
+#~ msgstr "Nincs szabad"
+
+#~ msgid "Includes variant and substitute stock"
+#~ msgstr "Változatokkal és helyettesítőkkel együtt"
+
+#~ msgid "Includes variant stock"
+#~ msgstr "Változatokkal együtt"
+
+#~ msgid "Includes substitute stock"
+#~ msgstr "Helyettesítőkkel együtt"
+
+#~ msgid "Consumable item"
+#~ msgstr "Fogyóeszköz tétel"
+
+#~ msgid "Validate BOM Item"
+#~ msgstr "Alkatrészjegyzék tétel jóváhagyása"
+
+#~ msgid "This line has been validated"
+#~ msgstr "Ez a sor jóvá lett hagyva"
+
+#~ msgid "Edit substitute parts"
+#~ msgstr "Helyettesítő alkatrészek szerkesztése"
+
+#~ msgid "Edit BOM Item"
+#~ msgstr "Alkatrészjegyzék tétel szerkesztése"
+
+#~ msgid "Delete BOM Item"
+#~ msgstr "Alkatrészjegyzék tétel törlése"
+
+#~ msgid "View BOM"
+#~ msgstr "Alkatrészjegyzék megtekintése"
+
+#~ msgid "No BOM items found"
+#~ msgstr "Nem találhatók alkatrészjegyzék tételek"
+
+#~ msgid "Required Part"
+#~ msgstr "Szükséges alkatrész"
+
+#~ msgid "Inherited from parent BOM"
+#~ msgstr "Örökölve a szülő alkatrészjegyzéktől"
+
+#~ msgid "Edit Build Order"
+#~ msgstr "Gyártási utasítás szerkesztése"
+
+#~ msgid "Create Build Order"
+#~ msgstr "Gyártási utasítás létrehozása"
+
+#~ msgid "Cancel Build Order"
+#~ msgstr "Gyártási utasítás törlése"
+
+#~ msgid "Are you sure you wish to cancel this build?"
+#~ msgstr "Biztosan meg szeretnéd szakítani ezt a gyártást?"
+
+#~ msgid "Stock items have been allocated to this build order"
+#~ msgstr "Ehhez a gyártáshoz készlet lett hozzárendelve"
+
+#~ msgid "There are incomplete outputs remaining for this build order"
+#~ msgstr "Ennek a gyártásnak befejezetlen kimenetei vannak"
+
+#~ msgid "Build order is ready to be completed"
+#~ msgstr "Gyártási utasítás készen áll a befejezésre"
+
+#~ msgid "This build order cannot be completed as there are incomplete outputs"
+#~ msgstr "A rendelés nem jelölhető késznek mivel függő kimenetek vannak"
+
+#~ msgid "Build Order is incomplete"
+#~ msgstr "Gyártási utasítás befejezetlen"
+
+#~ msgid "Complete Build Order"
+#~ msgstr "Gyártási utasítás befejezése"
+
+#~ msgid "Next available serial number"
+#~ msgstr "Következő szabad sorozatszám"
+
+#~ msgid "Latest serial number"
+#~ msgstr "Legutolsó sorozatszám"
+
+#~ msgid "The Bill of Materials contains trackable parts"
+#~ msgstr "Az alkatrészjegyzék követésre kötelezett alkatrészeket tartalmaz"
+
+#~ msgid "Build outputs must be generated individually"
+#~ msgstr "A gyártási kimeneteket egyesével kell előállítani"
+
+#~ msgid "Trackable parts can have serial numbers specified"
+#~ msgstr "A követésre kötelezett alkatrészekhez sorozatszámot lehet rendelni"
+
+#~ msgid "Enter serial numbers to generate multiple single build outputs"
+#~ msgstr "Adj meg sorozatszámokat a több egyedi gyártási kimenet létrehozásához"
+
+#~ msgid "Create Build Output"
+#~ msgstr "Gyártási kimenet létrehozása"
+
+#~ msgid "Allocate stock items to this build output"
+#~ msgstr "Készlet tételek foglalása ehhez a gyártási kimenethez"
+
+#~ msgid "Deallocate stock from build output"
+#~ msgstr "Készlet felszabadítása a gyártási kimenetből"
+
+#~ msgid "Complete build output"
+#~ msgstr "Gyártási kimenet befejezése"
+
+#~ msgid "Scrap build output"
+#~ msgstr "Gyártási kimenet selejtezése"
+
+#~ msgid "Delete build output"
+#~ msgstr "Gyártási kimenet törlése"
+
+#~ msgid "Are you sure you wish to deallocate the selected stock items from this build?"
+#~ msgstr "Biztosan szeretnéd a már lefoglalt készlet tételeket felszabadítani ebből a gyártási utasításból?"
+
+#~ msgid "Deallocate Stock Items"
+#~ msgstr "Készlet tételek felszabadítása"
+
+#~ msgid "Select Build Outputs"
+#~ msgstr "Gyártási kimenetek kiválasztása"
+
+#~ msgid "At least one build output must be selected"
+#~ msgstr "Legalább egy gyártási kimenetet ki kell választani"
+
+#~ msgid "Selected build outputs will be marked as complete"
+#~ msgstr "A kiválasztott gyártási kimenetek késznek lesznek jelölve"
+
+#~ msgid "Output"
+#~ msgstr "Kimenet"
+
+#~ msgid "Complete Build Outputs"
+#~ msgstr "Gyártási kimenetek befejezése"
+
+#~ msgid "Selected build outputs will be marked as scrapped"
+#~ msgstr "A kiválasztott gyártási kimenetek selejtnek lesznek jelölve"
+
+#~ msgid "Scrapped output are marked as rejected"
+#~ msgstr "Selejtezett kimenetek elutasítottnak jelölve"
+
+#~ msgid "Allocated stock items will no longer be available"
+#~ msgstr "A lefoglalt készlet már nem lesz elérhető"
+
+#~ msgid "The completion status of the build order will not be adjusted"
+#~ msgstr "A befejezési státusza a gyártásnak nem fog változni"
+
+#~ msgid "Scrap Build Outputs"
+#~ msgstr "Gyártási kimenetek selejtezése"
+
+#~ msgid "Selected build outputs will be deleted"
+#~ msgstr "A kiválasztott gyártási kimenetek törölve lesznek"
+
+#~ msgid "Build output data will be permanently deleted"
+#~ msgstr "A gyártási kimenet adatai véglegesen törölve lesznek"
+
+#~ msgid "Allocated stock items will be returned to stock"
+#~ msgstr "A lefoglalt készlet tételek újra készletre kerülnek"
+
+#~ msgid "Delete Build Outputs"
+#~ msgstr "Gyártási kimenetek törlése"
+
+#~ msgid "No build order allocations found"
+#~ msgstr "Nincs gyártási utasításhoz történő foglalás"
+
+#~ msgid "Allocated Quantity"
+#~ msgstr "Lefoglalt mennyiség"
+
+#~ msgid "Location not specified"
+#~ msgstr "Hely nincs megadva"
+
+#~ msgid "Complete outputs"
+#~ msgstr "Kimenetek befejezése"
+
+#~ msgid "Scrap outputs"
+#~ msgstr "Kimenetek selejtezése"
+
+#~ msgid "Delete outputs"
+#~ msgstr "Kimenetek törlése"
+
+#~ msgid "build output"
+#~ msgstr "gyártás kimenet"
+
+#~ msgid "build outputs"
+#~ msgstr "gyártás kimenetek"
+
+#~ msgid "Build output actions"
+#~ msgstr "Gyártási kimenet műveletei"
+
+#~ msgid "No active build outputs found"
+#~ msgstr "Nem található aktív gyártási kimenet"
+
+#~ msgid "Allocated Lines"
+#~ msgstr "Lefoglalt sorok"
+
+#~ msgid "Required Tests"
+#~ msgstr "Szükséges tesztek"
+
+#~ msgid "Select Parts"
+#~ msgstr "Válassz alkatrészeket"
+
+#~ msgid "You must select at least one part to allocate"
+#~ msgstr "Legalább egy alkatrész választása szükséges a foglaláshoz"
+
+#~ msgid "Specify stock allocation quantity"
+#~ msgstr "Készlet foglalási mennyiség megadása"
+
+#~ msgid "All Parts Allocated"
+#~ msgstr "Minden alkatrész lefoglalva"
+
+#~ msgid "All selected parts have been fully allocated"
+#~ msgstr "Minden kiválasztott alkatrész teljesen lefoglalva"
+
+#~ msgid "Select source location (leave blank to take from all locations)"
+#~ msgstr "Válassz forrás helyet (vagy hagyd üresen ha bárhonnan)"
+
+#~ msgid "Allocate Stock Items to Build Order"
+#~ msgstr "Készlet foglalása a gyártási utasításhoz"
+
+#~ msgid "No matching stock locations"
+#~ msgstr "Nincs egyező készlethely"
+
+#~ msgid "No matching stock items"
+#~ msgstr "Nincs egyező készlet"
+
+#~ msgid "Automatic Stock Allocation"
+#~ msgstr "Automatikus készlet foglalás"
+
+#~ msgid "Stock items will be automatically allocated to this build order, according to the provided guidelines"
+#~ msgstr "A készlet automatikusan lefoglalásra kerül ehhez a gyártási utasításhoz, a következő feltételek szerint"
+
+#~ msgid "If a location is specified, stock will only be allocated from that location"
+#~ msgstr "Ha egy készlet hely meg van adva, akkor készlet csak arról a helyről lesz foglalva"
+
+#~ msgid "If stock is considered interchangeable, it will be allocated from the first location it is found"
+#~ msgstr "Ha a készlet helyettesíthetőnek minősül, akkor az első rendelkezésre álló helyről lesz lefoglalva"
+
+#~ msgid "If substitute stock is allowed, it will be used where stock of the primary part cannot be found"
+#~ msgstr "Ha a helyettesítő készlet engedélyezve van, akkor ott az lesz használva ha az elsődleges alkatrésznek nincs készlete"
+
+#~ msgid "Allocate Stock Items"
+#~ msgstr "Készlet tételek foglalása"
+
+#~ msgid "No builds matching query"
+#~ msgstr "Nincs a lekérdezéssel egyező gyártási utasítás"
+
+#~ msgid "Select"
+#~ msgstr "Kiválaszt"
+
+#~ msgid "Build order is overdue"
+#~ msgstr "Gyártás késésben van"
+
+#~ msgid "Progress"
+#~ msgstr "Haladás"
+
+#~ msgid "No user information"
+#~ msgstr "Nincs felhasználói információ"
+
+#~ msgid "Edit stock allocation"
+#~ msgstr "Készlet foglalások szerkesztése"
+
+#~ msgid "Delete stock allocation"
+#~ msgstr "Készlet foglalások törlése"
+
+#~ msgid "Edit Allocation"
+#~ msgstr "Foglalás szerkesztése"
+
+#~ msgid "Remove Allocation"
+#~ msgstr "Foglalás törlése"
+
+#~ msgid "build line"
+#~ msgstr "gyártás sor"
+
+#~ msgid "build lines"
+#~ msgstr "gyártás sorok"
+
+#~ msgid "No build lines found"
+#~ msgstr "Nincsenek gyártási sorok"
+
+#~ msgid "Trackable part"
+#~ msgstr "Követésre kötelezett alkatrész"
+
+#~ msgid "Unit Quantity"
+#~ msgstr "Mennyiségi egység"
+
+#~ msgid "Sufficient stock available"
+#~ msgstr "Van elegendő"
+
+#~ msgid "Consumable Item"
+#~ msgstr "Fogyóeszköz tétel"
+
+#~ msgid "Tracked item"
+#~ msgstr "Követett tétel"
+
+#~ msgid "Build stock"
+#~ msgstr "Gyártási készlet"
+
+#~ msgid "Order stock"
+#~ msgstr "Készlet rendelés"
+
+#~ msgid "Allocate stock"
+#~ msgstr "Lefoglalt készlet"
+
+#~ msgid "Remove stock allocation"
+#~ msgstr "Készlet foglalások törlése"
+
+#~ msgid "Add Manufacturer"
+#~ msgstr "Gyártó hozzáadása"
+
+#~ msgid "Add Manufacturer Part"
+#~ msgstr "Gyártói alkatrész hozzáadása"
+
+#~ msgid "Edit Manufacturer Part"
+#~ msgstr "Gyártói alkatrész szerkesztése"
+
+#~ msgid "Add Supplier"
+#~ msgstr "Beszállító hozzáadása"
+
+#~ msgid "Add Supplier Part"
+#~ msgstr "Beszállítói alkatrész hozzáadása"
+
+#~ msgid "All selected supplier parts will be deleted"
+#~ msgstr "Az összes kiválasztott beszállítói alkatrész törölve lesz"
+
+#~ msgid "Delete Supplier Parts"
+#~ msgstr "Beszállítói alkatrészek törlése"
+
+#~ msgid "Add new Company"
+#~ msgstr "Új cég hozzáadása"
+
+#~ msgid "Parts Supplied"
+#~ msgstr "Beszállított alkatrészek"
+
+#~ msgid "Parts Manufactured"
+#~ msgstr "Gyártott alkatrészek"
+
+#~ msgid "No company information found"
+#~ msgstr "Nem található céginformáció"
+
+#~ msgid "Create New Contact"
+#~ msgstr "Új névjegy létrehozása"
+
+#~ msgid "Edit Contact"
+#~ msgstr "Névjegy szerkesztése"
+
+#~ msgid "All selected contacts will be deleted"
+#~ msgstr "A kiválasztott névjegyek törlésre kerülnek"
+
+#~ msgid "Role"
+#~ msgstr "Szerepkör"
+
+#~ msgid "Delete Contacts"
+#~ msgstr "Névjegyek törlése"
+
+#~ msgid "No contacts found"
+#~ msgstr "Nem található névjegy"
+
+#~ msgid "Phone Number"
+#~ msgstr "Telefonszám"
+
+#~ msgid "Email Address"
+#~ msgstr "E-mail cím"
+
+#~ msgid "Delete Contact"
+#~ msgstr "Névjegy törlése"
+
+#~ msgid "Create New Address"
+#~ msgstr "Új cím létrehozása"
+
+#~ msgid "Edit Address"
+#~ msgstr "Cím szerkesztése"
+
+#~ msgid "All selected addresses will be deleted"
+#~ msgstr "Az összes kijelölt cím törlésre kerül"
+
+#~ msgid "Delete Addresses"
+#~ msgstr "Címek törlése"
+
+#~ msgid "No addresses found"
+#~ msgstr "Nincsenek címek"
+
+#~ msgid "Postal city"
+#~ msgstr "Város"
+
+#~ msgid "State/province"
+#~ msgstr "Állam/Megye"
+
+#~ msgid "Courier notes"
+#~ msgstr "Futár megjegyzések"
+
+#~ msgid "Internal notes"
+#~ msgstr "Belső megjegyzések"
+
+#~ msgid "Delete Address"
+#~ msgstr "Cím törlése"
+
+#~ msgid "All selected manufacturer parts will be deleted"
+#~ msgstr "Az összes kijelölt gyártói alkatrész törlésre kerül"
+
+#~ msgid "Delete Manufacturer Parts"
+#~ msgstr "Gyártói alkatrészek törlése"
+
+#~ msgid "All selected parameters will be deleted"
+#~ msgstr "Az összes kijelölt paraméter törlésre kerül"
+
+#~ msgid "Delete Parameters"
+#~ msgstr "Paraméterek törlése"
+
+#~ msgid "Order parts"
+#~ msgstr "Alkatrész rendelés"
+
+#~ msgid "Delete manufacturer parts"
+#~ msgstr "Gyártói alkatrészek törlése"
+
+#~ msgid "Manufacturer part actions"
+#~ msgstr "Gyártói alkatrész műveletek"
+
+#~ msgid "No manufacturer parts found"
+#~ msgstr "Nincs gyártói alkatrész"
+
+#~ msgid "Template part"
+#~ msgstr "Sablon alkatrész"
+
+#~ msgid "Assembled part"
+#~ msgstr "Gyártmány alkatrész"
+
+#~ msgid "No parameters found"
+#~ msgstr "Nem található paraméter"
+
+#~ msgid "Edit parameter"
+#~ msgstr "Paraméter szerkesztése"
+
+#~ msgid "Delete parameter"
+#~ msgstr "Paraméter törlése"
+
+#~ msgid "Edit Parameter"
+#~ msgstr "Paraméter szerkesztése"
+
+#~ msgid "Delete Parameter"
+#~ msgstr "Paraméter törlése"
+
+#~ msgid "Delete supplier parts"
+#~ msgstr "Beszállítói alkatrész törlése"
+
+#~ msgid "No supplier parts found"
+#~ msgstr "Nincs beszállítói alkatrész"
+
+#~ msgid "Base Units"
+#~ msgstr "Egység"
+
+#~ msgid "Availability"
+#~ msgstr "Elérhetőség"
+
+#~ msgid "Edit supplier part"
+#~ msgstr "Beszállítói alkatrész szerkesztése"
+
+#~ msgid "Delete supplier part"
+#~ msgstr "Beszállítói alkatrész törlése"
+
+#~ msgid "Delete Price Break"
+#~ msgstr "Ársáv törlése"
+
+#~ msgid "Edit Price Break"
+#~ msgstr "Ársáv szerkesztése"
+
+#~ msgid "No price break information found"
+#~ msgstr "Nincs ársáv információ"
+
+#~ msgid "Last updated"
+#~ msgstr "Utoljára módosítva"
+
+#~ msgid "Edit price break"
+#~ msgstr "Ársáv szerkesztése"
+
+#~ msgid "Delete price break"
+#~ msgstr "Ársáv törlése"
+
+#~ msgid "true"
+#~ msgstr "igaz"
+
+#~ msgid "false"
+#~ msgstr "hamis"
+
+#~ msgid "Select filter"
+#~ msgstr "Szűrő kiválasztása"
+
+#~ msgid "Print Labels"
+#~ msgstr "Címkék nyomtatása"
+
+#~ msgid "Print Reports"
+#~ msgstr "Riportok nyomtatása"
+
+#~ msgid "Download table data"
+#~ msgstr "Táblázat letöltése"
+
+#~ msgid "Reload table data"
+#~ msgstr "Táblázat frissítése"
+
+#~ msgid "Add new filter"
+#~ msgstr "Új szűrő hozzáadása"
+
+#~ msgid "Clear all filters"
+#~ msgstr "Összes szűrő törlése"
+
+#~ msgid "Create filter"
+#~ msgstr "Szűrő létrehozása"
+
+#~ msgid "Action Prohibited"
+#~ msgstr "Művelet tiltva"
+
+#~ msgid "Create operation not allowed"
+#~ msgstr "Létrehozás nem engedélyezett"
+
+#~ msgid "Update operation not allowed"
+#~ msgstr "Módosítás nem engedélyezett"
+
+#~ msgid "Delete operation not allowed"
+#~ msgstr "Törlés nem engedélyezett"
+
+#~ msgid "View operation not allowed"
+#~ msgstr "Megtekintés nem engedélyezett"
+
+#~ msgid "Keep this form open"
+#~ msgstr "Form nyitva tartása"
+
+#~ msgid "Enter a valid number"
+#~ msgstr "Adj meg egy érvényes számot"
+
+#~ msgid "Form errors exist"
+#~ msgstr "Form hibák vannak"
+
+#~ msgid "No results found"
+#~ msgstr "Nincs találat"
+
+#~ msgid "Searching"
+#~ msgstr "Keresés"
+
+#~ msgid "Clear input"
+#~ msgstr "Bevitel törlése"
+
+#~ msgid "File Column"
+#~ msgstr "Fájl oszlop"
+
+#~ msgid "Field Name"
+#~ msgstr "Mező név"
+
+#~ msgid "Select Columns"
+#~ msgstr "Oszlopok kiválasztása"
+
+#~ msgid "YES"
+#~ msgstr "IGEN"
+
+#~ msgid "NO"
+#~ msgstr "NEM"
+
+#~ msgid "True"
+#~ msgstr "Igaz"
+
+#~ msgid "False"
+#~ msgstr "Hamis"
+
+#~ msgid "No parts required for builds"
+#~ msgstr "Nem szükséges alkatrész a gyártáshoz"
+
+#~ msgid "Select Items"
+#~ msgstr "Tételek kiválasztása"
+
+#~ msgid "No items selected for printing"
+#~ msgstr "Nincs tétel kiválasztva a nyomtatáshoz"
+
+#~ msgid "No Labels Found"
+#~ msgstr "Nem található címke"
+
+#~ msgid "No label templates found which match the selected items"
+#~ msgstr "Nem található címke sablon a kiválasztott tételekhez"
+
+#~ msgid "selected"
+#~ msgstr "kiválasztva"
+
+#~ msgid "Printing Options"
+#~ msgstr "Nyomtatási beállítások"
+
+#~ msgid "Print label"
+#~ msgstr "Címke nyomtatása"
+
+#~ msgid "Print labels"
+#~ msgstr "Címkék nyomtatása"
+
+#~ msgid "Print"
+#~ msgstr "Nyomtatás"
+
+#~ msgid "Select label template"
+#~ msgstr "Címke sablon választás"
+
+#~ msgid "Select plugin"
+#~ msgstr "Plugin választás"
+
+#~ msgid "Labels sent to printer"
+#~ msgstr "Címkék nyomtatónak elküldve"
+
+#~ msgid "Cancel"
+#~ msgstr "Mégsem"
+
+#~ msgid "Submit"
+#~ msgstr "Küldés"
+
+#~ msgid "Form Title"
+#~ msgstr "Form megnevezése"
+
+#~ msgid "Waiting for server..."
+#~ msgstr "Várakozás a kiszolgálóra..."
+
+#~ msgid "Show Error Information"
+#~ msgstr "Hibainformációk megjelenítése"
+
+#~ msgid "Accept"
+#~ msgstr "Elfogadás"
+
+#~ msgid "Loading Data"
+#~ msgstr "Adatok betöltése"
+
+#~ msgid "Invalid response from server"
+#~ msgstr "Rossz válasz a kiszolgálótól"
+
+#~ msgid "Form data missing from server response"
+#~ msgstr "Űrlap adat hiányzik a kiszolgálótól kapott válaszban"
+
+#~ msgid "Error posting form data"
+#~ msgstr "Form adat küldési hiba"
+
+#~ msgid "JSON response missing form data"
+#~ msgstr "JSON válasz hiányzó form adatok"
+
+#~ msgid "Error 400: Bad Request"
+#~ msgstr "Error 400: Rossz kérelem"
+
+#~ msgid "Server returned error code 400"
+#~ msgstr "A kiszolgáló 400-as hibakódot adott vissza"
+
+#~ msgid "Error requesting form data"
+#~ msgstr "Form adat lekérése sikertelen"
+
+#~ msgid "No news found"
+#~ msgstr "Nem találhatók hírek"
+
+#~ msgid "ID"
+#~ msgstr "Azonosító"
+
+#~ msgid "Age"
+#~ msgstr "Életkor"
+
+#~ msgid "Notification"
+#~ msgstr "Értesítés"
+
+#~ msgid "Mark as unread"
+#~ msgstr "Megjelölés olvasatlanként"
+
+#~ msgid "Mark as read"
+#~ msgstr "Megjelölés olvasottként"
+
+#~ msgid "No unread notifications"
+#~ msgstr "Nincsenek olvasatlan értesítések"
+
+#~ msgid "Notifications will load here"
+#~ msgstr "Az értesítések itt fognak megjelenni"
+
+#~ msgid "Add Extra Line Item"
+#~ msgstr "Egyéb tétel hozzáadása"
+
+#~ msgid "Export Order"
+#~ msgstr "Rendelés exportálása"
+
+#~ msgid "Duplicate Line"
+#~ msgstr "Sor másolása"
+
+#~ msgid "Edit Line"
+#~ msgstr "Sor szerkesztése"
+
+#~ msgid "Delete Line"
+#~ msgstr "Sor törlése"
+
+#~ msgid "No line items found"
+#~ msgstr "Nem találhatók sortételek"
+
+#~ msgid "Duplicate line"
+#~ msgstr "Sor másolása"
+
+#~ msgid "Edit line"
+#~ msgstr "Sor szerkesztése"
+
+#~ msgid "Delete line"
+#~ msgstr "Sor törlése"
+
+#~ msgid "Part Attributes"
+#~ msgstr "Alkatrész tulajdonságok"
+
+#~ msgid "Part Creation Options"
+#~ msgstr "Alkatrész létrehozási opciók"
+
+#~ msgid "Part Duplication Options"
+#~ msgstr "Alkatrész másolási opciók"
+
+#~ msgid "Add Part Category"
+#~ msgstr "Alkatrész kategória hozzáadása"
+
+#~ msgid "Parent part category"
+#~ msgstr "Felsőbb szintű alkatrész kategória"
+
+#~ msgid "Icon (optional) - Explore all available icons on"
+#~ msgstr "Ikon (opcionális) - Az összes ikon felfedezése itt"
+
+#~ msgid "Create Part Category"
+#~ msgstr "Alkatrész kategória létrehozása"
+
+#~ msgid "Create new category after this one"
+#~ msgstr "Új kategória létrehozása ez után"
+
+#~ msgid "Part category created"
+#~ msgstr "Alkatrész kategória létrehozva"
+
+#~ msgid "Edit Part Category"
+#~ msgstr "Alkatrész kategória szerkesztése"
+
+#~ msgid "Are you sure you want to delete this part category?"
+#~ msgstr "Biztos hogy törölni szeretnéd ezt az alkatrész kategóriát?"
+
+#~ msgid "Delete Part Category"
+#~ msgstr "Alkatrész kategória törlése"
+
+#~ msgid "Action for parts in this category"
+#~ msgstr "A kategóriában lévő alkatrészek kezelése"
+
+#~ msgid "Action for child categories"
+#~ msgstr "Alkategóriák kezelése"
+
+#~ msgid "Create Part"
+#~ msgstr "Alkatrész létrehozása"
+
+#~ msgid "Create another part after this one"
+#~ msgstr "Új alkatrész létrehozása ez után"
+
+#~ msgid "Part created successfully"
+#~ msgstr "Alkatrész sikeresen létrehozva"
+
+#~ msgid "Edit Part"
+#~ msgstr "Alkatrész szerkesztése"
+
+#~ msgid "Part edited"
+#~ msgstr "Alkatrész módosítva"
+
+#~ msgid "Create Part Variant"
+#~ msgstr "Alkatrész változat létrehozása"
+
+#~ msgid "Active Part"
+#~ msgstr "Aktív alkatrész"
+
+#~ msgid "Part cannot be deleted as it is currently active"
+#~ msgstr "Alkatrész nem törölhető mivel még aktív"
+
+#~ msgid "Deleting this part cannot be reversed"
+#~ msgstr "Ezen alkatrész törlése nem vonható vissza"
+
+#~ msgid "Any stock items for this part will be deleted"
+#~ msgstr "Ennek az alkatrésznek a teljes készlete törölve lesz"
+
+#~ msgid "This part will be removed from any Bills of Material"
+#~ msgstr "Ez az alkatrész minden alkatrészjegyzékből törölve lesz"
+
+#~ msgid "All manufacturer and supplier information for this part will be deleted"
+#~ msgstr "Ehhez az alkatrészhez rendelt minden beszállítói és gyártói információ törölve lesz"
+
+#~ msgid "Delete Part"
+#~ msgstr "Alkatrész törlése"
+
+#~ msgid "You are subscribed to notifications for this item"
+#~ msgstr "Értesítések beállítva erre a tételre"
+
+#~ msgid "You have subscribed to notifications for this item"
+#~ msgstr "Értesítések beállítva erre a tételre"
+
+#~ msgid "Subscribe to notifications for this item"
+#~ msgstr "Értesítések kérése erre a tételre"
+
+#~ msgid "You have unsubscribed to notifications for this item"
+#~ msgstr "Értesítések letiltva erre a tételre"
+
+#~ msgid "Validating the BOM will mark each line item as valid"
+#~ msgstr "Az alkatrészjegyzék jóváhagyása minden sortételt jóvá fog hagyni"
+
+#~ msgid "Validate Bill of Materials"
+#~ msgstr "Alkatrészjegyzék jóváhagyása"
+
+#~ msgid "Validated Bill of Materials"
+#~ msgstr "Alkatrészjegyzék jóvá lett hagyva"
+
+#~ msgid "Copy Bill of Materials"
+#~ msgstr "Alkatrészjegyzék másolása"
+
+#~ msgid "Low stock"
+#~ msgstr "Alacsony készlet"
+
+#~ msgid "No stock available"
+#~ msgstr "Nincs elérhető készlet"
+
+#~ msgid "Demand"
+#~ msgstr "Igény"
+
+#~ msgid "Unit"
+#~ msgstr "Me"
+
+#~ msgid "Virtual part"
+#~ msgstr "Virtuális alkatrész"
+
+#~ msgid "Subscribed part"
+#~ msgstr "Értesítésre beállított alkatrész"
+
+#~ msgid "Salable part"
+#~ msgstr "Értékesíthető alkatrész"
+
+#~ msgid "Schedule generation of a new stocktake report."
+#~ msgstr "Új leltár riport ütemezése."
+
+#~ msgid "Once complete, the stocktake report will be available for download."
+#~ msgstr "Amint elkészül, az új leltár riport letölthető lesz."
+
+#~ msgid "Generate Stocktake Report"
+#~ msgstr "Leltár riport létrehozása"
+
+#~ msgid "Stocktake report scheduled"
+#~ msgstr "Leltár riport beütemezve"
+
+#~ msgid "No stocktake information available"
+#~ msgstr "Nincs elérhető leltár előzmény"
+
+#~ msgid "Edit Stocktake Entry"
+#~ msgstr "Leltár bejegyzés szerkesztése"
+
+#~ msgid "Delete Stocktake Entry"
+#~ msgstr "Leltár bejegyzés törlése"
+
+#~ msgid "No variants found"
+#~ msgstr "Nincs több változat"
+
+#~ msgid "No part parameter templates found"
+#~ msgstr "Nincs alkatrész paraméter sablon"
+
+#~ msgid "Edit Part Parameter Template"
+#~ msgstr "Alkatrész paraméter sablon módosítása"
+
+#~ msgid "Any parameters which reference this template will also be deleted"
+#~ msgstr "Az összes erre a sablonra hivatkozó paraméter is törlésre kerül"
+
+#~ msgid "Delete Part Parameter Template"
+#~ msgstr "Alkatrész paraméter sablon törlése"
+
+#~ msgid "No purchase orders found"
+#~ msgstr "Nem található beszerzési rendelés"
+
+#~ msgid "This line item is overdue"
+#~ msgstr "Ez a sortétel késésben van"
+
+#~ msgid "Receive line item"
+#~ msgstr "Sortétel bevételezése"
+
+#~ msgid "Delete part relationship"
+#~ msgstr "Alkatrész kapcsolatok törlése"
+
+#~ msgid "Delete Part Relationship"
+#~ msgstr "Alkatrész kapcsolatok törlése"
+
+#~ msgid "No parts found"
+#~ msgstr "Nincs alkatrész"
+
+#~ msgid "Set the part category for the selected parts"
+#~ msgstr "Kategória beállítása a kiválasztott alkatrészekhez"
+
+#~ msgid "Set Part Category"
+#~ msgstr "Alkatrész kategória beállítása"
+
+#~ msgid "Set category"
+#~ msgstr "Kategória beállítása"
+
+#~ msgid "part"
+#~ msgstr "alkatrész"
+
+#~ msgid "parts"
+#~ msgstr "alkatrészek"
+
+#~ msgid "No category"
+#~ msgstr "Nincs kategória"
+
+#~ msgid "Display as list"
+#~ msgstr "Megjelenítés listaként"
+
+#~ msgid "Display as grid"
+#~ msgstr "Megjelenítés rácsnézetként"
+
+#~ msgid "No subcategories found"
+#~ msgstr "Nem találhatóak alkategóriák"
+
+#~ msgid "Display as tree"
+#~ msgstr "Megjelenítés fában"
+
+#~ msgid "Load Subcategories"
+#~ msgstr "Alkategóriák betöltése"
+
+#~ msgid "Subscribed category"
+#~ msgstr "Értesítésre beállított kategória"
+
+#~ msgid "No test templates matching query"
+#~ msgstr "Nincs a lekérdezéssel egyező teszt sablon"
+
+#~ msgid "Edit test result"
+#~ msgstr "Teszt eredmény szerkesztése"
+
+#~ msgid "Delete test result"
+#~ msgstr "Teszt eredmény törlése"
+
+#~ msgid "This test is defined for a parent part"
+#~ msgstr "Ez a teszt a szülő alkatrészhez lett felvéve"
+
+#~ msgid "Edit Test Result Template"
+#~ msgstr "Teszt eredmény sablon szerkesztése"
+
+#~ msgid "Delete Test Result Template"
+#~ msgstr "Teszt eredmény sablon törlése"
+
+#~ msgid "No date specified"
+#~ msgstr "Nincs megadva dátum"
+
+#~ msgid "Specified date is in the past"
+#~ msgstr "A megadott dátum a múltban van"
+
+#~ msgid "Speculative"
+#~ msgstr "Spekulatív"
+
+#~ msgid "No scheduling information available for this part"
+#~ msgstr "Az alkatrészhez nem áll rendelkezésre ütemezési információ"
+
+#~ msgid "Error fetching scheduling information for this part"
+#~ msgstr "Hiba az alkatrész ütemezési információinak betöltésekor"
+
+#~ msgid "Scheduled Stock Quantities"
+#~ msgstr "Ütemezett készlet mennyiség"
+
+#~ msgid "Maximum Quantity"
+#~ msgstr "Maximum mennyiség"
+
+#~ msgid "Minimum Stock Level"
+#~ msgstr "Minimális készlet"
+
+#~ msgid "No plugins found"
+#~ msgstr "Nem találhatók pluginok"
+
+#~ msgid "This plugin is no longer installed"
+#~ msgstr "Ez a plugin már nincs telepítve"
+
+#~ msgid "This plugin is active"
+#~ msgstr "Ez a plugin aktív"
+
+#~ msgid "This plugin is installed but not active"
+#~ msgstr "Ez a plugin telepítve van ugyan, de nem aktív"
+
+#~ msgid "Disable Plugin"
+#~ msgstr "Plugin kikapcsolása"
+
+#~ msgid "Enable Plugin"
+#~ msgstr "Plugin bekapcsolása"
+
+#~ msgid "The Plugin was installed"
+#~ msgstr "A plugin telepítve lett"
+
+#~ msgid "Are you sure you want to enable this plugin?"
+#~ msgstr "Biztosan bekapcsolod ezt a plugint?"
+
+#~ msgid "Are you sure you want to disable this plugin?"
+#~ msgstr "Biztosan kikapcsolod ezt a plugint?"
+
+#~ msgid "Enable"
+#~ msgstr "Bekapcsolás"
+
+#~ msgid "Disable"
+#~ msgstr "Letiltás"
+
+#~ msgid "Plugin updated"
+#~ msgstr "Plugin frissítve"
+
+#~ msgid "Error fetching currency data"
+#~ msgstr "Pénznem adatok lekérdezése sikertelen"
+
+#~ msgid "No BOM data available"
+#~ msgstr "Nincs alkatrészjegyzék infomáció"
+
+#~ msgid "No supplier pricing data available"
+#~ msgstr "Nincs beszállítói árinfomáció"
+
+#~ msgid "No price break data available"
+#~ msgstr "Nincsenek ársáv adatok"
+
+#~ msgid "No purchase history data available"
+#~ msgstr "Nincsenek beszerzési ár előzmények"
+
+#~ msgid "Purchase Price History"
+#~ msgstr "Beszerzési ár előzmények"
+
+#~ msgid "No sales history data available"
+#~ msgstr "Nincsenek eladási ár előzmények"
+
+#~ msgid "Sale Price History"
+#~ msgstr "Eladási ár előzmények"
+
+#~ msgid "No variant data available"
+#~ msgstr "Nincs alkatrészváltozat infomáció"
+
+#~ msgid "Variant Part"
+#~ msgstr "Alkatrészváltozat"
+
+#~ msgid "Select purchase order to duplicate"
+#~ msgstr "Válaszd ki a lemásolandó beszerzési rendelést"
+
+#~ msgid "Duplicate Line Items"
+#~ msgstr "Sortételek másolása"
+
+#~ msgid "Duplicate all line items from the selected order"
+#~ msgstr "Összes sortétel másolása a kiválasztott rendelésből"
+
+#~ msgid "Duplicate Extra Lines"
+#~ msgstr "Egyéb tételek másolása"
+
+#~ msgid "Duplicate extra line items from the selected order"
+#~ msgstr "Összes egyéb tétel másolása a kiválasztott rendelésből"
+
+#~ msgid "Edit Purchase Order"
+#~ msgstr "Beszerzési rendelés szerkesztése"
+
+#~ msgid "Duplication Options"
+#~ msgstr "Másolási opciók"
+
+#~ msgid "Complete Purchase Order"
+#~ msgstr "Beszerzési rendelés befejezése"
+
+#~ msgid "Mark this order as complete?"
+#~ msgstr "Rendelés befejezettnek jelölése?"
+
+#~ msgid "All line items have been received"
+#~ msgstr "Minden sortétel megérkezett"
+
+#~ msgid "This order has line items which have not been marked as received."
+#~ msgstr "Ez a rendelés olyan sortételeket tartalmaz amik még nem érkeztek be."
+
+#~ msgid "Completing this order means that the order and line items will no longer be editable."
+#~ msgstr "A rendelés befejezettnek jelölésével annak adatai és sortételei a továbbiakban már nem lesznek szerkeszthetők."
+
+#~ msgid "Cancel Purchase Order"
+#~ msgstr "Beszerzési rendelés törlése"
+
+#~ msgid "Are you sure you wish to cancel this purchase order?"
+#~ msgstr "Biztosan törölni szeretnéd ezt a beszerzési rendelést?"
+
+#~ msgid "This purchase order can not be cancelled"
+#~ msgstr "Ezt a beszerzési rendelést nem lehet törölni"
+
+#~ msgid "After placing this order, line items will no longer be editable."
+#~ msgstr "A kiküldés után a sortételek már nem lesznek szerkeszthetők."
+
+#~ msgid "Issue Purchase Order"
+#~ msgstr "Beszerzési rendelés kiküldése"
+
+#~ msgid "At least one purchaseable part must be selected"
+#~ msgstr "Legalább egy beszerezhető alkatrészt ki kell választani"
+
+#~ msgid "Quantity to order"
+#~ msgstr "Rendelendő mennyiség"
+
+#~ msgid "New supplier part"
+#~ msgstr "Új beszállítói alkatrész"
+
+#~ msgid "New purchase order"
+#~ msgstr "Új beszerzési rendelés"
+
+#~ msgid "Add to purchase order"
+#~ msgstr "Hozzáadás beszerzési rendeléshez"
+
+#~ msgid "No matching supplier parts"
+#~ msgstr "Nincsenek egyező beszállítói alkatrészek"
+
+#~ msgid "No matching purchase orders"
+#~ msgstr "Nincsenek egyező beszerzési rendelések"
+
+#~ msgid "Select Line Items"
+#~ msgstr "Sortételek kiválasztása"
+
+#~ msgid "At least one line item must be selected"
+#~ msgstr "Legalább egy sortételt ki kell választani"
+
+#~ msgid "Received Quantity"
+#~ msgstr "Beérkezett mennyiség"
+
+#~ msgid "Quantity to receive"
+#~ msgstr "Érkező mennyiség"
+
+#~ msgid "Stock Status"
+#~ msgstr "Készlet állapota"
+
+#~ msgid "Add barcode"
+#~ msgstr "Vonalkód hozzáadása"
+
+#~ msgid "Remove barcode"
+#~ msgstr "Vonalkód eltávolítása"
+
+#~ msgid "Specify location"
+#~ msgstr "Add meg a helyet"
+
+#~ msgid "Add batch code"
+#~ msgstr "Batch kód hozzáadása"
+
+#~ msgid "Add serial numbers"
+#~ msgstr "Sorozatszám hozzáadása"
+
+#~ msgid "Serials"
+#~ msgstr "Sorozatszámok"
+
+#~ msgid "Order Code"
+#~ msgstr "Rendelési kód"
+
+#~ msgid "Quantity to Receive"
+#~ msgstr "Érkező mennyiség"
+
+#~ msgid "Confirm receipt of items"
+#~ msgstr "Bevételezés megerősítése"
+
+#~ msgid "Receive Purchase Order Items"
+#~ msgstr "Beszerzési rendelés tételeinek bevételezése"
+
+#~ msgid "Scan Item Barcode"
+#~ msgstr "Tétel vonalkód beolvasása"
+
+#~ msgid "Scan barcode on incoming item (must not match any existing stock items)"
+#~ msgstr "Beérkezett tétel vonalkódjának leolvasása (egyik meglévő készlet tétellel sem egyezhet)"
+
+#~ msgid "Invalid barcode data"
+#~ msgstr "Érvénytelen vonalkód adat"
+
+#~ msgid "Order is overdue"
+#~ msgstr "Rendelés késésben"
+
+#~ msgid "Items"
+#~ msgstr "Tételek"
+
+#~ msgid "All selected Line items will be deleted"
+#~ msgstr "Az összes kijelölt sortétel törlésre kerül"
+
+#~ msgid "Delete selected Line items?"
+#~ msgstr "Töröljük a kiválasztott sortételeket?"
+
+#~ msgid "Duplicate Line Item"
+#~ msgstr "Sortétel másolása"
+
+#~ msgid "Edit Line Item"
+#~ msgstr "Sortétel szerkesztése"
+
+#~ msgid "Delete Line Item"
+#~ msgstr "Sortétel törlése"
+
+#~ msgid "Duplicate line item"
+#~ msgstr "Sortétel másolása"
+
+#~ msgid "Edit line item"
+#~ msgstr "Sortétel szerkesztése"
+
+#~ msgid "Delete line item"
+#~ msgstr "Sortétel törlése"
+
+#~ msgid "items selected"
+#~ msgstr "kiválasztott tételek"
+
+#~ msgid "Select Report Template"
+#~ msgstr "Riport sablon kiválasztása"
+
+#~ msgid "Select Test Report Template"
+#~ msgstr "Teszt riport sablon kiválasztása"
+
+#~ msgid "No Reports Found"
+#~ msgstr "Nem található riport"
+
+#~ msgid "No report templates found which match the selected items"
+#~ msgstr "Nem található riport sablon a kiválasztott tételekhez"
+
+#~ msgid "Add Customer"
+#~ msgstr "Vevő hozzáadása"
+
+#~ msgid "Create Return Order"
+#~ msgstr "Visszavétel létrehozása"
+
+#~ msgid "Edit Return Order"
+#~ msgstr "Visszavétel szerkesztése"
+
+#~ msgid "Issue Return Order"
+#~ msgstr "Visszavétel kiadása"
+
+#~ msgid "Are you sure you wish to cancel this Return Order?"
+#~ msgstr "Biztosan törölni szeretnéd ezt a visszavételt?"
+
+#~ msgid "Cancel Return Order"
+#~ msgstr "Visszavétel törlése"
+
+#~ msgid "Complete Return Order"
+#~ msgstr "Visszavétel befejezése"
+
+#~ msgid "No return orders found"
+#~ msgstr "Nem található visszavétel"
+
+#~ msgid "Invalid Customer"
+#~ msgstr "Érvénytelen vevő"
+
+#~ msgid "Receive Return Order Items"
+#~ msgstr "Visszavétel tételeinek bevételezése"
+
+#~ msgid "No matching line items"
+#~ msgstr "Nincs egyező sortétel"
+
+#~ msgid "Mark item as received"
+#~ msgstr "Tétel bevételezve"
+
+#~ msgid "Create Sales Order"
+#~ msgstr "Vevői rendelés létrehozása"
+
+#~ msgid "Edit Sales Order"
+#~ msgstr "Vevői rendelés szerkesztése"
+
+#~ msgid "No stock items have been allocated to this shipment"
+#~ msgstr "Ehhez a szállítmányhoz nincs készlet hozzárendelve"
+
+#~ msgid "The following stock items will be shipped"
+#~ msgstr "A következő készlet tételek ki lesznek szállítva"
+
+#~ msgid "Complete Shipment"
+#~ msgstr "Függő szállítmányok kiszállítása"
+
+#~ msgid "Confirm Shipment"
+#~ msgstr "Szállítmány megerősítése"
+
+#~ msgid "No pending shipments found"
+#~ msgstr "Nincs függő szállítmány"
+
+#~ msgid "No stock items have been allocated to pending shipments"
+#~ msgstr "A függő a szállítmányokhoz nincs készlet hozzárendelve"
+
+#~ msgid "Complete Shipments"
+#~ msgstr "Függő szállítmányok kiszállítása"
+
+#~ msgid "Skip"
+#~ msgstr "Kihagyás"
+
+#~ msgid "This order has line items which have not been completed."
+#~ msgstr "Ez a rendelés olyan sortételeket tartalmaz amik még nem teljesítettek."
+
+#~ msgid "Issue this Sales Order?"
+#~ msgstr "Vissza lett igazolva ez a vevői rendelés?"
+
+#~ msgid "Issue Sales Order"
+#~ msgstr "Vevői rendelés visszaigazolása"
+
+#~ msgid "Cancel Sales Order"
+#~ msgstr "Vevő rendelés törlése"
+
+#~ msgid "Cancelling this order means that the order will no longer be editable."
+#~ msgstr "A rendelés törlésével annak adatai a továbbiakban már nem lesznek szerkeszthetők."
+
+#~ msgid "Create New Shipment"
+#~ msgstr "Szállítmány létrehozása"
+
+#~ msgid "No sales orders found"
+#~ msgstr "Nem található vevői rendelés"
+
+#~ msgid "Edit shipment"
+#~ msgstr "Szállítmány szerkesztése"
+
+#~ msgid "Complete shipment"
+#~ msgstr "Szállítmány kiszállítása"
+
+#~ msgid "Delete shipment"
+#~ msgstr "Szállítmány törlése"
+
+#~ msgid "Edit Shipment"
+#~ msgstr "Szállítmány szerkesztése"
+
+#~ msgid "Delete Shipment"
+#~ msgstr "Szállítmány törlése"
+
+#~ msgid "No matching shipments found"
+#~ msgstr "Nincs egyező szállímány"
+
+#~ msgid "Shipment Reference"
+#~ msgstr "Szállítmány azonosító"
+
+#~ msgid "Not shipped"
+#~ msgstr "Nincs kiszállítva"
+
+#~ msgid "Tracking"
+#~ msgstr "Nyomkövetés"
+
+#~ msgid "Invoice"
+#~ msgstr "Számla"
+
+#~ msgid "Add Shipment"
+#~ msgstr "Szállítmány hozzáadása"
+
+#~ msgid "Confirm stock allocation"
+#~ msgstr "Készlet foglalás megerősítése"
+
+#~ msgid "Allocate Stock Items to Sales Order"
+#~ msgstr "Készlet foglalása a vevői rendeléshez"
+
+#~ msgid "No sales order allocations found"
+#~ msgstr "Nincs vevői rendeléshez történő foglalás"
+
+#~ msgid "Edit Stock Allocation"
+#~ msgstr "Készlet foglalások szerkesztése"
+
+#~ msgid "Confirm Delete Operation"
+#~ msgstr "Törlési művelet megerősítése"
+
+#~ msgid "Delete Stock Allocation"
+#~ msgstr "Készlet foglalások törlése"
+
+#~ msgid "Shipped to customer"
+#~ msgstr "Vevőnek kiszállítva"
+
+#~ msgid "Stock location not specified"
+#~ msgstr "Készlethely nincs megadva"
+
+#~ msgid "Allocate serial numbers"
+#~ msgstr "Sorozatszámok kiosztása"
+
+#~ msgid "Purchase stock"
+#~ msgstr "Készletrendelés"
+
+#~ msgid "Calculate price"
+#~ msgstr "Árszámítás"
+
+#~ msgid "Cannot be deleted as items have been shipped"
+#~ msgstr "Nem törölhető mivel a tételek ki lettek szállítva"
+
+#~ msgid "Cannot be deleted as items have been allocated"
+#~ msgstr "Nem törölhető mivel tételek vannak lefoglalva"
+
+#~ msgid "Allocate Serial Numbers"
+#~ msgstr "Sorozatszámok kiosztása"
+
+#~ msgid "Update Unit Price"
+#~ msgstr "Egységár módosítása"
+
+#~ msgid "No results"
+#~ msgstr "Nincs találat"
+
+#~ msgid "Enter search query"
+#~ msgstr "Add meg a keresési lekérdezést"
+
+#~ msgid "result"
+#~ msgstr "eredmény"
+
+#~ msgid "results"
+#~ msgstr "találat"
+
+#~ msgid "Minimize results"
+#~ msgstr "Eredmények összezárása"
+
+#~ msgid "Remove results"
+#~ msgstr "Eredmények eltávolítása"
+
+#~ msgid "Serialize Stock Item"
+#~ msgstr "Készlet tétel sorszámozása"
+
+#~ msgid "Confirm Stock Serialization"
+#~ msgstr "Készlet sorozatszámozás megerősítése"
+
+#~ msgid "Default icon for all locations that have no icon set (optional) - Explore all available icons on"
+#~ msgstr "Alapértelmezett ikon minden készlethelyre melyhez nincs ikon rendelve (választható) - Válogass az ikonok közül"
+
+#~ msgid "Add Location type"
+#~ msgstr "Készlethely típus hozzáadása"
+
+#~ msgid "Edit Stock Location"
+#~ msgstr "Készlet hely szerkesztése"
+
+#~ msgid "New Stock Location"
+#~ msgstr "Új készlet hely"
+
+#~ msgid "Create another location after this one"
+#~ msgstr "Új készlethely létrehozása ez után"
+
+#~ msgid "Stock location created"
+#~ msgstr "Készlet hely létrehozva"
+
+#~ msgid "Are you sure you want to delete this stock location?"
+#~ msgstr "Biztosan törölni szeretnéd ezt a készlet helyet?"
+
+#~ msgid "Delete Stock Location"
+#~ msgstr "Készlethely törlése"
+
+#~ msgid "Action for stock items in this stock location"
+#~ msgstr "Műveletek az ezen a helyen lévő tételekhez"
+
+#~ msgid "Action for sub-locations"
+#~ msgstr "Műveletek az al-helyekhez"
+
+#~ msgid "This part cannot be serialized"
+#~ msgstr "Ezt az alkatrészt nem lehet sorozatszámozni"
+
+#~ msgid "Add given quantity as packs instead of individual items"
+#~ msgstr "Mennyiség hozzáadása csomagolási egységenként egyedi tételek helyett"
+
+#~ msgid "Enter initial quantity for this stock item"
+#~ msgstr "Add meg a kezdeti mennyiséget ehhez a készlet tételhez"
+
+#~ msgid "Enter serial numbers for new stock (or leave blank)"
+#~ msgstr "Add meg az új készlet tételhez tartozó sorozatszámokat (vagy hagyd üresen)"
+
+#~ msgid "Stock item duplicated"
+#~ msgstr "Készlet tétel lemásolva"
+
+#~ msgid "Duplicate Stock Item"
+#~ msgstr "Készlet tétel másolása"
+
+#~ msgid "Are you sure you want to delete this stock item?"
+#~ msgstr "Biztosan törölni szeretnéd ezt a készlet tételt?"
+
+#~ msgid "Delete Stock Item"
+#~ msgstr "Készlet tétel törlése"
+
+#~ msgid "Edit Stock Item"
+#~ msgstr "Készlet tétel szerkesztése"
+
+#~ msgid "Create another item after this one"
+#~ msgstr "Új tétel létrehozása ez után"
+
+#~ msgid "Created new stock item"
+#~ msgstr "Készlet tétel létrehozva"
+
+#~ msgid "Created multiple stock items"
+#~ msgstr "Több készlet tétel létre lett hozva"
+
+#~ msgid "Find Serial Number"
+#~ msgstr "Sorozatszám keresése"
+
+#~ msgid "Enter serial number"
+#~ msgstr "Sorozatszám megadása"
+
+#~ msgid "Enter a serial number"
+#~ msgstr "Adj meg egy sorozatszámot"
+
+#~ msgid "No matching serial number"
+#~ msgstr "Nincs egyező sorozatszám"
+
+#~ msgid "More than one matching result found"
+#~ msgstr "Több egyező eredmény is van"
+
+#~ msgid "Confirm stock assignment"
+#~ msgstr "Készlet hozzárendelés jóváhagyása"
+
+#~ msgid "Assign Stock to Customer"
+#~ msgstr "Készlet vevőhöz rendelése"
+
+#~ msgid "Warning: Merge operation cannot be reversed"
+#~ msgstr "Figyelem: az összevonási művelet nem vonható vissza"
+
+#~ msgid "Some information will be lost when merging stock items"
+#~ msgstr "Némi információ elveszik a készlet összevonás során"
+
+#~ msgid "Stock transaction history will be deleted for merged items"
+#~ msgstr "A készlettörténet törölve lesz az összevont tételeknél"
+
+#~ msgid "Supplier part information will be deleted for merged items"
+#~ msgstr "A beszállítói alkatrész információk törlődnek az összevont tételeknél"
+
+#~ msgid "Confirm stock item merge"
+#~ msgstr "Készlet összevonás megerősítése"
+
+#~ msgid "Transfer Stock"
+#~ msgstr "Készlet áthelyezése"
+
+#~ msgid "Move"
+#~ msgstr "Áthelyezés"
+
+#~ msgid "Count Stock"
+#~ msgstr "Leltározás"
+
+#~ msgid "Count"
+#~ msgstr "Leltár"
+
+#~ msgid "Remove Stock"
+#~ msgstr "Készlet csökkentése"
+
+#~ msgid "Take"
+#~ msgstr "Kivesz"
+
+#~ msgid "Add Stock"
+#~ msgstr "Készlet növelése"
+
+#~ msgid "Delete Stock"
+#~ msgstr "Készlet törlése"
+
+#~ msgid "Quantity cannot be adjusted for serialized stock"
+#~ msgstr "Egyedi követésre kötelezett tételeknél a menyiség nem módosítható"
+
+#~ msgid "Specify stock quantity"
+#~ msgstr "Készlet mennyiség megadása"
+
+#~ msgid "Select Stock Items"
+#~ msgstr "Készlet tételek kiválasztása"
+
+#~ msgid "Select at least one available stock item"
+#~ msgstr "Válassz legalább egy rendelkezésre álló készlet tételt"
+
+#~ msgid "Confirm stock adjustment"
+#~ msgstr "Készlet módosítás jóváhagyása"
+
+#~ msgid "PASS"
+#~ msgstr "SIKER"
+
+#~ msgid "FAIL"
+#~ msgstr "SIKERTELEN"
+
+#~ msgid "NO RESULT"
+#~ msgstr "NINCS EREDMÉNY"
+
+#~ msgid "Pass test"
+#~ msgstr "Teszt sikeres"
+
+#~ msgid "Add test result"
+#~ msgstr "Teszt eredmény hozzáadása"
+
+#~ msgid "No test results found"
+#~ msgstr "Nincs teszt eredmény"
+
+#~ msgid "Test Date"
+#~ msgstr "Teszt dátuma"
+
+#~ msgid "Edit Test Result"
+#~ msgstr "Teszt eredmény szerkesztése"
+
+#~ msgid "Delete Test Result"
+#~ msgstr "Teszt eredmény törlése"
+
+#~ msgid "In production"
+#~ msgstr "Gyártásban"
+
+#~ msgid "Installed in Stock Item"
+#~ msgstr "Beépítve készlet tételbe"
+
+#~ msgid "Assigned to Sales Order"
+#~ msgstr "Vevő rendeléshez hozzárendelve"
+
+#~ msgid "No stock location set"
+#~ msgstr "Nincs hely megadva"
+
+#~ msgid "Change stock status"
+#~ msgstr "Készlet állapot módosítása"
+
+#~ msgid "Merge stock"
+#~ msgstr "Készlet összevonása"
+
+#~ msgid "Delete stock"
+#~ msgstr "Készlet törlése"
+
+#~ msgid "stock items"
+#~ msgstr "készlet tételek"
+
+#~ msgid "Scan to location"
+#~ msgstr "Beolvasás helyre"
+
+#~ msgid "Stock Actions"
+#~ msgstr "Készlet műveletek"
+
+#~ msgid "Load installed items"
+#~ msgstr "Beépített tételek betöltése"
+
+#~ msgid "Stock item is in production"
+#~ msgstr "Készlet tétel gyártás alatt"
+
+#~ msgid "Stock item assigned to sales order"
+#~ msgstr "Készlet tétel hozzárendelve egy vevői rendeléshez"
+
+#~ msgid "Stock item assigned to customer"
+#~ msgstr "Készlet tétel hozzárendelve egy vevőhöz"
+
+#~ msgid "Serialized stock item has been allocated"
+#~ msgstr "Egyedi követésre kötelezett készlet tétel lefoglalva"
+
+#~ msgid "Stock item has been fully allocated"
+#~ msgstr "Készlet tétel teljes egészében lefoglalva"
+
+#~ msgid "Stock item has been partially allocated"
+#~ msgstr "Készlet tétel részben lefoglalva"
+
+#~ msgid "Stock item has been installed in another item"
+#~ msgstr "Készlet tétel beépítve egy másikba"
+
+#~ msgid "Stock item has been consumed by a build order"
+#~ msgstr "Készlet tétel fel lett használva egy gyártásban"
+
+#~ msgid "Stock item has expired"
+#~ msgstr "Készlet tétel lejárt"
+
+#~ msgid "Stock item will expire soon"
+#~ msgstr "Készlet tétel hamarosan lejár"
+
+#~ msgid "Stock item has been rejected"
+#~ msgstr "Készlet tétel elutasítva"
+
+#~ msgid "Stock item is lost"
+#~ msgstr "Készlet tétel elveszett"
+
+#~ msgid "Stock item is destroyed"
+#~ msgstr "Készlet tétel megsemmisült"
+
+#~ msgid "Depleted"
+#~ msgstr "Kimerült"
+
+#~ msgid "Supplier part not specified"
+#~ msgstr "Beszállítói alkatrész nincs megadva"
+
+#~ msgid "Stock Value"
+#~ msgstr "Készletérték"
+
+#~ msgid "No stock items matching query"
+#~ msgstr "Nincs a lekérdezésnek megfelelő készlet tétel"
+
+#~ msgid "stock locations"
+#~ msgstr "készlethelyek"
+
+#~ msgid "Load Sublocations"
+#~ msgstr "Alhelyek betöltése"
+
+#~ msgid "Details"
+#~ msgstr "Részletek"
+
+#~ msgid "No changes"
+#~ msgstr "Nincs változás"
+
+#~ msgid "Part information unavailable"
+#~ msgstr "Alkatrész információ nem áll rendelkezésre"
+
+#~ msgid "Location no longer exists"
+#~ msgstr "A hely már nem létezik"
+
+#~ msgid "Build order no longer exists"
+#~ msgstr "A gyártási utasítás már nem létezik"
+
+#~ msgid "Purchase order no longer exists"
+#~ msgstr "Beszerzési megrendelés már nem létezik"
+
+#~ msgid "Sales Order no longer exists"
+#~ msgstr "Vevői megrendelés már nem létezik"
+
+#~ msgid "Return Order no longer exists"
+#~ msgstr "Visszavétel már nem létezik"
+
+#~ msgid "Customer no longer exists"
+#~ msgstr "Vevő már nem létezik"
+
+#~ msgid "Stock item no longer exists"
+#~ msgstr "A készlet tétel már nem létezik"
+
+#~ msgid "Added"
+#~ msgstr "Hozzáadva"
+
+#~ msgid "Removed"
+#~ msgstr "Eltávolítva"
+
+#~ msgid "No installed items"
+#~ msgstr "Nincsenek beépített tételek"
+
+#~ msgid "Uninstall Stock Item"
+#~ msgstr "Készlet tétel kiszedése"
+
+#~ msgid "Select stock item to uninstall"
+#~ msgstr "Válaszd ki a kiszedni való készlet tételt"
+
+#~ msgid "Install another stock item into this item"
+#~ msgstr "Másik tétel beépítése ebbe a készlet tételbe"
+
+#~ msgid "Stock items can only be installed if they meet the following criteria"
+#~ msgstr "Készlet tételek csak akkor építhetők be ha teljesítik a következő kritériumokat"
+
+#~ msgid "The Stock Item links to a Part which is the BOM for this Stock Item"
+#~ msgstr "A készlet tétel egy olyan alkatrészre mutat ami alkatrészjegyzéke ennek a készlet tételnek"
+
+#~ msgid "The Stock Item is currently available in stock"
+#~ msgstr "A készlet tétel jelenleg elérhető készleten"
+
+#~ msgid "The Stock Item is not already installed in another item"
+#~ msgstr "A készlet tétel még nem épült be egy másik tételbe"
+
+#~ msgid "The Stock Item is tracked by either a batch code or serial number"
+#~ msgstr "A készlet tétel követett vagy sorozatszámmal vagy batch kóddal"
+
+#~ msgid "Select part to install"
+#~ msgstr "Válaszd ki a beépítendő alkatrészt"
+
+#~ msgid "Select one or more stock items"
+#~ msgstr "Válassz ki egy vagy több készlet tételt"
+
+#~ msgid "Selected stock items"
+#~ msgstr "Kiválasztott készlet tételek"
+
+#~ msgid "Change Stock Status"
+#~ msgstr "Készlet állapot módosítása"
+
+#~ msgid "Has project code"
+#~ msgstr "Van projektszáma"
+
+#~ msgid "Order status"
+#~ msgstr "Rendelés állapota"
+
+#~ msgid "Outstanding"
+#~ msgstr "Kintlévő"
+
+#~ msgid "Assigned to me"
+#~ msgstr "Hozzám rendelt"
+
+#~ msgid "Trackable Part"
+#~ msgstr "Követésre kötelezett"
+
+#~ msgid "Assembled Part"
+#~ msgstr "Gyártmány alkatrész"
+
+#~ msgid "Has Available Stock"
+#~ msgstr "Van elérhető készlete"
+
+#~ msgid "Allow Variant Stock"
+#~ msgstr "Készlet változatok engedélyezése"
+
+#~ msgid "Has Pricing"
+#~ msgstr "Van árazás"
+
+#~ msgid "Include locations"
+#~ msgstr "Helyekkel együtt"
+
+#~ msgid "Has location type"
+#~ msgstr "Van készlethely típusa"
+
+#~ msgid "Subscribed"
+#~ msgstr "Értesítés beállítva"
+
+#~ msgid "Is Serialized"
+#~ msgstr "Sorozatszámos"
+
+#~ msgid "Serial number GTE"
+#~ msgstr "Sorozatszám >="
+
+#~ msgid "Serial number greater than or equal to"
+#~ msgstr "Sorozatszám nagyobb vagy egyenlő mint"
+
+#~ msgid "Serial number LTE"
+#~ msgstr "Sorozatszám <="
+
+#~ msgid "Serial number less than or equal to"
+#~ msgstr "Sorozatszám kisebb vagy egyenlő mint"
+
+#~ msgid "Serial number"
+#~ msgstr "Sorozatszám"
+
+#~ msgid "Batch code"
+#~ msgstr "Batch kód"
+
+#~ msgid "Active parts"
+#~ msgstr "Aktív alkatrész"
+
+#~ msgid "Show stock for active parts"
+#~ msgstr "Aktív alkatrészek készletének megjelenítése"
+
+#~ msgid "Part is an assembly"
+#~ msgstr "Az alkatrész egy gyártmány"
+
+#~ msgid "Is allocated"
+#~ msgstr "Lefoglalt"
+
+#~ msgid "Item has been allocated"
+#~ msgstr "Az tétel lefoglalásra került"
+
+#~ msgid "Stock is available for use"
+#~ msgstr "Felhasználható készlet"
+
+#~ msgid "Include stock in sublocations"
+#~ msgstr "Alhelyeken lévő készlettel együtt"
+
+#~ msgid "Show stock items which are depleted"
+#~ msgstr "Kimerült készlet tételek megjelenítése"
+
+#~ msgid "Show items which are in stock"
+#~ msgstr "Készleten lévő tételek megjelenítése"
+
+#~ msgid "Show items which are in production"
+#~ msgstr "Gyártásban lévő tételek megjelenítése"
+
+#~ msgid "Include Variants"
+#~ msgstr "Változatokkal együtt"
+
+#~ msgid "Include stock items for variant parts"
+#~ msgstr "Alkatrészváltozatok készletével együtt"
+
+#~ msgid "Show stock items which are installed in another item"
+#~ msgstr "Másik tételbe beépült tételek mutatása"
+
+#~ msgid "Show items which have been assigned to a customer"
+#~ msgstr "Készlet tételek melyek hozzá vannak rendelve egy vevőhöz"
+
+#~ msgid "Stock status"
+#~ msgstr "Készlet állapota"
+
+#~ msgid "Has batch code"
+#~ msgstr "Van batch kódja"
+
+#~ msgid "Stock item is tracked by either batch code or serial number"
+#~ msgstr "Követett készlet tétel sorozatszámmal vagy batch kóddal"
+
+#~ msgid "Has purchase price"
+#~ msgstr "Van beszerzési ára"
+
+#~ msgid "Show stock items which have a purchase price set"
+#~ msgstr "Beszerzési árral rendelkező készlet tételek megjelenítése"
+
+#~ msgid "Expiry Date before"
+#~ msgstr "Lejárat előtt"
+
+#~ msgid "Expiry Date after"
+#~ msgstr "Lejárat után"
+
+#~ msgid "Show stock items which have expired"
+#~ msgstr "Lejárt készlet tételek megjelenítése"
+
+#~ msgid "Show stock which is close to expiring"
+#~ msgstr "Hamarosan lejáró készlet tételek megjelenítése"
+
+#~ msgid "Test Passed"
+#~ msgstr "Teszten megfelelt"
+
+#~ msgid "Include Installed Items"
+#~ msgstr "Beépített tételekkel együtt"
+
+#~ msgid "Build status"
+#~ msgstr "Gyártási állapot"
+
+#~ msgid "Include parts in subcategories"
+#~ msgstr "Alkategóriákkal együtt"
+
+#~ msgid "Show active parts"
+#~ msgstr "Aktív alkatrészek megjelenítése"
+
+#~ msgid "Available stock"
+#~ msgstr "Elérhető"
+
+#~ msgid "Has Units"
+#~ msgstr "Van mértékegysége"
+
+#~ msgid "Part has defined units"
+#~ msgstr "Az alkatrésznek van megadva mértékegysége"
+
+#~ msgid "Has IPN"
+#~ msgstr "Van IPN-je"
+
+#~ msgid "Part has internal part number"
+#~ msgstr "Van belső cikkszáma"
+
+#~ msgid "In stock"
+#~ msgstr "Készleten"
+
+#~ msgid "Purchasable"
+#~ msgstr "Beszerezhető"
+
+#~ msgid "Has stocktake entries"
+#~ msgstr "Volt leltár"
+
+#~ msgid "Has Choices"
+#~ msgstr "Vannak lehetőségei"
+
+#~ msgid "Display calendar view"
+#~ msgstr "Naptár nézet megjelenítése"
+
+#~ msgid "Display list view"
+#~ msgstr "Lista nézet megjenítése"
+
+#~ msgid "Display tree view"
+#~ msgstr "Fa nézet megjelenítése"
+
+#~ msgid "Expand all rows"
+#~ msgstr "Sorok kinyitása"
+
+#~ msgid "Collapse all rows"
+#~ msgstr "Sorok becsukása"
+
+#~ msgid "Export Table Data"
+#~ msgstr "Táblázat exportálása"
+
+#~ msgid "Select File Format"
+#~ msgstr "Fájlfomátum kiválasztása"
+
+#~ msgid "Loading data"
+#~ msgstr "Adatok betöltése"
+
+#~ msgid "rows per page"
+#~ msgstr "sor oldalanként"
+
+#~ msgid "Showing all rows"
+#~ msgstr "Összes sor mutatása"
+
+#~ msgid "Showing"
+#~ msgstr "Látható"
+
+#~ msgid "to"
+#~ msgstr "-"
+
+#~ msgid "of"
+#~ msgstr "a"
+
+#~ msgid "rows"
+#~ msgstr "sorból,"
+
+#~ msgid "No matching results"
+#~ msgstr "Nincs egyező eredmény"
+
+#~ msgid "Hide/Show pagination"
+#~ msgstr "Lapozó elrejtése/megjelenítése"
+
+#~ msgid "Toggle"
+#~ msgstr "Átváltás"
+
+#~ msgid "Columns"
+#~ msgstr "Oszlopok"
+
+#~ msgid "All"
+#~ msgstr "Összes"
+
+#~ msgid "Buy"
+#~ msgstr "Beszerzés"
+
+#~ msgid "Sell"
+#~ msgstr "Értékesítés"
+
+#~ msgid "Show Notifications"
+#~ msgstr "Értesítések megjelenítése"
+
+#~ msgid "New Notifications"
+#~ msgstr "Új értesítések"
+
+#~ msgid "Logout"
+#~ msgstr "Kijelentkezés"
+
+#~ msgid "Save"
+#~ msgstr "Mentés"
+
+#~ msgid "Show all notifications and history"
+#~ msgstr "Összes értesítés és előzmény megjelenítése"
+
+#~ msgid "QR data not provided"
+#~ msgstr "Nincs QR kód adat megadva"
+
+#~ msgid "You were logged out successfully."
+#~ msgstr "Sikeresen kijelentkeztél."
+
+#~ msgid "Log in again"
+#~ msgstr "Jelentkezz be újra"
+
+#~ msgid "Show full search results"
+#~ msgstr "Teljes találatok megjelenítése"
+
+#~ msgid "Clear search"
+#~ msgstr "Keresőmező törlése"
+
+#~ msgid "Close search menu"
+#~ msgstr "Keresés menü bezárása"
+
+#~ msgid "Social Network Login Failure"
+#~ msgstr "Közösségi háló bejelentkezési hiba"
+
+#~ msgid "Account Login Failure"
+#~ msgstr "Felhasználó bejelentkezési hiba"
+
+#~ msgid "An error occurred while attempting to login via your social network account."
+#~ msgstr "Hiba lépett fel a közösségi hálós bejelentkezés során."
+
+#~ msgid "Contact your system administrator for further information."
+#~ msgstr "Vedd fel a kapcsolatot a rendszergazdával további információkért."
+
+#, python-format
+#~ msgid "Connect %(provider)s"
+#~ msgstr "Kapcsolódás %(provider)s-hoz"
+
+#, python-format
+#~ msgid "You are about to connect a new third party account from %(provider)s."
+#~ msgstr "A %(provider)s felhasználói fiókkal fogsz kapcsolódni."
+
+#, python-format
+#~ msgid "Sign In Via %(provider)s"
+#~ msgstr "Bejelentkezés a következővel: %(provider)s"
+
+#, python-format
+#~ msgid "You are about to sign in using a third party account from %(provider)s."
+#~ msgstr "A %(provider)s felhasználói fiókkal fogsz regisztrálni."
+
+#~ msgid "Continue"
+#~ msgstr "Tovább"
+
+#~ msgid "Invalid SSO Provider"
+#~ msgstr "Érvénytelen SSO szolgáltató"
+
+#~ msgid "The selected SSO provider is invalid, or has not been correctly configured"
+#~ msgstr "A kiválasztott SSO kiszolgáló érvénytelen, vagy nincs megfelelően konfigurálva"
+
+#~ msgid "Provider has not been configured"
+#~ msgstr "A kiszolgáló nincs konfigurálva"
+
+#~ msgid "No SSO providers have been configured"
+#~ msgstr "Nincs SSO kiszolgáló konfigurálva"
+
+#~ msgid "Instance Name"
+#~ msgstr "Példány neve"
+
+#~ msgid "Database"
+#~ msgstr "Adatbázis"
+
+#~ msgid "Server is running in debug mode"
+#~ msgstr "A kiszolgáló hibakeresési módban fut"
+
+#~ msgid "Docker Mode"
+#~ msgstr "Docker mód"
+
+#~ msgid "Server is deployed using docker"
+#~ msgstr "A kiszolgáló docker-ben fut"
+
+#~ msgid "Plugin Support"
+#~ msgstr "Plugin Támogatás"
+
+#~ msgid "Plugin support enabled"
+#~ msgstr "Plugin támogatás engedélyezve"
+
+#~ msgid "Plugin support disabled"
+#~ msgstr "Plugin támogatás letiltva"
+
+#~ msgid "Server status"
+#~ msgstr "Kiszolgáló állapota"
+
+#~ msgid "Healthy"
+#~ msgstr "Rendben"
+
+#~ msgid "Issues detected"
+#~ msgstr "Észlelt problémák vannak"
+
+#~ msgid "Background Worker"
+#~ msgstr "Háttér folyamat"
+
+#~ msgid "Background worker not running"
+#~ msgstr "Háttér folyamat nem fut"
+
+#~ msgid "Email Settings"
+#~ msgstr "Email beállítások"
+
+#~ msgid "Email settings not configured"
+#~ msgstr "Email beállítások hiányoznak"
+
+#~ msgid "Yes"
+#~ msgstr "Igen"
+
+#~ msgid "No"
+#~ msgstr "Nem"

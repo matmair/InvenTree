@@ -88,47 +88,27 @@ msgstr "Verdi '{name}' vises ikke i mønsterformat"
 msgid "Provided value does not match required pattern: "
 msgstr "Angitt verdi samsvarer ikke med påkrevd mønster: "
 
-#: InvenTree/forms.py:128
-msgid "Enter password"
-msgstr "Oppgi passord"
-
-#: InvenTree/forms.py:129
-msgid "Enter new password"
-msgstr "Oppgi nytt passord"
-
-#: InvenTree/forms.py:138
-msgid "Confirm password"
-msgstr "Bekreft passord"
-
-#: InvenTree/forms.py:139
-msgid "Confirm new password"
-msgstr "Bekreft nytt passord"
-
-#: InvenTree/forms.py:143
-msgid "Old password"
-msgstr "Gammelt passord"
-
-#: InvenTree/forms.py:182
+#: InvenTree/forms.py:63
 msgid "Email (again)"
 msgstr "E-post (gjenta)"
 
-#: InvenTree/forms.py:186
+#: InvenTree/forms.py:67
 msgid "Email address confirmation"
 msgstr "Bekreft e-postaddresse"
 
-#: InvenTree/forms.py:209
+#: InvenTree/forms.py:90
 msgid "You must type the same email each time."
 msgstr "Du må angi samme e-post hver gang."
 
-#: InvenTree/forms.py:253 InvenTree/forms.py:261
+#: InvenTree/forms.py:134 InvenTree/forms.py:142
 msgid "The provided primary email address is not valid."
 msgstr "Den oppgitte primære e-postadressen er ikke gyldig."
 
-#: InvenTree/forms.py:268
+#: InvenTree/forms.py:149
 msgid "The provided email domain is not approved."
 msgstr "Det oppgitte e-postdomenet er ikke godkjent."
 
-#: InvenTree/forms.py:395
+#: InvenTree/forms.py:266
 msgid "Registration is disabled."
 msgstr "Registrering er deaktivert."
 
@@ -707,8 +687,6 @@ msgstr "Plassert"
 
 #: InvenTree/status_codes.py:14 InvenTree/status_codes.py:151
 #: InvenTree/status_codes.py:169 generic/states/tests.py:19
-#: order/templates/order/order_base.html:158
-#: order/templates/order/sales_order_base.html:161
 msgid "Complete"
 msgstr "Fullført"
 
@@ -766,7 +744,7 @@ msgstr "I Karantene"
 msgid "Legacy stock tracking entry"
 msgstr "Gammel lagervare sporingsoppføring"
 
-#: InvenTree/status_codes.py:93 templates/js/translated/stock.js:544
+#: InvenTree/status_codes.py:93
 msgid "Stock item created"
 msgstr "Lagevare opprettet"
 
@@ -858,7 +836,7 @@ msgstr "Mottatt mot innkjøpsordre"
 msgid "Returned against Return Order"
 msgstr "Returnert mot returordre"
 
-#: InvenTree/status_codes.py:141 templates/js/translated/table_filters.js:375
+#: InvenTree/status_codes.py:141
 msgid "Sent to customer"
 msgstr "Sendt til kunde"
 
@@ -3684,9 +3662,7 @@ msgstr "Er dette nyhetselementet lest?"
 #: report/templates/report/inventree_bill_of_materials_report.html:126
 #: report/templates/report/inventree_bill_of_materials_report.html:148
 #: report/templates/report/inventree_return_order_report_base.html:35
-#: stock/templates/stock/item_base.html:133 templates/503.html:31
-#: templates/hover_image.html:7 templates/hover_image.html:9
-#: templates/modals.html:6
+#: templates/503.html:31
 msgid "Image"
 msgstr "Bilde"
 
@@ -3812,18 +3788,11 @@ msgstr "Nøkkelordargumenter"
 msgid "Task keyword arguments"
 msgstr "Nøkkelordargumenter for oppgave"
 
-#: common/views.py:84 order/templates/order/order_wizard/po_upload.html:51
-#: order/templates/order/purchase_order_detail.html:24 order/views.py:118
-#: part/templates/part/import_wizard/part_upload.html:58 part/views.py:109
-#: templates/patterns/wizard/upload.html:37
+#: common/views.py:84
 msgid "Upload File"
 msgstr "Last opp fil"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "Sammelign felter"
 
@@ -3839,14 +3808,7 @@ msgstr "Matching av felter mislyktes"
 msgid "Parts imported"
 msgstr "Deler importert"
 
-#: common/views.py:494 order/templates/order/order_wizard/match_fields.html:27
-#: order/templates/order/order_wizard/match_parts.html:19
-#: order/templates/order/order_wizard/po_upload.html:49
-#: part/templates/part/import_wizard/match_fields.html:27
-#: part/templates/part/import_wizard/match_references.html:19
-#: part/templates/part/import_wizard/part_upload.html:56
-#: templates/patterns/wizard/match_fields.html:26
-#: templates/patterns/wizard/upload.html:35
+#: common/views.py:494
 msgid "Previous Step"
 msgstr "Forrige trinn"
 
@@ -4142,7 +4104,7 @@ msgstr "Den sammenkoblede produsentdelen må referere til samme basisdel"
 #: order/templates/order/order_base.html:136 part/bom.py:272 part/bom.py:310
 #: part/serializers.py:499 plugin/builtin/suppliers/digikey.py:25
 #: plugin/builtin/suppliers/lcsc.py:26 plugin/builtin/suppliers/mouser.py:24
-#: plugin/builtin/suppliers/tme.py:26 stock/templates/stock/item_base.html:224
+#: plugin/builtin/suppliers/tme.py:26
 #: templates/email/overdue_purchase_order.html:16
 #: templates/js/translated/company.js:350
 #: templates/js/translated/company.js:511
@@ -4791,13 +4753,11 @@ msgstr "Filtre"
 #: label/templates/label/part/part_label.html:31
 #: label/templates/label/stockitem/qr.html:21
 #: label/templates/label/stocklocation/qr.html:20
-#: templates/allauth_2fa/setup.html:18
 msgid "QR Code"
 msgstr "QR-kode"
 
 #: label/templates/label/part/part_label_code128.html:31
 #: label/templates/label/stocklocation/qr_and_text.html:31
-#: templates/qr_code.html:7
 msgid "QR code"
 msgstr "QR-kode"
 
@@ -4945,7 +4905,6 @@ msgstr ""
 #: order/templates/order/order_base.html:9
 #: order/templates/order/order_base.html:18
 #: report/templates/report/inventree_po_report_base.html:14
-#: stock/templates/stock/item_base.html:176
 #: templates/email/overdue_purchase_order.html:15
 #: templates/js/translated/part.js:1745 templates/js/translated/pricing.js:804
 #: templates/js/translated/purchase_order.js:168
@@ -5945,8 +5904,7 @@ msgstr "Minimal lagerbeholdning"
 msgid "Used In"
 msgstr "Brukt i"
 
-#: part/admin.py:150 part/templates/part/part_base.html:241 stock/admin.py:231
-#: templates/js/translated/part.js:714 templates/js/translated/part.js:2152
+#: part/admin.py:150 stock/admin.py:231
 msgid "Building"
 msgstr "Produseres"
 
@@ -5968,8 +5926,7 @@ msgstr "Overordnet ID"
 msgid "Parent Name"
 msgstr "Overordnet navn"
 
-#: part/admin.py:318 part/templates/part/category.html:88
-#: part/templates/part/category.html:101
+#: part/admin.py:318
 msgid "Category Path"
 msgstr "Sti til kategori"
 
@@ -6107,6 +6064,10 @@ msgstr "Standard plassering"
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
 msgstr "Total lagerbeholdning"
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
+msgstr "SKU-kode"
 
 #: part/forms.py:49
 msgid "Input quantity for price calculation"
@@ -8370,8 +8331,6 @@ msgid "Name for the Plugin Package - can also contain a version indicator"
 msgstr "Navn på utvidelsespakke – kan også inneholde en versjonsindikator"
 
 #: plugin/serializers.py:99
-#: templates/InvenTree/settings/plugin_settings.html:42
-#: templates/js/translated/plugin.js:86
 msgid "Version"
 msgstr "Versjon"
 
@@ -8572,17 +8531,43 @@ msgstr "Ressursfilbeskrivelse"
 msgid "stock location query filters (comma-separated list of key=value pairs)"
 msgstr "spørringsfiltre for lagerplassering (kommadelt liste av nøkkel=verdi-par)"
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr "Stykkliste (BOM)"
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr "Nødvendige materialer"
+
+#: report/templates/report/inventree_build_order_base.html:98
+#: report/templates/report/inventree_po_report_base.html:40
+#: report/templates/report/inventree_so_report_base.html:40
+#: report/templates/report/inventree_test_report_base.html:84
+#: report/templates/report/inventree_test_report_base.html:163
+msgid "Part image"
+msgstr "Bilde av del"
+
+#: report/templates/report/inventree_build_order_base.html:121
+msgid "Issued"
+msgstr "Utstedt"
 
 #: report/templates/report/inventree_build_order_base.html:146
 msgid "Required For"
 msgstr "Kreves for"
 
+#: report/templates/report/inventree_build_order_base.html:152
+msgid "Issued By"
+msgstr "Utstedt av"
+
 #: report/templates/report/inventree_po_report_base.html:15
 msgid "Supplier was deleted"
 msgstr "Leverandør ble slettet"
+
+#: report/templates/report/inventree_po_report_base.html:22
+#: report/templates/report/inventree_return_order_report_base.html:19
+#: report/templates/report/inventree_so_report_base.html:22
+msgid "Line Items"
+msgstr "Linjeelementer"
 
 #: report/templates/report/inventree_po_report_base.html:30
 #: report/templates/report/inventree_so_report_base.html:30
@@ -8661,7 +8646,6 @@ msgid "No result"
 msgstr "Ingen resultat"
 
 #: report/templates/report/inventree_test_report_base.html:154
-#: stock/templates/stock/stock_sidebar.html:16
 msgid "Installed Items"
 msgstr "Installerte artikler"
 
@@ -8695,14 +8679,17 @@ msgstr "Plasserings-ID"
 msgid "Location Name"
 msgstr "Plasseringsnavn"
 
-#: stock/admin.py:64 stock/templates/stock/location.html:131
-#: stock/templates/stock/location.html:137
+#: stock/admin.py:64
 msgid "Location Path"
 msgstr "Plasserings-sti"
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
 msgstr "Lagervare-ID"
+
+#: stock/admin.py:163
+msgid "Batch"
+msgstr "Batch"
 
 #: stock/admin.py:168
 msgid "Status Code"
@@ -8879,28 +8866,28 @@ msgstr "Lagervarer kan ikke plasseres i strukturelle plasseringer!"
 msgid "Stock item cannot be created for virtual parts"
 msgstr "Lagervare kan ikke opprettes for virtuelle deler"
 
-#: stock/models.py:670
+#: stock/models.py:673
 #, python-brace-format
 msgid "Part type ('{self.supplier_part.part}') must be {self.part}"
 msgstr "Deltype ('{self.supplier_part.part}') må være {self.part}"
 
-#: stock/models.py:680 stock/models.py:693
+#: stock/models.py:683 stock/models.py:696
 msgid "Quantity must be 1 for item with a serial number"
 msgstr "Antall må være 1 for produkt med et serienummer"
 
-#: stock/models.py:683
+#: stock/models.py:686
 msgid "Serial number cannot be set if quantity greater than 1"
 msgstr "Serienummeret kan ikke angis hvis antall er større enn 1"
 
-#: stock/models.py:707
+#: stock/models.py:710
 msgid "Item cannot belong to itself"
 msgstr "Elementet kan ikke tilhøre seg selv"
 
-#: stock/models.py:712
+#: stock/models.py:715
 msgid "Item must have a build reference if is_building=True"
 msgstr "Elementet må ha en produksjonsrefereanse om is_building=True"
 
-#: stock/models.py:725
+#: stock/models.py:728
 msgid "Build reference does not point to the same part object"
 msgstr "Produksjonsreferanse peker ikke til samme del-objekt"
 
@@ -9682,8 +9669,7 @@ msgstr "Autentiseringsfeil"
 msgid "You have been logged out from InvenTree."
 msgstr "Du har blitt logget ut av InvenTree."
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr "Logg inn"
 
@@ -14226,3 +14212,2007 @@ msgstr "Tillatelse til å endre elementer"
 msgid "Permission to delete items"
 msgstr "Tillatelse til å slette elementer"
 
+#~ msgid "Enter password"
+#~ msgstr "Oppgi passord"
+
+#~ msgid "Enter new password"
+#~ msgstr "Oppgi nytt passord"
+
+#~ msgid "Confirm password"
+#~ msgstr "Bekreft passord"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Bekreft nytt passord"
+
+#~ msgid "Old password"
+#~ msgstr "Gammelt passord"
+
+#~ msgid "Unknown database"
+#~ msgstr "Ukjent database"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Rediger brukerinformasjon"
+
+#~ msgid "Set Password"
+#~ msgstr "Velg passord"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Passordfeltene må samsvare"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Feil passord angitt"
+
+#~ msgid "System Information"
+#~ msgstr "Systeminformasjon"
+
+#~ msgid "About InvenTree"
+#~ msgstr "Om InvenTree"
+
+#~ msgid "Part thumbnail"
+#~ msgstr "Miniatyrbilde for del"
+
+#~ msgid "Barcode actions"
+#~ msgstr "Strekkodehandlinger"
+
+#~ msgid "Show QR Code"
+#~ msgstr "Vis QR-kode"
+
+#~ msgid "Unlink Barcode"
+#~ msgstr "Fjern strekkodekobling"
+
+#~ msgid "Link Barcode"
+#~ msgstr "Koble mot strekkode"
+
+#~ msgid "Print actions"
+#~ msgstr "Utskriftshandlinger"
+
+#~ msgid "Print build order report"
+#~ msgstr "Skriv ut produksjonsordrerapport"
+
+#~ msgid "Build actions"
+#~ msgstr "Produksjonshandlinger"
+
+#~ msgid "Edit Build"
+#~ msgstr "Rediger Produksjon"
+
+#~ msgid "Cancel Build"
+#~ msgstr "Kanseller produksjon"
+
+#~ msgid "Duplicate Build"
+#~ msgstr "Dupliser Produksjon"
+
+#~ msgid "Delete Build"
+#~ msgstr "Slett Produksjon"
+
+#~ msgid "Complete Build"
+#~ msgstr "Fullfør Produksjon"
+
+#~ msgid "Build Description"
+#~ msgstr "Produksjonsbeskrivelse"
+
+#~ msgid "No build outputs have been created for this build order"
+#~ msgstr "Ingen produksjonsartikler har blitt opprettet for produksjonsordren"
+
+#~ msgid "Build Order is ready to mark as completed"
+#~ msgstr "Produksjonsordren er klar til å merkes som fullført"
+
+#~ msgid "Build Order cannot be completed as outstanding outputs remain"
+#~ msgstr "Produksjonsordren kan ikke fullføres på grunn av utestående artikler"
+
+#~ msgid "Required build quantity has not yet been completed"
+#~ msgstr "Nødvendig produksjonsantall er ikke oppnådd enda"
+
+#~ msgid "Stock has not been fully allocated to this Build Order"
+#~ msgstr "Lagerbeholdning er ikke fullt tildelt til denne Produksjonsordren"
+
+#, python-format
+#~ msgid "This build was due on %(target)s"
+#~ msgstr "Denne produksjonsordren forfalt %(target)s"
+
+#~ msgid "Overdue"
+#~ msgstr "Forfalt"
+
+#~ msgid "Completed Outputs"
+#~ msgstr "Fullførte byggeresultater"
+
+#~ msgid "Priority"
+#~ msgstr "Prioritet"
+
+#~ msgid "Delete Build Order"
+#~ msgstr "Slett Produksjonsordre"
+
+#~ msgid "Build Order QR Code"
+#~ msgstr "Produksjonsordrens QR-kode"
+
+#~ msgid "Link Barcode to Build Order"
+#~ msgstr "Koble Strekkode til Produksjonsordre"
+
+#~ msgid "Build Details"
+#~ msgstr "Produksjonsdetaljer"
+
+#~ msgid "Stock Source"
+#~ msgstr "Lagerkilde"
+
+#~ msgid "Stock can be taken from any available location."
+#~ msgstr "Lagervare kan hentes fra alle tilgengelige plasseringer."
+
+#~ msgid "Destination location not specified"
+#~ msgstr "Målplassering er ikke spesifisert"
+
+#~ msgid "Allocated Parts"
+#~ msgstr "Tildelte deler"
+
+#~ msgid "Created"
+#~ msgstr "Opprettet"
+
+#~ msgid "No target date set"
+#~ msgstr "Ingen måldato satt"
+
+#~ msgid "Completed"
+#~ msgstr "Fullført"
+
+#~ msgid "Build not complete"
+#~ msgstr "Produksjon ikke fullført"
+
+#~ msgid "Child Build Orders"
+#~ msgstr "Underordnede Produksjonsordrer"
+
+#~ msgid "Allocate Stock to Build"
+#~ msgstr "Tildel Lagerbeholdning til Produksjon"
+
+#~ msgid "Deallocate stock"
+#~ msgstr "Fjern allokering av lagerbeholdning"
+
+#~ msgid "Deallocate Stock"
+#~ msgstr "Fjern allokering av lagerbeholdning"
+
+#~ msgid "Automatically allocate stock to build"
+#~ msgstr "Automatisk tildel lagerbeholdning til produksjon"
+
+#~ msgid "Auto Allocate"
+#~ msgstr "Automatisk tildeling"
+
+#~ msgid "Manually allocate stock to build"
+#~ msgstr "Manuelt tildel lagerbeholdning til produksjon"
+
+#~ msgid "Allocate Stock"
+#~ msgstr "Tildel lagerbeholdning"
+
+#~ msgid "Order required parts"
+#~ msgstr "Bestill nødvendige deler"
+
+#~ msgid "Order Parts"
+#~ msgstr "Bestill deler"
+
+#~ msgid "Incomplete Build Outputs"
+#~ msgstr "Ufullstendige Produksjonsartikler"
+
+#~ msgid "Create new build output"
+#~ msgstr "Opprett ny produksjonsartikkel"
+
+#~ msgid "New Build Output"
+#~ msgstr "Ny Produksjonsartikkel"
+
+#~ msgid "Consumed Stock"
+#~ msgstr "Brukt lagerbeholdning"
+
+#~ msgid "Completed Build Outputs"
+#~ msgstr "Fullførte produksjonsartikkel"
+
+#~ msgid "Attachments"
+#~ msgstr "Vedlegg"
+
+#~ msgid "Build Notes"
+#~ msgstr "Produksjonsnotater"
+
+#~ msgid "Allocation Complete"
+#~ msgstr "Tildeling fullført"
+
+#~ msgid "All lines have been fully allocated"
+#~ msgstr "Alle linjer er fullt tildelt"
+
+#~ msgid "New Build Order"
+#~ msgstr "Ny produksjonsordre"
+
+#~ msgid "Build Order Details"
+#~ msgstr "Produksjonsordre-detaljer"
+
+#~ msgid "Incomplete Outputs"
+#~ msgstr "Ufullstendige artikler"
+
+#~ msgid "Create Purchase Order"
+#~ msgstr "Opprett Innkjøpsordre"
+
+#~ msgid "Company actions"
+#~ msgstr "Firmavalg"
+
+#~ msgid "Edit company information"
+#~ msgstr "Rediger firmainformasjon"
+
+#~ msgid "Edit Company"
+#~ msgstr "Rediger Firma"
+
+#~ msgid "Delete company"
+#~ msgstr "Slett firma"
+
+#~ msgid "Delete Company"
+#~ msgstr "Slett Firma"
+
+#~ msgid "Upload new image"
+#~ msgstr "Last opp nytt bilde"
+
+#~ msgid "Download image from URL"
+#~ msgstr "Last ned bilde fra URL"
+
+#~ msgid "Delete image"
+#~ msgstr "Slett bilde"
+
+#~ msgid "Uses default currency"
+#~ msgstr "Bruker standardvaluta"
+
+#~ msgid "Phone"
+#~ msgstr "Telefon"
+
+#~ msgid "Remove"
+#~ msgstr "Fjern"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "Leverandørdeler"
+
+#~ msgid "Create new supplier part"
+#~ msgstr "Opprett ny leverandørdel"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "Ny leverandørdel"
+
+#~ msgid "Manufacturer Parts"
+#~ msgstr "Produsentdeler"
+
+#~ msgid "Create new manufacturer part"
+#~ msgstr "Opprett ny produsentdel"
+
+#~ msgid "New Manufacturer Part"
+#~ msgstr "Ny Produsentdel"
+
+#~ msgid "Supplier Stock"
+#~ msgstr "Leverandørs lagerbeholdning"
+
+#~ msgid "Create new purchase order"
+#~ msgstr "Opprett ny innkjøpsordre"
+
+#~ msgid "New Purchase Order"
+#~ msgstr "Ny innkjøpsordre"
+
+#~ msgid "Create new sales order"
+#~ msgstr "Opprett ny salgsordre"
+
+#~ msgid "New Sales Order"
+#~ msgstr "Ny salgsordre"
+
+#~ msgid "Assigned Stock"
+#~ msgstr "Tildelt lagerbeholdning"
+
+#~ msgid "Create new return order"
+#~ msgstr "Opprett ny returordre"
+
+#~ msgid "New Return Order"
+#~ msgstr "Ny Returordre"
+
+#~ msgid "Company Notes"
+#~ msgstr "Notater til firma"
+
+#~ msgid "Company Contacts"
+#~ msgstr "Firmakontakter"
+
+#~ msgid "Add Contact"
+#~ msgstr "Legg til Kontakt"
+
+#~ msgid "Company addresses"
+#~ msgstr "Selskapets adresser"
+
+#~ msgid "Add Address"
+#~ msgstr "Legg til adresse"
+
+#~ msgid "Manufacturers"
+#~ msgstr "Produsenter"
+
+#~ msgid "Order part"
+#~ msgstr "Bestill del"
+
+#~ msgid "Edit manufacturer part"
+#~ msgstr "Endre produsentdel"
+
+#~ msgid "Delete manufacturer part"
+#~ msgstr "Slett produsentdel"
+
+#~ msgid "Internal Part"
+#~ msgstr "Intern del"
+
+#~ msgid "No manufacturer information available"
+#~ msgstr "Ingen produsentinformasjon tilgjengelig"
+
+#~ msgid "Parameters"
+#~ msgstr "Parametere"
+
+#~ msgid "New Parameter"
+#~ msgstr "Nytt Parameter"
+
+#~ msgid "Manufactured Parts"
+#~ msgstr "Produserte deler"
+
+#~ msgid "Supplied Parts"
+#~ msgstr "Leverte Deler"
+
+#~ msgid "Supplied Stock Items"
+#~ msgstr "Leverte Lagervarer"
+
+#~ msgid "Assigned Stock Items"
+#~ msgstr "Tildelte lagervarer"
+
+#~ msgid "Contacts"
+#~ msgstr "Kontakter"
+
+#~ msgid "Addresses"
+#~ msgstr "Adresser"
+
+#~ msgid "Order Part"
+#~ msgstr "Bestill del"
+
+#~ msgid "Update Availability"
+#~ msgstr "Oppdater Tilgjengelighet"
+
+#~ msgid "Edit Supplier Part"
+#~ msgstr "Rediger Leverandørdel"
+
+#~ msgid "Duplicate Supplier Part"
+#~ msgstr "Dupliser Leverandørdel"
+
+#~ msgid "Delete Supplier Part"
+#~ msgstr "Slett Leverandørdel"
+
+#~ msgid "Delete Supplier  Part"
+#~ msgstr "Slett Leverandørdel"
+
+#~ msgid "No supplier information available"
+#~ msgstr "Ingen leverandørinformasjon tilgjengelig"
+
+#~ msgid "Supplier Part Stock"
+#~ msgstr "Leverandørs lagerbeholdning"
+
+#~ msgid "Create new stock item"
+#~ msgstr "Opprett ny lagervare"
+
+#~ msgid "New Stock Item"
+#~ msgstr "Ny Lagervare"
+
+#~ msgid "Supplier Part Orders"
+#~ msgstr "Leverandørdelordre"
+
+#~ msgid "Pricing Information"
+#~ msgstr "Prisinformasjon"
+
+#~ msgid "Add Price Break"
+#~ msgstr "Legg til Prisbrudd"
+
+#~ msgid "Supplier Part Pricing"
+#~ msgstr "Leverandørdelprising"
+
+#~ msgid "New Supplier"
+#~ msgstr "Ny Leverandør"
+
+#~ msgid "New Manufacturer"
+#~ msgstr "Ny Produsent"
+
+#~ msgid "Customers"
+#~ msgstr "Kunder"
+
+#~ msgid "New Customer"
+#~ msgstr "Ny Kunde"
+
+#~ msgid "Companies"
+#~ msgstr "Firmaer"
+
+#~ msgid "New Company"
+#~ msgstr "Nytt Firma"
+
+#~ msgid "Print purchase order report"
+#~ msgstr "Skriv ut innkjøpsordrerapport"
+
+#~ msgid "Export order to file"
+#~ msgstr "Eksporterer ordre til fil"
+
+#~ msgid "Order actions"
+#~ msgstr "Ordrehandlinger"
+
+#~ msgid "Edit order"
+#~ msgstr "Rediger ordre"
+
+#~ msgid "Cancel order"
+#~ msgstr "Kanseller ordre"
+
+#~ msgid "Duplicate order"
+#~ msgstr "Dupliser ordre"
+
+#~ msgid "Issue Order"
+#~ msgstr "Send ordre"
+
+#~ msgid "Mark order as complete"
+#~ msgstr "Merk ordren som fullført"
+
+#~ msgid "Complete Order"
+#~ msgstr "Fullfør ordre"
+
+#~ msgid "Supplier part thumbnail"
+#~ msgstr "Miniatyrbilde for leverandør"
+
+#~ msgid "Order Reference"
+#~ msgstr "Ordrereferanse"
+
+#~ msgid "Order Description"
+#~ msgstr "Ordrebeskrivelse"
+
+#~ msgid "Order Status"
+#~ msgstr "Ordrestatus"
+
+#~ msgid "No suppplier information available"
+#~ msgstr "Ingen leverandørinformasjon tilgjengelig"
+
+#~ msgid "Completed Line Items"
+#~ msgstr "Fullførte elementer"
+
+#~ msgid "Incomplete"
+#~ msgstr "Ufullstendig"
+
+#~ msgid "Total cost"
+#~ msgstr "Total kostnad"
+
+#~ msgid "Total cost could not be calculated"
+#~ msgstr "Total kostnad kunne ikke beregnes"
+
+#~ msgid "Missing selections for the following required columns"
+#~ msgstr "Manglende valg for følgende påkrevde kolonner"
+
+#~ msgid "Duplicate selections found, see below. Fix them then retry submitting."
+#~ msgstr "Dupliserte valg funnet, se under. Fiks dem og prøv på nytt."
+
+#~ msgid "Submit Selections"
+#~ msgstr "Send inn Valg"
+
+#~ msgid "File Fields"
+#~ msgstr "Filfelter"
+
+#~ msgid "Remove column"
+#~ msgstr "Fjern kolonne"
+
+#~ msgid "Duplicate selection"
+#~ msgstr "Duplikatvalg"
+
+#~ msgid "Remove row"
+#~ msgstr "Fjern rad"
+
+#~ msgid "Errors exist in the submitted data"
+#~ msgstr "Det eksisterer feil i innsendt data"
+
+#~ msgid "Row"
+#~ msgstr "Rad"
+
+#~ msgid "Select Supplier Part"
+#~ msgstr "Velg Leverandørdel"
+
+#~ msgid "Return to Orders"
+#~ msgstr "Returner til ordrer"
+
+#~ msgid "Upload File for Purchase Order"
+#~ msgstr "Last opp Fil for Innkjøpsordre"
+
+#~ msgid "Order is already processed. Files cannot be uploaded."
+#~ msgstr "Ordren er allerede behandlet. Filer kan ikke lastes opp."
+
+#, python-format
+#~ msgid "Step %(step)s of %(count)s"
+#~ msgstr "Trinn %(step)s av %(count)s"
+
+#~ msgid "Received Stock"
+#~ msgstr "Mottatt lagerbeholdning"
+
+#~ msgid "Purchase Order Items"
+#~ msgstr "Innkjøpsordreartikler"
+
+#~ msgid "Add Line Item"
+#~ msgstr "Legg til linjeelement"
+
+#~ msgid "Receive Line Items"
+#~ msgstr "Motta linjeelementer"
+
+#~ msgid "Extra Lines"
+#~ msgstr "Ekstralinjer"
+
+#~ msgid "Add Extra Line"
+#~ msgstr "Legg til Ekstralinje"
+
+#~ msgid "Received Items"
+#~ msgstr "Mottatte artikler"
+
+#~ msgid "Order Notes"
+#~ msgstr "Ordrenotater"
+
+#~ msgid "Customer logo thumbnail"
+#~ msgstr "Miniatyrbilde for kundelogo"
+
+#~ msgid "Print return order report"
+#~ msgstr "Skriv ut returordrerapport"
+
+#~ msgid "Print packing list"
+#~ msgstr "Skriv ut pakkeliste"
+
+#~ msgid "Customer Reference"
+#~ msgstr "Kundereferanse"
+
+#~ msgid "Total Cost"
+#~ msgstr "Total kostnad"
+
+#~ msgid "Order Details"
+#~ msgstr "Ordredetaljer"
+
+#~ msgid "Print sales order report"
+#~ msgstr "Skriv ut salgsordrerapport"
+
+#~ msgid "Ship Items"
+#~ msgstr "Send artikler"
+
+#~ msgid "Complete Sales Order"
+#~ msgstr "Fullfør Salgsordre"
+
+#~ msgid "This Sales Order has not been fully allocated"
+#~ msgstr "Salgsordren er ikke fullstendig tildelt"
+
+#~ msgid "Completed Shipments"
+#~ msgstr "Fullførte forsendelser"
+
+#~ msgid "Sales Order Items"
+#~ msgstr "Salgsordreartikler"
+
+#~ msgid "Pending Shipments"
+#~ msgstr "Ventende forsendelser"
+
+#~ msgid "Actions"
+#~ msgstr "Handlinger"
+
+#~ msgid "New Shipment"
+#~ msgstr "Ny forsendelse"
+
+#~ msgid "Match Supplier Parts"
+#~ msgstr "Match Leverandørdeler"
+
+#~ msgid "Sales order not found"
+#~ msgstr "Salgsordre ikke funnet"
+
+#~ msgid "Price not found"
+#~ msgstr "Pris ikke funnet"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price}"
+#~ msgstr "Oppdaterte {part} enhetspris to {price}"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price} and quantity to {qty}"
+#~ msgstr "Oppdaterte {part} enhetspris til {price} og antall til {qty}"
+
+#~ msgid "You do not have permission to edit the BOM."
+#~ msgstr "Du har ikke rettigheter til å redigere BOMen."
+
+#~ msgid "The BOM this part has been changed, and must be validated"
+#~ msgstr "Stykklisten har blitt endret og må godkjennes"
+
+#, python-format
+#~ msgid "This BOM was last checked by %(checker)s on %(check_date)s"
+#~ msgstr "Denne BOMen ble sist sjekket av %(checker)s den %(check_date)s"
+
+#~ msgid "This BOM has not been validated."
+#~ msgstr "Denne BOMen er ikke godkjent."
+
+#~ msgid "Perform stocktake for this part category"
+#~ msgstr "Utfør lagertelling for denne delkategorien"
+
+#~ msgid "You are subscribed to notifications for this category"
+#~ msgstr "Du abonnerer på varsler for denne kategorien"
+
+#~ msgid "Subscribe to notifications for this category"
+#~ msgstr "Abonner på varsler for denne kategorien"
+
+#~ msgid "Category Actions"
+#~ msgstr "Kategorihandlinger"
+
+#~ msgid "Edit category"
+#~ msgstr "Rediger kategori"
+
+#~ msgid "Edit Category"
+#~ msgstr "Rediger Kategori"
+
+#~ msgid "Delete Category"
+#~ msgstr "Slett Kategori"
+
+#~ msgid "Top level part category"
+#~ msgstr "Toppnivå delkategori"
+
+#~ msgid "Subcategories"
+#~ msgstr "Underkategorier"
+
+#~ msgid "Parts (Including subcategories)"
+#~ msgstr "Deler (inkludert underkategorier)"
+
+#~ msgid "Create new part"
+#~ msgstr "Opprett ny del"
+
+#~ msgid "New Part"
+#~ msgstr "Ny Del"
+
+#~ msgid "Part Parameters"
+#~ msgstr "Delparametere"
+
+#~ msgid "New Category"
+#~ msgstr "Ny Kategori"
+
+#~ msgid "Import Parts"
+#~ msgstr "Importér Deler"
+
+#, python-format
+#~ msgid "Make a copy of part '%(full_name)s'."
+#~ msgstr "Lag en kopi av del %(full_name)s."
+
+#~ msgid "Possible Matching Parts"
+#~ msgstr "Mulige Samsvarende Deler"
+
+#~ msgid "The new part may be a duplicate of these existing parts"
+#~ msgstr "Den nye delen kan være et duplikat av disse eksisterende delene"
+
+#, python-format
+#~ msgid "%(full_name)s - <em>%(desc)s</em> (%(match_per)s%% match)"
+#~ msgstr "%(full_name)s - <em>%(desc)s</em> (%(match_per)s%% match)"
+
+#~ msgid "Part Stock"
+#~ msgstr "Dellager"
+
+#~ msgid "Refresh scheduling data"
+#~ msgstr "Oppdater planleggingsdata"
+
+#~ msgid "Refresh"
+#~ msgstr "Oppdater"
+
+#~ msgid "Add stocktake information"
+#~ msgstr "Legg til lagertellingsinformasjon"
+
+#~ msgid "Part Test Templates"
+#~ msgstr "Deltestmaler"
+
+#~ msgid "Add Test Template"
+#~ msgstr "Legg til Testmal"
+
+#~ msgid "Sales Order Allocations"
+#~ msgstr "Salgsordretildelinger"
+
+#~ msgid "Part Notes"
+#~ msgstr "Delnotater"
+
+#~ msgid "Part Variants"
+#~ msgstr "Delvarianter"
+
+#~ msgid "Create new variant"
+#~ msgstr "Opprett ny variant"
+
+#~ msgid "New Variant"
+#~ msgstr "Ny Variant"
+
+#~ msgid "Add new parameter"
+#~ msgstr "Legg til ny parameter"
+
+#~ msgid "Related Parts"
+#~ msgstr "Relaterte Deler"
+
+#~ msgid "Add Related"
+#~ msgstr "Legg til relatert"
+
+#~ msgid "Export actions"
+#~ msgstr "Eksporthandlinger"
+
+#~ msgid "Export BOM"
+#~ msgstr "Eksporter BOM"
+
+#~ msgid "Print BOM Report"
+#~ msgstr "Skriv ut BOM-rapport"
+
+#~ msgid "BOM actions"
+#~ msgstr "BOM-handlinger"
+
+#~ msgid "Upload BOM"
+#~ msgstr "Last opp BOM"
+
+#~ msgid "Validate BOM"
+#~ msgstr "Godkjenn BOM"
+
+#~ msgid "Add BOM Item"
+#~ msgstr "Legg til BOM-artikkel"
+
+#~ msgid "Assemblies"
+#~ msgstr "Sammenstillinger"
+
+#~ msgid "Part Builds"
+#~ msgstr "Del-produksjoner"
+
+#~ msgid "Build Order Allocations"
+#~ msgstr "Produksjonsordre-tildelinger"
+
+#~ msgid "Part Suppliers"
+#~ msgstr "Deleleverandører"
+
+#~ msgid "Part Manufacturers"
+#~ msgstr "Deleprodusenter"
+
+#~ msgid "Insufficient privileges."
+#~ msgstr "Utilstrekkelige rettigheter."
+
+#~ msgid "Return to Parts"
+#~ msgstr "Tilbake til deler"
+
+#~ msgid "Import Parts from File"
+#~ msgstr "Importer deler fra fil"
+
+#~ msgid "Requirements for part import"
+#~ msgstr "Krav for import av deler"
+
+#~ msgid "The part import file must contain the required named columns as provided in the "
+#~ msgstr "Delens importfil må inneholde de nødvendige navngitte kolonnene som i "
+
+#~ msgid "Part Import Template"
+#~ msgstr "Importmal for del"
+
+#~ msgid "Download Part Import Template"
+#~ msgstr "Last ned importmal for del"
+
+#~ msgid "Format"
+#~ msgstr "Format"
+
+#~ msgid "Select file format"
+#~ msgstr "Velg filformat"
+
+#~ msgid "Part List"
+#~ msgstr "Deleliste"
+
+#~ msgid "You are subscribed to notifications for this part"
+#~ msgstr "Du abonnerer på varsler for denne delen"
+
+#~ msgid "Subscribe to notifications for this part"
+#~ msgstr "Abonner på varsler for denne delen"
+
+#~ msgid "Print Label"
+#~ msgstr "Skriv ut etikett"
+
+#~ msgid "Show pricing information"
+#~ msgstr "Vis prisinformasjon"
+
+#~ msgid "Stock actions"
+#~ msgstr "Lagerhandlinger"
+
+#~ msgid "Count part stock"
+#~ msgstr "Tell delbeholdning"
+
+#~ msgid "Transfer part stock"
+#~ msgstr "Overfør delbeholdning"
+
+#~ msgid "Part actions"
+#~ msgstr "Delhandlinger"
+
+#~ msgid "Duplicate part"
+#~ msgstr "Dupliser del"
+
+#~ msgid "Edit part"
+#~ msgstr "Rediger del"
+
+#~ msgid "Delete part"
+#~ msgstr "Slett del"
+
+#~ msgid "Part is a template part (variants can be made from this part)"
+#~ msgstr "Delen er en maldel (varianter kan lages fra denne delen)"
+
+#~ msgid "Part can be assembled from other parts"
+#~ msgstr "Delen kan sammenstilles fra andre deler"
+
+#~ msgid "Part can be used in assemblies"
+#~ msgstr "Delen kan brukes i sammenstillinger"
+
+#~ msgid "Part stock is tracked by serial number"
+#~ msgstr "Delelager spores via serienummer"
+
+#~ msgid "Part can be purchased from external suppliers"
+#~ msgstr "Delen kan kjøpes fra eksterne leverandører"
+
+#~ msgid "Part can be sold to customers"
+#~ msgstr "Delen kan selges til kunder"
+
+#~ msgid "Part is not active"
+#~ msgstr "Delen er ikke aktiv"
+
+#~ msgid "Inactive"
+#~ msgstr "Inaktiv"
+
+#~ msgid "Part is virtual (not a physical part)"
+#~ msgstr "Delen er virtuall (ikke en fysisk del)"
+
+#~ msgid "Show Part Details"
+#~ msgstr "Vis detaljer for del"
+
+#~ msgid "Allocated to Build Orders"
+#~ msgstr "Tildelt til produksjonsordrer"
+
+#~ msgid "Allocated to Sales Orders"
+#~ msgstr "Tildelt til Salgsordrer"
+
+#~ msgid "Can Build"
+#~ msgstr "Kan Produsere"
+
+#~ msgid "Minimum stock level"
+#~ msgstr "Minimalt lagerbeholdningsnivå"
+
+#~ msgid "Price Range"
+#~ msgstr "Prisområde"
+
+#~ msgid "Latest Serial Number"
+#~ msgstr "Siste serienummer"
+
+#~ msgid "Search for serial number"
+#~ msgstr "Søk etter serienummer"
+
+#~ msgid "Supplier Pricing"
+#~ msgstr "Leverandørprising"
+
+#~ msgid "Unit Cost"
+#~ msgstr "Enhetspris"
+
+#~ msgid "No supplier pricing available"
+#~ msgstr "Ingen leverandørpriser tilgjengelig"
+
+#~ msgid "BOM Pricing"
+#~ msgstr "BOM-prising"
+
+#~ msgid "Unit Purchase Price"
+#~ msgstr "Enhet-innkjøpspris"
+
+#~ msgid "Total Purchase Price"
+#~ msgstr "Total Innkjøpspris"
+
+#~ msgid "No BOM pricing available"
+#~ msgstr "Ingen BOM-prising tilgjengelig"
+
+#~ msgid "Internal Price"
+#~ msgstr "Intern Pris"
+
+#~ msgid "No pricing information is available for this part."
+#~ msgstr "Ingen prisinformasjon er tilgjengelig for denne delen."
+
+#~ msgid "Scheduled Quantity"
+#~ msgstr "Planlagt antall"
+
+#~ msgid "Variants"
+#~ msgstr "Varianter"
+
+#~ msgid "Stock"
+#~ msgstr "Lagerbeholdning"
+
+#~ msgid "Pricing"
+#~ msgstr "Prising"
+
+#~ msgid "Scheduling"
+#~ msgstr "Planlegging"
+
+#~ msgid "Test Templates"
+#~ msgstr "Testmaler"
+
+#~ msgid "Select from existing images"
+#~ msgstr "Velg fra eksisterende bilder"
+
+#~ msgid "Pricing Overview"
+#~ msgstr "Prisingoversikt"
+
+#~ msgid "Refresh Part Pricing"
+#~ msgstr "Oppdater delprising"
+
+#~ msgid "Override Part Pricing"
+#~ msgstr "Overstyr delprising"
+
+#~ msgid "Edit"
+#~ msgstr "Rediger"
+
+#~ msgid "Price Category"
+#~ msgstr "Priskategori"
+
+#~ msgid "Minimum"
+#~ msgstr "Minimum"
+
+#~ msgid "Maximum"
+#~ msgstr "Maksimum"
+
+#~ msgid "Internal Pricing"
+#~ msgstr "Intern Prising"
+
+#~ msgid "Purchase History"
+#~ msgstr "Inkjøpshistorikk"
+
+#~ msgid "Variant Pricing"
+#~ msgstr "Variantprising"
+
+#~ msgid "Pricing Overrides"
+#~ msgstr "Prisoverstyringer"
+
+#~ msgid "Overall Pricing"
+#~ msgstr "Generell prising"
+
+#~ msgid "Sale History"
+#~ msgstr "Salgshistorikk"
+
+#~ msgid "Sale price data is not available for this part"
+#~ msgstr "Salgsprisdata er ikke tilgjengelig for denne delen"
+
+#~ msgid "Price range data is not available for this part."
+#~ msgstr "Prisområdedata er ikke tilgjengelig for denne delen."
+
+#~ msgid "Jump to overview"
+#~ msgstr "Hopp til oversikt"
+
+#~ msgid "Add Internal Price Break"
+#~ msgstr "Legg til internt prisbrudd"
+
+#~ msgid "Sale Pricing"
+#~ msgstr "Salgsprising"
+
+#~ msgid "Add Sell Price Break"
+#~ msgstr "Legg til salgsprisbrudd"
+
+#~ msgid "No Stock"
+#~ msgstr "Ingen lagerbeholdning"
+
+#~ msgid "Low Stock"
+#~ msgstr "Lav lagerbeholdning"
+
+#~ msgid "Return to BOM"
+#~ msgstr "Tilbake til Stykkliste"
+
+#~ msgid "Upload Bill of Materials"
+#~ msgstr "Last opp stykkliste"
+
+#~ msgid "BOM upload requirements"
+#~ msgstr "Stykkliste opplastningskrav"
+
+#~ msgid "Upload BOM File"
+#~ msgstr "Last opp BOM-fil"
+
+#~ msgid "Submit BOM Data"
+#~ msgstr "Send inn BOM-data"
+
+#~ msgid "Requirements for BOM upload"
+#~ msgstr "Krav for BOM-opplastning"
+
+#~ msgid "The BOM file must contain the required named columns as provided in the "
+#~ msgstr "BOM-filen må inneholde de nødvendige navngitte kolonnene som i "
+
+#~ msgid "BOM Upload Template"
+#~ msgstr "BOM-opplastningsmalen"
+
+#~ msgid "Each part must already exist in the database"
+#~ msgstr "Hver del må allerede finnes i databasen"
+
+#~ msgid "Create new part variant"
+#~ msgstr "Opprett ny variant av del"
+
+#~ msgid "Create a new variant part from this template"
+#~ msgstr "Opprett en ny variant del fra denne malen"
+
+#~ msgid "Match References"
+#~ msgstr "Match referanser"
+
+#, python-brace-format
+#~ msgid "Can't import part {new_part.name} because there is no category assigned"
+#~ msgstr "Kan ikke importere del {new_part.name} fordi det ikke er oppgitt noen kategori"
+
+#~ msgid "Select Part Image"
+#~ msgstr "Vel bilde for del"
+
+#~ msgid "Updated part image"
+#~ msgstr "Oppdatert bilde for del"
+
+#~ msgid "Part image not found"
+#~ msgstr "Bilde for del ikke funnet"
+
+#~ msgid "Test name"
+#~ msgstr "Testnavn"
+
+#~ msgid "Stock Tracking Information"
+#~ msgstr "Lager-sporingsinformasjon"
+
+#~ msgid "Child Stock Items"
+#~ msgstr "Underordnede lagervarer"
+
+#~ msgid "This stock item does not have any child items"
+#~ msgstr "Denne lagervaren har ikke noen underordnede lagervarer"
+
+#~ msgid "Test Data"
+#~ msgstr "Testdata"
+
+#~ msgid "Test Report"
+#~ msgstr "Testrapport"
+
+#~ msgid "Delete Test Data"
+#~ msgstr "Slett testdata"
+
+#~ msgid "Add Test Data"
+#~ msgstr "Legg till Testdata"
+
+#~ msgid "Stock Item Notes"
+#~ msgstr "Notater for lagervare"
+
+#~ msgid "Installed Stock Items"
+#~ msgstr "Installerte lagervarer"
+
+#~ msgid "Install Stock Item"
+#~ msgstr "Installer lagervare"
+
+#~ msgid "Delete all test results for this stock item"
+#~ msgstr "Slett alle testresultater for denne lagervaren"
+
+#~ msgid "Locate stock item"
+#~ msgstr "Finn lagervare"
+
+#~ msgid "Printing actions"
+#~ msgstr "Utskriftshandlinger"
+
+#~ msgid "Stock adjustment actions"
+#~ msgstr "Lagerjusteringshandlinger"
+
+#~ msgid "Count stock"
+#~ msgstr "Tell beholdning"
+
+#~ msgid "Add stock"
+#~ msgstr "Legg til lagerbeholdning"
+
+#~ msgid "Remove stock"
+#~ msgstr "Fjern lagerbeholdning"
+
+#~ msgid "Serialize stock"
+#~ msgstr "Serialiser lager"
+
+#~ msgid "Transfer stock"
+#~ msgstr "Overfør lagerbeholdning"
+
+#~ msgid "Assign to customer"
+#~ msgstr "Tilordne til kunde"
+
+#~ msgid "Return to stock"
+#~ msgstr "Returner til Lager"
+
+#~ msgid "Uninstall stock item"
+#~ msgstr "Avinstaller lagervare"
+
+#~ msgid "Uninstall"
+#~ msgstr "Avinstaller"
+
+#~ msgid "Install stock item"
+#~ msgstr "Installer lagervare"
+
+#~ msgid "Install"
+#~ msgstr "Installer"
+
+#~ msgid "Convert to variant"
+#~ msgstr "Konvertert til variant"
+
+#~ msgid "Duplicate stock item"
+#~ msgstr "Duplisert lagervare"
+
+#~ msgid "Edit stock item"
+#~ msgstr "Rediger lagervare"
+
+#~ msgid "Delete stock item"
+#~ msgstr "Slett lagervare"
+
+#~ msgid "Build"
+#~ msgstr "Produksjon"
+
+#~ msgid "Parent Item"
+#~ msgstr "Overodnet element"
+
+#~ msgid "No manufacturer set"
+#~ msgstr "Ingen produsent valgt"
+
+#~ msgid "You are not in the list of owners of this item. This stock item cannot be edited."
+#~ msgstr "Du er ikke i eierlisten til dette elementet. Denne lagervaren kan ikke redigeres."
+
+#~ msgid "Read only"
+#~ msgstr "Kun lesetilgang"
+
+#~ msgid "This stock item is unavailable"
+#~ msgstr "Lagervaren er utilgjengelig"
+
+#~ msgid "This stock item is in production and cannot be edited."
+#~ msgstr "Denne lagervaren er under produksjon og kan ikke endres."
+
+#~ msgid "Edit the stock item from the build view."
+#~ msgstr "Rediger lagervaren fra produksjonsvinduet."
+
+#~ msgid "This stock item is allocated to Sales Order"
+#~ msgstr "Denne lagervaren er tildelt til Salgsordre"
+
+#~ msgid "This stock item is allocated to Build Order"
+#~ msgstr "Denne lagervaren er tildelt til Produksjonsordre"
+
+#~ msgid "This stock item is serialized. It has a unique serial number and the quantity cannot be adjusted"
+#~ msgstr "Denne lagervaren er serialisert. Den har et unikt serienummer, og antallet kan ikke justeres"
+
+#~ msgid "previous page"
+#~ msgstr "forrige side"
+
+#~ msgid "Navigate to previous serial number"
+#~ msgstr "Gå til forrige serienummer"
+
+#~ msgid "next page"
+#~ msgstr "neste side"
+
+#~ msgid "Navigate to next serial number"
+#~ msgstr "Gå til neste serienummer"
+
+#~ msgid "Available Quantity"
+#~ msgstr "Tilgjengelig antall"
+
+#~ msgid "No location set"
+#~ msgstr "Ingen plassering satt"
+
+#~ msgid "Tests"
+#~ msgstr "Tester"
+
+#, python-format
+#~ msgid "This StockItem expired on %(item.expiry_date)s"
+#~ msgstr "Denne lagervaren utløp %(item.expiry_date)s"
+
+#, python-format
+#~ msgid "This StockItem expires on %(item.expiry_date)s"
+#~ msgstr "Denne lagervaren utløper %(item.expiry_date)s"
+
+#~ msgid "No stocktake performed"
+#~ msgstr "Ingen lagertelling utført"
+
+#~ msgid "Select one of the part variants listed below."
+#~ msgstr "Velg en av variantdelene oppført under."
+
+#~ msgid "Warning"
+#~ msgstr "Advarsel"
+
+#~ msgid "This action cannot be easily undone"
+#~ msgstr "Denne handlingen er vanskelig å omgjøre"
+
+#~ msgid "Create serialized items from this stock item."
+#~ msgstr "Opprett serialiserte artikler for denne lagervaren."
+
+#~ msgid "Select quantity to serialize, and unique serial numbers."
+#~ msgstr "Velg antall å serialisere, og unike serienummer."
+
+#~ msgid "Perform stocktake for this stock location"
+#~ msgstr "Utfør lagertelling for denne lagerplasseringen"
+
+#~ msgid "Locate stock location"
+#~ msgstr "Finn lagerplassering"
+
+#~ msgid "Scan stock items into this location"
+#~ msgstr "Skann lagervarer til denne plasseringen"
+
+#~ msgid "Scan In Stock Items"
+#~ msgstr "Skann inn Lagervarer"
+
+#~ msgid "Scan stock container into this location"
+#~ msgstr "Skann lagerbeholder til denne plasseringen"
+
+#~ msgid "Scan In Container"
+#~ msgstr "Skann inn beholder"
+
+#~ msgid "Location actions"
+#~ msgstr "Plasseringshandlinger"
+
+#~ msgid "Edit location"
+#~ msgstr "Rediger plassering"
+
+#~ msgid "Delete location"
+#~ msgstr "Slett plassering"
+
+#~ msgid "Top level stock location"
+#~ msgstr "Toppnivå-lagerplassering"
+
+#~ msgid "Location Owner"
+#~ msgstr "Plasseringens Eier"
+
+#~ msgid "You are not in the list of owners of this location. This stock location cannot be edited."
+#~ msgstr "Du er ikke i listen over eiere av denne plasseringen. Denne lagerplasseringen kan ikke redigeres."
+
+#~ msgid "Sublocations"
+#~ msgstr "Underplasseringer"
+
+#~ msgid "Create new stock location"
+#~ msgstr "Opprett ny lagerplassering"
+
+#~ msgid "New Location"
+#~ msgstr "Ny plassering"
+
+#~ msgid "Loading..."
+#~ msgstr "Laster inn..."
+
+#~ msgid "Stock Tracking"
+#~ msgstr "Sporing av lager"
+
+#~ msgid "Allocations"
+#~ msgstr "Tildelinger"
+
+#~ msgid "Child Items"
+#~ msgstr "Underordnede artikler"
+
+#~ msgid "Index"
+#~ msgstr "Indeks"
+
+#~ msgid "Notification History"
+#~ msgstr "Varsellogg"
+
+#~ msgid "Delete Notifications"
+#~ msgstr "Slett varlser"
+
+#~ msgid "Pending Notifications"
+#~ msgstr "Ventende varsler"
+
+#~ msgid "Mark all as read"
+#~ msgstr "Merk alle som lest"
+
+#~ msgid "Notifications"
+#~ msgstr "Varlser"
+
+#~ msgid "Delete all read notifications"
+#~ msgstr "Slett alle leste varsler"
+
+#~ msgid "Inbox"
+#~ msgstr "Innboks"
+
+#~ msgid "History"
+#~ msgstr "Logg"
+
+#~ msgid "Search Results"
+#~ msgstr "Søkeresultater"
+
+#~ msgid "Barcode Settings"
+#~ msgstr "Strekkodeinnstillinger"
+
+#~ msgid "Build Order Settings"
+#~ msgstr "Innstillinger for produksjonsordre"
+
+#~ msgid "Category Settings"
+#~ msgstr "Kategoriinnstillinger"
+
+#~ msgid "Server Settings"
+#~ msgstr "Serverinnstillinger"
+
+#~ msgid "Label Settings"
+#~ msgstr "Etikettinnstillinger"
+
+#~ msgid "Login Settings"
+#~ msgstr "Innstillinger for innlogging"
+
+#~ msgid "Outgoing email has not been configured. Some login and sign-up features may not work correctly!"
+#~ msgstr "Utgående e-post har ikke blitt kanskje. Noen innloggings- og registreringsfunksjoner fungerer kanskje ikke korrekt!"
+
+#~ msgid "Signup"
+#~ msgstr "Registrering"
+
+#~ msgid "Single Sign On"
+#~ msgstr "Single Sign On"
+
+#~ msgid "Settings"
+#~ msgstr "Innstillinger"
+
+#~ msgid "URLs"
+#~ msgstr "URLer"
+
+#, python-format
+#~ msgid "The Base-URL for this plugin is <a href=\"/%(base)s\" target=\"_blank\"><strong>%(base)s</strong></a>."
+#~ msgstr "Basis-URLen for denne utvidelsen er <a href=\"/%(base)s\" target=\"_blank\"><strong>%(base)s</strong></a>."
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Open in new tab"
+#~ msgstr "Åpne i ny fane"
+
+#~ msgid "Notification Settings"
+#~ msgstr "Innstillinger for varsling"
+
+#~ msgid "Slug"
+#~ msgstr "URL-segment"
+
+#~ msgid "Part Settings"
+#~ msgstr "Innstillinger for del"
+
+#~ msgid "Part Import"
+#~ msgstr "Import av Del"
+
+#~ msgid "Import Part"
+#~ msgstr "Importér Del"
+
+#~ msgid "Part Parameter Templates"
+#~ msgstr "Mal for Delparameter"
+
+#~ msgid "Stocktake Settings"
+#~ msgstr "Innstillinger for lagertelling"
+
+#~ msgid "Stocktake Reports"
+#~ msgstr "Lagertellingsrapporter"
+
+#~ msgid "Physical Units"
+#~ msgstr "Fysiske enheter"
+
+#~ msgid "Add Unit"
+#~ msgstr "Legg til enhet"
+
+#~ msgid "Plugin Settings"
+#~ msgstr "Innstillinger for Utvidelser"
+
+#~ msgid "Changing the settings below require you to immediately restart the server. Do not change this while under active usage."
+#~ msgstr "Endring av innstillingene nedenfor krever at du umiddelbart starter serveren på nytt. Ikke endre under aktiv bruk."
+
+#~ msgid "Plugins"
+#~ msgstr "Utvidelser"
+
+#~ msgid "Install Plugin"
+#~ msgstr "Installer Utvidelse"
+
+#~ msgid "Reload Plugins"
+#~ msgstr "Last utvidelser på nytt"
+
+#~ msgid "External plugins are not enabled for this InvenTree installation"
+#~ msgstr "Eksterne utvidelser er ikke aktivert for denne InvenTree-installasjonen"
+
+#~ msgid "Plugin Error Stack"
+#~ msgstr "Utvidelse feilstack"
+
+#~ msgid "Stage"
+#~ msgstr "Stadium"
+
+#~ msgid "Message"
+#~ msgstr "Melding"
+
+#~ msgid "Plugin information"
+#~ msgstr "Informasjon om utvidelse"
+
+#~ msgid "no version information supplied"
+#~ msgstr "ingen versjonsinformasjon angitt"
+
+#~ msgid "License"
+#~ msgstr "Lisens"
+
+#~ msgid "The code information is pulled from the latest git commit for this plugin. It might not reflect official version numbers or information but the actual code running."
+#~ msgstr "Kodeinformasjonen hentes fra siste git-commit for denne utvidelsen. Det gjenspeiler kanskje ikke offisielle versjonsnummer eller informasjon, men den faktiske koden som kjører."
+
+#~ msgid "Package information"
+#~ msgstr "Informasjon om pakken"
+
+#~ msgid "Installation method"
+#~ msgstr "Installasjonsmåte"
+
+#~ msgid "This plugin was installed as a package"
+#~ msgstr "Denne utvidelsen ble installert som en pakke"
+
+#~ msgid "This plugin was found in a local server path"
+#~ msgstr "Denne utvidelsen ble funnet på en lokal serversti"
+
+#~ msgid "Installation path"
+#~ msgstr "Installasjonssti"
+
+#~ msgid "Builtin"
+#~ msgstr "Innebygd"
+
+#~ msgid "This is a builtin plugin which cannot be disabled"
+#~ msgstr "Dette er en innebygd utvidelse som ikke kan deaktiveres"
+
+#~ msgid "Sample"
+#~ msgstr "Eksempel"
+
+#~ msgid "This is a sample plugin"
+#~ msgstr "Dette er en eksempelplugin"
+
+#~ msgid "Commit Author"
+#~ msgstr "Commit-forfatter"
+
+#~ msgid "Commit Date"
+#~ msgstr "Commit-dato"
+
+#~ msgid "Commit Hash"
+#~ msgstr "Commit-hash"
+
+#~ msgid "Commit Message"
+#~ msgstr "Commit-melding"
+
+#~ msgid "Purchase Order Settings"
+#~ msgstr "Innstillinger for Innkjøpsordre"
+
+#~ msgid "Pricing Settings"
+#~ msgstr "Innstillinger for prising"
+
+#~ msgid "Exchange Rates"
+#~ msgstr "Valutakurser"
+
+#~ msgid "Update Now"
+#~ msgstr "Oppdater nå"
+
+#~ msgid "Last Update"
+#~ msgstr "Siste oppdatering"
+
+#~ msgid "Never"
+#~ msgstr "Aldri"
+
+#~ msgid "Project Code Settings"
+#~ msgstr "Innstillinger for prosjektkoder"
+
+#~ msgid "Project Codes"
+#~ msgstr "Prosjektkoder"
+
+#~ msgid "New Project Code"
+#~ msgstr "Ny Prosjektkode"
+
+#~ msgid "Report Settings"
+#~ msgstr "Rapportinstillinger"
+
+#~ msgid "Return Order Settings"
+#~ msgstr "Innstillinger for Returordre"
+
+#~ msgid "No value set"
+#~ msgstr "Ingen verdi satt"
+
+#~ msgid "Edit setting"
+#~ msgstr "Rediger innstilling"
+
+#~ msgid "New Location Type"
+#~ msgstr "Ny plasseringstype"
+
+#~ msgid "User Settings"
+#~ msgstr "Brukerinnstillinger"
+
+#~ msgid "Account"
+#~ msgstr "Konto"
+
+#~ msgid "Display"
+#~ msgstr "Visning"
+
+#~ msgid "Home Page"
+#~ msgstr "Startside"
+
+#~ msgid "Search"
+#~ msgstr "Søk"
+
+#~ msgid "Reporting"
+#~ msgstr "Rapportering"
+
+#~ msgid "Global Settings"
+#~ msgstr "Globale innstillinger"
+
+#~ msgid "Server"
+#~ msgstr "Server"
+
+#~ msgid "Labels"
+#~ msgstr "Etiketter"
+
+#~ msgid "Categories"
+#~ msgstr "Kategorier"
+
+#~ msgid "Sales Order Settings"
+#~ msgstr "Innstillinger for salgsordre"
+
+#~ msgid "Stock Settings"
+#~ msgstr "Instillinger for lager"
+
+#~ msgid "Stock Location Types"
+#~ msgstr "Lagerplasseringstyper"
+
+#~ msgid "Account Settings"
+#~ msgstr "Kontoinnstillinger"
+
+#~ msgid "Change Password"
+#~ msgstr "Endre passord"
+
+#~ msgid "Username"
+#~ msgstr "Brukernavn"
+
+#~ msgid "First Name"
+#~ msgstr "Fornavn"
+
+#~ msgid "Last Name"
+#~ msgstr "Etternavn"
+
+#~ msgid "The following email addresses are associated with your account:"
+#~ msgstr "Følgende e-postadresser er tilknyttet din konto:"
+
+#~ msgid "Verified"
+#~ msgstr "Bekreftet"
+
+#~ msgid "Unverified"
+#~ msgstr "Ubekreftet"
+
+#~ msgid "Primary"
+#~ msgstr "Primær"
+
+#~ msgid "Make Primary"
+#~ msgstr "Gjør til primær"
+
+#~ msgid "Re-send Verification"
+#~ msgstr "Re-send bekreftelse"
+
+#~ msgid "Warning:"
+#~ msgstr "Advarsel:"
+
+#~ msgid "You currently do not have any email address set up. You should really add an email address so you can receive notifications, reset your password, etc."
+#~ msgstr "Du har for øyeblikket ikke konfigurert noen epostadresse. Du burde legge til en e-postadresse slik at du kan motta varslinger, tilbakestille passordet, osv."
+
+#~ msgid "Add Email Address"
+#~ msgstr "Legg til e-postadresse"
+
+#~ msgid "Add Email"
+#~ msgstr "Legg til e-post"
+
+#~ msgid "Multifactor"
+#~ msgstr "Multifaktor"
+
+#~ msgid "You have these factors available:"
+#~ msgstr "Du har disse faktorene tilgjengelig:"
+
+#~ msgid "TOTP"
+#~ msgstr "TOTP"
+
+#~ msgid "Static"
+#~ msgstr "Statisk"
+
+#~ msgid "Multifactor authentication is not configured for your account"
+#~ msgstr "Multifaktor-autentisering er ikke konfigurert for din konto"
+
+#~ msgid "Change factors"
+#~ msgstr "Endre faktorer"
+
+#~ msgid "Setup multifactor"
+#~ msgstr "Sett opp multifaktor"
+
+#~ msgid "Remove multifactor"
+#~ msgstr "Fjern multifaktor"
+
+#~ msgid "Active Sessions"
+#~ msgstr "Aktive økter"
+
+#~ msgid "Log out active sessions (except this one)"
+#~ msgstr "Logg ut aktive økter (unntatt denne)"
+
+#~ msgid "Log Out Active Sessions"
+#~ msgstr "Logg Ut Aktive Økter"
+
+#~ msgid "<em>unknown on unknown</em>"
+#~ msgstr "<em>ukjent på ukjent</em>"
+
+#~ msgid "<em>unknown</em>"
+#~ msgstr "<em>ukjent</em>"
+
+#~ msgid "IP Address"
+#~ msgstr "IP-adresse"
+
+#~ msgid "Device"
+#~ msgstr "Enhet"
+
+#~ msgid "Last Activity"
+#~ msgstr "Siste aktivitet"
+
+#, python-format
+#~ msgid "%(time)s ago (this session)"
+#~ msgstr "%(time)s siden (denne økten)"
+
+#, python-format
+#~ msgid "%(time)s ago"
+#~ msgstr "%(time)s siden"
+
+#~ msgid "Display Settings"
+#~ msgstr "Visningsinnstillinger"
+
+#~ msgid "Theme Settings"
+#~ msgstr "Temainnstillinger"
+
+#~ msgid "Select theme"
+#~ msgstr "Velg tema"
+
+#~ msgid "Set Theme"
+#~ msgstr "Sett tema"
+
+#~ msgid "Language Settings"
+#~ msgstr "Språkinnstillinger"
+
+#~ msgid "Select language"
+#~ msgstr "Velg språk"
+
+#, python-format
+#~ msgid "%(lang_translated)s%% translated"
+#~ msgstr "%(lang_translated)s%% oversatt"
+
+#~ msgid "No translations available"
+#~ msgstr "Ingen oversettelser tilgjengelig"
+
+#~ msgid "Set Language"
+#~ msgstr "Angi språk"
+
+#~ msgid "Some languages are not complete"
+#~ msgstr "Noen språk er ikke komplett"
+
+#~ msgid "Show only sufficient"
+#~ msgstr "Vis kun tilstrekkelige"
+
+#~ msgid "and hidden."
+#~ msgstr "og skjulte."
+
+#~ msgid "Show them too"
+#~ msgstr "Vis dem også"
+
+#~ msgid "Help the translation efforts!"
+#~ msgstr "Hjelp oss med oversettelsesinnsatsen!"
+
+#~ msgid "Native language translation of the web application is community contributed via crowdin. Contributions are welcomed and encouraged."
+#~ msgstr "Språkoversettelsen av nettapplikasjonen er bidratt av fellesskapet via crowdin. Bidrag er ønsket og settes pris på."
+
+#~ msgid "InvenTree Translation Project"
+#~ msgstr "InvenTree Oversettelsesprosjekt"
+
+#~ msgid "Home Page Settings"
+#~ msgstr "Innstillinger for startside"
+
+#~ msgid "Search Settings"
+#~ msgstr "Søkeinnstillinger"
+
+#~ msgid "Single Sign On Accounts"
+#~ msgstr "\"Single Sign On\"-kontoer"
+
+#~ msgid "You can sign in to your account using any of the following third party accounts:"
+#~ msgstr "Du kan logge inn på kontoen din ved hjelp av følgende tredjepartskontoer:"
+
+#~ msgid "There are no social network accounts connected to this account."
+#~ msgstr "Det finnes ingen sosiale nettverkskontoer koblet til denne kontoen."
+
+#~ msgid "Add SSO Account"
+#~ msgstr "Legg til SSO-konto"
+
+#~ msgid "Single Sign On is not enabled for this server"
+#~ msgstr "Single Sign On er ikke aktivert for denne serveren"
+
+#~ msgid "InvenTree Version"
+#~ msgstr "InvenTree-versjon"
+
+#~ msgid "Development Version"
+#~ msgstr "Utviklingsversjon"
+
+#~ msgid "Up to Date"
+#~ msgstr "Oppdatert"
+
+#~ msgid "Update Available"
+#~ msgstr "Oppdatering er tilgjengelig"
+
+#~ msgid "Commit Branch"
+#~ msgstr "Commit Branch"
+
+#~ msgid "InvenTree Documentation"
+#~ msgstr "InvenTree-dokumentasjon"
+
+#~ msgid "API Version"
+#~ msgstr "API-versjon"
+
+#~ msgid "Python Version"
+#~ msgstr "Python-versjon"
+
+#~ msgid "Django Version"
+#~ msgstr "Django-versjon"
+
+#~ msgid "View Code on GitHub"
+#~ msgstr "Vis koden på GitHub"
+
+#~ msgid "Credits"
+#~ msgstr "Krediteringer"
+
+#~ msgid "Mobile App"
+#~ msgstr "Mobilapp"
+
+#~ msgid "Submit Bug Report"
+#~ msgstr "Send feilrapport"
+
+#~ msgid "copy to clipboard"
+#~ msgstr "kopier til utklippstavle"
+
+#~ msgid "copy version information"
+#~ msgstr "kopiér versjonsinformasjon"
+
+#~ msgid "InvenTree logo"
+#~ msgstr "InvenTree-logo"
+
+#~ msgid "Confirm Email Address"
+#~ msgstr "Bekreft e-postadresse"
+
+#, python-format
+#~ msgid "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an email address for user %(user_display)s."
+#~ msgstr "Vennligst bekreft at <a href=\"mailto:%(email)s\">%(email)s</a> er ne e-postadresse for bruker %(user_display)s."
+
+#~ msgid "Confirm"
+#~ msgstr "Bekreft"
+
+#, python-format
+#~ msgid "This email confirmation link expired or is invalid. Please <a href=\"%(email_url)s\">issue a new email confirmation request</a>."
+#~ msgstr "Denne e-postbekreftelseslenken er utgått eller ugyldig. Vennligst <a href=\"%(email_url)s\">send en ny bekreftelsesforespørsel</a>."
+
+#~ msgid "Sign In"
+#~ msgstr "Logg inn"
+
+#~ msgid "Not a member?"
+#~ msgstr "Ikke medlem?"
+
+#~ msgid "Sign Up"
+#~ msgstr "Registrer deg"
+
+#~ msgid "Forgot Password?"
+#~ msgstr "Glemt passord?"
+
+#~ msgid "or log in with"
+#~ msgstr "eller logg på med"
+
+#~ msgid "Sign Out"
+#~ msgstr "Logg ut"
+
+#~ msgid "Are you sure you want to sign out?"
+#~ msgstr "Er du sikker på at du vil logge ut?"
+
+#~ msgid "Return to Site"
+#~ msgstr "Gå tilbake til siden"
+
+#~ msgid "Password Reset"
+#~ msgstr "Tilbakestill passord"
+
+#~ msgid "Forgotten your password? Enter your email address below, and we'll send you an email allowing you to reset it."
+#~ msgstr "Glemt passord? Skriv inn e-postadressen din under, så sender vi deg en e-post slik at du kan tilbakestille den."
+
+#~ msgid "Reset My Password"
+#~ msgstr "Tilbakestill passord"
+
+#~ msgid "This function is currently disabled. Please contact an administrator."
+#~ msgstr "Denne funksjonen er deaktivert. Vennligst kontakt en administrator."
+
+#~ msgid "Bad Token"
+#~ msgstr "Ugyldig token"
+
+#, python-format
+#~ msgid "The password reset link was invalid, possibly because it has already been used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</a>."
+#~ msgstr "Link for å tilbakestille passordet var ugyldig, muligens fordi det allerede er brukt. Be om en <a href=\"%(passwd_reset_url)s\">ny tilbakestilling</a>."
+
+#~ msgid "Change password"
+#~ msgstr "Endre passord"
+
+#~ msgid "Your password is now changed."
+#~ msgstr "Passordet ditt er nå endret."
+
+#, python-format
+#~ msgid "Already have an account? Then please <a href=\"%(login_url)s\">sign in</a>."
+#~ msgstr "Har du allerede en konto? Vennligst <a href=\"%(login_url)s\">logg inn</a>."
+
+#~ msgid "Use a SSO-provider for signup"
+#~ msgstr "Bruk en SSO-leverandør for registrering"
+
+#~ msgid "Sign Up Closed"
+#~ msgstr "Registreringen er lukket"
+
+#~ msgid "Sign up is currently closed."
+#~ msgstr "Registrering er for tiden stengt."
+
+#~ msgid "Return to login page"
+#~ msgstr "Tilbake til innloggingsside"
+
+#~ msgid "View in administration panel"
+#~ msgstr "Vis i administrasjonspanel"
+
+#~ msgid "Two-Factor Authentication"
+#~ msgstr "Tofaktor-autentisering"
+
+#~ msgid "Authenticate"
+#~ msgstr "Autentisér"
+
+#~ msgid "Two-Factor Authentication Backup Tokens"
+#~ msgstr "Tofaktor-autentisering Backup-symboler"
+
+#~ msgid "Backup tokens have been generated, but are not revealed here for security reasons. Press the button below to generate new ones."
+#~ msgstr "Backup-symboler er generert, men ikke avslørt her av sikkerhetshensyn. Trykk på knappen under for å generere nye."
+
+#~ msgid "No backup tokens are available. Press the button below to generate some."
+#~ msgstr "Ingen backup-symboler er tilgjengelig. Trykk på knappen under for å generere noen."
+
+#~ msgid "Generate Tokens"
+#~ msgstr "Generer Symboler"
+
+#~ msgid "Disable Two-Factor Authentication"
+#~ msgstr "Deaktiver Tofaktor-autentisering"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Er du sikker?"
+
+#~ msgid "Disable 2FA"
+#~ msgstr "Deaktiver 2FA"
+
+#~ msgid "Setup Two-Factor Authentication"
+#~ msgstr "Sett opp to-faktor autentisering"
+
+#~ msgid "Step 1"
+#~ msgstr "Trinn 1"
+
+#~ msgid "Scan the QR code below with a token generator of your choice (for instance Google Authenticator)."
+#~ msgstr "Skann QR-koden nedenfor med en symbolgenerator du velger (for eksempel Google Authenticator)."
+
+#~ msgid "Step 2"
+#~ msgstr "Trinn 2"
+
+#~ msgid "Input a token generated by the app:"
+#~ msgstr "Angi et symbol generert av appen:"
+
+#~ msgid "Verify"
+#~ msgstr "Bekreft"
+
+#~ msgid "Add Link"
+#~ msgstr "Legg til lenke"
+
+#~ msgid "Add Attachment"
+#~ msgstr "Legg til vedlegg"
+
+#~ msgid "Barcode Identifier"
+#~ msgstr "Strekkode-identifikator"
+
+#~ msgid "Scan Barcode"
+#~ msgstr "Skann strekkode"
+
+#~ msgid "Close"
+#~ msgstr "Lukk"
+
+#~ msgid "Form errors exist"
+#~ msgstr "Skjemafeil eksisterer"
+
+#~ msgid "Submit"
+#~ msgstr "Send"
+
+#~ msgid "Notifications will load here"
+#~ msgstr "Varsler lastes inn her"
+
+#~ msgid "Enter search query"
+#~ msgstr "Angi søkeord"
+
+#~ msgid "Buy"
+#~ msgstr "Kjøp"
+
+#~ msgid "Sell"
+#~ msgstr "Selg"
+
+#~ msgid "Show Notifications"
+#~ msgstr "Vis varsler"
+
+#~ msgid "New Notifications"
+#~ msgstr "Nye varslinger"
+
+#~ msgid "Logout"
+#~ msgstr "Logg ut"
+
+#~ msgid "Save"
+#~ msgstr "Lagre"
+
+#~ msgid "Show all notifications and history"
+#~ msgstr "Vis alle varsler og historikk"
+
+#~ msgid "QR data not provided"
+#~ msgstr "QR-data ikke oppgitt"
+
+#~ msgid "You were logged out successfully."
+#~ msgstr "Du ble logget ut."
+
+#~ msgid "Log in again"
+#~ msgstr "Logg inn på nytt"
+
+#~ msgid "Show full search results"
+#~ msgstr "Vis fullstendige søkeresultater"
+
+#~ msgid "Clear search"
+#~ msgstr "Nullstill søk"
+
+#~ msgid "Close search menu"
+#~ msgstr "Lukk søkemeny"
+
+#~ msgid "Social Network Login Failure"
+#~ msgstr "\"Sosial nettverk\"-pålogging feilet"
+
+#~ msgid "Account Login Failure"
+#~ msgstr "Kontofeil ved innlogging"
+
+#~ msgid "An error occurred while attempting to login via your social network account."
+#~ msgstr "En feil oppstod under forsøk på å logge inn via din sosiale nettverkskonto."
+
+#~ msgid "Contact your system administrator for further information."
+#~ msgstr "Kontakt systemadministratoren for mer informasjon."
+
+#, python-format
+#~ msgid "Connect %(provider)s"
+#~ msgstr "Koble til %(provider)s"
+
+#, python-format
+#~ msgid "You are about to connect a new third party account from %(provider)s."
+#~ msgstr "Du er i ferd med å koble en ny tredjepartskonto fra %(provider)s."
+
+#, python-format
+#~ msgid "Sign In Via %(provider)s"
+#~ msgstr "Logg på via %(provider)s"
+
+#, python-format
+#~ msgid "You are about to sign in using a third party account from %(provider)s."
+#~ msgstr "Du er i ferd med å logge inn med en tredjepartskonto fra %(provider)s."
+
+#~ msgid "Continue"
+#~ msgstr "Fortsett"
+
+#~ msgid "Invalid SSO Provider"
+#~ msgstr "Ugyldig SSO-leverandør"
+
+#~ msgid "The selected SSO provider is invalid, or has not been correctly configured"
+#~ msgstr "Valgt SSO-leverandør er ugyldig, eller den er ikke riktig konfigurert"
+
+#~ msgid "Provider has not been configured"
+#~ msgstr "Leverandør er ikke konfigurert"
+
+#~ msgid "No SSO providers have been configured"
+#~ msgstr "Ingen SSO-leverandører er konfigurert"
+
+#~ msgid "Instance Name"
+#~ msgstr "Instansnavn"
+
+#~ msgid "Database"
+#~ msgstr "Database"
+
+#~ msgid "Server is running in debug mode"
+#~ msgstr "Serveren kjører i debug-modus"
+
+#~ msgid "Docker Mode"
+#~ msgstr "Docker-modus"
+
+#~ msgid "Server is deployed using docker"
+#~ msgstr "Serveren er distribuert ved hjelp av docker"
+
+#~ msgid "Plugin Support"
+#~ msgstr "Støtte for utvidelser"
+
+#~ msgid "Plugin support enabled"
+#~ msgstr "Utvidelsesstøtte aktivert"
+
+#~ msgid "Plugin support disabled"
+#~ msgstr "Utvidelsesstøtte deaktivert"
+
+#~ msgid "Server status"
+#~ msgstr "Serverstatus"
+
+#~ msgid "Healthy"
+#~ msgstr "Frisk"
+
+#~ msgid "Issues detected"
+#~ msgstr "Problemer oppdaget"
+
+#~ msgid "Background Worker"
+#~ msgstr "Bakgrunnsarbeider"
+
+#~ msgid "Background worker not running"
+#~ msgstr "Bakgrunnsarbeider kjører ikke"
+
+#~ msgid "Email Settings"
+#~ msgstr "E-Post-Innstillinger"
+
+#~ msgid "Email settings not configured"
+#~ msgstr "E-postinnstillinger ikke konfigurert"
+
+#~ msgid "Yes"
+#~ msgstr "Ja"
+
+#~ msgid "No"
+#~ msgstr "Nei"

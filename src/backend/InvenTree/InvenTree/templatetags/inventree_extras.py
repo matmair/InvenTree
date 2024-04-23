@@ -1,25 +1,16 @@
 """This module provides template tags for extra functionality, over and above the built-in Django tags."""
 
 import logging
-import os
 from datetime import date, datetime
 
 from django import template
 from django.conf import settings as djangosettings
-from django.templatetags.static import StaticNode
-from django.urls import NoReverseMatch, reverse
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _
 
 import common.models
 import InvenTree.helpers
 import InvenTree.helpers_model
-import plugin.models
-from common.settings import currency_code_default
-from InvenTree import settings, version
+from InvenTree import version
 from plugin import registry
-from plugin.plugin import InvenTreePlugin
 
 register = template.Library()
 
@@ -121,18 +112,6 @@ def to_list(*args):
 
 
 @register.simple_tag()
-def part_allocation_count(build, part, *args, **kwargs):
-    """Return the total number of <part> allocated to <build>."""
-    return InvenTree.helpers.decimal2string(build.getAllocatedQuantity(part))
-
-
-@register.simple_tag()
-def inventree_in_debug_mode(*args, **kwargs):
-    """Return True if the server is running in DEBUG mode."""
-    return djangosettings.DEBUG
-
-
-@register.simple_tag()
 def inventree_show_about(user, *args, **kwargs):
     """Return True if the about modal should be shown."""
     if common.models.InvenTreeSetting.get_setting('INVENTREE_RESTRICT_ABOUT'):
@@ -178,12 +157,6 @@ def plugins_info(*args, **kwargs):
 
 
 @register.simple_tag()
-def inventree_db_engine(*args, **kwargs):
-    """Return the InvenTree database backend e.g. 'postgresql'."""
-    return version.inventreeDatabase() or _('Unknown database')
-
-
-@register.simple_tag()
 def inventree_instance_name(*args, **kwargs):
     """Return the InstanceName associated with the current database."""
     return version.inventreeInstanceName()
@@ -211,156 +184,11 @@ def inventree_splash(**kwargs):
 
 
 @register.simple_tag()
-def inventree_base_url(*args, **kwargs):
-    """Return the base URL of the InvenTree server."""
-    return InvenTree.helpers_model.get_base_url()
-
-
-@register.simple_tag()
-def python_version(*args, **kwargs):
-    """Return the current python version."""
-    return version.inventreePythonVersion()
-
-
-@register.simple_tag()
 def inventree_version(shortstring=False, *args, **kwargs):
     """Return InvenTree version string."""
     if shortstring:
         return f'{version.inventreeInstanceTitle()} v{version.inventreeVersion()}'
     return version.inventreeVersion()
-
-
-@register.simple_tag()
-def inventree_is_development(*args, **kwargs):
-    """Returns True if this is a development version of InvenTree."""
-    return version.isInvenTreeDevelopmentVersion()
-
-
-@register.simple_tag()
-def inventree_is_release(*args, **kwargs):
-    """Returns True if this is a release version of InvenTree."""
-    return not version.isInvenTreeDevelopmentVersion()
-
-
-@register.simple_tag()
-def inventree_docs_version(*args, **kwargs):
-    """Returns the InvenTree documentation version."""
-    return version.inventreeDocsVersion()
-
-
-@register.simple_tag()
-def inventree_api_version(*args, **kwargs):
-    """Return InvenTree API version."""
-    return version.inventreeApiVersion()
-
-
-@register.simple_tag()
-def django_version(*args, **kwargs):
-    """Return Django version string."""
-    return version.inventreeDjangoVersion()
-
-
-@register.simple_tag()
-def inventree_commit_hash(*args, **kwargs):
-    """Return InvenTree git commit hash string."""
-    return version.inventreeCommitHash()
-
-
-@register.simple_tag()
-def inventree_commit_date(*args, **kwargs):
-    """Return InvenTree git commit date string."""
-    return version.inventreeCommitDate()
-
-
-@register.simple_tag()
-def inventree_installer(*args, **kwargs):
-    """Return InvenTree package installer string."""
-    return version.inventreeInstaller()
-
-
-@register.simple_tag()
-def inventree_branch(*args, **kwargs):
-    """Return InvenTree git branch string."""
-    return version.inventreeBranch()
-
-
-@register.simple_tag()
-def inventree_target(*args, **kwargs):
-    """Return InvenTree target string."""
-    return version.inventreeTarget()
-
-
-@register.simple_tag()
-def inventree_platform(*args, **kwargs):
-    """Return InvenTree platform string."""
-    return version.inventreePlatform()
-
-
-@register.simple_tag()
-def inventree_github_url(*args, **kwargs):
-    """Return URL for InvenTree github site."""
-    return version.inventreeGithubUrl()
-
-
-@register.simple_tag()
-def inventree_docs_url(*args, **kwargs):
-    """Return URL for InvenTree documentation site."""
-    return version.inventreeDocUrl()
-
-
-@register.simple_tag()
-def inventree_app_url(*args, **kwargs):
-    """Return URL for InvenTree app site."""
-    return version.inventreeAppUrl()
-
-
-@register.simple_tag()
-def inventree_credits_url(*args, **kwargs):
-    """Return URL for InvenTree credits site."""
-    return version.inventreeCreditsUrl()
-
-
-@register.simple_tag()
-def default_currency(*args, **kwargs):
-    """Returns the default currency code."""
-    return currency_code_default()
-
-
-@register.simple_tag()
-def setting_object(key, *args, **kwargs):
-    """Return a setting object specified by the given key.
-
-    (Or return None if the setting does not exist)
-    if a user-setting was requested return that
-    """
-    cache = kwargs.get('cache', True)
-
-    if 'plugin' in kwargs:
-        # Note, 'plugin' is an instance of an InvenTreePlugin class
-
-        plg = kwargs['plugin']
-        if issubclass(plg.__class__, InvenTreePlugin):
-            try:
-                plg = plg.plugin_config()
-            except plugin.models.PluginConfig.DoesNotExist:
-                return None
-
-        return plugin.models.PluginSetting.get_setting_object(
-            key, plugin=plg, cache=cache
-        )
-
-    elif 'method' in kwargs:
-        return plugin.models.NotificationUserSetting.get_setting_object(
-            key, user=kwargs['user'], method=kwargs['method'], cache=cache
-        )
-
-    elif 'user' in kwargs:
-        return common.models.InvenTreeUserSetting.get_setting_object(
-            key, user=kwargs['user'], cache=cache
-        )
-
-    else:
-        return common.models.InvenTreeSetting.get_setting_object(key, cache=cache)
 
 
 @register.simple_tag()

@@ -94,47 +94,27 @@ msgstr "值 '{name}' 没有以模式格式显示"
 msgid "Provided value does not match required pattern: "
 msgstr "提供的值与所需模式不匹配： "
 
-#: InvenTree/forms.py:128
-msgid "Enter password"
-msgstr "输入密码"
-
-#: InvenTree/forms.py:129
-msgid "Enter new password"
-msgstr "输入新密码"
-
-#: InvenTree/forms.py:138
-msgid "Confirm password"
-msgstr "确认密码"
-
-#: InvenTree/forms.py:139
-msgid "Confirm new password"
-msgstr "确认新密码"
-
-#: InvenTree/forms.py:143
-msgid "Old password"
-msgstr "旧密码"
-
-#: InvenTree/forms.py:182
+#: InvenTree/forms.py:63
 msgid "Email (again)"
 msgstr "Email (再次)"
 
-#: InvenTree/forms.py:186
+#: InvenTree/forms.py:67
 msgid "Email address confirmation"
 msgstr "Email 地址确认"
 
-#: InvenTree/forms.py:209
+#: InvenTree/forms.py:90
 msgid "You must type the same email each time."
 msgstr "您必须输入相同的 Email 。"
 
-#: InvenTree/forms.py:253 InvenTree/forms.py:261
+#: InvenTree/forms.py:134 InvenTree/forms.py:142
 msgid "The provided primary email address is not valid."
 msgstr "所提供的主要电子邮件地址无效。"
 
-#: InvenTree/forms.py:268
+#: InvenTree/forms.py:149
 msgid "The provided email domain is not approved."
 msgstr "提供的电子邮件域未被核准。"
 
-#: InvenTree/forms.py:395
+#: InvenTree/forms.py:266
 msgid "Registration is disabled."
 msgstr ""
 
@@ -732,8 +712,6 @@ msgstr "已添加"
 
 #: InvenTree/status_codes.py:14 InvenTree/status_codes.py:151
 #: InvenTree/status_codes.py:169 generic/states/tests.py:19
-#: order/templates/order/order_base.html:158
-#: order/templates/order/sales_order_base.html:161
 msgid "Complete"
 msgstr "完成"
 
@@ -791,7 +769,7 @@ msgstr "隔离"
 msgid "Legacy stock tracking entry"
 msgstr "旧库存跟踪条目"
 
-#: InvenTree/status_codes.py:93 templates/js/translated/stock.js:544
+#: InvenTree/status_codes.py:93
 msgid "Stock item created"
 msgstr "库存项已创建"
 
@@ -893,7 +871,7 @@ msgstr "收到定购单"
 msgid "Returned against Return Order"
 msgstr "收到定购单"
 
-#: InvenTree/status_codes.py:141 templates/js/translated/table_filters.js:375
+#: InvenTree/status_codes.py:141
 msgid "Sent to customer"
 msgstr "发送给客户"
 
@@ -3824,9 +3802,7 @@ msgstr ""
 #: report/templates/report/inventree_bill_of_materials_report.html:126
 #: report/templates/report/inventree_bill_of_materials_report.html:148
 #: report/templates/report/inventree_return_order_report_base.html:35
-#: stock/templates/stock/item_base.html:133 templates/503.html:31
-#: templates/hover_image.html:7 templates/hover_image.html:9
-#: templates/modals.html:6
+#: templates/503.html:31
 msgid "Image"
 msgstr "图片"
 
@@ -3978,18 +3954,11 @@ msgstr "关键词"
 msgid "Task keyword arguments"
 msgstr ""
 
-#: common/views.py:84 order/templates/order/order_wizard/po_upload.html:51
-#: order/templates/order/purchase_order_detail.html:24 order/views.py:118
-#: part/templates/part/import_wizard/part_upload.html:58 part/views.py:109
-#: templates/patterns/wizard/upload.html:37
+#: common/views.py:84
 msgid "Upload File"
 msgstr "上传文件"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "匹配字段"
 
@@ -4005,14 +3974,7 @@ msgstr "字段匹配失败"
 msgid "Parts imported"
 msgstr "已导入商品"
 
-#: common/views.py:494 order/templates/order/order_wizard/match_fields.html:27
-#: order/templates/order/order_wizard/match_parts.html:19
-#: order/templates/order/order_wizard/po_upload.html:49
-#: part/templates/part/import_wizard/match_fields.html:27
-#: part/templates/part/import_wizard/match_references.html:19
-#: part/templates/part/import_wizard/part_upload.html:56
-#: templates/patterns/wizard/match_fields.html:26
-#: templates/patterns/wizard/upload.html:35
+#: common/views.py:494
 msgid "Previous Step"
 msgstr ""
 
@@ -4340,7 +4302,7 @@ msgstr ""
 #: order/templates/order/order_base.html:136 part/bom.py:272 part/bom.py:310
 #: part/serializers.py:499 plugin/builtin/suppliers/digikey.py:25
 #: plugin/builtin/suppliers/lcsc.py:26 plugin/builtin/suppliers/mouser.py:24
-#: plugin/builtin/suppliers/tme.py:26 stock/templates/stock/item_base.html:224
+#: plugin/builtin/suppliers/tme.py:26
 #: templates/email/overdue_purchase_order.html:16
 #: templates/js/translated/company.js:350
 #: templates/js/translated/company.js:511
@@ -5015,7 +4977,6 @@ msgstr "筛选器"
 #: label/templates/label/part/part_label.html:31
 #: label/templates/label/stockitem/qr.html:21
 #: label/templates/label/stocklocation/qr.html:20
-#: templates/allauth_2fa/setup.html:18
 #, fuzzy
 #| msgid "Part QR Code"
 msgid "QR Code"
@@ -5023,7 +4984,6 @@ msgstr "商品二维码"
 
 #: label/templates/label/part/part_label_code128.html:31
 #: label/templates/label/stocklocation/qr_and_text.html:31
-#: templates/qr_code.html:7
 msgid "QR code"
 msgstr ""
 
@@ -5193,7 +5153,6 @@ msgstr "待定"
 #: order/templates/order/order_base.html:9
 #: order/templates/order/order_base.html:18
 #: report/templates/report/inventree_po_report_base.html:14
-#: stock/templates/stock/item_base.html:176
 #: templates/email/overdue_purchase_order.html:15
 #: templates/js/translated/part.js:1745 templates/js/translated/pricing.js:804
 #: templates/js/translated/purchase_order.js:168
@@ -6255,8 +6214,7 @@ msgstr "最低库存"
 msgid "Used In"
 msgstr ""
 
-#: part/admin.py:150 part/templates/part/part_base.html:241 stock/admin.py:231
-#: templates/js/translated/part.js:714 templates/js/translated/part.js:2152
+#: part/admin.py:150 stock/admin.py:231
 msgid "Building"
 msgstr ""
 
@@ -6278,8 +6236,7 @@ msgstr ""
 msgid "Parent Name"
 msgstr ""
 
-#: part/admin.py:318 part/templates/part/category.html:88
-#: part/templates/part/category.html:101
+#: part/admin.py:318
 msgid "Category Path"
 msgstr "类别路径"
 
@@ -6424,6 +6381,10 @@ msgstr "默认仓储地点"
 #: part/bom.py:171 part/serializers.py:822
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
+msgstr ""
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
 msgstr ""
 
 #: part/forms.py:49
@@ -8828,8 +8789,6 @@ msgid "Name for the Plugin Package - can also contain a version indicator"
 msgstr ""
 
 #: plugin/serializers.py:99
-#: templates/InvenTree/settings/plugin_settings.html:42
-#: templates/js/translated/plugin.js:86
 msgid "Version"
 msgstr ""
 
@@ -9042,16 +9001,44 @@ msgstr ""
 msgid "stock location query filters (comma-separated list of key=value pairs)"
 msgstr "查询筛选器 (逗号分隔的键值对列表)"
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
+msgstr ""
+
+#: report/templates/report/inventree_build_order_base.html:98
+#: report/templates/report/inventree_po_report_base.html:40
+#: report/templates/report/inventree_so_report_base.html:40
+#: report/templates/report/inventree_test_report_base.html:84
+#: report/templates/report/inventree_test_report_base.html:163
+#, fuzzy
+#| msgid "Part name"
+msgid "Part image"
+msgstr "商品名称"
+
+#: report/templates/report/inventree_build_order_base.html:121
+msgid "Issued"
 msgstr ""
 
 #: report/templates/report/inventree_build_order_base.html:146
 msgid "Required For"
 msgstr ""
 
+#: report/templates/report/inventree_build_order_base.html:152
+msgid "Issued By"
+msgstr "发布者"
+
 #: report/templates/report/inventree_po_report_base.html:15
 msgid "Supplier was deleted"
+msgstr ""
+
+#: report/templates/report/inventree_po_report_base.html:22
+#: report/templates/report/inventree_return_order_report_base.html:19
+#: report/templates/report/inventree_so_report_base.html:22
+msgid "Line Items"
 msgstr ""
 
 #: report/templates/report/inventree_po_report_base.html:30
@@ -9137,7 +9124,6 @@ msgid "No result"
 msgstr ""
 
 #: report/templates/report/inventree_test_report_base.html:154
-#: stock/templates/stock/stock_sidebar.html:16
 msgid "Installed Items"
 msgstr ""
 
@@ -9173,14 +9159,17 @@ msgstr ""
 msgid "Location Name"
 msgstr ""
 
-#: stock/admin.py:64 stock/templates/stock/location.html:131
-#: stock/templates/stock/location.html:137
+#: stock/admin.py:64
 msgid "Location Path"
 msgstr ""
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
 msgstr ""
+
+#: stock/admin.py:163
+msgid "Batch"
+msgstr "批量"
 
 #: stock/admin.py:168
 #, fuzzy
@@ -9377,29 +9366,29 @@ msgstr ""
 msgid "Stock item cannot be created for virtual parts"
 msgstr ""
 
-#: stock/models.py:670
+#: stock/models.py:673
 #, fuzzy, python-brace-format
 #| msgid "Part type ('{pf}') must be {pe}"
 msgid "Part type ('{self.supplier_part.part}') must be {self.part}"
 msgstr "商品类型 ('{pf}') 必须是 {pe}"
 
-#: stock/models.py:680 stock/models.py:693
+#: stock/models.py:683 stock/models.py:696
 msgid "Quantity must be 1 for item with a serial number"
 msgstr ""
 
-#: stock/models.py:683
+#: stock/models.py:686
 msgid "Serial number cannot be set if quantity greater than 1"
 msgstr ""
 
-#: stock/models.py:707
+#: stock/models.py:710
 msgid "Item cannot belong to itself"
 msgstr ""
 
-#: stock/models.py:712
+#: stock/models.py:715
 msgid "Item must have a build reference if is_building=True"
 msgstr ""
 
-#: stock/models.py:725
+#: stock/models.py:728
 msgid "Build reference does not point to the same part object"
 msgstr ""
 
@@ -10222,8 +10211,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr ""
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr ""
 
@@ -15049,6 +15037,1677 @@ msgstr "编辑项目权限"
 #: users/models.py:426
 msgid "Permission to delete items"
 msgstr "删除项目权限"
+
+#~ msgid "Enter password"
+#~ msgstr "输入密码"
+
+#~ msgid "Enter new password"
+#~ msgstr "输入新密码"
+
+#~ msgid "Confirm password"
+#~ msgstr "确认密码"
+
+#~ msgid "Confirm new password"
+#~ msgstr "确认新密码"
+
+#~ msgid "Old password"
+#~ msgstr "旧密码"
+
+#~ msgid "Edit User Information"
+#~ msgstr "编辑用户信息"
+
+#~ msgid "Set Password"
+#~ msgstr "设置密码"
+
+#~ msgid "Password fields must match"
+#~ msgstr "密码字段必须相匹配。"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "密码错误"
+
+#~ msgid "System Information"
+#~ msgstr "系统信息"
+
+#~ msgid "About InvenTree"
+#~ msgstr "关于 InventTree"
+
+#, fuzzy
+#~| msgid "Part name"
+#~ msgid "Part thumbnail"
+#~ msgstr "商品名称"
+
+#~ msgid "Print actions"
+#~ msgstr "打印操作"
+
+#~ msgid "Print build order report"
+#~ msgstr "打印构建订单报告"
+
+#~ msgid "Build actions"
+#~ msgstr "生产操作"
+
+#~ msgid "Edit Build"
+#~ msgstr "编辑生产"
+
+#~ msgid "Cancel Build"
+#~ msgstr "取消生产"
+
+#~ msgid "Duplicate Build"
+#~ msgstr "重复构件"
+
+#~ msgid "Delete Build"
+#~ msgstr "删除生产"
+
+#~ msgid "Complete Build"
+#~ msgstr "生产完成"
+
+#~ msgid "Build Description"
+#~ msgstr "构建描述"
+
+#~ msgid "No build outputs have been created for this build order"
+#~ msgstr "针对此生产订单，尚未创建生产产出"
+
+#~ msgid "Build Order is ready to mark as completed"
+#~ msgstr "构建订单已准备好标记为已完成"
+
+#~ msgid "Build Order cannot be completed as outstanding outputs remain"
+#~ msgstr "创建订单无法完成，因为未完成的输出"
+
+#~ msgid "Required build quantity has not yet been completed"
+#~ msgstr "所需生产数量尚未完成"
+
+#~ msgid "Stock has not been fully allocated to this Build Order"
+#~ msgstr "库存尚未被完全分配到此构建订单"
+
+#, python-format
+#~ msgid "This build was due on %(target)s"
+#~ msgstr "此次生产的截止日期为 %(target)s"
+
+#~ msgid "Overdue"
+#~ msgstr "逾期"
+
+#~ msgid "Completed Outputs"
+#~ msgstr "已完成输出"
+
+#~ msgid "Priority"
+#~ msgstr "优先级"
+
+#~ msgid "Delete Build Order"
+#~ msgstr "删除生产订单"
+
+#, fuzzy
+#~| msgid "Build Order"
+#~ msgid "Build Order QR Code"
+#~ msgstr "生产订单"
+
+#, fuzzy
+#~| msgid "Print Build Orders"
+#~ msgid "Link Barcode to Build Order"
+#~ msgstr "打印生产订单"
+
+#~ msgid "Build Details"
+#~ msgstr "生产详情"
+
+#~ msgid "Stock Source"
+#~ msgstr "库存来源"
+
+#~ msgid "Stock can be taken from any available location."
+#~ msgstr "库存可以从任何可用的地点获得。"
+
+#~ msgid "Destination location not specified"
+#~ msgstr "目标位置未指定"
+
+#~ msgid "Allocated Parts"
+#~ msgstr "已分配的部件"
+
+#~ msgid "Created"
+#~ msgstr "已创建"
+
+#~ msgid "No target date set"
+#~ msgstr "无预计日期"
+
+#~ msgid "Completed"
+#~ msgstr "已完成"
+
+#~ msgid "Build not complete"
+#~ msgstr "生产未完成"
+
+#~ msgid "Child Build Orders"
+#~ msgstr "子生产订单"
+
+#~ msgid "Allocate Stock to Build"
+#~ msgstr "为生产分配库存"
+
+#, fuzzy
+#~| msgid "Unallocate stock"
+#~ msgid "Deallocate stock"
+#~ msgstr "未分配库存"
+
+#, fuzzy
+#~| msgid "Unallocate Stock"
+#~ msgid "Deallocate Stock"
+#~ msgstr "未分配库存"
+
+#~ msgid "Automatically allocate stock to build"
+#~ msgstr "自动分配存货进行生成"
+
+#~ msgid "Auto Allocate"
+#~ msgstr "自动分配"
+
+#~ msgid "Manually allocate stock to build"
+#~ msgstr "手动分配存货进行生成"
+
+#~ msgid "Allocate Stock"
+#~ msgstr "分配库存"
+
+#~ msgid "Order required parts"
+#~ msgstr "订单所需部件"
+
+#~ msgid "Order Parts"
+#~ msgstr "订购商品"
+
+#~ msgid "Incomplete Build Outputs"
+#~ msgstr "未完成的生产产出"
+
+#~ msgid "Create new build output"
+#~ msgstr "创建新构建输出"
+
+#~ msgid "New Build Output"
+#~ msgstr "新建构建输出"
+
+#, fuzzy
+#~| msgid "Minimum Stock"
+#~ msgid "Consumed Stock"
+#~ msgstr "最低库存"
+
+#~ msgid "Completed Build Outputs"
+#~ msgstr "已完成构建输出"
+
+#~ msgid "Attachments"
+#~ msgstr "附件"
+
+#~ msgid "Build Notes"
+#~ msgstr "生产备注"
+
+#~ msgid "Allocation Complete"
+#~ msgstr "分配完成"
+
+#, fuzzy
+#~| msgid "Required stock has not been fully allocated"
+#~ msgid "All lines have been fully allocated"
+#~ msgstr "所需库存尚未完全分配"
+
+#~ msgid "New Build Order"
+#~ msgstr "新建生产订单"
+
+#~ msgid "Build Order Details"
+#~ msgstr "生产订单详情"
+
+#~ msgid "Incomplete Outputs"
+#~ msgstr "未完成输出"
+
+#~ msgid "Create Purchase Order"
+#~ msgstr "创建采购订单"
+
+#~ msgid "Edit company information"
+#~ msgstr "编辑公司信息"
+
+#~ msgid "Edit Company"
+#~ msgstr "编辑公司信息"
+
+#~ msgid "Delete Company"
+#~ msgstr "删除该公司"
+
+#~ msgid "Upload new image"
+#~ msgstr "上传新图片"
+
+#~ msgid "Download image from URL"
+#~ msgstr "从 URL 下载图片"
+
+#~ msgid "Uses default currency"
+#~ msgstr "使用默认货币"
+
+#~ msgid "Phone"
+#~ msgstr "电话"
+
+#~ msgid "Upload Image"
+#~ msgstr "上传图片"
+
+#~ msgid "Download Image"
+#~ msgstr "下载图片"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "供应商商品"
+
+#~ msgid "Create new supplier part"
+#~ msgstr "创建新的供应商商品"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "新建供应商商品"
+
+#~ msgid "Manufacturer Parts"
+#~ msgstr "制造商商品"
+
+#~ msgid "Create new manufacturer part"
+#~ msgstr "新建制造商商品"
+
+#~ msgid "New Manufacturer Part"
+#~ msgstr "新建制造商商品"
+
+#~ msgid "Supplier Stock"
+#~ msgstr "供货商库存"
+
+#~ msgid "Create new purchase order"
+#~ msgstr "新建采购订单"
+
+#~ msgid "New Purchase Order"
+#~ msgstr "新建采购订单"
+
+#~ msgid "Create new sales order"
+#~ msgstr "新建销售订单"
+
+#~ msgid "New Sales Order"
+#~ msgstr "新建销售订单"
+
+#, fuzzy
+#~| msgid "Create new sales order"
+#~ msgid "Create new return order"
+#~ msgstr "新建销售订单"
+
+#, fuzzy
+#~| msgid "New Build Order"
+#~ msgid "New Return Order"
+#~ msgstr "新建生产订单"
+
+#~ msgid "Company Notes"
+#~ msgstr "公司备注"
+
+#, fuzzy
+#~| msgid "Company Notes"
+#~ msgid "Company Contacts"
+#~ msgstr "公司备注"
+
+#, fuzzy
+#~| msgid "Contact"
+#~ msgid "Add Contact"
+#~ msgstr "联系人"
+
+#, fuzzy
+#~| msgid "Company address"
+#~ msgid "Company addresses"
+#~ msgstr "公司地址"
+
+#, fuzzy
+#~| msgid "Address"
+#~ msgid "Add Address"
+#~ msgstr "地址"
+
+#~ msgid "Manufacturers"
+#~ msgstr "制造商"
+
+#~ msgid "Order part"
+#~ msgstr "订购商品"
+
+#~ msgid "Edit manufacturer part"
+#~ msgstr "编辑制造商商品"
+
+#~ msgid "Delete manufacturer part"
+#~ msgstr "删除生产商商品"
+
+#~ msgid "Internal Part"
+#~ msgstr "内部商品"
+
+#~ msgid "Parameters"
+#~ msgstr "参数"
+
+#~ msgid "New Parameter"
+#~ msgstr "新建参数"
+
+#~ msgid "Add Parameter"
+#~ msgstr "添加参数"
+
+#, fuzzy
+#~| msgid "Contact"
+#~ msgid "Contacts"
+#~ msgstr "联系人"
+
+#, fuzzy
+#~| msgid "Address"
+#~ msgid "Addresses"
+#~ msgstr "地址"
+
+#~ msgid "Order Part"
+#~ msgstr "订购商品"
+
+#~ msgid "Edit Supplier Part"
+#~ msgstr "编辑供应商商品"
+
+#~ msgid "Supplier Part Stock"
+#~ msgstr "供货商商品库存"
+
+#~ msgid "Supplier Part Orders"
+#~ msgstr "供应商商品订单"
+
+#~ msgid "Pricing Information"
+#~ msgstr "价格信息"
+
+#~ msgid "Supplier Part Pricing"
+#~ msgstr "供应商商品价格"
+
+#~ msgid "New Supplier"
+#~ msgstr "新增供应商"
+
+#~ msgid "New Manufacturer"
+#~ msgstr "新建制造商"
+
+#~ msgid "Customers"
+#~ msgstr "客户信息"
+
+#~ msgid "New Customer"
+#~ msgstr "新建客户"
+
+#~ msgid "Companies"
+#~ msgstr "公司"
+
+#~ msgid "New Company"
+#~ msgstr "新建公司信息"
+
+#~ msgid "Cancel order"
+#~ msgstr "取消订单"
+
+#, fuzzy
+#~| msgid "Build Order"
+#~ msgid "Issue Order"
+#~ msgstr "生产订单"
+
+#, fuzzy
+#~| msgid "Supplier part"
+#~ msgid "Supplier part thumbnail"
+#~ msgstr "供应商商品"
+
+#, fuzzy
+#~| msgid "Purchase Orders"
+#~ msgid "Purchase Order QR Code"
+#~ msgstr "采购订单"
+
+#, fuzzy
+#~| msgid "Create Purchase Order"
+#~ msgid "Link Barcode to Purchase Order"
+#~ msgstr "创建采购订单"
+
+#~ msgid "File Fields"
+#~ msgstr "文件字段"
+
+#~ msgid "Remove column"
+#~ msgstr "移除列"
+
+#~ msgid "Remove row"
+#~ msgstr "移除行"
+
+#~ msgid "Errors exist in the submitted data"
+#~ msgstr "提交数据中存在错误"
+
+#~ msgid "Row"
+#~ msgstr "行"
+
+#~ msgid "Select Supplier Part"
+#~ msgstr "选择供应商商品"
+
+#, python-format
+#~ msgid "Step %(step)s of %(count)s"
+#~ msgstr "步骤 %(step)s / %(count)s"
+
+#, fuzzy
+#~| msgid "Print build order report"
+#~ msgid "Print return order report"
+#~ msgstr "打印构建订单报告"
+
+#, fuzzy
+#~| msgid "Returned"
+#~ msgid "Return Order QR Code"
+#~ msgstr "已退回"
+
+#, fuzzy
+#~| msgid "Create Purchase Order"
+#~ msgid "Link Barcode to Return Order"
+#~ msgstr "创建采购订单"
+
+#, fuzzy
+#~| msgid "Build Order Details"
+#~ msgid "Order Details"
+#~ msgstr "生产订单详情"
+
+#, fuzzy
+#~| msgid "Match Items"
+#~ msgid "Ship Items"
+#~ msgstr "匹配项"
+
+#, fuzzy
+#~| msgid "Sales Order"
+#~ msgid "Sales Order QR Code"
+#~ msgstr "销售订单"
+
+#, fuzzy
+#~| msgid "New Sales Order"
+#~ msgid "Link Barcode to Sales Order"
+#~ msgstr "新建销售订单"
+
+#, fuzzy
+#~| msgid "Some stock items have been overallocated"
+#~ msgid "The BOM this part has been changed, and must be validated"
+#~ msgstr "一些库存项已被过度分配"
+
+#, fuzzy
+#~| msgid "Some stock items have been overallocated"
+#~ msgid "This BOM has not been validated."
+#~ msgstr "一些库存项已被过度分配"
+
+#~ msgid "Subcategories"
+#~ msgstr "子类别"
+
+#~ msgid "Parts (Including subcategories)"
+#~ msgstr "商品 (包括子类别)"
+
+#~ msgid "Create new part"
+#~ msgstr "新建商品"
+
+#~ msgid "New Part"
+#~ msgstr "新商品"
+
+#~ msgid "Part Parameters"
+#~ msgstr "商品参数"
+
+#~ msgid "Part Stock"
+#~ msgstr "商品库存"
+
+#~ msgid "Part Suppliers"
+#~ msgstr "商品供应商"
+
+#~ msgid "Part Manufacturers"
+#~ msgstr "商品制造商"
+
+#~ msgid "Import Parts from File"
+#~ msgstr "从文件导入商品"
+
+#~ msgid "Part List"
+#~ msgstr "商品列表"
+
+#~ msgid "Print Label"
+#~ msgstr "打印标签"
+
+#~ msgid "Count part stock"
+#~ msgstr "清点商品库存"
+
+#~ msgid "Duplicate part"
+#~ msgstr "重复的商品"
+
+#~ msgid "Edit part"
+#~ msgstr "编辑商品"
+
+#~ msgid "Delete part"
+#~ msgstr "删除商品"
+
+#~ msgid "Part can be assembled from other parts"
+#~ msgstr "商品可以由其他部件组装"
+
+#~ msgid "Part can be used in assemblies"
+#~ msgstr "商品可以用于组装成品"
+
+#~ msgid "Part can be purchased from external suppliers"
+#~ msgstr "商品可以从外部供应商处购买"
+
+#~ msgid "Part can be sold to customers"
+#~ msgstr "商品可以销售给客户"
+
+#, fuzzy
+#~| msgid "Print actions"
+#~ msgid "Part is not active"
+#~ msgstr "打印操作"
+
+#~ msgid "Part is virtual (not a physical part)"
+#~ msgstr "商品是虚拟的(不是实体零件)"
+
+#~ msgid "Part QR Code"
+#~ msgstr "商品二维码"
+
+#~ msgid "No pricing information is available for this part."
+#~ msgstr "此商品无价格信息可用。"
+
+#~ msgid "Stock"
+#~ msgstr "库存"
+
+#~ msgid "Pricing"
+#~ msgstr "定价"
+
+#, fuzzy
+#~| msgid "Part Pricing"
+#~ msgid "Override Part Pricing"
+#~ msgstr "商品价格"
+
+#~ msgid "Edit"
+#~ msgstr "编辑"
+
+#, fuzzy
+#~| msgid "Print actions"
+#~ msgid "Pricing Overrides"
+#~ msgstr "打印操作"
+
+#, fuzzy
+#~| msgid "Part Pricing"
+#~ msgid "Update Pricing"
+#~ msgstr "商品价格"
+
+#~ msgid "Each part must already exist in the database"
+#~ msgstr "每个商品必须已经存在于数据库"
+
+#~ msgid "Select Part Image"
+#~ msgstr "选择商品图像"
+
+#~ msgid "Updated part image"
+#~ msgstr "更新商品图像"
+
+#~ msgid "Part image not found"
+#~ msgstr "未找到商品图像"
+
+#~ msgid "Build"
+#~ msgstr "生产"
+
+#, fuzzy
+#~| msgid "Stock item is over-allocated"
+#~ msgid "This stock item is unavailable"
+#~ msgstr "库存物品分配过度！"
+
+#~ msgid "This stock item is in production and cannot be edited."
+#~ msgstr "此库存项目正在生产中，无法编辑。"
+
+#~ msgid "No location set"
+#~ msgstr "未设置仓储地点"
+
+#, fuzzy
+#~| msgid "Stock Item"
+#~ msgid "stock item"
+#~ msgstr "库存项"
+
+#~ msgid "Warning"
+#~ msgstr "警告"
+
+#~ msgid "Location actions"
+#~ msgstr "仓储地操作"
+
+#~ msgid "Edit location"
+#~ msgstr "编辑仓储地"
+
+#~ msgid "You are not in the list of owners of this location. This stock location cannot be edited."
+#~ msgstr "您不在此仓储地的所有者列表中，无法编辑此仓储地。"
+
+#~ msgid "Create new stock location"
+#~ msgstr "新建仓储地点"
+
+#~ msgid "New Location"
+#~ msgstr "新建仓储地点"
+
+#, fuzzy
+#~| msgid "Stock Location"
+#~ msgid "stock location"
+#~ msgstr "仓储地点"
+
+#~ msgid "Latest Parts"
+#~ msgstr "最近商品"
+
+#~ msgid "Barcode Settings"
+#~ msgstr "条形码设置"
+
+#~ msgid "Build Order Settings"
+#~ msgstr "生产订单设置"
+
+#~ msgid "Category Settings"
+#~ msgstr "类别设置"
+
+#~ msgid "Label Settings"
+#~ msgstr "标签设置"
+
+#~ msgid "Settings"
+#~ msgstr "设置"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Part Settings"
+#~ msgstr "商品设置"
+
+#~ msgid "Part Import"
+#~ msgstr "商品导入"
+
+#~ msgid "Import Part"
+#~ msgstr "导入商品"
+
+#~ msgid "Part Parameter Templates"
+#~ msgstr "商品参数模板"
+
+#, fuzzy
+#~| msgid "Invalid value"
+#~ msgid "Physical Units"
+#~ msgstr "无效值"
+
+#, fuzzy
+#~| msgid "Contact"
+#~ msgid "Add Unit"
+#~ msgstr "联系人"
+
+#, fuzzy
+#~| msgid "Subcategories"
+#~ msgid "Reload Plugins"
+#~ msgstr "子类别"
+
+#~ msgid "Purchase Order Settings"
+#~ msgstr "采购订单设置"
+
+#~ msgid "Exchange Rates"
+#~ msgstr "汇率"
+
+#~ msgid "Update Now"
+#~ msgstr "立即更新"
+
+#~ msgid "Last Update"
+#~ msgstr "上次更新"
+
+#~ msgid "Never"
+#~ msgstr "从不"
+
+#, fuzzy
+#~| msgid "Barcode Settings"
+#~ msgid "Project Code Settings"
+#~ msgstr "条形码设置"
+
+#, fuzzy
+#~| msgid "Part QR Code"
+#~ msgid "Project Codes"
+#~ msgstr "商品二维码"
+
+#, fuzzy
+#~| msgid "New Parameter"
+#~ msgid "New Project Code"
+#~ msgstr "新建参数"
+
+#~ msgid "Report Settings"
+#~ msgstr "报表设置"
+
+#, fuzzy
+#~| msgid "Build Order Settings"
+#~ msgid "Return Order Settings"
+#~ msgstr "生产订单设置"
+
+#~ msgid "No value set"
+#~ msgstr "未设置值"
+
+#~ msgid "Edit setting"
+#~ msgstr "编辑设置"
+
+#, fuzzy
+#~| msgid "Edited stock item"
+#~ msgid "Edit Custom Unit"
+#~ msgstr "已编辑库存项"
+
+#, fuzzy
+#~| msgid "Delete Company"
+#~ msgid "Delete Custom Unit"
+#~ msgstr "删除该公司"
+
+#, fuzzy
+#~| msgid "New Customer"
+#~ msgid "New Custom Unit"
+#~ msgstr "新建客户"
+
+#, fuzzy
+#~| msgid "No parameters found"
+#~ msgid "No project codes found"
+#~ msgstr "无指定参数"
+
+#, fuzzy
+#~| msgid "Edit Parameter"
+#~ msgid "Edit Project Code"
+#~ msgstr "编辑参数"
+
+#, fuzzy
+#~| msgid "Delete Parameter"
+#~ msgid "Delete Project Code"
+#~ msgstr "删除参数"
+
+#~ msgid "No category parameter templates found"
+#~ msgstr "未找到类别参数模板"
+
+#~ msgid "Edit Template"
+#~ msgstr "编辑模板"
+
+#~ msgid "Delete Template"
+#~ msgstr "删除模板"
+
+#, fuzzy
+#~| msgid "Delete Category Parameter Template"
+#~ msgid "Edit Category Parameter Template"
+#~ msgstr "删除类别参数模板"
+
+#~ msgid "Delete Category Parameter Template"
+#~ msgstr "删除类别参数模板"
+
+#~ msgid "Create Category Parameter Template"
+#~ msgstr "创建类别参数模板"
+
+#, fuzzy
+#~| msgid "No stock location set"
+#~ msgid "No stock location types found"
+#~ msgstr "未设置仓储地点"
+
+#, fuzzy
+#~| msgid "Location actions"
+#~ msgid "Location count"
+#~ msgstr "仓储地操作"
+
+#, fuzzy
+#~| msgid "Edit location"
+#~ msgid "Edit Location Type"
+#~ msgstr "编辑仓储地"
+
+#, fuzzy
+#~| msgid "Delete location"
+#~ msgid "Delete Location type"
+#~ msgstr "删除仓储地"
+
+#, fuzzy
+#~| msgid "Delete location"
+#~ msgid "Delete Location Type"
+#~ msgstr "删除仓储地"
+
+#, fuzzy
+#~| msgid "New Location"
+#~ msgid "New Location Type"
+#~ msgstr "新建仓储地点"
+
+#~ msgid "User Settings"
+#~ msgstr "用户设置"
+
+#, fuzzy
+#~| msgid "Account Settings"
+#~ msgid "Account"
+#~ msgstr "帐户设置"
+
+#~ msgid "Search"
+#~ msgstr "搜索"
+
+#, fuzzy
+#~| msgid "Label"
+#~ msgid "Labels"
+#~ msgstr "标签"
+
+#~ msgid "Sales Order Settings"
+#~ msgstr "销售订单设置"
+
+#~ msgid "Stock Settings"
+#~ msgstr "库存设置"
+
+#, fuzzy
+#~| msgid "Stock Locations"
+#~ msgid "Stock Location Types"
+#~ msgstr "仓储地点"
+
+#~ msgid "Account Settings"
+#~ msgstr "帐户设置"
+
+#~ msgid "Change Password"
+#~ msgstr "更改密码"
+
+#~ msgid "Username"
+#~ msgstr "用户名"
+
+#~ msgid "First Name"
+#~ msgstr "名字"
+
+#~ msgid "Last Name"
+#~ msgstr "姓氏"
+
+#~ msgid "Theme Settings"
+#~ msgstr "主题设置"
+
+#~ msgid "Set Theme"
+#~ msgstr "设置主题"
+
+#~ msgid "Language Settings"
+#~ msgstr "语言设置"
+
+#, python-format
+#~ msgid "%(lang_translated)s%% translated"
+#~ msgstr "%(lang_translated)s%% 已翻译"
+
+#~ msgid "No translations available"
+#~ msgstr "无可用翻译"
+
+#~ msgid "Set Language"
+#~ msgstr "设置语言"
+
+#~ msgid "Help the translation efforts!"
+#~ msgstr "帮助翻译工作！"
+
+#~ msgid "Home Page Settings"
+#~ msgstr "主页设置"
+
+#~ msgid "Search Settings"
+#~ msgstr "搜索设置"
+
+#, fuzzy
+#~| msgid "Account Settings"
+#~ msgid "Add SSO Account"
+#~ msgstr "帐户设置"
+
+#, fuzzy
+#~| msgid "About InvenTree"
+#~ msgid "InvenTree logo"
+#~ msgstr "关于 InventTree"
+
+#~ msgid "Confirm"
+#~ msgstr "确认"
+
+#~ msgid "Add Attachment"
+#~ msgstr "添加附件"
+
+#, fuzzy
+#~| msgid "Stock item is over-allocated"
+#~ msgid "The server is currently unavailable"
+#~ msgstr "库存物品分配过度！"
+
+#, fuzzy
+#~| msgid "Delete parameters"
+#~ msgid "Delete attachments"
+#~ msgstr "删除参数"
+
+#, fuzzy
+#~| msgid "Attachments"
+#~ msgid "Attachment actions"
+#~ msgstr "附件"
+
+#~ msgid "Edit Attachment"
+#~ msgstr "编辑附件"
+
+#~ msgid "Enter barcode data"
+#~ msgstr "输入条形码数据"
+
+#~ msgid "Scan Barcode"
+#~ msgstr "扫描条形码"
+
+#~ msgid "Levels"
+#~ msgstr "等级"
+
+#~ msgid "Include Parameter Data"
+#~ msgstr "包含参数数据"
+
+#~ msgid "Include Stock Data"
+#~ msgstr "包括库存数据"
+
+#~ msgid "Include part stock data in exported BOM"
+#~ msgstr "在导出 BOM 中包括库存数据"
+
+#~ msgid "Include Manufacturer Data"
+#~ msgstr "包括制造商数据"
+
+#~ msgid "Include part manufacturer data in exported BOM"
+#~ msgstr "在导出 BOM 中包含制造商数据"
+
+#~ msgid "Include Supplier Data"
+#~ msgstr "包含供应商数据"
+
+#~ msgid "Include part supplier data in exported BOM"
+#~ msgstr "在导出 BOM 中包含供应商数据"
+
+#, fuzzy
+#~| msgid "Delete parameters"
+#~ msgid "Delete items"
+#~ msgstr "删除参数"
+
+#~ msgid "Are you sure you wish to cancel this build?"
+#~ msgstr "是否确定取消生产？"
+
+#~ msgid "Build Order is incomplete"
+#~ msgstr "生产订单未完成"
+
+#~ msgid "Complete Build Order"
+#~ msgstr "生产订单完成"
+
+#~ msgid "Trackable parts can have serial numbers specified"
+#~ msgstr "可追踪商品可以指定序列号"
+
+#~ msgid "Create Build Output"
+#~ msgstr "创建创建生产产出"
+
+#, fuzzy
+#~| msgid "Manually allocate stock to build"
+#~ msgid "Deallocate stock from build output"
+#~ msgstr "手动分配存货进行生成"
+
+#, fuzzy
+#~| msgid "Build output"
+#~ msgid "Scrap build output"
+#~ msgstr "生产产出"
+
+#, fuzzy
+#~| msgid "Are you sure you wish to cancel this build?"
+#~ msgid "Are you sure you wish to deallocate the selected stock items from this build?"
+#~ msgstr "是否确定取消生产？"
+
+#, fuzzy
+#~| msgid "Select Stock Items"
+#~ msgid "Deallocate Stock Items"
+#~ msgstr "选择库存项"
+
+#, fuzzy
+#~| msgid "Delete any build outputs which have not been completed"
+#~ msgid "Selected build outputs will be marked as complete"
+#~ msgstr "删除所有未完成的生产产出"
+
+#, fuzzy
+#~| msgid "Delete any build outputs which have not been completed"
+#~ msgid "Selected build outputs will be marked as scrapped"
+#~ msgstr "删除所有未完成的生产产出"
+
+#, fuzzy
+#~| msgid "Delete any build outputs which have not been completed"
+#~ msgid "Scrapped output are marked as rejected"
+#~ msgstr "删除所有未完成的生产产出"
+
+#, fuzzy
+#~| msgid "Stock item is over-allocated"
+#~ msgid "Allocated stock items will no longer be available"
+#~ msgstr "库存物品分配过度！"
+
+#, fuzzy
+#~| msgid "Create Build Output"
+#~ msgid "Scrap Build Outputs"
+#~ msgstr "创建创建生产产出"
+
+#, fuzzy
+#~| msgid "All selected supplier parts will be deleted"
+#~ msgid "Selected build outputs will be deleted"
+#~ msgstr "删除所有选定的供应商商品"
+
+#, fuzzy
+#~| msgid "Build output is already completed"
+#~ msgid "Build output data will be permanently deleted"
+#~ msgstr "生产产出已完成"
+
+#, fuzzy
+#~| msgid "All selected supplier parts will be deleted"
+#~ msgid "Allocated stock items will be returned to stock"
+#~ msgstr "删除所有选定的供应商商品"
+
+#, fuzzy
+#~| msgid "Allocated Parts"
+#~ msgid "Allocated Quantity"
+#~ msgstr "已分配的部件"
+
+#~ msgid "Location not specified"
+#~ msgstr "未指定仓储地点"
+
+#~ msgid "Complete outputs"
+#~ msgstr "已完成输出"
+
+#, fuzzy
+#~| msgid "Complete outputs"
+#~ msgid "Scrap outputs"
+#~ msgstr "已完成输出"
+
+#~ msgid "Delete outputs"
+#~ msgstr "删除输出"
+
+#, fuzzy
+#~| msgid "Build output"
+#~ msgid "build output"
+#~ msgstr "生产产出"
+
+#, fuzzy
+#~| msgid "Build output"
+#~ msgid "build outputs"
+#~ msgstr "生产产出"
+
+#, fuzzy
+#~| msgid "Build actions"
+#~ msgid "Build output actions"
+#~ msgstr "生产操作"
+
+#, fuzzy
+#~| msgid "Allocated Parts"
+#~ msgid "Allocated Lines"
+#~ msgstr "已分配的部件"
+
+#~ msgid "Select Parts"
+#~ msgstr "选择商品"
+
+#~ msgid "No user information"
+#~ msgstr "没有用户信息"
+
+#, fuzzy
+#~| msgid "Build actions"
+#~ msgid "build line"
+#~ msgstr "生产操作"
+
+#, fuzzy
+#~| msgid "Build actions"
+#~ msgid "build lines"
+#~ msgstr "生产操作"
+
+#, fuzzy
+#~| msgid "Subcategories"
+#~ msgid "No build lines found"
+#~ msgstr "子类别"
+
+#~ msgid "Trackable part"
+#~ msgstr "可追溯商品"
+
+#, fuzzy
+#~| msgid "Quantity"
+#~ msgid "Unit Quantity"
+#~ msgstr "数量"
+
+#, fuzzy
+#~| msgid "Minimum Stock"
+#~ msgid "Consumable Item"
+#~ msgstr "最低库存"
+
+#, fuzzy
+#~| msgid "Stock Item"
+#~ msgid "Tracked item"
+#~ msgstr "库存项"
+
+#, fuzzy
+#~| msgid "Confirm stock allocation"
+#~ msgid "Remove stock allocation"
+#~ msgstr "确认库存分配"
+
+#~ msgid "Add Manufacturer"
+#~ msgstr "添加制造商"
+
+#~ msgid "Add Manufacturer Part"
+#~ msgstr "添加制造商商品"
+
+#~ msgid "Edit Manufacturer Part"
+#~ msgstr "编辑制造商商品"
+
+#~ msgid "Add Supplier"
+#~ msgstr "添加供应商"
+
+#~ msgid "Add Supplier Part"
+#~ msgstr "添加供应商商品"
+
+#~ msgid "All selected supplier parts will be deleted"
+#~ msgstr "删除所有选定的供应商商品"
+
+#~ msgid "Add new Company"
+#~ msgstr "增加新的公司信息"
+
+#~ msgid "No company information found"
+#~ msgstr "未找到该公司信息"
+
+#, fuzzy
+#~| msgid "Create new part"
+#~ msgid "Create New Contact"
+#~ msgstr "新建商品"
+
+#, fuzzy
+#~| msgid "Contact"
+#~ msgid "Edit Contact"
+#~ msgstr "联系人"
+
+#, fuzzy
+#~| msgid "All selected supplier parts will be deleted"
+#~ msgid "All selected contacts will be deleted"
+#~ msgstr "删除所有选定的供应商商品"
+
+#, fuzzy
+#~| msgid "Delete outputs"
+#~ msgid "Delete Contacts"
+#~ msgstr "删除输出"
+
+#, fuzzy
+#~| msgid "No matching action found"
+#~ msgid "No contacts found"
+#~ msgstr "未找到指定操作"
+
+#, fuzzy
+#~| msgid "Phone number"
+#~ msgid "Phone Number"
+#~ msgstr "电话号码"
+
+#, fuzzy
+#~| msgid "Address"
+#~ msgid "Email Address"
+#~ msgstr "地址"
+
+#, fuzzy
+#~| msgid "Delete part"
+#~ msgid "Delete Contact"
+#~ msgstr "删除商品"
+
+#, fuzzy
+#~| msgid "Create new part"
+#~ msgid "Create New Address"
+#~ msgstr "新建商品"
+
+#, fuzzy
+#~| msgid "Address"
+#~ msgid "Edit Address"
+#~ msgstr "地址"
+
+#, fuzzy
+#~| msgid "All selected supplier parts will be deleted"
+#~ msgid "All selected addresses will be deleted"
+#~ msgstr "删除所有选定的供应商商品"
+
+#, fuzzy
+#~| msgid "Delete parameters"
+#~ msgid "Delete Addresses"
+#~ msgstr "删除参数"
+
+#, fuzzy
+#~| msgid "No parameters found"
+#~ msgid "No addresses found"
+#~ msgstr "无指定参数"
+
+#, fuzzy
+#~| msgid "Install into"
+#~ msgid "Postal city"
+#~ msgstr "安装到"
+
+#, fuzzy
+#~| msgid "Internal Prices"
+#~ msgid "Internal notes"
+#~ msgstr "内部价格"
+
+#, fuzzy
+#~| msgid "Delete parts"
+#~ msgid "Delete Address"
+#~ msgstr "删除商品"
+
+#~ msgid "Delete Manufacturer Parts"
+#~ msgstr "删除制造商商品"
+
+#~ msgid "Delete Parameters"
+#~ msgstr "删除参数"
+
+#~ msgid "Order parts"
+#~ msgstr "订购商品"
+
+#~ msgid "Delete manufacturer parts"
+#~ msgstr "删除制造商商品"
+
+#, fuzzy
+#~| msgid "Manufacturer part description"
+#~ msgid "Manufacturer part actions"
+#~ msgstr "制造商商品描述"
+
+#~ msgid "No parameters found"
+#~ msgstr "无指定参数"
+
+#~ msgid "Edit parameter"
+#~ msgstr "编辑参数"
+
+#~ msgid "Delete parameter"
+#~ msgstr "删除参数"
+
+#~ msgid "Edit Parameter"
+#~ msgstr "编辑参数"
+
+#~ msgid "Delete Parameter"
+#~ msgstr "删除参数"
+
+#~ msgid "Delete supplier parts"
+#~ msgstr "删除供应商商品"
+
+#~ msgid "No supplier parts found"
+#~ msgstr "未找到供应商商品"
+
+#, fuzzy
+#~| msgid "Units"
+#~ msgid "Base Units"
+#~ msgstr "单位"
+
+#~ msgid "Edit supplier part"
+#~ msgstr "编辑供应商商品"
+
+#~ msgid "Delete supplier part"
+#~ msgstr "删除供应商商品"
+
+#~ msgid "Select filter"
+#~ msgstr "选择筛选项"
+
+#~ msgid "Print Labels"
+#~ msgstr "打印标签"
+
+#, fuzzy
+#~| msgid "Print Order Reports"
+#~ msgid "Print Reports"
+#~ msgstr "打印订单报表"
+
+#, fuzzy
+#~| msgid "Download Image"
+#~ msgid "Download table data"
+#~ msgstr "下载图片"
+
+#, fuzzy
+#~| msgid "Stock required for build order"
+#~ msgid "No parts required for builds"
+#~ msgstr "生产订单所需的库存"
+
+#, fuzzy
+#~| msgid "Stock item(s) must be selected before printing labels"
+#~ msgid "No items selected for printing"
+#~ msgstr "打印标签前必须选择库存项目"
+
+#~ msgid "No Labels Found"
+#~ msgstr "未找到标签"
+
+#, fuzzy
+#~| msgid "No labels found which match the selected part(s)"
+#~ msgid "No label templates found which match the selected items"
+#~ msgstr "没有找到与所选商品相匹配的标签"
+
+#, fuzzy
+#~| msgid "Rejected"
+#~ msgid "selected"
+#~ msgstr "已拒绝"
+
+#, fuzzy
+#~| msgid "Print actions"
+#~ msgid "Printing Options"
+#~ msgstr "打印操作"
+
+#, fuzzy
+#~| msgid "Print labels"
+#~ msgid "Print label"
+#~ msgstr "打印标签"
+
+#~ msgid "Print labels"
+#~ msgstr "打印标签"
+
+#, fuzzy
+#~| msgid "Print Label"
+#~ msgid "Print"
+#~ msgstr "打印标签"
+
+#, fuzzy
+#~| msgid "Select Label Template"
+#~ msgid "Select label template"
+#~ msgstr "选择标签模板"
+
+#, fuzzy
+#~| msgid "Select supplier"
+#~ msgid "Select plugin"
+#~ msgstr "选择供应商"
+
+#~ msgid "Cancel"
+#~ msgstr "取消"
+
+#~ msgid "Part Attributes"
+#~ msgstr "商品属性"
+
+#~ msgid "Part Creation Options"
+#~ msgstr "商品创建选项"
+
+#~ msgid "Part Duplication Options"
+#~ msgstr "商品重复选项"
+
+#~ msgid "Add Part Category"
+#~ msgstr "增加商品类别"
+
+#~ msgid "Create Part Category"
+#~ msgstr "创建商品类别"
+
+#, fuzzy
+#~| msgid "Create new part category"
+#~ msgid "Create new category after this one"
+#~ msgstr "新建商品类别"
+
+#, fuzzy
+#~| msgid "Part category"
+#~ msgid "Part category created"
+#~ msgstr "商品类别"
+
+#~ msgid "Edit Part Category"
+#~ msgstr "编辑商品类别"
+
+#~ msgid "Delete Part Category"
+#~ msgstr "删除商品类别"
+
+#~ msgid "Create Part"
+#~ msgstr "创建商品"
+
+#~ msgid "Edit Part"
+#~ msgstr "编辑商品"
+
+#~ msgid "Virtual part"
+#~ msgstr "虚拟商品"
+
+#~ msgid "Salable part"
+#~ msgstr "可销售商品"
+
+#~ msgid "No part parameter templates found"
+#~ msgstr "未找到商品参数模板"
+
+#~ msgid "Set Part Category"
+#~ msgstr "设置商品类别"
+
+#~ msgid "Set category"
+#~ msgstr "设置类别"
+
+#, fuzzy
+#~| msgid "Edit part"
+#~ msgid "part"
+#~ msgstr "编辑商品"
+
+#, fuzzy
+#~| msgid "Parts"
+#~ msgid "parts"
+#~ msgstr "商品"
+
+#~ msgid "No category"
+#~ msgstr "没有分类"
+
+#, fuzzy
+#~| msgid "Subcategories"
+#~ msgid "No subcategories found"
+#~ msgstr "子类别"
+
+#, fuzzy
+#~| msgid "Subcategories"
+#~ msgid "No plugins found"
+#~ msgstr "子类别"
+
+#, fuzzy
+#~| msgid "Print actions"
+#~ msgid "This plugin is no longer installed"
+#~ msgstr "打印操作"
+
+#, fuzzy
+#~| msgid "Print actions"
+#~ msgid "This plugin is installed but not active"
+#~ msgstr "打印操作"
+
+#, fuzzy
+#~| msgid "Enabled"
+#~ msgid "Enable Plugin"
+#~ msgstr "已启用"
+
+#, fuzzy
+#~| msgid "Are you sure you want to delete this stock location?"
+#~ msgid "Are you sure you want to enable this plugin?"
+#~ msgstr "确实要删除此仓储地点吗?"
+
+#, fuzzy
+#~| msgid "Are you sure you want to delete this stock location?"
+#~ msgid "Are you sure you want to disable this plugin?"
+#~ msgstr "确实要删除此仓储地点吗?"
+
+#, fuzzy
+#~| msgid "Enabled"
+#~ msgid "Enable"
+#~ msgstr "已启用"
+
+#, fuzzy
+#~| msgid "Available"
+#~ msgid "Disable"
+#~ msgstr "空闲"
+
+#, fuzzy
+#~| msgid "Barcode"
+#~ msgid "Add barcode"
+#~ msgstr "条形码"
+
+#, fuzzy
+#~| msgid "Remove row"
+#~ msgid "Remove barcode"
+#~ msgstr "移除行"
+
+#, fuzzy
+#~| msgid "Edit location"
+#~ msgid "Specify location"
+#~ msgstr "编辑仓储地"
+
+#, fuzzy
+#~| msgid "Serial Numbers"
+#~ msgid "Serials"
+#~ msgstr "序列号"
+
+#~ msgid "Order Code"
+#~ msgstr "订单编码"
+
+#, fuzzy
+#~| msgid "Scan Barcode"
+#~ msgid "Scan Item Barcode"
+#~ msgstr "扫描条形码"
+
+#, fuzzy
+#~| msgid "Enter barcode data"
+#~ msgid "Invalid barcode data"
+#~ msgstr "输入条形码数据"
+
+#, fuzzy
+#~| msgid "All selected supplier parts will be deleted"
+#~ msgid "All selected Line items will be deleted"
+#~ msgstr "删除所有选定的供应商商品"
+
+#, fuzzy
+#~| msgid "Allocate selected items"
+#~ msgid "Delete selected Line items?"
+#~ msgstr "分配选定项目"
+
+#~ msgid "No Reports Found"
+#~ msgstr "没有找到报表"
+
+#, fuzzy
+#~| msgid "No labels found which match the selected part(s)"
+#~ msgid "No report templates found which match the selected items"
+#~ msgstr "没有找到与所选商品相匹配的标签"
+
+#, fuzzy
+#~| msgid "Create Purchase Order"
+#~ msgid "Create Return Order"
+#~ msgstr "创建采购订单"
+
+#, fuzzy
+#~| msgid "Are you sure you wish to cancel this build?"
+#~ msgid "Are you sure you wish to cancel this Return Order?"
+#~ msgstr "是否确定取消生产？"
+
+#, fuzzy
+#~| msgid "Cancel order"
+#~ msgid "Cancel Return Order"
+#~ msgstr "取消订单"
+
+#, fuzzy
+#~| msgid "Complete Build Order"
+#~ msgid "Complete Return Order"
+#~ msgstr "生产订单完成"
+
+#, fuzzy
+#~| msgid "No parameters found"
+#~ msgid "No return orders found"
+#~ msgstr "无指定参数"
+
+#, fuzzy
+#~| msgid "New Sales Order"
+#~ msgid "Issue this Sales Order?"
+#~ msgstr "新建销售订单"
+
+#, fuzzy
+#~| msgid "New Sales Order"
+#~ msgid "Issue Sales Order"
+#~ msgstr "新建销售订单"
+
+#~ msgid "Confirm stock allocation"
+#~ msgstr "确认库存分配"
+
+#~ msgid "Confirm Delete Operation"
+#~ msgstr "确认删除操作"
+
+#, fuzzy
+#~| msgid "Location"
+#~ msgid "Add Location type"
+#~ msgstr "地点"
+
+#~ msgid "Edit Stock Location"
+#~ msgstr "编辑仓储地点"
+
+#, fuzzy
+#~| msgid "Stock item created"
+#~ msgid "Stock location created"
+#~ msgstr "库存项已创建"
+
+#~ msgid "Are you sure you want to delete this stock location?"
+#~ msgstr "确实要删除此仓储地点吗?"
+
+#~ msgid "Delete Stock Location"
+#~ msgstr "删除仓储地点"
+
+#~ msgid "Select Stock Items"
+#~ msgstr "选择库存项"
+
+#~ msgid "In production"
+#~ msgstr "正在生产"
+
+#~ msgid "No stock location set"
+#~ msgstr "未设置仓储地点"
+
+#, fuzzy
+#~| msgid "Stock Items"
+#~ msgid "stock items"
+#~ msgstr "库存项"
+
+#, fuzzy
+#~| msgid "Stock Location"
+#~ msgid "Scan to location"
+#~ msgstr "仓储地点"
+
+#, fuzzy
+#~| msgid "Stock Locations"
+#~ msgid "Stock Actions"
+#~ msgstr "仓储地点"
+
+#, fuzzy
+#~| msgid "Installed into assembly"
+#~ msgid "Load installed items"
+#~ msgstr "安装到组装中"
+
+#~ msgid "Stock item is in production"
+#~ msgstr "库存品正在生产"
+
+#, fuzzy
+#~| msgid "Accept as consumed by this build order"
+#~ msgid "Stock item has been consumed by a build order"
+#~ msgstr "接受此构建订单所消耗的内容"
+
+#, fuzzy
+#~| msgid "Stock Source"
+#~ msgid "Stock Value"
+#~ msgstr "库存来源"
+
+#, fuzzy
+#~| msgid "Stock Locations"
+#~ msgid "stock locations"
+#~ msgstr "仓储地点"
+
+#, fuzzy
+#~| msgid "Stock Locations"
+#~ msgid "Load Sublocations"
+#~ msgstr "仓储地点"
+
+#~ msgid "Details"
+#~ msgstr "详情"
+
+#, fuzzy
+#~| msgid "Change"
+#~ msgid "No changes"
+#~ msgstr "更改"
+
+#, fuzzy
+#~| msgid "Sales Order Settings"
+#~ msgid "Build order no longer exists"
+#~ msgstr "销售订单设置"
+
+#, fuzzy
+#~| msgid "Sales Order Settings"
+#~ msgid "Sales Order no longer exists"
+#~ msgstr "销售订单设置"
+
+#, fuzzy
+#~| msgid "Select Stock Items"
+#~ msgid "Select one or more stock items"
+#~ msgstr "选择库存项"
+
+#, fuzzy
+#~| msgid "Select Stock Items"
+#~ msgid "Selected stock items"
+#~ msgstr "选择库存项"
+
+#, fuzzy
+#~| msgid "Stock Settings"
+#~ msgid "Change Stock Status"
+#~ msgstr "库存设置"
+
+#~ msgid "Trackable Part"
+#~ msgstr "可追溯商品"
+
+#, fuzzy
+#~| msgid "No location set"
+#~ msgid "Has location type"
+#~ msgstr "未设置仓储地点"
+
+#~ msgid "Show items which are in production"
+#~ msgstr "显示正在生产的项目"
+
+#~ msgid "Build status"
+#~ msgstr "生产状态"
+
+#, fuzzy
+#~| msgid "Parameter units"
+#~ msgid "Part has defined units"
+#~ msgstr "参数单位"
+
+#~ msgid "Part has internal part number"
+#~ msgstr "商品有内部编号"
+
+#, fuzzy
+#~| msgid "Units"
+#~ msgid "Has Choices"
+#~ msgstr "单位"
+
+#~ msgid "Display calendar view"
+#~ msgstr "显示日历"
+
+#~ msgid "Display list view"
+#~ msgstr "列表视图"
+
+#~ msgid "Buy"
+#~ msgstr "采购"
+
+#~ msgid "Sell"
+#~ msgstr "销售"
+
+#, fuzzy
+#~| msgid "Invalid quantity provided"
+#~ msgid "Invalid SSO Provider"
+#~ msgstr "提供的数量无效"
+
+#, fuzzy
+#~| msgid "Email backend not configured"
+#~ msgid "Provider has not been configured"
+#~ msgstr "未配置电子邮件后端"
+
+#~ msgid "Email Settings"
+#~ msgstr "电子邮件设置"
+
+#~ msgid "Email settings not configured"
+#~ msgstr "电子邮件设置未配置"
+
+#~ msgid "Yes"
+#~ msgstr "确定"
+
+#~ msgid "No"
+#~ msgstr "取消"
 
 #, fuzzy
 #~| msgid "BOM Item"

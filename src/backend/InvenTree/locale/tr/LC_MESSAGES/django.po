@@ -88,47 +88,27 @@ msgstr "'{name}' değeri desen formatında yer almıyor"
 msgid "Provided value does not match required pattern: "
 msgstr "Sağlanan değer gerekli kalıpla eşleşmiyor: "
 
-#: InvenTree/forms.py:128
-msgid "Enter password"
-msgstr "Şifrenizi girin"
-
-#: InvenTree/forms.py:129
-msgid "Enter new password"
-msgstr "Lütfen Yeni Parolayı Girin"
-
-#: InvenTree/forms.py:138
-msgid "Confirm password"
-msgstr "Parolayı doğrulayın"
-
-#: InvenTree/forms.py:139
-msgid "Confirm new password"
-msgstr "Yeni parolayı doğrulayın"
-
-#: InvenTree/forms.py:143
-msgid "Old password"
-msgstr "Eski parola"
-
-#: InvenTree/forms.py:182
+#: InvenTree/forms.py:63
 msgid "Email (again)"
 msgstr "E-posta (tekrar)"
 
-#: InvenTree/forms.py:186
+#: InvenTree/forms.py:67
 msgid "Email address confirmation"
 msgstr "E-posta adresi onayı"
 
-#: InvenTree/forms.py:209
+#: InvenTree/forms.py:90
 msgid "You must type the same email each time."
 msgstr "Her seferind eaynı e-posta adresini yazmalısınız."
 
-#: InvenTree/forms.py:253 InvenTree/forms.py:261
+#: InvenTree/forms.py:134 InvenTree/forms.py:142
 msgid "The provided primary email address is not valid."
 msgstr "Sağlanan e-posta adresi geçerli değil."
 
-#: InvenTree/forms.py:268
+#: InvenTree/forms.py:149
 msgid "The provided email domain is not approved."
 msgstr "Sağlanan e-posta alanı onaylanmadı."
 
-#: InvenTree/forms.py:395
+#: InvenTree/forms.py:266
 msgid "Registration is disabled."
 msgstr "Kayıt devre dışı."
 
@@ -707,8 +687,6 @@ msgstr "Sipariş verildi"
 
 #: InvenTree/status_codes.py:14 InvenTree/status_codes.py:151
 #: InvenTree/status_codes.py:169 generic/states/tests.py:19
-#: order/templates/order/order_base.html:158
-#: order/templates/order/sales_order_base.html:161
 msgid "Complete"
 msgstr "Tamamlandı"
 
@@ -766,7 +744,7 @@ msgstr "Karantinaya alındı"
 msgid "Legacy stock tracking entry"
 msgstr "Eski stok izleme girişi"
 
-#: InvenTree/status_codes.py:93 templates/js/translated/stock.js:544
+#: InvenTree/status_codes.py:93
 msgid "Stock item created"
 msgstr "Stok kalemi oluşturuldu"
 
@@ -858,7 +836,7 @@ msgstr ""
 msgid "Returned against Return Order"
 msgstr ""
 
-#: InvenTree/status_codes.py:141 templates/js/translated/table_filters.js:375
+#: InvenTree/status_codes.py:141
 msgid "Sent to customer"
 msgstr "Müşteriye gönderildi"
 
@@ -3684,9 +3662,7 @@ msgstr ""
 #: report/templates/report/inventree_bill_of_materials_report.html:126
 #: report/templates/report/inventree_bill_of_materials_report.html:148
 #: report/templates/report/inventree_return_order_report_base.html:35
-#: stock/templates/stock/item_base.html:133 templates/503.html:31
-#: templates/hover_image.html:7 templates/hover_image.html:9
-#: templates/modals.html:6
+#: templates/503.html:31
 msgid "Image"
 msgstr "Resim"
 
@@ -3812,18 +3788,11 @@ msgstr ""
 msgid "Task keyword arguments"
 msgstr ""
 
-#: common/views.py:84 order/templates/order/order_wizard/po_upload.html:51
-#: order/templates/order/purchase_order_detail.html:24 order/views.py:118
-#: part/templates/part/import_wizard/part_upload.html:58 part/views.py:109
-#: templates/patterns/wizard/upload.html:37
+#: common/views.py:84
 msgid "Upload File"
 msgstr "Dosya Yükle"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "Alanları Eşleştir"
 
@@ -3839,14 +3808,7 @@ msgstr ""
 msgid "Parts imported"
 msgstr ""
 
-#: common/views.py:494 order/templates/order/order_wizard/match_fields.html:27
-#: order/templates/order/order_wizard/match_parts.html:19
-#: order/templates/order/order_wizard/po_upload.html:49
-#: part/templates/part/import_wizard/match_fields.html:27
-#: part/templates/part/import_wizard/match_references.html:19
-#: part/templates/part/import_wizard/part_upload.html:56
-#: templates/patterns/wizard/match_fields.html:26
-#: templates/patterns/wizard/upload.html:35
+#: common/views.py:494
 msgid "Previous Step"
 msgstr ""
 
@@ -4142,7 +4104,7 @@ msgstr ""
 #: order/templates/order/order_base.html:136 part/bom.py:272 part/bom.py:310
 #: part/serializers.py:499 plugin/builtin/suppliers/digikey.py:25
 #: plugin/builtin/suppliers/lcsc.py:26 plugin/builtin/suppliers/mouser.py:24
-#: plugin/builtin/suppliers/tme.py:26 stock/templates/stock/item_base.html:224
+#: plugin/builtin/suppliers/tme.py:26
 #: templates/email/overdue_purchase_order.html:16
 #: templates/js/translated/company.js:350
 #: templates/js/translated/company.js:511
@@ -4791,13 +4753,11 @@ msgstr "Filtreler"
 #: label/templates/label/part/part_label.html:31
 #: label/templates/label/stockitem/qr.html:21
 #: label/templates/label/stocklocation/qr.html:20
-#: templates/allauth_2fa/setup.html:18
 msgid "QR Code"
 msgstr ""
 
 #: label/templates/label/part/part_label_code128.html:31
 #: label/templates/label/stocklocation/qr_and_text.html:31
-#: templates/qr_code.html:7
 msgid "QR code"
 msgstr ""
 
@@ -4945,7 +4905,6 @@ msgstr ""
 #: order/templates/order/order_base.html:9
 #: order/templates/order/order_base.html:18
 #: report/templates/report/inventree_po_report_base.html:14
-#: stock/templates/stock/item_base.html:176
 #: templates/email/overdue_purchase_order.html:15
 #: templates/js/translated/part.js:1745 templates/js/translated/pricing.js:804
 #: templates/js/translated/purchase_order.js:168
@@ -5945,8 +5904,7 @@ msgstr "Minimum Stok"
 msgid "Used In"
 msgstr ""
 
-#: part/admin.py:150 part/templates/part/part_base.html:241 stock/admin.py:231
-#: templates/js/translated/part.js:714 templates/js/translated/part.js:2152
+#: part/admin.py:150 stock/admin.py:231
 msgid "Building"
 msgstr ""
 
@@ -5968,8 +5926,7 @@ msgstr ""
 msgid "Parent Name"
 msgstr ""
 
-#: part/admin.py:318 part/templates/part/category.html:88
-#: part/templates/part/category.html:101
+#: part/admin.py:318
 msgid "Category Path"
 msgstr ""
 
@@ -6106,6 +6063,10 @@ msgstr "Varsayılan Konum"
 #: part/bom.py:171 part/serializers.py:822
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
+msgstr ""
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
 msgstr ""
 
 #: part/forms.py:49
@@ -8370,8 +8331,6 @@ msgid "Name for the Plugin Package - can also contain a version indicator"
 msgstr ""
 
 #: plugin/serializers.py:99
-#: templates/InvenTree/settings/plugin_settings.html:42
-#: templates/js/translated/plugin.js:86
 msgid "Version"
 msgstr ""
 
@@ -8572,16 +8531,42 @@ msgstr ""
 msgid "stock location query filters (comma-separated list of key=value pairs)"
 msgstr ""
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
+msgstr ""
+
+#: report/templates/report/inventree_build_order_base.html:98
+#: report/templates/report/inventree_po_report_base.html:40
+#: report/templates/report/inventree_so_report_base.html:40
+#: report/templates/report/inventree_test_report_base.html:84
+#: report/templates/report/inventree_test_report_base.html:163
+msgid "Part image"
+msgstr ""
+
+#: report/templates/report/inventree_build_order_base.html:121
+msgid "Issued"
 msgstr ""
 
 #: report/templates/report/inventree_build_order_base.html:146
 msgid "Required For"
 msgstr "İçin Gerekli Olan"
 
+#: report/templates/report/inventree_build_order_base.html:152
+msgid "Issued By"
+msgstr "Veren"
+
 #: report/templates/report/inventree_po_report_base.html:15
 msgid "Supplier was deleted"
+msgstr ""
+
+#: report/templates/report/inventree_po_report_base.html:22
+#: report/templates/report/inventree_return_order_report_base.html:19
+#: report/templates/report/inventree_so_report_base.html:22
+msgid "Line Items"
 msgstr ""
 
 #: report/templates/report/inventree_po_report_base.html:30
@@ -8661,7 +8646,6 @@ msgid "No result"
 msgstr ""
 
 #: report/templates/report/inventree_test_report_base.html:154
-#: stock/templates/stock/stock_sidebar.html:16
 msgid "Installed Items"
 msgstr ""
 
@@ -8695,14 +8679,17 @@ msgstr ""
 msgid "Location Name"
 msgstr ""
 
-#: stock/admin.py:64 stock/templates/stock/location.html:131
-#: stock/templates/stock/location.html:137
+#: stock/admin.py:64
 msgid "Location Path"
 msgstr ""
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
 msgstr ""
+
+#: stock/admin.py:163
+msgid "Batch"
+msgstr "Toplu"
 
 #: stock/admin.py:168
 msgid "Status Code"
@@ -8879,28 +8866,28 @@ msgstr ""
 msgid "Stock item cannot be created for virtual parts"
 msgstr ""
 
-#: stock/models.py:670
+#: stock/models.py:673
 #, python-brace-format
 msgid "Part type ('{self.supplier_part.part}') must be {self.part}"
 msgstr ""
 
-#: stock/models.py:680 stock/models.py:693
+#: stock/models.py:683 stock/models.py:696
 msgid "Quantity must be 1 for item with a serial number"
 msgstr "Seri numarası olan ögenin miktarı bir olmalı"
 
-#: stock/models.py:683
+#: stock/models.py:686
 msgid "Serial number cannot be set if quantity greater than 1"
 msgstr "Miktar birden büyük ise seri numarası ayarlanamaz"
 
-#: stock/models.py:707
+#: stock/models.py:710
 msgid "Item cannot belong to itself"
 msgstr ""
 
-#: stock/models.py:712
+#: stock/models.py:715
 msgid "Item must have a build reference if is_building=True"
 msgstr ""
 
-#: stock/models.py:725
+#: stock/models.py:728
 msgid "Build reference does not point to the same part object"
 msgstr ""
 
@@ -9682,8 +9669,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr ""
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr "Giriş"
 
@@ -14226,3 +14212,521 @@ msgstr "Parçaları düzenleme izni"
 msgid "Permission to delete items"
 msgstr "Parçaları silme izni"
 
+#~ msgid "Enter password"
+#~ msgstr "Şifrenizi girin"
+
+#~ msgid "Enter new password"
+#~ msgstr "Lütfen Yeni Parolayı Girin"
+
+#~ msgid "Confirm password"
+#~ msgstr "Parolayı doğrulayın"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Yeni parolayı doğrulayın"
+
+#~ msgid "Old password"
+#~ msgstr "Eski parola"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Kullanıcı Bilgisini Düzenle"
+
+#~ msgid "Set Password"
+#~ msgstr "Şifre Belirle"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Parola alanları eşleşmelidir"
+
+#~ msgid "System Information"
+#~ msgstr "Sistem Bilgisi"
+
+#~ msgid "About InvenTree"
+#~ msgstr "InvenTree Hakkında"
+
+#~ msgid "Barcode actions"
+#~ msgstr "Barkod işlemleri"
+
+#~ msgid "Print actions"
+#~ msgstr "Yazdırma işlemleri"
+
+#~ msgid "Build actions"
+#~ msgstr "Yapım İşi işlemleri"
+
+#~ msgid "Edit Build"
+#~ msgstr "Yapım İşini Düzenle"
+
+#~ msgid "Cancel Build"
+#~ msgstr "Yapım İşini İptal Et"
+
+#~ msgid "Complete Build"
+#~ msgstr "Tamamlanmış Yapım İşi"
+
+#~ msgid "Build Order is ready to mark as completed"
+#~ msgstr "Yapım işi tamamlandı olarak işaretlenmeye hazır"
+
+#~ msgid "Build Order cannot be completed as outstanding outputs remain"
+#~ msgstr "Bekleyen çıktılar kaldığı için yapım işi emri tamamlanamıyor"
+
+#~ msgid "Required build quantity has not yet been completed"
+#~ msgstr "Gerekli yapım işi miktarı henüz tamamlanmadı"
+
+#~ msgid "Stock has not been fully allocated to this Build Order"
+#~ msgstr "Stok, yapım işi emri için tamamen tahsis edilemedi"
+
+#, python-format
+#~ msgid "This build was due on %(target)s"
+#~ msgstr "Bu yapım işinin %(target)s tarihinde süresi doluyor"
+
+#~ msgid "Overdue"
+#~ msgstr "Vadesi geçmiş"
+
+#~ msgid "Build Details"
+#~ msgstr "Yapım İşi Detayları"
+
+#~ msgid "Stock Source"
+#~ msgstr "Stok Kaynağı"
+
+#~ msgid "Stock can be taken from any available location."
+#~ msgstr "Stok herhangi bir konumdan alınabilir."
+
+#~ msgid "Destination location not specified"
+#~ msgstr "Hedef konumu belirtilmedi"
+
+#~ msgid "Created"
+#~ msgstr "Oluşturuldu"
+
+#~ msgid "No target date set"
+#~ msgstr "Hedef tarih ayarlanmadı"
+
+#~ msgid "Completed"
+#~ msgstr "Tamamlandı"
+
+#~ msgid "Build not complete"
+#~ msgstr "Yapım İşi tamamlanmadı"
+
+#~ msgid "Child Build Orders"
+#~ msgstr "Alt Yapım İşi Emrileri"
+
+#~ msgid "Allocate Stock to Build"
+#~ msgstr "Yapım İşi için Stok Tahsis Et"
+
+#~ msgid "Allocate Stock"
+#~ msgstr "Stok Tahsis Et"
+
+#~ msgid "Order required parts"
+#~ msgstr "Gerekli parçaları sipariş edin"
+
+#~ msgid "Order Parts"
+#~ msgstr "Parça Siparişi"
+
+#~ msgid "Incomplete Build Outputs"
+#~ msgstr "Tamamlanmamış Yapım İşi Çıktıları"
+
+#~ msgid "Create new build output"
+#~ msgstr "Yeni yapım işi çıktısı oluştur"
+
+#~ msgid "Completed Build Outputs"
+#~ msgstr "Tamamlanmış Yapım İşi Çıktıları"
+
+#~ msgid "Attachments"
+#~ msgstr "Ekler"
+
+#~ msgid "Build Notes"
+#~ msgstr "Yapım İşi Notları"
+
+#~ msgid "New Build Order"
+#~ msgstr "Yeni Yapım İşi Emri"
+
+#~ msgid "Incomplete Outputs"
+#~ msgstr "Tamamlanmamış Çıktılar"
+
+#~ msgid "Create Purchase Order"
+#~ msgstr "Satın Alma Emri Oluştur"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "Tedarikçi Parçaları"
+
+#~ msgid "Create new supplier part"
+#~ msgstr "Yeni tedarikçi parçası oluştur"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "Yeni Tedarikçi Parçası"
+
+#~ msgid "Supplier Stock"
+#~ msgstr "Tedarikçi Stoku"
+
+#~ msgid "Create new purchase order"
+#~ msgstr "Yeni satın alma emri oluştur"
+
+#~ msgid "New Purchase Order"
+#~ msgstr "Yeni Satın Alma Emri"
+
+#~ msgid "Create new sales order"
+#~ msgstr "Yeni satış emri oluştur"
+
+#~ msgid "New Sales Order"
+#~ msgstr "Yeni Satış Emri"
+
+#~ msgid "Assigned Stock"
+#~ msgstr "Atanan Stok"
+
+#~ msgid "Manufacturers"
+#~ msgstr "Üreticiler"
+
+#~ msgid "Order part"
+#~ msgstr "Parça siparişi"
+
+#~ msgid "Supplier Part Stock"
+#~ msgstr "Tedarikçi Parça Stoku"
+
+#~ msgid "Supplier Part Orders"
+#~ msgstr "Tedarikçi Parçası Emirleri"
+
+#~ msgid "Pricing Information"
+#~ msgstr "Fiyat Bilgisi"
+
+#~ msgid "Supplier Part Pricing"
+#~ msgstr "Tedarikçi Parçası Fiyatlandırması"
+
+#~ msgid "New Supplier"
+#~ msgstr "Yeni Tedarikçi"
+
+#~ msgid "New Manufacturer"
+#~ msgstr "Yeni Üretici"
+
+#~ msgid "Customers"
+#~ msgstr "Müşteriler"
+
+#~ msgid "New Customer"
+#~ msgstr "Yeni Müşteri"
+
+#~ msgid "Companies"
+#~ msgstr "Şirketler"
+
+#~ msgid "New Company"
+#~ msgstr "Yeni Şirket"
+
+#~ msgid "Export order to file"
+#~ msgstr "Emiri dosya çıkar"
+
+#~ msgid "Cancel order"
+#~ msgstr "Siparişi iptal et"
+
+#~ msgid "Mark order as complete"
+#~ msgstr "Siparişi tamamlandı olarak işaretle"
+
+#~ msgid "Missing selections for the following required columns"
+#~ msgstr "Aşağıdaki gerekli sütunlar için eksik seçimler"
+
+#~ msgid "File Fields"
+#~ msgstr "Dosya Alanları"
+
+#~ msgid "Select Supplier Part"
+#~ msgstr "Tedarikçi Parçası Seçin"
+
+#~ msgid "Upload File for Purchase Order"
+#~ msgstr "Sipariş Emri için Dosya Yükle"
+
+#~ msgid "Order Notes"
+#~ msgstr "Sipariş Notları"
+
+#~ msgid "Total Cost"
+#~ msgstr "Toplam Maliyet"
+
+#~ msgid "Actions"
+#~ msgstr "İşlemler"
+
+#~ msgid "Subcategories"
+#~ msgstr "Alt kategoriler"
+
+#~ msgid "Parts (Including subcategories)"
+#~ msgstr "Parçalar (Alt kategoriler dahil)"
+
+#~ msgid "Part Stock"
+#~ msgstr "Parça Stoku"
+
+#~ msgid "Refresh"
+#~ msgstr "Yenile"
+
+#~ msgid "Part Test Templates"
+#~ msgstr "Parça Test Şablonları"
+
+#~ msgid "Add Test Template"
+#~ msgstr "Test Şablonu Ekle"
+
+#~ msgid "Part Variants"
+#~ msgstr "Parça Çeşitleri"
+
+#~ msgid "Create new variant"
+#~ msgstr "Yeni çeşit oluştur"
+
+#~ msgid "New Variant"
+#~ msgstr "Yeni Çeşit"
+
+#~ msgid "Part Suppliers"
+#~ msgstr "Parça Tedarikçileri"
+
+#~ msgid "Print Label"
+#~ msgstr "Etiket Yazdır"
+
+#~ msgid "Stock actions"
+#~ msgstr "Stok işlemleri"
+
+#~ msgid "Part actions"
+#~ msgstr "Parça işlemleri"
+
+#~ msgid "Part is a template part (variants can be made from this part)"
+#~ msgstr "Bu parça bir şablon parçadır (Bu parçanın çeşitleri yapılabilir)"
+
+#~ msgid "Part stock is tracked by serial number"
+#~ msgstr "Parça stoku seri numarası ile takip edilebilir"
+
+#~ msgid "Part can be purchased from external suppliers"
+#~ msgstr "Bu parça harici tedarikçilerden satın alınabilir"
+
+#~ msgid "Inactive"
+#~ msgstr "Pasif"
+
+#~ msgid "Latest Serial Number"
+#~ msgstr "Son Seri Numarası"
+
+#~ msgid "Unit Cost"
+#~ msgstr "Birim Maliyeti"
+
+#~ msgid "Stock"
+#~ msgstr "Stok"
+
+#~ msgid "No Stock"
+#~ msgstr "Stok Yok"
+
+#~ msgid "Low Stock"
+#~ msgstr "Düşük Stok"
+
+#~ msgid "The BOM file must contain the required named columns as provided in the "
+#~ msgstr "Malzeme Listesi dosyası gerekli sütün adlarını sağlandığı şekilde içermelidir "
+
+#~ msgid "BOM Upload Template"
+#~ msgstr "Malzeme Listesi Şablonu Yükle"
+
+#~ msgid "Create new part variant"
+#~ msgstr "Yeni parça çeşidi oluştur"
+
+#~ msgid "Printing actions"
+#~ msgstr "Yazdırma işlemleri"
+
+#~ msgid "Stock adjustment actions"
+#~ msgstr "Stok ayarlama işlemleri"
+
+#~ msgid "Serialize stock"
+#~ msgstr "Stoku seri numarala"
+
+#~ msgid "Convert to variant"
+#~ msgstr "Çeşide çevir"
+
+#~ msgid "Build"
+#~ msgstr "Yapım İşi"
+
+#, python-format
+#~ msgid "This StockItem expired on %(item.expiry_date)s"
+#~ msgstr "Bu stok kaleminin süresi %(item.expiry_date)s tarihinde sona erdi"
+
+#, python-format
+#~ msgid "This StockItem expires on %(item.expiry_date)s"
+#~ msgstr "Bu stok kaleminin süresi %(item.expiry_date)s tarihinde sona erecek"
+
+#~ msgid "Warning"
+#~ msgstr "Uyarı"
+
+#~ msgid "This action cannot be easily undone"
+#~ msgstr "Bu işlem kolayca geri alınamaz"
+
+#~ msgid "Create serialized items from this stock item."
+#~ msgstr "Bu stok kalemi için seri numaralandırılmış ögeler oluştur."
+
+#~ msgid "Select quantity to serialize, and unique serial numbers."
+#~ msgstr "Seri numaralandırılacak miktarı ve benzersiz seri numaralarını seçin."
+
+#~ msgid "Location actions"
+#~ msgstr "Konum işlemleri"
+
+#~ msgid "Edit location"
+#~ msgstr "Konumu düzenle"
+
+#~ msgid "You are not in the list of owners of this location. This stock location cannot be edited."
+#~ msgstr "Bu konumun sahipleri listesinde değilsiniz. Bu stok konumu düzenlenemez."
+
+#~ msgid "Sublocations"
+#~ msgstr "Alt konumlar"
+
+#~ msgid "Create new stock location"
+#~ msgstr "Yeni stok konumu oluştur"
+
+#~ msgid "New Location"
+#~ msgstr "Yeni Konum"
+
+#~ msgid "Category Settings"
+#~ msgstr "Kategori Ayarları"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Part Parameter Templates"
+#~ msgstr "Parça Parametre Şablonu"
+
+#~ msgid "Commit Date"
+#~ msgstr "Commit Tarihi"
+
+#~ msgid "Commit Hash"
+#~ msgstr "Commit Hash Değeri"
+
+#~ msgid "Search"
+#~ msgstr "Arama"
+
+#~ msgid "Server"
+#~ msgstr "Sunucu"
+
+#~ msgid "Theme Settings"
+#~ msgstr "Tema Ayarları"
+
+#~ msgid "Set Theme"
+#~ msgstr "Tema Seç"
+
+#~ msgid "Language Settings"
+#~ msgstr "Dil Ayarları"
+
+#~ msgid "Set Language"
+#~ msgstr "Dili Ayarla"
+
+#~ msgid "Home Page Settings"
+#~ msgstr "Ana Sayfa Ayarları"
+
+#~ msgid "Search Settings"
+#~ msgstr "Arama Ayarları"
+
+#~ msgid "InvenTree Version"
+#~ msgstr "InvenTree Sürümü"
+
+#~ msgid "Up to Date"
+#~ msgstr "Güncel"
+
+#~ msgid "Update Available"
+#~ msgstr "Güncelleme Mevcut"
+
+#~ msgid "API Version"
+#~ msgstr "API Sürümü"
+
+#~ msgid "Python Version"
+#~ msgstr "Python Sürümü"
+
+#~ msgid "Django Version"
+#~ msgstr "Django Sürümü"
+
+#~ msgid "Credits"
+#~ msgstr "Katkıda Bulunanlar"
+
+#~ msgid "Mobile App"
+#~ msgstr "Mobil Uygulama"
+
+#~ msgid "Submit Bug Report"
+#~ msgstr "Hata Raporu Gönder"
+
+#~ msgid "copy to clipboard"
+#~ msgstr "panoya kopyala"
+
+#~ msgid "copy version information"
+#~ msgstr "sürüm bilgisini kopyala"
+
+#~ msgid "Confirm"
+#~ msgstr "Onay"
+
+#~ msgid "Add Attachment"
+#~ msgstr "Dosya Ekle"
+
+#~ msgid "Close"
+#~ msgstr "Kapat"
+
+#~ msgid "Buy"
+#~ msgstr "Al"
+
+#~ msgid "Sell"
+#~ msgstr "Sat"
+
+#~ msgid "Show Notifications"
+#~ msgstr "Bildirimleri Göster"
+
+#~ msgid "New Notifications"
+#~ msgstr "Yeni Bildirimler"
+
+#~ msgid "Logout"
+#~ msgstr "Çıkış"
+
+#~ msgid "Show all notifications and history"
+#~ msgstr "Tüm bildirimleri ve içeriğini göster"
+
+#~ msgid "QR data not provided"
+#~ msgstr "QR sağlanamadı"
+
+#~ msgid "You were logged out successfully."
+#~ msgstr "Başarıyla çıkış yapıldı."
+
+#~ msgid "Log in again"
+#~ msgstr "Tekrar giriş yap"
+
+#~ msgid "Show full search results"
+#~ msgstr "Arama sonuçlarının hepsini göster"
+
+#~ msgid "Clear search"
+#~ msgstr "Aramayı temizle"
+
+#~ msgid "Close search menu"
+#~ msgstr "Arama menüsünü kapat"
+
+#~ msgid "Instance Name"
+#~ msgstr "Sistem adı"
+
+#~ msgid "Database"
+#~ msgstr "Veritabanı"
+
+#~ msgid "Server is running in debug mode"
+#~ msgstr "Sunucu debug modunda çalışıyor"
+
+#~ msgid "Docker Mode"
+#~ msgstr "Docker modu"
+
+#~ msgid "Server is deployed using docker"
+#~ msgstr "Server docker ile yayınlandı"
+
+#~ msgid "Plugin Support"
+#~ msgstr "Eklenti Desteği"
+
+#~ msgid "Plugin support enabled"
+#~ msgstr "Eklenti desteği etkin"
+
+#~ msgid "Plugin support disabled"
+#~ msgstr "Eklenti desteği devre dışı"
+
+#~ msgid "Server status"
+#~ msgstr "Sunucu Durumu"
+
+#~ msgid "Healthy"
+#~ msgstr "Sağlıklı"
+
+#~ msgid "Issues detected"
+#~ msgstr "Sorun algılandı"
+
+#~ msgid "Background Worker"
+#~ msgstr "Arkaplan işi"
+
+#~ msgid "Background worker not running"
+#~ msgstr "Arkaplan işleri çalışmıyor"
+
+#~ msgid "Email Settings"
+#~ msgstr "E-posta Ayarları"
+
+#~ msgid "Email settings not configured"
+#~ msgstr "E-posta ayarları yapılandırılmadı"
+
+#~ msgid "Yes"
+#~ msgstr "Evet"
+
+#~ msgid "No"
+#~ msgstr "Hayır"

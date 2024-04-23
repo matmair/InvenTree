@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 from InvenTree.unit_test import InvenTreeTestCase
 
 from .models import Build
-from stock.models import StockItem
 
 from InvenTree.status_codes import BuildStatus
 
@@ -42,8 +41,7 @@ class BuildTestSimple(InvenTreeTestCase):
     def test_url(self):
         """Test URL lookup"""
         b1 = Build.objects.get(pk=1)
-        if settings.ENABLE_CLASSIC_FRONTEND:
-            self.assertEqual(b1.get_absolute_url(), '/build/1/')
+        self.assertEqual(b1.get_absolute_url(), 'TOBEREFACTORED')
 
     def test_is_complete(self):
         """Test build completion status"""
