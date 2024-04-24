@@ -28,6 +28,14 @@ export const ManufacturerDetail = Loadable(
   lazy(() => import('./pages/company/ManufacturerDetail'))
 );
 
+export const SupplierPartDetail = Loadable(
+  lazy(() => import('./pages/company/SupplierPartDetail'))
+);
+
+export const ManufacturerPartDetail = Loadable(
+  lazy(() => import('./pages/company/ManufacturerPartDetail'))
+);
+
 export const CategoryDetail = Loadable(
   lazy(() => import('./pages/part/CategoryDetail'))
 );
@@ -95,6 +103,7 @@ export const AdminCenter = Loadable(
 
 export const NotFound = Loadable(lazy(() => import('./pages/NotFound')));
 export const Login = Loadable(lazy(() => import('./pages/Auth/Login')));
+export const Logout = Loadable(lazy(() => import('./pages/Auth/Logout')));
 export const Logged_In = Loadable(lazy(() => import('./pages/Auth/Logged-In')));
 export const Reset = Loadable(lazy(() => import('./pages/Auth/Reset')));
 export const Set_Password = Loadable(
@@ -119,12 +128,12 @@ export const routes = (
         <Route path="user/*" element={<UserSettings />} />
       </Route>
       <Route path="part/">
-        <Route index element={<Navigate to="category/" />} />
+        <Route index element={<Navigate to="category/index/" />} />
         <Route path="category/:id?/*" element={<CategoryDetail />} />
         <Route path=":id/*" element={<PartDetail />} />
       </Route>
       <Route path="stock/">
-        <Route index element={<Navigate to="location/" />} />
+        <Route index element={<Navigate to="location/index/" />} />
         <Route path="location/:id?/*" element={<LocationDetail />} />
         <Route path="item/:id/*" element={<StockDetail />} />
       </Route>
@@ -137,7 +146,12 @@ export const routes = (
         <Route path="index/*" element={<PurchasingIndex />} />
         <Route path="purchase-order/:id/*" element={<PurchaseOrderDetail />} />
         <Route path="supplier/:id/*" element={<SupplierDetail />} />
+        <Route path="supplier-part/:id/*" element={<SupplierPartDetail />} />
         <Route path="manufacturer/:id/*" element={<ManufacturerDetail />} />
+        <Route
+          path="manufacturer-part/:id/*"
+          element={<ManufacturerPartDetail />}
+        />
       </Route>
       <Route path="company/:id/*" element={<CompanyDetail />} />
       <Route path="sales/">
@@ -150,6 +164,7 @@ export const routes = (
     </Route>
     <Route path="/" errorElement={<ErrorPage />}>
       <Route path="/login" element={<Login />} />,
+      <Route path="/logout" element={<Logout />} />,
       <Route path="/logged-in" element={<Logged_In />} />
       <Route path="/reset-password" element={<Reset />} />
       <Route path="/set-password" element={<Set_Password />} />

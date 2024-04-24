@@ -186,7 +186,7 @@ margin-top: 4cm;
 {% endblock %}
 
 {% block bottom_left %}
-content: "v{{report_revision}} - {{ date.isoformat }}";
+content: "v{{report_revision}} - {% format_date date %}";
 {% endblock %}
 
 {% block header_content %}
@@ -230,13 +230,13 @@ content: "v{{report_revision}} - {{ date.isoformat }}";
             </tr>
             <tr>
                 <th>{% trans "Issued" %}</th>
-                <td>{% render_date build.creation_date %}</td>
+                <td>{% format_date build.creation_date %}</td>
             </tr>
             <tr>
                 <th>{% trans "Target Date" %}</th>
                 <td>
                     {% if build.target_date %}
-                    {% render_date build.target_date %}
+                    {% format_date build.target_date %}
                     {% else %}
                     <em>Not specified</em>
                     {% endif %}
@@ -321,4 +321,4 @@ This will result a report page like this:
 
 A default *Build Report* template is provided out of the box, which is useful for generating simple test reports. Furthermore, it may be used as a starting point for developing custom BOM reports:
 
-View the [source code](https://github.com/inventree/InvenTree/blob/master/InvenTree/report/templates/report/inventree_build_order_base.html) for the default build report template.
+View the [source code](https://github.com/inventree/InvenTree/blob/master/src/backend/InvenTree/report/templates/report/inventree_build_order_base.html) for the default build report template.

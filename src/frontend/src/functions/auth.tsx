@@ -1,74 +1,89 @@
 import { t } from '@lingui/macro';
-import { notifications, showNotification } from '@mantine/notifications';
-import { IconCheck } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 import axios from 'axios';
 
-import { api } from '../App';
-import { ApiPaths } from '../enums/ApiEndpoints';
-import { apiUrl, useServerApiState } from '../states/ApiState';
+import { api, setApiDefaults } from '../App';
+import { ApiEndpoints } from '../enums/ApiEndpoints';
+import { apiUrl } from '../states/ApiState';
 import { useLocalState } from '../states/LocalState';
-import { useSessionState } from '../states/SessionState';
-import {
-  useGlobalSettingsState,
-  useUserSettingsState
-} from '../states/SettingsState';
-import { useUserState } from '../states/UserState';
+import { fetchGlobalStates } from '../states/states';
+import { showLoginNotification } from './notifications';
 
-export const doClassicLogin = async (username: string, password: string) => {
+/**
+ * Attempt to login using username:password combination.
+ * If login is successful, an API token will be returned.
+ * This API token is used for any future API requests.
+ */
+export const doBasicLogin = async (username: string, password: string) => {
   const { host } = useLocalState.getState();
+  // const apiState = useServerApiState.getState();
 
-  // Get token from server
-  const token = await axios
-    .get(apiUrl(ApiPaths.user_token), {
-      auth: { username, password },
-      baseURL: host,
-      timeout: 2000,
-      params: {
-        name: 'inventree-web-app'
+  if (username.length == 0 || password.length == 0) {
+    return;
+  }
+
+  clearCsrfCookie();
+
+  const login_url = apiUrl(ApiEndpoints.user_login);
+
+  // Attempt login with
+  await api
+    .post(
+      login_url,
+      {
+        username: username,
+        password: password
+      },
+      {
+        baseURL: host
+      }
+    )
+    .then((response) => {
+      switch (response.status) {
+        case 200:
+          fetchGlobalStates();
+          break;
+        default:
+          clearCsrfCookie();
+          break;
       }
     })
-    .then((response) => response.data.token)
-    .catch((error) => {
-      showNotification({
-        title: t`Login failed`,
-        message: t`Error fetching token from server.`,
-        color: 'red'
-      });
-      return false;
+    .catch(() => {
+      clearCsrfCookie();
     });
-
-  if (token === false) return token;
-
-  // log in with token
-  doTokenLogin(token);
-  return true;
 };
 
 /**
- * Logout the user (invalidate auth token)
+ * Logout the user from the current session
+ *
+ * @arg deleteToken: If true, delete the token from the server
  */
-export const doClassicLogout = async () => {
-  // TODO @matmair - logout from the server session
-  // Set token in context
-  const { setToken } = useSessionState.getState();
-  setToken(undefined);
+export const doLogout = async (navigate: any) => {
+  // Logout from the server session
+  await api.post(apiUrl(ApiEndpoints.user_logout)).finally(() => {
+    clearCsrfCookie();
+    navigate('/login');
 
-  notifications.show({
-    title: t`Logout successful`,
-    message: t`See you soon.`,
-    color: 'green',
-    icon: <IconCheck size="1rem" />
+    showLoginNotification({
+      title: t`Logged Out`,
+      message: t`Successfully logged out`
+    });
   });
-
-  return true;
 };
 
 export const doSimpleLogin = async (email: string) => {
   const { host } = useLocalState.getState();
   const mail = await axios
-    .post(apiUrl(ApiPaths.user_simple_login), {
-      email: email
-    })
+    .post(
+      apiUrl(ApiEndpoints.user_simple_login),
+      {
+        email: email
+      },
+      {
+        baseURL: host,
+        timeout: 2000
+      }
+    )
     .then((response) => response.data)
     .catch((_error) => {
       return false;
@@ -76,24 +91,9 @@ export const doSimpleLogin = async (email: string) => {
   return mail;
 };
 
-// Perform a login using a token
-export const doTokenLogin = (token: string) => {
-  const { setToken } = useSessionState.getState();
-  const { fetchUserState } = useUserState.getState();
-  const { fetchServerApiState } = useServerApiState.getState();
-  const globalSettingsState = useGlobalSettingsState.getState();
-  const userSettingsState = useUserSettingsState.getState();
-
-  setToken(token);
-  fetchUserState();
-  fetchServerApiState();
-  globalSettingsState.fetchSettings();
-  userSettingsState.fetchSettings();
-};
-
 export function handleReset(navigate: any, values: { email: string }) {
   api
-    .post(apiUrl(ApiPaths.user_reset), values, {
+    .post(apiUrl(ApiEndpoints.user_reset), values, {
       headers: { Authorization: '' }
     })
     .then((val) => {
@@ -116,32 +116,79 @@ export function handleReset(navigate: any, values: { email: string }) {
 }
 
 /**
- * Check login state, and redirect the user as required
+ * Check login state, and redirect the user as required.
+ *
+ * The user may be logged in via the following methods:
+ * - An existing API token is stored in the session
+ * - An existing CSRF cookie is stored in the browser
  */
-export function checkLoginState(navigate: any, redirect?: string) {
-  api
-    .get(apiUrl(ApiPaths.user_token), {
-      timeout: 2000,
-      params: {
-        name: 'inventree-web-app'
-      }
-    })
-    .then((val) => {
-      if (val.status === 200 && val.data.token) {
-        doTokenLogin(val.data.token);
+export function checkLoginState(
+  navigate: any,
+  redirect?: string,
+  no_redirect?: boolean
+) {
+  setApiDefaults();
 
-        notifications.show({
-          title: t`Already logged in`,
-          message: t`Found an existing login - using it to log you in.`,
-          color: 'green',
-          icon: <IconCheck size="1rem" />
-        });
-        navigate(redirect ?? '/home');
-      } else {
-        navigate('/login');
-      }
-    })
-    .catch(() => {
-      navigate('/login');
+  if (redirect == '/') {
+    redirect = '/home';
+  }
+
+  // Callback function when login is successful
+  const loginSuccess = () => {
+    showLoginNotification({
+      title: t`Logged In`,
+      message: t`Successfully logged in`
     });
+
+    navigate(redirect ?? '/home');
+  };
+
+  // Callback function when login fails
+  const loginFailure = () => {
+    if (!no_redirect) {
+      navigate('/login', { state: { redirectFrom: redirect } });
+    }
+  };
+
+  // Check the 'user_me' endpoint to see if the user is logged in
+  if (isLoggedIn()) {
+    api
+      .get(apiUrl(ApiEndpoints.user_me))
+      .then((response) => {
+        if (response.status == 200) {
+          loginSuccess();
+        } else {
+          loginFailure();
+        }
+      })
+      .catch(() => {
+        loginFailure();
+      });
+  } else {
+    loginFailure();
+  }
+}
+
+/*
+ * Return the value of the CSRF cookie, if available
+ */
+export function getCsrfCookie() {
+  const cookieValue = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+
+  return cookieValue;
+}
+
+export function isLoggedIn() {
+  return !!getCsrfCookie();
+}
+
+/*
+ * Clear out the CSRF and session cookies (force session logout)
+ */
+export function clearCsrfCookie() {
+  document.cookie =
+    'csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 }

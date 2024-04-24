@@ -28,8 +28,6 @@ InvenTree relies on the following Python libraries:
 | [rapidfuzz](https://pypi.org/project/rapidfuzz/) | MIT | Fuzzy string matching |
 | [django-stdimage](https://pypi.org/project/django-stdimage/) | MIT | Advanced image fields for django |
 | [django-weasyprint](https://pypi.org/project/django-weasyprint/) | Apache 2.0 | PDF generation |
-| [django-debug-toolbar](https://pypi.org/project/django-debug-toolbar/) | BSD | Debug interface |
-| [django-admin-shell](https://pypi.org/project/django-admin-shell/) | MIT | Command line shell for the admin interface |
 | [django-money](https://pypi.org/project/django-money/) | BSD | Currency support |
 | [certifi](https://pypi.org/project/certifi/) | MPL 2.0 | Web certification |
 | [django-error-report](https://pypi.org/project/django-error-report/) | BSD | Error / excepttion management |
@@ -41,7 +39,6 @@ InvenTree relies on the following Python libraries:
 | [flake8](https://pypi.org/project/flake8/) | MIT | style checking |
 | [pep8-naming](https://pypi.org/project/pep8-naming/) | Expat | name checking |
 | [coverage](https://pypi.org/project/coverage/) | Apache-2.0 | coverage checking |
-| [coveralls](https://pypi.org/project/coveralls/) | MIT | coverage uploader |
 | [django-formtools](https://pypi.org/project/django-formtools/) | MIT | better forms / wizards |
 | [django-allauth](https://pypi.org/project/django-allauth/) | MIT | SSO for django |
 | [pint](https://pint.readthedocs.io/en/stable/) | [licence](https://github.com/hgrecco/pint/blob/master/LICENSE) | Physical unit conversion |

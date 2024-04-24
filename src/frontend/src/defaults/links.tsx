@@ -2,6 +2,7 @@ import { Trans } from '@lingui/macro';
 import { openContextModal } from '@mantine/modals';
 
 import { DocumentationLinkItem } from '../components/items/DocumentationLinks';
+import { StylishText } from '../components/items/StylishText';
 import { IS_DEV_OR_DEMO } from '../main';
 
 export const footerLinks = [
@@ -70,25 +71,45 @@ export const navDocLinks: DocumentationLinkItem[] = [
   }
 ];
 
-function serverInfo() {
+export function serverInfo() {
   return openContextModal({
     modal: 'info',
-    title: <Trans>System Information</Trans>,
+    title: (
+      <StylishText size="xl">
+        <Trans>System Information</Trans>
+      </StylishText>
+    ),
     size: 'xl',
     innerProps: {}
   });
 }
 
-function aboutInvenTree() {
+export function aboutInvenTree() {
   return openContextModal({
     modal: 'about',
-    title: <Trans>About InvenTree</Trans>,
+    title: (
+      <StylishText size="xl">
+        <Trans>About InvenTree</Trans>
+      </StylishText>
+    ),
     size: 'xl',
     innerProps: {}
   });
 }
 
-// TODO @matmair: Add the following pages and adjust the links
+export function licenseInfo() {
+  return openContextModal({
+    modal: 'license',
+    title: (
+      <StylishText size="xl">
+        <Trans>License Information</Trans>
+      </StylishText>
+    ),
+    size: 'xl',
+    innerProps: {}
+  });
+}
+
 export const aboutLinks: DocumentationLinkItem[] = [
   {
     id: 'instance',
@@ -105,8 +126,7 @@ export const aboutLinks: DocumentationLinkItem[] = [
   {
     id: 'licenses',
     title: <Trans>Licenses</Trans>,
-    description: <Trans>Licenses for packages used by InvenTree</Trans>,
-    link: '/licenses',
-    placeholder: true
+    description: <Trans>Licenses for dependencies of the service</Trans>,
+    action: licenseInfo
   }
 ];

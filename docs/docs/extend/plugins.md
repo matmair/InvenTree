@@ -9,8 +9,8 @@ The InvenTree server code supports an extensible plugin architecture, allowing c
 Plugins can be added from multiple sources:
 
 - Plugins can be installed in InvenTrees venv via PIP (python package manager)
-- Custom plugins should be placed in the directory `./InvenTree/plugins`.
-- InvenTree built-in plugins are located in the directory `./InvenTree/plugin/builtin`.
+- Custom plugins should be placed in the directory `./src/backend/InvenTree/plugins`.
+- InvenTree built-in plugins are located in the directory `./src/backend/InvenTree/plugin/builtin`.
 
 For further information, read more about [installing plugins](./plugins/install.md).
 
@@ -28,7 +28,7 @@ Please read all release notes and watch out for warnings - we generally provide 
 
 #### Plugins
 
-General classes and mechanisms are provided under the `plugin` [namespaces](https://github.com/inventree/InvenTree/blob/master/InvenTree/plugin/__init__.py). These include:
+General classes and mechanisms are provided under the `plugin` [namespaces](https://github.com/inventree/InvenTree/blob/master/src/backend/InvenTree/plugin/__init__.py). These include:
 
 ```python
 # Management objects
@@ -44,7 +44,7 @@ MixinNotImplementedError    # Is raised if a mixin was not implemented (core mec
 
 #### Mixins
 
-Mixins are split up internally to keep the source tree clean and enable better testing separation. All public APIs that should be used are exposed under `plugin.mixins`. These include all built-in mixins and notification methods. An up-to-date reference can be found in the source code (current master can be [found here](https://github.com/inventree/InvenTree/blob/master/InvenTree/plugin/mixins/__init__.py)).
+Mixins are split up internally to keep the source tree clean and enable better testing separation. All public APIs that should be used are exposed under `plugin.mixins`. These include all built-in mixins and notification methods. An up-to-date reference can be found in the source code (current master can be [found here](https://github.com/inventree/InvenTree/blob/master/src/backend/InvenTree/plugin/mixins/__init__.py)).
 
 #### Models and other internal InvenTree APIs
 
@@ -72,7 +72,7 @@ MIN_VERSION = None  # Lowest InvenTree version number that is supported by the p
 MAX_VERSION = None  # Highest InvenTree version number that is supported by the plugin
 ```
 
-Refer to the [sample plugins](https://github.com/inventree/InvenTree/tree/master/InvenTree/plugin/samples) for further examples.
+Refer to the [sample plugins](https://github.com/inventree/InvenTree/tree/master/src/backend/InvenTree/plugin/samples) for further examples.
 
 ### Plugin Config
 
@@ -85,7 +85,7 @@ The configuration entries must be enabled via the [InvenTree admin interface](..
 
 ### Plugin Mixins
 
-Common use cases are covered by pre-supplied modules in the form of *mixins* (similar to how [Django](https://docs.djangoproject.com/en/stable/topics/class-based-views/mixins/) does it). Each mixin enables the integration into a specific area of InvenTree. Sometimes it also enhances the plugin with helper functions to supply often used functions out-of-the-box.
+Common use cases are covered by pre-supplied modules in the form of *mixins* (similar to how [Django]({% include "django.html" %}/topics/class-based-views/mixins/) does it). Each mixin enables the integration into a specific area of InvenTree. Sometimes it also enhances the plugin with helper functions to supply often used functions out-of-the-box.
 
 Supported mixin classes are:
 

@@ -2,15 +2,17 @@ import { ActionIcon, Container, Group, Indicator, Tabs } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconBell, IconSearch } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useMatch, useNavigate, useParams } from 'react-router-dom';
 
 import { api } from '../../App';
 import { navTabs as mainNavTabs } from '../../defaults/links';
-import { ApiPaths } from '../../enums/ApiEndpoints';
+import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { InvenTreeStyle } from '../../globalStyle';
 import { apiUrl } from '../../states/ApiState';
-import { ScanButton } from '../items/ScanButton';
+import { useLocalState } from '../../states/LocalState';
+import { ScanButton } from '../buttons/ScanButton';
+import { SpotlightButton } from '../buttons/SpotlightButton';
 import { MainMenu } from './MainMenu';
 import { NavHoverMenu } from './NavHoverMenu';
 import { NavigationDrawer } from './NavigationDrawer';
@@ -19,8 +21,12 @@ import { SearchDrawer } from './SearchDrawer';
 
 export function Header() {
   const { classes } = InvenTreeStyle();
+  const [setNavigationOpen, navigationOpen] = useLocalState((state) => [
+    state.setNavigationOpen,
+    state.navigationOpen
+  ]);
   const [navDrawerOpened, { open: openNavDrawer, close: closeNavDrawer }] =
-    useDisclosure(false);
+    useDisclosure(navigationOpen);
   const [
     searchDrawerOpened,
     { open: openSearchDrawer, close: closeSearchDrawer }
@@ -37,25 +43,39 @@ export function Header() {
   const notifications = useQuery({
     queryKey: ['notification-count'],
     queryFn: async () => {
-      return api
-        .get(apiUrl(ApiPaths.notifications_list), {
+      try {
+        const params = {
           params: {
             read: false,
             limit: 1
           }
-        })
-        .then((response) => {
-          setNotificationCount(response.data.count);
-          return response.data;
-        })
-        .catch((error) => {
-          return error;
-        });
+        };
+        let response = await api.get(
+          apiUrl(ApiEndpoints.notifications_list),
+          params
+        );
+        setNotificationCount(response.data.count);
+        return response.data;
+      } catch (error) {
+        return error;
+      }
     },
     refetchInterval: 30000,
     refetchOnMount: true,
     refetchOnWindowFocus: false
   });
+
+  // Sync Navigation Drawer state with zustand
+  useEffect(() => {
+    if (navigationOpen === navDrawerOpened) return;
+    setNavigationOpen(navDrawerOpened);
+  }, [navDrawerOpened]);
+
+  useEffect(() => {
+    if (navigationOpen === navDrawerOpened) return;
+    if (navigationOpen) openNavDrawer();
+    else closeNavDrawer();
+  }, [navigationOpen]);
 
   return (
     <div className={classes.layoutHeader}>
@@ -78,6 +98,7 @@ export function Header() {
             <ActionIcon onClick={openSearchDrawer}>
               <IconSearch />
             </ActionIcon>
+            <SpotlightButton />
             <ScanButton />
             <ActionIcon onClick={openNotificationDrawer}>
               <Indicator
@@ -100,8 +121,9 @@ export function Header() {
 
 function NavTabs() {
   const { classes } = InvenTreeStyle();
-  const { tabValue } = useParams();
   const navigate = useNavigate();
+  const match = useMatch(':tabName/*');
+  const tabValue = match?.params.tabName;
 
   return (
     <Tabs

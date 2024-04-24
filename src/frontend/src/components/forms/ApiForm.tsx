@@ -2,25 +2,26 @@ import { t } from '@lingui/macro';
 import {
   Alert,
   DefaultMantineColor,
-  Divider,
   LoadingOverlay,
+  Paper,
   Text
 } from '@mantine/core';
-import { Button, Group, Stack } from '@mantine/core';
+import { Button, Divider, Group, Stack } from '@mantine/core';
 import { useId } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { useQuery } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import {
   FieldValues,
+  FormProvider,
   SubmitErrorHandler,
   SubmitHandler,
   useForm
 } from 'react-hook-form';
 
 import { api, queryClient } from '../../App';
-import { ApiPaths } from '../../enums/ApiEndpoints';
+import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import {
   NestedDict,
   constructField,
@@ -60,11 +61,13 @@ export interface ApiFormAction {
  * @param onFormError : A callback function to call when the form is submitted with errors.
  */
 export interface ApiFormProps {
-  url: ApiPaths | string;
+  url: ApiEndpoints | string;
   pk?: number | string | undefined;
   pathParams?: PathParams;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   fields?: ApiFormFieldSet;
+  focus?: string;
+  initialData?: FieldValues;
   submitText?: string;
   submitColor?: string;
   fetchInitialData?: boolean;
@@ -77,6 +80,7 @@ export interface ApiFormProps {
   onFormSuccess?: (data: any) => void;
   onFormError?: () => void;
   actions?: ApiFormAction[];
+  timeout?: number;
 }
 
 export function OptionsApiForm({
@@ -101,8 +105,10 @@ export function OptionsApiForm({
     [props.url, props.pk, props.pathParams]
   );
 
-  const { data } = useQuery({
+  const optionsQuery = useQuery({
     enabled: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryKey: [
       'form-options-data',
       id,
@@ -111,16 +117,14 @@ export function OptionsApiForm({
       props.pk,
       props.pathParams
     ],
-    queryFn: () =>
-      api.options(url).then((res) => {
-        let fields: Record<string, ApiFormFieldType> | null = {};
-
-        if (!props.ignorePermissionCheck) {
-          fields = extractAvailableFields(res, props.method);
-        }
-
-        return fields;
-      }),
+    queryFn: async () => {
+      let response = await api.options(url);
+      let fields: Record<string, ApiFormFieldType> | null = {};
+      if (!props.ignorePermissionCheck) {
+        fields = extractAvailableFields(response, props.method);
+      }
+      return fields;
+    },
     throwOnError: (error: any) => {
       if (error.response) {
         invalidResponse(error.response.status);
@@ -131,7 +135,6 @@ export function OptionsApiForm({
           color: 'red'
         });
       }
-
       return false;
     }
   });
@@ -144,32 +147,64 @@ export function OptionsApiForm({
     for (const [k, v] of Object.entries(_props.fields)) {
       _props.fields[k] = constructField({
         field: v,
-        definition: data?.[k]
+        definition: optionsQuery?.data?.[k]
       });
+
+      // If the user has specified initial data, use that value here
+      let value = _props?.initialData?.[k];
+
+      if (value) {
+        _props.fields[k].value = value;
+      }
     }
 
     return _props;
-  }, [data, props]);
+  }, [optionsQuery.data, props]);
 
-  if (!data) {
-    return <LoadingOverlay visible={true} />;
-  }
-
-  return <ApiForm id={id} props={formProps} />;
+  return (
+    <ApiForm
+      id={id}
+      props={formProps}
+      optionsLoading={optionsQuery.isFetching}
+    />
+  );
 }
 
 /**
  * An ApiForm component is a modal form which is rendered dynamically,
  * based on an API endpoint.
  */
-export function ApiForm({ id, props }: { id: string; props: ApiFormProps }) {
-  const defaultValues: FieldValues = useMemo(
-    () =>
-      mapFields(props.fields ?? {}, (_path, field) => {
-        return field.default ?? undefined;
-      }),
-    [props.fields]
-  );
+export function ApiForm({
+  id,
+  props,
+  optionsLoading
+}: {
+  id: string;
+  props: ApiFormProps;
+  optionsLoading: boolean;
+}) {
+  const fields: ApiFormFieldSet = useMemo(() => {
+    return props.fields ?? {};
+  }, [props.fields]);
+
+  const defaultValues: FieldValues = useMemo(() => {
+    let defaultValuesMap = mapFields(fields ?? {}, (_path, field) => {
+      return field.value ?? field.default ?? undefined;
+    });
+
+    // If the user has specified initial data, that overrides default values
+    // But, *only* for the fields we have specified
+    if (props.initialData) {
+      Object.keys(props.initialData).map((key) => {
+        if (key in defaultValuesMap) {
+          defaultValuesMap[key] =
+            props?.initialData?.[key] ?? defaultValuesMap[key];
+        }
+      });
+    }
+
+    return defaultValuesMap;
+  }, [props.fields, props.initialData]);
 
   // Form errors which are not associated with a specific field
   const [nonFieldErrors, setNonFieldErrors] = useState<string[]>([]);
@@ -179,6 +214,7 @@ export function ApiForm({ id, props }: { id: string; props: ApiFormProps }) {
     criteriaMode: 'all',
     defaultValues
   });
+
   const {
     isValid,
     isDirty,
@@ -204,41 +240,55 @@ export function ApiForm({ id, props }: { id: string; props: ApiFormProps }) {
       props.pathParams
     ],
     queryFn: async () => {
-      return api
-        .get(url)
-        .then((response) => {
-          const processFields = (fields: ApiFormFieldSet, data: NestedDict) => {
-            const res: NestedDict = {};
+      try {
+        // Await API call
+        let response = await api.get(url);
 
-            for (const [k, field] of Object.entries(fields)) {
-              const dataValue = data[k];
+        // Define function to process API response
+        const processFields = (fields: ApiFormFieldSet, data: NestedDict) => {
+          const res: NestedDict = {};
 
-              if (
-                field.field_type === 'nested object' &&
-                field.children &&
-                typeof dataValue === 'object'
-              ) {
-                res[k] = processFields(field.children, dataValue);
-              } else {
-                res[k] = dataValue;
-              }
+          // TODO: replace with .map()
+          for (const [k, field] of Object.entries(fields)) {
+            const dataValue = data[k];
+
+            if (
+              field.field_type === 'nested object' &&
+              field.children &&
+              typeof dataValue === 'object'
+            ) {
+              res[k] = processFields(field.children, dataValue);
+            } else {
+              res[k] = dataValue;
             }
+          }
 
-            return res;
-          };
-          const initialData: any = processFields(
-            props.fields ?? {},
-            response.data
-          );
+          return res;
+        };
 
-          // Update form values, but only for the fields specified for this form
-          form.reset(initialData);
+        // Process API response
+        const initialData: any = processFields(fields, response.data);
 
-          return response;
-        })
-        .catch((error) => {
-          console.error('Error fetching initial data:', error);
+        // Update form values, but only for the fields specified for this form
+        form.reset(initialData);
+
+        // Update the field references, too
+        Object.keys(fields).forEach((fieldName) => {
+          if (fieldName in initialData) {
+            let field = fields[fieldName] ?? {};
+            fields[fieldName] = {
+              ...field,
+              value: initialData[fieldName]
+            };
+          }
         });
+
+        return response;
+      } catch (error) {
+        console.error('Error fetching initial data:', error);
+        // Re-throw error to allow react-query to handle error
+        throw error;
+      }
     }
   });
 
@@ -258,7 +308,48 @@ export function ApiForm({ id, props }: { id: string; props: ApiFormProps }) {
       });
       initialDataQuery.refetch();
     }
-  }, []);
+  }, [props.fetchInitialData]);
+
+  const isLoading = useMemo(
+    () =>
+      isFormLoading ||
+      initialDataQuery.isFetching ||
+      optionsLoading ||
+      isSubmitting ||
+      !fields,
+    [
+      isFormLoading,
+      initialDataQuery.isFetching,
+      isSubmitting,
+      fields,
+      optionsLoading
+    ]
+  );
+
+  const [initialFocus, setInitialFocus] = useState<string>('');
+
+  // Update field focus when the form is loaded
+  useEffect(() => {
+    let focusField = props.focus ?? '';
+
+    if (!focusField) {
+      // If a focus field is not specified, then focus on the first available field
+      Object.entries(fields).forEach(([fieldName, field]) => {
+        if (focusField || field.read_only || field.disabled || field.hidden) {
+          return;
+        }
+
+        focusField = fieldName;
+      });
+    }
+
+    if (isLoading || initialFocus == focusField) {
+      return;
+    }
+
+    form.setFocus(focusField);
+    setInitialFocus(focusField);
+  }, [props.focus, fields, form.setFocus, isLoading, initialFocus]);
 
   const submitForm: SubmitHandler<FieldValues> = async (data) => {
     setNonFieldErrors([]);
@@ -266,7 +357,7 @@ export function ApiForm({ id, props }: { id: string; props: ApiFormProps }) {
     let method = props.method?.toLowerCase() ?? 'get';
 
     let hasFiles = false;
-    mapFields(props.fields ?? {}, (_path, field) => {
+    mapFields(fields, (_path, field) => {
       if (field.field_type === 'file upload') {
         hasFiles = true;
       }
@@ -276,6 +367,7 @@ export function ApiForm({ id, props }: { id: string; props: ApiFormProps }) {
       method: method,
       url: url,
       data: data,
+      timeout: props.timeout,
       headers: {
         'Content-Type': hasFiles ? 'multipart/form-data' : 'application/json'
       }
@@ -319,13 +411,15 @@ export function ApiForm({ id, props }: { id: string; props: ApiFormProps }) {
           switch (error.response.status) {
             case 400:
               // Data validation errors
-              const nonFieldErrors: string[] = [];
+              const _nonFieldErrors: string[] = [];
               const processErrors = (errors: any, _path?: string) => {
                 for (const [k, v] of Object.entries(errors)) {
                   const path = _path ? `${_path}.${k}` : k;
 
-                  if (k === 'non_field_errors') {
-                    nonFieldErrors.push((v as string[]).join(', '));
+                  if (k === 'non_field_errors' || k === '__all__') {
+                    if (Array.isArray(v)) {
+                      _nonFieldErrors.push(...v);
+                    }
                     continue;
                   }
 
@@ -338,7 +432,7 @@ export function ApiForm({ id, props }: { id: string; props: ApiFormProps }) {
               };
 
               processErrors(error.response.data);
-              setNonFieldErrors(nonFieldErrors);
+              setNonFieldErrors(_nonFieldErrors);
               break;
             default:
               // Unexpected state on form error
@@ -355,76 +449,87 @@ export function ApiForm({ id, props }: { id: string; props: ApiFormProps }) {
       });
   };
 
-  const isLoading = useMemo(
-    () => isFormLoading || initialDataQuery.isFetching || isSubmitting,
-    [isFormLoading, initialDataQuery.isFetching, isSubmitting]
-  );
-
   const onFormError = useCallback<SubmitErrorHandler<FieldValues>>(() => {
     props.onFormError?.();
   }, [props.onFormError]);
 
   return (
     <Stack>
-      <Stack spacing="sm">
-        <LoadingOverlay visible={isLoading} />
-        {(!isValid || nonFieldErrors.length > 0) && (
-          <Alert radius="sm" color="red" title={t`Form Errors Exist`}>
-            {nonFieldErrors.length > 0 && (
-              <Stack spacing="xs">
-                {nonFieldErrors.map((message) => (
-                  <Text key={message}>{message}</Text>
-                ))}
-              </Stack>
+      {/* Show loading overlay while fetching fields */}
+      {/* zIndex used to force overlay on top of modal header bar */}
+      <LoadingOverlay visible={isLoading} zIndex={1010} />
+
+      {/* Attempt at making fixed footer with scroll area */}
+      <Paper mah={'65vh'} style={{ overflowY: 'auto' }}>
+        <div>
+          {/* Form Fields */}
+          <Stack spacing="sm">
+            {(!isValid || nonFieldErrors.length > 0) && (
+              <Alert radius="sm" color="red" title={t`Form Errors Exist`}>
+                {nonFieldErrors.length > 0 && (
+                  <Stack spacing="xs">
+                    {nonFieldErrors.map((message) => (
+                      <Text key={message}>{message}</Text>
+                    ))}
+                  </Stack>
+                )}
+              </Alert>
             )}
-          </Alert>
-        )}
-        {props.preFormContent}
-        {props.preFormSuccess && (
-          <Alert color="green" radius="sm">
-            {props.preFormSuccess}
-          </Alert>
-        )}
-        {props.preFormWarning && (
-          <Alert color="orange" radius="sm">
-            {props.preFormWarning}
-          </Alert>
-        )}
-        <Stack spacing="xs">
-          {Object.entries(props.fields ?? {}).map(([fieldName, field]) => (
-            <ApiFormField
-              key={fieldName}
-              fieldName={fieldName}
-              definition={field}
-              control={form.control}
-            />
-          ))}
-        </Stack>
-        {props.postFormContent}
-      </Stack>
+            {props.preFormContent}
+            {props.preFormSuccess && (
+              <Alert color="green" radius="sm">
+                {props.preFormSuccess}
+              </Alert>
+            )}
+            {props.preFormWarning && (
+              <Alert color="orange" radius="sm">
+                {props.preFormWarning}
+              </Alert>
+            )}
+            <FormProvider {...form}>
+              <Stack spacing="xs">
+                {!optionsLoading &&
+                  Object.entries(fields).map(([fieldName, field]) => (
+                    <ApiFormField
+                      key={fieldName}
+                      fieldName={fieldName}
+                      definition={field}
+                      control={form.control}
+                    />
+                  ))}
+              </Stack>
+            </FormProvider>
+            {props.postFormContent}
+          </Stack>
+        </div>
+      </Paper>
+
+      {/* Footer with Action Buttons */}
       <Divider />
-      <Group position="right">
-        {props.actions?.map((action, i) => (
+      <div>
+        <Group position="right">
+          {props.actions?.map((action, i) => (
+            <Button
+              key={i}
+              onClick={action.onClick}
+              variant={action.variant ?? 'outline'}
+              radius="sm"
+              color={action.color}
+            >
+              {action.text}
+            </Button>
+          ))}
           <Button
-            key={i}
-            onClick={action.onClick}
-            variant={action.variant ?? 'outline'}
+            onClick={form.handleSubmit(submitForm, onFormError)}
+            variant="filled"
             radius="sm"
-            color={action.color}
+            color={props.submitColor ?? 'green'}
+            disabled={isLoading || (props.fetchInitialData && !isDirty)}
           >
-            {action.text}
+            {props.submitText ?? t`Submit`}
           </Button>
-        ))}
-        <Button
-          onClick={form.handleSubmit(submitForm, onFormError)}
-          variant="outline"
-          radius="sm"
-          color={props.submitColor ?? 'green'}
-          disabled={isLoading || (props.fetchInitialData && !isDirty)}
-        >
-          {props.submitText ?? t`Submit`}
-        </Button>
-      </Group>
+        </Group>
+      </div>
     </Stack>
   );
 }
