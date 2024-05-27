@@ -1,52 +1,74 @@
 import { t } from '@lingui/macro';
-import { Alert, LoadingOverlay, Skeleton, Stack, Text } from '@mantine/core';
+import { Grid, LoadingOverlay, Skeleton, Stack } from '@mantine/core';
 import {
   IconBookmark,
   IconBoxPadding,
   IconChecklist,
-  IconCircleCheck,
-  IconCircleMinus,
-  IconCirclePlus,
-  IconCopy,
   IconDots,
   IconHistory,
   IconInfoCircle,
   IconNotes,
   IconPackages,
   IconPaperclip,
-  IconSitemap,
-  IconTransfer
+  IconSitemap
 } from '@tabler/icons-react';
-import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { ReactNode, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import AdminButton from '../../components/buttons/AdminButton';
+import { PrintingActions } from '../../components/buttons/PrintingActions';
+import { DetailsField, DetailsTable } from '../../components/details/Details';
+import DetailsBadge from '../../components/details/DetailsBadge';
+import { DetailsImage } from '../../components/details/DetailsImage';
+import { ItemDetailsGrid } from '../../components/details/ItemDetails';
 import {
   ActionDropdown,
   BarcodeActionDropdown,
   DeleteItemAction,
+  DuplicateItemAction,
   EditItemAction,
   LinkBarcodeAction,
   UnlinkBarcodeAction,
   ViewBarcodeAction
 } from '../../components/items/ActionDropdown';
-import { PlaceholderPanel } from '../../components/items/Placeholder';
 import { PageDetail } from '../../components/nav/PageDetail';
 import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
 import { StockLocationTree } from '../../components/nav/StockLocationTree';
+import { StatusRenderer } from '../../components/render/StatusRenderer';
 import { NotesEditor } from '../../components/widgets/MarkdownEditor';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
-import { useEditStockItem } from '../../forms/StockForms';
+import { ModelType } from '../../enums/ModelType';
+import { UserRoles } from '../../enums/Roles';
+import {
+  StockOperationProps,
+  useAddStockItem,
+  useCountStockItem,
+  useRemoveStockItem,
+  useStockFields,
+  useTransferStockItem
+} from '../../forms/StockForms';
+import { InvenTreeIcon } from '../../functions/icons';
+import { getDetailUrl } from '../../functions/urls';
+import {
+  useCreateApiFormModal,
+  useDeleteApiFormModal,
+  useEditApiFormModal
+} from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
 import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
 import { AttachmentTable } from '../../tables/general/AttachmentTable';
+import InstalledItemsTable from '../../tables/stock/InstalledItemsTable';
 import { StockItemTable } from '../../tables/stock/StockItemTable';
 import StockItemTestResultTable from '../../tables/stock/StockItemTestResultTable';
+import { StockTrackingTable } from '../../tables/stock/StockTrackingTable';
 
 export default function StockDetail() {
   const { id } = useParams();
 
   const user = useUserState();
+
+  const navigate = useNavigate();
 
   const [treeOpen, setTreeOpen] = useState(false);
 
@@ -64,25 +86,202 @@ export default function StockDetail() {
     }
   });
 
+  const detailsPanel = useMemo(() => {
+    let data = stockitem;
+    let part = stockitem?.part_detail ?? {};
+
+    data.available_stock = Math.max(0, data.quantity - data.allocated);
+
+    if (instanceQuery.isFetching) {
+      return <Skeleton />;
+    }
+
+    // Top left - core part information
+    let tl: DetailsField[] = [
+      {
+        name: 'part',
+        label: t`Base Part`,
+        type: 'link',
+        model: ModelType.part
+      },
+      {
+        name: 'status',
+        type: 'status',
+        label: t`Stock Status`,
+        model: ModelType.stockitem
+      },
+      {
+        type: 'text',
+        name: 'tests',
+        label: `Completed Tests`,
+        icon: 'progress',
+        hidden: !part?.trackable
+      },
+      {
+        type: 'text',
+        name: 'updated',
+        icon: 'calendar',
+        label: t`Last Updated`
+      },
+      {
+        type: 'text',
+        name: 'stocktake',
+        icon: 'calendar',
+        label: t`Last Stocktake`,
+        hidden: !stockitem.stocktake
+      }
+    ];
+
+    // Top right - available stock information
+    let tr: DetailsField[] = [
+      {
+        type: 'text',
+        name: 'quantity',
+        label: t`Quantity`
+      },
+      {
+        type: 'text',
+        name: 'serial',
+        label: t`Serial Number`,
+        hidden: !stockitem.serial
+      },
+      {
+        type: 'text',
+        name: 'available_stock',
+        label: t`Available`,
+        icon: 'quantity'
+      }
+      // TODO: allocated_to_sales_orders
+      // TODO: allocated_to_build_orders
+    ];
+
+    // Bottom left: location information
+    let bl: DetailsField[] = [
+      {
+        name: 'supplier_part',
+        label: t`Supplier Part`,
+        type: 'link',
+        model: ModelType.supplierpart,
+        hidden: !stockitem.supplier_part
+      },
+      {
+        type: 'link',
+        name: 'location',
+        label: t`Location`,
+        model: ModelType.stocklocation,
+        hidden: !stockitem.location
+      },
+      {
+        type: 'link',
+        name: 'belongs_to',
+        label: t`Installed In`,
+        model_formatter: (model: any) => {
+          let text = model?.part_detail?.full_name ?? model?.name;
+          if (model.serial && model.quantity == 1) {
+            text += `# ${model.serial}`;
+          }
+
+          return text;
+        },
+        icon: 'stock',
+        model: ModelType.stockitem,
+        hidden: !stockitem.belongs_to
+      },
+      {
+        type: 'link',
+        name: 'consumed_by',
+        label: t`Consumed By`,
+        model: ModelType.build,
+        hidden: !stockitem.consumed_by,
+        icon: 'build',
+        model_field: 'reference'
+      },
+      {
+        type: 'link',
+        name: 'build',
+        label: t`Build Order`,
+        model: ModelType.build,
+        hidden: !stockitem.build,
+        model_field: 'reference'
+      },
+      {
+        type: 'link',
+        name: 'sales_order',
+        label: t`Sales Order`,
+        model: ModelType.salesorder,
+        hidden: !stockitem.sales_order,
+        icon: 'sales_orders',
+        model_field: 'reference'
+      },
+      {
+        type: 'link',
+        name: 'customer',
+        label: t`Customer`,
+        model: ModelType.company,
+        hidden: !stockitem.customer
+      }
+    ];
+
+    // Bottom right - any other information
+    let br: DetailsField[] = [
+      // TODO: Expiry date
+      // TODO: Ownership
+      {
+        type: 'text',
+        name: 'packaging',
+        icon: 'part',
+        label: t`Packaging`,
+        hidden: !stockitem.packaging
+      }
+    ];
+
+    return (
+      <ItemDetailsGrid>
+        <Grid>
+          <Grid.Col span={4}>
+            <DetailsImage
+              appRole={UserRoles.part}
+              apiPath={ApiEndpoints.part_list}
+              src={
+                stockitem.part_detail?.image ??
+                stockitem?.part_detail?.thumbnail
+              }
+              pk={stockitem.part}
+            />
+          </Grid.Col>
+          <Grid.Col span={8}>
+            <DetailsTable fields={tl} item={stockitem} />
+          </Grid.Col>
+        </Grid>
+        <DetailsTable fields={tr} item={stockitem} />
+        <DetailsTable fields={bl} item={stockitem} />
+        <DetailsTable fields={br} item={stockitem} />
+      </ItemDetailsGrid>
+    );
+  }, [stockitem, instanceQuery]);
+
   const stockPanels: PanelType[] = useMemo(() => {
     return [
       {
         name: 'details',
-        label: t`Details`,
+        label: t`Stock Details`,
         icon: <IconInfoCircle />,
-        content: <PlaceholderPanel />
+        content: detailsPanel
       },
       {
         name: 'tracking',
         label: t`Stock Tracking`,
         icon: <IconHistory />,
-        content: <PlaceholderPanel />
+        content: stockitem.pk ? (
+          <StockTrackingTable itemId={stockitem.pk} />
+        ) : (
+          <Skeleton />
+        )
       },
       {
         name: 'allocations',
         label: t`Allocations`,
         icon: <IconBookmark />,
-        content: <PlaceholderPanel />,
         hidden:
           !stockitem?.part_detail?.salable && !stockitem?.part_detail?.component
       },
@@ -104,7 +303,8 @@ export default function StockDetail() {
         name: 'installed_items',
         label: t`Installed Items`,
         icon: <IconBoxPadding />,
-        hidden: !stockitem?.part_detail?.assembly
+        hidden: !stockitem?.part_detail?.assembly,
+        content: <InstalledItemsTable parentId={stockitem.pk} />
       },
       {
         name: 'child_items',
@@ -112,7 +312,10 @@ export default function StockDetail() {
         icon: <IconSitemap />,
         hidden: (stockitem?.child_items ?? 0) == 0,
         content: stockitem?.pk ? (
-          <StockItemTable params={{ ancestor: stockitem.pk }} />
+          <StockItemTable
+            tableName="child-stock"
+            params={{ ancestor: stockitem.pk }}
+          />
         ) : (
           <Skeleton />
         )
@@ -149,78 +352,189 @@ export default function StockDetail() {
       { name: t`Stock`, url: '/stock' },
       ...(stockitem.location_path ?? []).map((l: any) => ({
         name: l.name,
-        url: `/stock/location/${l.pk}`
+        url: getDetailUrl(ModelType.stocklocation, l.pk)
       }))
     ],
     [stockitem]
   );
 
-  const editStockItem = useEditStockItem({
-    item_id: stockitem.pk,
-    callback: () => refreshInstance()
+  const editStockItemFields = useStockFields({ create: false });
+
+  const editStockItem = useEditApiFormModal({
+    url: ApiEndpoints.stock_item_list,
+    pk: stockitem.pk,
+    title: t`Edit Stock Item`,
+    fields: editStockItemFields,
+    onFormSuccess: refreshInstance
   });
 
+  const duplicateStockItemFields = useStockFields({ create: true });
+
+  const duplicateStockItem = useCreateApiFormModal({
+    url: ApiEndpoints.stock_item_list,
+    title: t`Add Stock Item`,
+    fields: duplicateStockItemFields,
+    initialData: {
+      ...stockitem
+    },
+    follow: true,
+    modelType: ModelType.stockitem
+  });
+
+  const preDeleteContent = useMemo(() => {
+    // TODO: Fill this out with information on the stock item.
+    // e.g. list of child items which would be deleted, etc
+    return undefined;
+  }, [stockitem]);
+
+  const deleteStockItem = useDeleteApiFormModal({
+    url: ApiEndpoints.stock_item_list,
+    pk: stockitem.pk,
+    title: t`Delete Stock Item`,
+    preFormContent: preDeleteContent,
+    onFormSuccess: () => {
+      // Redirect to the part page
+      navigate(getDetailUrl(ModelType.part, stockitem.part));
+    }
+  });
+
+  const stockActionProps: StockOperationProps = useMemo(() => {
+    return {
+      items: stockitem,
+      model: ModelType.stockitem,
+      refresh: refreshInstance,
+      filters: {
+        in_stock: true
+      }
+    };
+  }, [stockitem]);
+
+  const countStockItem = useCountStockItem(stockActionProps);
+  const addStockItem = useAddStockItem(stockActionProps);
+  const removeStockItem = useRemoveStockItem(stockActionProps);
+  const transferStockItem = useTransferStockItem(stockActionProps);
+
   const stockActions = useMemo(
-    () => /* TODO: Disable actions based on user permissions*/ [
+    () => [
+      <AdminButton model={ModelType.stockitem} pk={stockitem.pk} />,
       <BarcodeActionDropdown
         actions={[
           ViewBarcodeAction({}),
           LinkBarcodeAction({
-            disabled: stockitem?.barcode_hash
+            hidden:
+              stockitem?.barcode_hash || !user.hasChangeRole(UserRoles.stock)
           }),
           UnlinkBarcodeAction({
-            disabled: !stockitem?.barcode_hash
+            hidden:
+              !stockitem?.barcode_hash || !user.hasChangeRole(UserRoles.stock)
           })
         ]}
       />,
+      <PrintingActions
+        modelType={ModelType.stockitem}
+        items={[stockitem.pk]}
+        enableReports
+        enableLabels
+      />,
       <ActionDropdown
-        key="operations"
         tooltip={t`Stock Operations`}
         icon={<IconPackages />}
         actions={[
           {
             name: t`Count`,
             tooltip: t`Count stock`,
-            icon: <IconCircleCheck color="green" />
+            icon: (
+              <InvenTreeIcon icon="stocktake" iconProps={{ color: 'blue' }} />
+            ),
+            onClick: () => {
+              stockitem.pk && countStockItem.open();
+            }
           },
           {
             name: t`Add`,
             tooltip: t`Add stock`,
-            icon: <IconCirclePlus color="green" />
+            icon: <InvenTreeIcon icon="add" iconProps={{ color: 'green' }} />,
+            onClick: () => {
+              stockitem.pk && addStockItem.open();
+            }
           },
           {
             name: t`Remove`,
             tooltip: t`Remove stock`,
-            icon: <IconCircleMinus color="red" />
+            icon: <InvenTreeIcon icon="remove" iconProps={{ color: 'red' }} />,
+            onClick: () => {
+              stockitem.pk && removeStockItem.open();
+            }
           },
           {
             name: t`Transfer`,
             tooltip: t`Transfer stock`,
-            icon: <IconTransfer color="blue" />
+            icon: (
+              <InvenTreeIcon icon="transfer" iconProps={{ color: 'blue' }} />
+            ),
+            onClick: () => {
+              stockitem.pk && transferStockItem.open();
+            }
           }
         ]}
       />,
       <ActionDropdown
-        key="stock"
-        // tooltip={t`Stock Actions`}
+        tooltip={t`Stock Item Actions`}
         icon={<IconDots />}
         actions={[
-          {
-            name: t`Duplicate`,
-            tooltip: t`Duplicate stock item`,
-            icon: <IconCopy />
-          },
-          EditItemAction({
-            onClick: () => {
-              stockitem.pk && editStockItem.open();
-            }
+          DuplicateItemAction({
+            hidden: !user.hasAddRole(UserRoles.stock),
+            onClick: () => duplicateStockItem.open()
           }),
-          DeleteItemAction({})
+          EditItemAction({
+            hidden: !user.hasChangeRole(UserRoles.stock),
+            onClick: () => editStockItem.open()
+          }),
+          DeleteItemAction({
+            hidden: !user.hasDeleteRole(UserRoles.stock),
+            onClick: () => deleteStockItem.open()
+          })
         ]}
       />
     ],
     [id, stockitem, user]
   );
+
+  const stockBadges: ReactNode[] = useMemo(() => {
+    return instanceQuery.isLoading
+      ? []
+      : [
+          <DetailsBadge
+            color="yellow"
+            label={t`In Production`}
+            visible={stockitem.is_building}
+          />,
+          <DetailsBadge
+            color="blue"
+            label={t`Serial Number` + `: ${stockitem.serial}`}
+            visible={!!stockitem.serial}
+            key="serial"
+          />,
+          <DetailsBadge
+            color="blue"
+            label={t`Quantity` + `: ${stockitem.quantity}`}
+            visible={!stockitem.serial}
+            key="quantity"
+          />,
+          <DetailsBadge
+            color="blue"
+            label={t`Batch Code` + `: ${stockitem.batch}`}
+            visible={!!stockitem.batch}
+            key="batch"
+          />,
+          <StatusRenderer
+            status={stockitem.status}
+            type={ModelType.stockitem}
+            options={{ size: 'lg' }}
+            key="status"
+          />
+        ];
+  }, [stockitem, instanceQuery]);
 
   return (
     <Stack>
@@ -234,11 +548,7 @@ export default function StockDetail() {
         title={t`Stock Item`}
         subtitle={stockitem.part_detail?.full_name}
         imageUrl={stockitem.part_detail?.thumbnail}
-        detail={
-          <Alert color="teal" title="Stock Item">
-            <Text>Quantity: {stockitem.quantity ?? 'idk'}</Text>
-          </Alert>
-        }
+        badges={stockBadges}
         breadcrumbs={breadcrumbs}
         breadcrumbAction={() => {
           setTreeOpen(true);
@@ -247,6 +557,12 @@ export default function StockDetail() {
       />
       <PanelGroup pageKey="stockitem" panels={stockPanels} />
       {editStockItem.modal}
+      {duplicateStockItem.modal}
+      {deleteStockItem.modal}
+      {countStockItem.modal}
+      {addStockItem.modal}
+      {removeStockItem.modal}
+      {transferStockItem.modal}
     </Stack>
   );
 }

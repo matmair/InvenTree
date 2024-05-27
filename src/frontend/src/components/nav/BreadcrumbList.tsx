@@ -7,7 +7,10 @@ import {
   Text
 } from '@mantine/core';
 import { IconMenu2 } from '@tabler/icons-react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { navigateToLink } from '../../functions/navigation';
 
 export type Breadcrumb = {
   name: string;
@@ -26,20 +29,40 @@ export function BreadcrumbList({
 }) {
   const navigate = useNavigate();
 
+  const elements = useMemo(() => {
+    // Limit to 7 active elements
+    if (breadcrumbs.length > 7) {
+      return [
+        ...breadcrumbs.slice(0, 3),
+        { name: '...', url: '#' },
+        ...breadcrumbs.slice(-3)
+      ];
+    } else {
+      return breadcrumbs;
+    }
+  }, [breadcrumbs]);
+
   return (
-    <Paper p="3" radius="xs">
-      <Group spacing="xs">
+    <Paper p="7" radius="xs" shadow="xs">
+      <Group gap="xs">
         {navCallback && (
-          <ActionIcon key="nav-action" onClick={navCallback}>
+          <ActionIcon
+            key="nav-action"
+            onClick={navCallback}
+            variant="transparent"
+          >
             <IconMenu2 />
           </ActionIcon>
         )}
         <Breadcrumbs key="breadcrumbs" separator=">">
-          {breadcrumbs.map((breadcrumb, index) => {
+          {elements.map((breadcrumb, index) => {
             return (
               <Anchor
                 key={index}
-                onClick={() => breadcrumb.url && navigate(breadcrumb.url)}
+                onClick={(event: any) =>
+                  breadcrumb.url &&
+                  navigateToLink(breadcrumb.url, navigate, event)
+                }
               >
                 <Text size="sm">{breadcrumb.name}</Text>
               </Anchor>

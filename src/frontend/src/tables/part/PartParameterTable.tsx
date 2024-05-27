@@ -3,10 +3,11 @@ import { Text } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
+import { YesNoButton } from '../../components/buttons/YesNoButton';
 import { ApiFormFieldSet } from '../../components/forms/fields/ApiFormField';
-import { YesNoButton } from '../../components/items/YesNoButton';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { UserRoles } from '../../enums/Roles';
+import { usePartParameterFields } from '../../forms/PartForms';
 import {
   useCreateApiFormModal,
   useDeleteApiFormModal,
@@ -19,6 +20,7 @@ import { TableColumn } from '../Column';
 import { DescriptionColumn, PartColumn } from '../ColumnRenderers';
 import { InvenTreeTable } from '../InvenTreeTable';
 import { RowDeleteAction, RowEditAction } from '../RowActions';
+import { TableHoverCard } from '../TableHoverCard';
 
 /**
  * Construct a table listing parameters for a given part
@@ -48,7 +50,11 @@ export function PartParameterTable({ partId }: { partId: any }) {
         render: (record) => {
           let variant = String(partId) != String(record.part);
 
-          return <Text italic={variant}>{record.template_detail?.name}</Text>;
+          return (
+            <Text style={{ fontStyle: variant ? 'italic' : 'inherit' }}>
+              {record.template_detail?.name}
+            </Text>
+          );
         }
       },
       DescriptionColumn({
@@ -65,13 +71,23 @@ export function PartParameterTable({ partId }: { partId: any }) {
             return <YesNoButton value={record.data} />;
           }
 
-          if (record.data_numeric) {
-            // TODO: Numeric data
+          let extra: any[] = [];
+
+          if (
+            template.units &&
+            record.data_numeric &&
+            record.data_numeric != record.data
+          ) {
+            extra.push(`${record.data_numeric} [${template.units}]`);
           }
 
-          // TODO: Units
-
-          return record.data;
+          return (
+            <TableHoverCard
+              value={record.data}
+              extra={extra}
+              title={t`Internal Units`}
+            />
+          );
         }
       },
       {
@@ -82,22 +98,17 @@ export function PartParameterTable({ partId }: { partId: any }) {
     ];
   }, [partId]);
 
-  const partParameterFields: ApiFormFieldSet = useMemo(() => {
-    return {
-      part: {},
-      template: {},
-      data: {}
-    };
-  }, []);
+  const partParameterFields: ApiFormFieldSet = usePartParameterFields();
 
   const newParameter = useCreateApiFormModal({
     url: ApiEndpoints.part_parameter_list,
     title: t`New Part Parameter`,
-    fields: partParameterFields,
+    fields: useMemo(() => ({ ...partParameterFields }), [partParameterFields]),
+    focus: 'template',
     initialData: {
       part: partId
     },
-    onFormSuccess: table.refreshTable
+    table: table
   });
 
   const [selectedParameter, setSelectedParameter] = useState<
@@ -108,15 +119,16 @@ export function PartParameterTable({ partId }: { partId: any }) {
     url: ApiEndpoints.part_parameter_list,
     pk: selectedParameter,
     title: t`Edit Part Parameter`,
-    fields: partParameterFields,
-    onFormSuccess: table.refreshTable
+    focus: 'data',
+    fields: useMemo(() => ({ ...partParameterFields }), [partParameterFields]),
+    table: table
   });
 
   const deleteParameter = useDeleteApiFormModal({
     url: ApiEndpoints.part_parameter_list,
     pk: selectedParameter,
     title: t`Delete Part Parameter`,
-    onFormSuccess: table.refreshTable
+    table: table
   });
 
   // Callback for row actions
@@ -153,6 +165,7 @@ export function PartParameterTable({ partId }: { partId: any }) {
   const tableActions = useMemo(() => {
     return [
       <AddItemButton
+        key="add-parameter"
         hidden={!user.hasAddRole(UserRoles.part)}
         tooltip={t`Add parameter`}
         onClick={() => newParameter.open()}

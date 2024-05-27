@@ -1,7 +1,11 @@
 import { t } from '@lingui/macro';
 import { Drawer, Group, LoadingOverlay, Stack, Text } from '@mantine/core';
 import { ReactTree } from '@naisutech/react-tree';
-import { IconSitemap } from '@tabler/icons-react';
+import {
+  IconChevronDown,
+  IconChevronRight,
+  IconSitemap
+} from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,13 +36,14 @@ export function StockLocationTree({
             return {
               id: location.pk,
               label: location.name,
-              parentId: location.parent
+              parentId: location.parent,
+              children: location.sublocations
             };
           })
         )
         .catch((error) => {
           console.error('Error fetching stock location tree:', error);
-          return error;
+          return [];
         }),
     refetchOnMount: true
   });
@@ -46,9 +51,9 @@ export function StockLocationTree({
   function renderNode({ node }: { node: any }) {
     return (
       <Group
-        position="apart"
+        justify="space-between"
         key={node.id}
-        noWrap={true}
+        wrap="nowrap"
         onClick={() => {
           onClose();
           navigate(`/stock/location/${node.id}`);
@@ -57,6 +62,14 @@ export function StockLocationTree({
         <Text>{node.label}</Text>
       </Group>
     );
+  }
+
+  function renderIcon({ node, open }: { node: any; open?: boolean }) {
+    if (node.children == 0) {
+      return undefined;
+    }
+
+    return open ? <IconChevronDown /> : <IconChevronRight />;
   }
 
   return (
@@ -75,18 +88,19 @@ export function StockLocationTree({
         }
       }}
       title={
-        <Group position="left" noWrap={true} spacing="md" p="md">
+        <Group justify="left" wrap="nowrap" gap="md" p="md">
           <IconSitemap />
           <StylishText size="lg">{t`Stock Locations`}</StylishText>
         </Group>
       }
     >
-      <Stack spacing="xs">
+      <Stack gap="xs">
         <LoadingOverlay visible={treeQuery.isFetching} />
         <ReactTree
           nodes={treeQuery.data ?? []}
           showEmptyItems={false}
           RenderNode={renderNode}
+          RenderIcon={renderIcon}
           defaultSelectedNodes={selectedLocation ? [selectedLocation] : []}
         />
       </Stack>

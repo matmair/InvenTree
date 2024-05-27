@@ -1,5 +1,5 @@
 import { t } from '@lingui/macro';
-import { LoadingOverlay, Stack } from '@mantine/core';
+import { Grid, LoadingOverlay, Skeleton, Stack } from '@mantine/core';
 import {
   IconDots,
   IconInfoCircle,
@@ -8,13 +8,19 @@ import {
   IconPackages,
   IconPaperclip
 } from '@tabler/icons-react';
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
+import AdminButton from '../../components/buttons/AdminButton';
+import { PrintingActions } from '../../components/buttons/PrintingActions';
+import { DetailsField, DetailsTable } from '../../components/details/Details';
+import { DetailsImage } from '../../components/details/DetailsImage';
+import { ItemDetailsGrid } from '../../components/details/ItemDetails';
 import {
   ActionDropdown,
   BarcodeActionDropdown,
-  DeleteItemAction,
+  CancelItemAction,
+  DuplicateItemAction,
   EditItemAction,
   LinkBarcodeAction,
   UnlinkBarcodeAction,
@@ -22,8 +28,17 @@ import {
 } from '../../components/items/ActionDropdown';
 import { PageDetail } from '../../components/nav/PageDetail';
 import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
+import { StatusRenderer } from '../../components/render/StatusRenderer';
 import { NotesEditor } from '../../components/widgets/MarkdownEditor';
+import { formatCurrency } from '../../defaults/formatters';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
+import { ModelType } from '../../enums/ModelType';
+import { UserRoles } from '../../enums/Roles';
+import { usePurchaseOrderFields } from '../../forms/PurchaseOrderForms';
+import {
+  useCreateApiFormModal,
+  useEditApiFormModal
+} from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
 import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
@@ -39,7 +54,11 @@ export default function PurchaseOrderDetail() {
 
   const user = useUserState();
 
-  const { instance: order, instanceQuery } = useInstance({
+  const {
+    instance: order,
+    instanceQuery,
+    refreshInstance
+  } = useInstance({
     endpoint: ApiEndpoints.purchase_order_list,
     pk: id,
     params: {
@@ -48,18 +67,198 @@ export default function PurchaseOrderDetail() {
     refetchOnMount: true
   });
 
+  const purchaseOrderFields = usePurchaseOrderFields();
+
+  const editPurchaseOrder = useEditApiFormModal({
+    url: ApiEndpoints.purchase_order_list,
+    pk: id,
+    title: t`Edit Purchase Order`,
+    fields: purchaseOrderFields,
+    onFormSuccess: () => {
+      refreshInstance();
+    }
+  });
+
+  const duplicatePurchaseOrder = useCreateApiFormModal({
+    url: ApiEndpoints.purchase_order_list,
+    title: t`Add Purchase Order`,
+    fields: purchaseOrderFields,
+    initialData: {
+      ...order,
+      reference: undefined
+    },
+    follow: true,
+    modelType: ModelType.purchaseorder
+  });
+
+  const detailsPanel = useMemo(() => {
+    if (instanceQuery.isFetching) {
+      return <Skeleton />;
+    }
+
+    let tl: DetailsField[] = [
+      {
+        type: 'text',
+        name: 'reference',
+        label: t`Reference`,
+        copy: true
+      },
+      {
+        type: 'text',
+        name: 'supplier_reference',
+        label: t`Supplier Reference`,
+        icon: 'reference',
+        hidden: !order.supplier_reference,
+        copy: true
+      },
+      {
+        type: 'link',
+        name: 'supplier',
+        icon: 'suppliers',
+        label: t`Supplier`,
+        model: ModelType.company
+      },
+      {
+        type: 'text',
+        name: 'description',
+        label: t`Description`,
+        copy: true
+      },
+      {
+        type: 'status',
+        name: 'status',
+        label: t`Status`,
+        model: ModelType.purchaseorder
+      }
+    ];
+
+    let tr: DetailsField[] = [
+      {
+        type: 'text',
+        name: 'line_items',
+        label: t`Line Items`,
+        icon: 'list'
+      },
+      {
+        type: 'progressbar',
+        name: 'completed',
+        icon: 'progress',
+        label: t`Completed Line Items`,
+        total: order.line_items,
+        progress: order.completed_lines
+      },
+      {
+        type: 'progressbar',
+        name: 'shipments',
+        icon: 'shipment',
+        label: t`Completed Shipments`,
+        total: order.shipments,
+        progress: order.completed_shipments
+      },
+      {
+        type: 'text',
+        name: 'currency',
+        label: t`Order Currency`,
+        value_formatter: () =>
+          order?.order_currency ?? order?.supplier_detail?.currency
+      },
+      {
+        type: 'text',
+        name: 'total_price',
+        label: t`Total Cost`,
+        value_formatter: () => {
+          return formatCurrency(order?.total_price, {
+            currency: order?.order_currency ?? order?.supplier_detail?.currency
+          });
+        }
+      }
+    ];
+
+    let bl: DetailsField[] = [
+      {
+        type: 'link',
+        external: true,
+        name: 'link',
+        label: t`Link`,
+        copy: true,
+        hidden: !order.link
+      },
+      {
+        type: 'link',
+        model: ModelType.contact,
+        link: false,
+        name: 'contact',
+        label: t`Contact`,
+        icon: 'user',
+        copy: true,
+        hidden: !order.contact
+      }
+      // TODO: Project code
+    ];
+
+    let br: DetailsField[] = [
+      {
+        type: 'text',
+        name: 'creation_date',
+        label: t`Created On`,
+        icon: 'calendar'
+      },
+      {
+        type: 'text',
+        name: 'target_date',
+        label: t`Target Date`,
+        icon: 'calendar',
+        hidden: !order.target_date
+      },
+      {
+        type: 'text',
+        name: 'responsible',
+        label: t`Responsible`,
+        badge: 'owner',
+        hidden: !order.responsible
+      }
+    ];
+
+    return (
+      <ItemDetailsGrid>
+        <Grid>
+          <Grid.Col span={4}>
+            <DetailsImage
+              appRole={UserRoles.purchase_order}
+              apiPath={ApiEndpoints.company_list}
+              src={order.supplier_detail?.image}
+              pk={order.supplier}
+            />
+          </Grid.Col>
+          <Grid.Col span={8}>
+            <DetailsTable fields={tl} item={order} />
+          </Grid.Col>
+        </Grid>
+        <DetailsTable fields={tr} item={order} />
+        <DetailsTable fields={bl} item={order} />
+        <DetailsTable fields={br} item={order} />
+      </ItemDetailsGrid>
+    );
+  }, [order, instanceQuery]);
+
   const orderPanels: PanelType[] = useMemo(() => {
     return [
       {
         name: 'detail',
         label: t`Order Details`,
-        icon: <IconInfoCircle />
+        icon: <IconInfoCircle />,
+        content: detailsPanel
       },
       {
         name: 'line-items',
         label: t`Line Items`,
         icon: <IconList />,
-        content: <PurchaseOrderLineItemTable orderId={Number(id)} />
+        content: (
+          <PurchaseOrderLineItemTable
+            orderId={Number(id)}
+            supplierId={Number(order.supplier)}
+          />
+        )
       },
       {
         name: 'received-stock',
@@ -67,6 +266,7 @@ export default function PurchaseOrderDetail() {
         icon: <IconPackages />,
         content: (
           <StockItemTable
+            tableName="received-stock"
             params={{
               purchase_order: id
             }}
@@ -101,31 +301,62 @@ export default function PurchaseOrderDetail() {
   }, [order, id]);
 
   const poActions = useMemo(() => {
-    // TODO: Disable certain actions based on user permissions
     return [
+      <AdminButton model={ModelType.purchaseorder} pk={order.pk} />,
       <BarcodeActionDropdown
         actions={[
           ViewBarcodeAction({}),
           LinkBarcodeAction({
-            disabled: order?.barcode_hash
+            hidden: order?.barcode_hash
           }),
           UnlinkBarcodeAction({
-            disabled: !order?.barcode_hash
+            hidden: !order?.barcode_hash
           })
         ]}
       />,
+      <PrintingActions
+        modelType={ModelType.purchaseorder}
+        items={[order.pk]}
+        enableReports
+      />,
       <ActionDropdown
-        key="order-actions"
         tooltip={t`Order Actions`}
         icon={<IconDots />}
-        actions={[EditItemAction({}), DeleteItemAction({})]}
+        actions={[
+          EditItemAction({
+            hidden: !user.hasChangeRole(UserRoles.purchase_order),
+            onClick: () => {
+              editPurchaseOrder.open();
+            }
+          }),
+          CancelItemAction({
+            tooltip: t`Cancel order`
+          }),
+          DuplicateItemAction({
+            hidden: !user.hasAddRole(UserRoles.purchase_order),
+            onClick: () => duplicatePurchaseOrder.open()
+          })
+        ]}
       />
     ];
   }, [id, order, user]);
 
+  const orderBadges: ReactNode[] = useMemo(() => {
+    return instanceQuery.isLoading
+      ? []
+      : [
+          <StatusRenderer
+            status={order.status}
+            type={ModelType.purchaseorder}
+            options={{ size: 'lg' }}
+          />
+        ];
+  }, [order, instanceQuery]);
+
   return (
     <>
-      <Stack spacing="xs">
+      {editPurchaseOrder.modal}
+      <Stack gap="xs">
         <LoadingOverlay visible={instanceQuery.isFetching} />
         <PageDetail
           title={t`Purchase Order` + `: ${order.reference}`}
@@ -133,6 +364,7 @@ export default function PurchaseOrderDetail() {
           imageUrl={order.supplier_detail?.image}
           breadcrumbs={[{ name: t`Purchasing`, url: '/purchasing/' }]}
           actions={poActions}
+          badges={orderBadges}
         />
         <PanelGroup pageKey="purchaseorder" panels={orderPanels} />
       </Stack>

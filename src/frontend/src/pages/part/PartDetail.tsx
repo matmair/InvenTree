@@ -1,5 +1,12 @@
 import { t } from '@lingui/macro';
-import { Group, LoadingOverlay, Skeleton, Stack, Text } from '@mantine/core';
+import {
+  Alert,
+  Grid,
+  LoadingOverlay,
+  Skeleton,
+  Stack,
+  Table
+} from '@mantine/core';
 import {
   IconBookmarks,
   IconBuilding,
@@ -19,15 +26,21 @@ import {
   IconStack2,
   IconTestPipe,
   IconTools,
-  IconTransfer,
   IconTruckDelivery,
   IconVersions
 } from '@tabler/icons-react';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { ReactNode, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { api } from '../../App';
+import AdminButton from '../../components/buttons/AdminButton';
+import { DetailsField, DetailsTable } from '../../components/details/Details';
+import DetailsBadge from '../../components/details/DetailsBadge';
+import { DetailsImage } from '../../components/details/DetailsImage';
+import { ItemDetailsGrid } from '../../components/details/ItemDetails';
+import { PartIcons } from '../../components/details/PartIcons';
+import { Thumbnail } from '../../components/images/Thumbnail';
 import {
   ActionDropdown,
   BarcodeActionDropdown,
@@ -46,17 +59,22 @@ import { formatPriceRange } from '../../defaults/formatters';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
-import { partFields } from '../../forms/PartForms';
-import { useEditApiFormModal } from '../../hooks/UseForm';
+import { usePartFields } from '../../forms/PartForms';
+import {
+  StockOperationProps,
+  useCountStockItem,
+  useTransferStockItem
+} from '../../forms/StockForms';
+import { InvenTreeIcon } from '../../functions/icons';
+import { getDetailUrl } from '../../functions/urls';
+import {
+  useCreateApiFormModal,
+  useDeleteApiFormModal,
+  useEditApiFormModal
+} from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
 import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
-import { DetailsField } from '../../tables/Details';
-import {
-  DetailsImageType,
-  ItemDetailFields,
-  ItemDetails
-} from '../../tables/ItemDetails';
 import { BomTable } from '../../tables/bom/BomTable';
 import { UsedInTable } from '../../tables/bom/UsedInTable';
 import { BuildOrderTable } from '../../tables/build/BuildOrderTable';
@@ -69,6 +87,7 @@ import { ManufacturerPartTable } from '../../tables/purchasing/ManufacturerPartT
 import { SupplierPartTable } from '../../tables/purchasing/SupplierPartTable';
 import { SalesOrderTable } from '../../tables/sales/SalesOrderTable';
 import { StockItemTable } from '../../tables/stock/StockItemTable';
+import PartPricingPanel from './PartPricingPanel';
 
 /**
  * Detail view for a single Part instance
@@ -76,6 +95,7 @@ import { StockItemTable } from '../../tables/stock/StockItemTable';
 export default function PartDetail() {
   const { id } = useParams();
 
+  const navigate = useNavigate();
   const user = useUserState();
 
   const [treeOpen, setTreeOpen] = useState(false);
@@ -93,188 +113,195 @@ export default function PartDetail() {
     refetchOnMount: true
   });
 
-  const detailFields = (part: any): ItemDetailFields => {
-    let left: DetailsField[][] = [];
-    let right: DetailsField[][] = [];
-    let bottom_right: DetailsField[][] = [];
-    let bottom_left: DetailsField[][] = [];
+  const detailsPanel = useMemo(() => {
+    if (instanceQuery.isFetching) {
+      return <Skeleton />;
+    }
 
-    let image: DetailsImageType = {
-      name: 'image',
-      imageActions: {
-        selectExisting: true,
-        uploadFile: true,
-        deleteFile: true
-      }
-    };
-
-    left.push([
+    // Construct the details tables
+    let tl: DetailsField[] = [
       {
-        type: 'text',
+        type: 'string',
+        name: 'name',
+        label: t`Name`,
+        icon: 'part',
+        copy: true
+      },
+      {
+        type: 'string',
         name: 'description',
         label: t`Description`,
         copy: true
-      }
-    ]);
-
-    if (part.variant_of) {
-      left.push([
-        {
-          type: 'link',
-          name: 'variant_of',
-          label: t`Variant of`,
-          model: ModelType.part
-        }
-      ]);
-    }
-
-    right.push([
+      },
+      {
+        type: 'link',
+        name: 'variant_of',
+        label: t`Variant of`,
+        model: ModelType.part,
+        hidden: !part.variant_of
+      },
+      {
+        type: 'link',
+        name: 'category',
+        label: t`Category`,
+        model: ModelType.partcategory
+      },
+      {
+        type: 'link',
+        name: 'default_location',
+        label: t`Default Location`,
+        model: ModelType.stocklocation,
+        hidden: !part.default_location
+      },
+      {
+        type: 'link',
+        name: 'category_default_location',
+        label: t`Category Default Location`,
+        model: ModelType.stocklocation,
+        hidden: part.default_location || !part.category_default_location
+      },
       {
         type: 'string',
-        name: 'unallocated_stock',
-        unit: true,
-        label: t`Available Stock`
+        name: 'IPN',
+        label: t`IPN`,
+        copy: true,
+        hidden: !part.IPN
+      },
+      {
+        type: 'string',
+        name: 'revision',
+        label: t`Revision`,
+        copy: true,
+        hidden: !part.revision
+      },
+      {
+        type: 'string',
+        name: 'units',
+        label: t`Units`,
+        copy: true,
+        hidden: !part.units
+      },
+      {
+        type: 'string',
+        name: 'keywords',
+        label: t`Keywords`,
+        copy: true,
+        hidden: !part.keywords
+      },
+      {
+        type: 'link',
+        name: 'link',
+        label: t`Link`,
+        external: true,
+        copy: true,
+        hidden: !part.link
       }
-    ]);
+    ];
 
-    right.push([
+    let tr: DetailsField[] = [
       {
         type: 'string',
         name: 'total_in_stock',
         unit: true,
         label: t`In Stock`
+      },
+      {
+        type: 'string',
+        name: 'unallocated_stock',
+        unit: true,
+        label: t`Available Stock`,
+        hidden: part.total_in_stock == part.unallocated_stock
+      },
+      {
+        type: 'string',
+        name: 'minimum_stock',
+        unit: true,
+        label: t`Minimum Stock`,
+        hidden: part.minimum_stock <= 0
+      },
+      {
+        type: 'string',
+        name: 'ordering',
+        label: t`On order`,
+        unit: true,
+        hidden: part.ordering <= 0
+      },
+      {
+        type: 'progressbar',
+        name: 'allocated_to_build_orders',
+        total: part.required_for_build_orders,
+        progress: part.allocated_to_build_orders,
+        label: t`Allocated to Build Orders`,
+        hidden: !part.component || part.required_for_build_orders <= 0
+      },
+      {
+        type: 'progressbar',
+        name: 'allocated_to_sales_orders',
+        total: part.required_for_sales_orders,
+        progress: part.allocated_to_sales_orders,
+        label: t`Allocated to Sales Orders`,
+        hidden: !part.salable || part.required_for_sales_orders <= 0
+      },
+      {
+        type: 'string',
+        name: 'can_build',
+        unit: true,
+        label: t`Can Build`,
+        hidden: !part.assembly
+      },
+      {
+        type: 'string',
+        name: 'building',
+        unit: true,
+        label: t`Building`,
+        hidden: !part.assembly
       }
-    ]);
+    ];
 
-    if (part.minimum_stock) {
-      right.push([
-        {
-          type: 'string',
-          name: 'minimum_stock',
-          unit: true,
-          label: t`Minimum Stock`
-        }
-      ]);
-    }
+    let bl: DetailsField[] = [
+      {
+        type: 'boolean',
+        name: 'active',
+        label: t`Active`
+      },
+      {
+        type: 'boolean',
+        name: 'template',
+        label: t`Template Part`
+      },
+      {
+        type: 'boolean',
+        name: 'assembly',
+        label: t`Assembled Part`
+      },
+      {
+        type: 'boolean',
+        name: 'component',
+        label: t`Component Part`
+      },
+      {
+        type: 'boolean',
+        name: 'trackable',
+        label: t`Trackable Part`
+      },
+      {
+        type: 'boolean',
+        name: 'purchaseable',
+        label: t`Purchaseable Part`
+      },
+      {
+        type: 'boolean',
+        name: 'saleable',
+        label: t`Saleable Part`
+      },
+      {
+        type: 'boolean',
+        name: 'virtual',
+        label: t`Virtual Part`
+      }
+    ];
 
-    if (part.ordering <= 0) {
-      right.push([
-        {
-          type: 'string',
-          name: 'ordering',
-          label: t`On order`,
-          unit: true
-        }
-      ]);
-    }
-
-    if (
-      part.assembly &&
-      (part.allocated_to_build_orders > 0 || part.required_for_build_orders > 0)
-    ) {
-      right.push([
-        {
-          type: 'progressbar',
-          name: 'allocated_to_build_orders',
-          total: part.required_for_build_orders,
-          progress: part.allocated_to_build_orders,
-          label: t`Allocated to Build Orders`
-        }
-      ]);
-    }
-
-    if (
-      part.salable &&
-      (part.allocated_to_sales_orders > 0 || part.required_for_sales_orders > 0)
-    ) {
-      right.push([
-        {
-          type: 'progressbar',
-          name: 'allocated_to_sales_orders',
-          total: part.required_for_sales_orders,
-          progress: part.allocated_to_sales_orders,
-          label: t`Allocated to Sales Orders`
-        }
-      ]);
-    }
-
-    if (part.assembly) {
-      right.push([
-        {
-          type: 'string',
-          name: 'can_build',
-          unit: true,
-          label: t`Can Build`
-        }
-      ]);
-    }
-
-    if (part.assembly) {
-      right.push([
-        {
-          type: 'string',
-          name: 'building',
-          unit: true,
-          label: t`Building`
-        }
-      ]);
-    }
-
-    if (part.category) {
-      bottom_left.push([
-        {
-          type: 'link',
-          name: 'category',
-          label: t`Category`,
-          model: ModelType.partcategory
-        }
-      ]);
-    }
-
-    if (part.IPN) {
-      bottom_left.push([
-        {
-          type: 'string',
-          name: 'IPN',
-          label: t`IPN`,
-          copy: true
-        }
-      ]);
-    }
-
-    if (part.revision) {
-      bottom_left.push([
-        {
-          type: 'string',
-          name: 'revision',
-          label: t`Revision`,
-          copy: true
-        }
-      ]);
-    }
-
-    if (part.units) {
-      bottom_left.push([
-        {
-          type: 'string',
-          name: 'units',
-          label: t`Units`
-        }
-      ]);
-    }
-
-    if (part.keywords) {
-      bottom_left.push([
-        {
-          type: 'string',
-          name: 'keywords',
-          label: t`Keywords`,
-          copy: true
-        }
-      ]);
-    }
-
-    bottom_right.push([
+    let br: DetailsField[] = [
       {
         type: 'string',
         name: 'creation_date',
@@ -283,181 +310,176 @@ export default function PartDetail() {
       {
         type: 'string',
         name: 'creation_user',
-        badge: 'user'
+        label: t`Created By`,
+        badge: 'user',
+        icon: 'user',
+        hidden: !part.creation_user
+      },
+      {
+        type: 'string',
+        name: 'responsible',
+        label: t`Responsible`,
+        badge: 'owner',
+        hidden: !part.responsible
+      },
+      {
+        type: 'link',
+        name: 'default_supplier',
+        label: t`Default Supplier`,
+        model: ModelType.supplierpart,
+        hidden: !part.default_supplier
       }
-    ]);
+    ];
 
+    // Add in price range data
     id &&
-      bottom_right.push([
-        {
-          type: 'string',
-          name: 'pricing',
-          label: t`Price Range`,
-          value_formatter: () => {
-            const { data } = useSuspenseQuery({
-              queryKey: ['pricing', id],
-              queryFn: async () => {
-                const url = apiUrl(ApiEndpoints.part_pricing_get, null, {
-                  id: id
+      br.push({
+        type: 'string',
+        name: 'pricing',
+        label: t`Price Range`,
+        value_formatter: () => {
+          const { data } = useSuspenseQuery({
+            queryKey: ['pricing', id],
+            queryFn: async () => {
+              const url = apiUrl(ApiEndpoints.part_pricing_get, null, {
+                id: id
+              });
+
+              return api
+                .get(url)
+                .then((response) => {
+                  switch (response.status) {
+                    case 200:
+                      return response.data;
+                    default:
+                      return null;
+                  }
+                })
+                .catch(() => {
+                  return null;
                 });
+            }
+          });
+          return `${formatPriceRange(data.overall_min, data.overall_max)}${
+            part.units && ' / ' + part.units
+          }`;
+        }
+      });
 
-                return api
-                  .get(url)
-                  .then((response) => {
-                    switch (response.status) {
-                      case 200:
-                        return response.data;
-                      default:
-                        return null;
-                    }
-                  })
-                  .catch(() => {
-                    return null;
-                  });
-              }
-            });
-            return `${formatPriceRange(data.overall_min, data.overall_max)}${
-              part.units && ' / ' + part.units
-            }`;
+    // Add in stocktake information
+    if (id && part.last_stocktake) {
+      br.push({
+        type: 'string',
+        name: 'stocktake',
+        label: t`Last Stocktake`,
+        unit: true,
+        value_formatter: () => {
+          const { data } = useSuspenseQuery({
+            queryKey: ['stocktake', id],
+            queryFn: async () => {
+              const url = apiUrl(ApiEndpoints.part_stocktake_list);
+
+              return api
+                .get(url, { params: { part: id, ordering: 'date' } })
+                .then((response) => {
+                  switch (response.status) {
+                    case 200:
+                      return response.data[response.data.length - 1];
+                    default:
+                      return null;
+                  }
+                })
+                .catch(() => {
+                  return null;
+                });
+            }
+          });
+
+          if (data.quantity) {
+            return `${data.quantity} (${data.date})`;
+          } else {
+            return '-';
           }
         }
-      ]);
+      });
 
-    id &&
-      part.last_stocktake &&
-      bottom_right.push([
-        {
-          type: 'string',
-          name: 'stocktake',
-          label: t`Last Stocktake`,
-          unit: true,
-          value_formatter: () => {
-            const { data } = useSuspenseQuery({
-              queryKey: ['stocktake', id],
-              queryFn: async () => {
-                const url = apiUrl(ApiEndpoints.part_stocktake_list);
+      br.push({
+        type: 'string',
+        name: 'stocktake_user',
+        label: t`Stocktake By`,
+        badge: 'user',
+        icon: 'user',
+        value_formatter: () => {
+          const { data } = useSuspenseQuery({
+            queryKey: ['stocktake', id],
+            queryFn: async () => {
+              const url = apiUrl(ApiEndpoints.part_stocktake_list);
 
-                return api
-                  .get(url, { params: { part: id, ordering: 'date' } })
-                  .then((response) => {
-                    switch (response.status) {
-                      case 200:
-                        return response.data[response.data.length - 1];
-                      default:
-                        return null;
-                    }
-                  })
-                  .catch(() => {
-                    return null;
-                  });
-              }
-            });
-            return data?.quantity;
-          }
-        },
-        {
-          type: 'string',
-          name: 'stocktake_user',
-          badge: 'user',
-          value_formatter: () => {
-            const { data } = useSuspenseQuery({
-              queryKey: ['stocktake', id],
-              queryFn: async () => {
-                const url = apiUrl(ApiEndpoints.part_stocktake_list);
-
-                return api
-                  .get(url, { params: { part: id, ordering: 'date' } })
-                  .then((response) => {
-                    switch (response.status) {
-                      case 200:
-                        return response.data[response.data.length - 1];
-                      default:
-                        return null;
-                    }
-                  })
-                  .catch(() => {
-                    return null;
-                  });
-              }
-            });
-            return data?.user;
-          }
+              return api
+                .get(url, { params: { part: id, ordering: 'date' } })
+                .then((response) => {
+                  switch (response.status) {
+                    case 200:
+                      return response.data[response.data.length - 1];
+                    default:
+                      return null;
+                  }
+                })
+                .catch(() => {
+                  return null;
+                });
+            }
+          });
+          return data?.user;
         }
-      ]);
-
-    if (part.default_location) {
-      bottom_right.push([
-        {
-          type: 'link',
-          name: 'default_location',
-          label: t`Default Location`,
-          model: ModelType.stocklocation
-        }
-      ]);
+      });
     }
 
-    if (part.default_supplier) {
-      bottom_right.push([
-        {
-          type: 'link',
-          name: 'default_supplier',
-          label: t`Default Supplier`,
-          model: ModelType.supplierpart
-        }
-      ]);
-    }
-
-    if (part.link) {
-      bottom_right.push([
-        {
-          type: 'link',
-          name: 'link',
-          label: t`Link`,
-          external: true,
-          copy: true
-        }
-      ]);
-    }
-
-    if (part.responsible) {
-      bottom_right.push([
-        {
-          type: 'string',
-          name: 'responsible',
-          label: t`Responsible`,
-          badge: 'owner'
-        }
-      ]);
-    }
-
-    let fields: ItemDetailFields = {
-      left: left,
-      right: right,
-      bottom_left: bottom_left,
-      bottom_right: bottom_right,
-      image: image
-    };
-
-    return fields;
-  };
+    return (
+      <ItemDetailsGrid>
+        <Grid>
+          <Grid.Col span={4}>
+            <DetailsImage
+              appRole={UserRoles.part}
+              imageActions={{
+                selectExisting: true,
+                uploadFile: true,
+                deleteFile: true
+              }}
+              src={part.image}
+              apiPath={apiUrl(ApiEndpoints.part_list, part.pk)}
+              refresh={refreshInstance}
+              pk={part.pk}
+            />
+          </Grid.Col>
+          <Grid.Col span={8}>
+            <Stack gap="xs">
+              <Table>
+                <Table.Tbody>
+                  <Table.Tr>
+                    <PartIcons part={part} />
+                  </Table.Tr>
+                </Table.Tbody>
+              </Table>
+              <DetailsTable fields={tl} item={part} />
+            </Stack>
+          </Grid.Col>
+        </Grid>
+        <DetailsTable fields={tr} item={part} />
+        <DetailsTable fields={bl} item={part} />
+        <DetailsTable fields={br} item={part} />
+      </ItemDetailsGrid>
+    );
+  }, [part, instanceQuery]);
 
   // Part data panels (recalculate when part data changes)
   const partPanels: PanelType[] = useMemo(() => {
     return [
       {
         name: 'details',
-        label: t`Details`,
+        label: t`Part Details`,
         icon: <IconInfoCircle />,
-        content: !instanceQuery.isFetching && (
-          <ItemDetails
-            appRole={UserRoles.part}
-            params={part}
-            apiPath={apiUrl(ApiEndpoints.part_list, part.pk)}
-            refresh={refreshInstance}
-            fields={detailFields(part)}
-            partModel
-          />
-        )
+        content: detailsPanel
       },
       {
         name: 'parameters',
@@ -469,10 +491,12 @@ export default function PartDetail() {
         name: 'stock',
         label: t`Stock`,
         icon: <IconPackages />,
-        content: (
+        content: part.pk && (
           <StockItemTable
+            tableName="part-stock"
+            allowAdd
             params={{
-              part: part.pk ?? -1
+              part: part.pk
             }}
           />
         )
@@ -513,8 +537,9 @@ export default function PartDetail() {
       },
       {
         name: 'pricing',
-        label: t`Pricing`,
-        icon: <IconCurrencyDollar />
+        label: t`Part Pricing`,
+        icon: <IconCurrencyDollar />,
+        content: part ? <PartPricingPanel part={part} /> : <Skeleton />
       },
       {
         name: 'manufacturers',
@@ -614,73 +639,171 @@ export default function PartDetail() {
       { name: t`Parts`, url: '/part' },
       ...(part.category_path ?? []).map((c: any) => ({
         name: c.name,
-        url: `/part/category/${c.pk}`
+        url: getDetailUrl(ModelType.partcategory, c.pk)
       }))
     ],
     [part]
   );
 
-  const partDetail = useMemo(() => {
-    return (
-      <Group spacing="xs" noWrap={true}>
-        <Stack spacing="xs">
-          <Text>Stock: {part.in_stock}</Text>
-        </Stack>
-      </Group>
-    );
-  }, [part, id]);
+  const badges: ReactNode[] = useMemo(() => {
+    if (instanceQuery.isLoading || instanceQuery.isFetching) {
+      return [];
+    }
+
+    return [
+      <DetailsBadge
+        label={t`In Stock` + `: ${part.total_in_stock}`}
+        color={part.in_stock >= part.minimum_stock ? 'green' : 'orange'}
+        visible={part.in_stock > 0}
+        key="in_stock"
+      />,
+      <DetailsBadge
+        label={t`Available` + `: ${part.unallocated_stock}`}
+        color="yellow"
+        key="available_stock"
+        visible={part.unallocated_stock != part.total_in_stock}
+      />,
+      <DetailsBadge
+        label={t`No Stock`}
+        color="red"
+        visible={part.in_stock == 0}
+        key="no_stock"
+      />,
+      <DetailsBadge
+        label={t`On Order` + `: ${part.ordering}`}
+        color="blue"
+        visible={part.on_order > 0}
+        key="on_order"
+      />,
+      <DetailsBadge
+        label={t`In Production` + `: ${part.building}`}
+        color="blue"
+        visible={part.building > 0}
+        key="in_production"
+      />,
+      <DetailsBadge
+        label={t`Inactive`}
+        color="red"
+        visible={part.active == false}
+        key="inactive"
+      />
+    ];
+  }, [part, instanceQuery]);
+
+  const partFields = usePartFields({ create: false });
 
   const editPart = useEditApiFormModal({
     url: ApiEndpoints.part_list,
     pk: part.pk,
     title: t`Edit Part`,
-    fields: partFields({ editing: true }),
+    fields: partFields,
     onFormSuccess: refreshInstance
   });
 
+  const duplicatePart = useCreateApiFormModal({
+    url: ApiEndpoints.part_list,
+    title: t`Add Part`,
+    fields: partFields,
+    initialData: {
+      ...part
+    },
+    follow: true,
+    modelType: ModelType.part
+  });
+
+  const deletePart = useDeleteApiFormModal({
+    url: ApiEndpoints.part_list,
+    pk: part.pk,
+    title: t`Delete Part`,
+    onFormSuccess: () => {
+      if (part.category) {
+        navigate(getDetailUrl(ModelType.partcategory, part.category));
+      } else {
+        navigate('/part/');
+      }
+    },
+    preFormContent: (
+      <Alert color="red" title={t`Deleting this part cannot be reversed`}>
+        <Stack gap="xs">
+          <Thumbnail src={part.thumbnail ?? part.image} text={part.full_name} />
+        </Stack>
+      </Alert>
+    )
+  });
+
+  const stockActionProps: StockOperationProps = useMemo(() => {
+    return {
+      pk: part.pk,
+      model: ModelType.part,
+      refresh: refreshInstance,
+      filters: {
+        in_stock: true
+      }
+    };
+  }, [part]);
+
+  const countStockItems = useCountStockItem(stockActionProps);
+  const transferStockItems = useTransferStockItem(stockActionProps);
+
   const partActions = useMemo(() => {
-    // TODO: Disable actions based on user permissions
     return [
+      <AdminButton model={ModelType.part} pk={part.pk} />,
       <BarcodeActionDropdown
         actions={[
           ViewBarcodeAction({}),
           LinkBarcodeAction({
-            disabled: part?.barcode_hash
+            hidden: part?.barcode_hash || !user.hasChangeRole(UserRoles.part)
           }),
           UnlinkBarcodeAction({
-            disabled: !part?.barcode_hash
+            hidden: !part?.barcode_hash || !user.hasChangeRole(UserRoles.part)
           })
         ]}
+        key="action_dropdown"
       />,
       <ActionDropdown
-        key="stock"
         tooltip={t`Stock Actions`}
         icon={<IconPackages />}
         actions={[
           {
-            icon: <IconClipboardList color="blue" />,
+            icon: (
+              <InvenTreeIcon icon="stocktake" iconProps={{ color: 'blue' }} />
+            ),
             name: t`Count Stock`,
-            tooltip: t`Count part stock`
+            tooltip: t`Count part stock`,
+            hidden: !user.hasChangeRole(UserRoles.stock),
+            onClick: () => {
+              part.pk && countStockItems.open();
+            }
           },
           {
-            icon: <IconTransfer color="blue" />,
+            icon: (
+              <InvenTreeIcon icon="transfer" iconProps={{ color: 'blue' }} />
+            ),
             name: t`Transfer Stock`,
-            tooltip: t`Transfer part stock`
+            tooltip: t`Transfer part stock`,
+            hidden: !user.hasChangeRole(UserRoles.stock),
+            onClick: () => {
+              part.pk && transferStockItems.open();
+            }
           }
         ]}
       />,
       <ActionDropdown
-        key="part"
         tooltip={t`Part Actions`}
         icon={<IconDots />}
         actions={[
-          DuplicateItemAction({}),
+          DuplicateItemAction({
+            hidden: !user.hasAddRole(UserRoles.part),
+            onClick: () => duplicatePart.open()
+          }),
           EditItemAction({
-            disabled: !user.hasChangeRole(UserRoles.part),
+            hidden: !user.hasChangeRole(UserRoles.part),
             onClick: () => editPart.open()
           }),
           DeleteItemAction({
-            disabled: part?.active
+            hidden: !user.hasDeleteRole(UserRoles.part),
+            disabled: part.active,
+            onClick: () => deletePart.open()
           })
         ]}
       />
@@ -689,8 +812,10 @@ export default function PartDetail() {
 
   return (
     <>
+      {duplicatePart.modal}
       {editPart.modal}
-      <Stack spacing="xs">
+      {deletePart.modal}
+      <Stack gap="xs">
         <LoadingOverlay visible={instanceQuery.isFetching} />
         <PartCategoryTree
           opened={treeOpen}
@@ -703,7 +828,7 @@ export default function PartDetail() {
           title={t`Part` + ': ' + part.full_name}
           subtitle={part.description}
           imageUrl={part.image}
-          detail={partDetail}
+          badges={badges}
           breadcrumbs={breadcrumbs}
           breadcrumbAction={() => {
             setTreeOpen(true);
@@ -711,6 +836,8 @@ export default function PartDetail() {
           actions={partActions}
         />
         <PanelGroup pageKey="part" panels={partPanels} />
+        {transferStockItems.modal}
+        {countStockItems.modal}
       </Stack>
     </>
   );
