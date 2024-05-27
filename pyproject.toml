@@ -82,7 +82,7 @@ known_django="django"
 sections=["FUTURE","STDLIB","DJANGO","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
 
 [tool.pyright]
-include = ["InvenTree"]
+include = ["src/backend/InvenTree"]
 exclude = ["**/node_modules","**/__pycache__","**/migrations/**"]
 defineConstant = { DEBUG = true }
 
