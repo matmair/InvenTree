@@ -552,7 +552,7 @@ class StockItemSerializer(InvenTree.serializers.InvenTreeTagModelSerializer):
         tests = kwargs.pop('tests', False)
         path_detail = kwargs.pop('path_detail', False)
 
-        super(StockItemSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if not part_detail:
             self.fields.pop('part_detail')

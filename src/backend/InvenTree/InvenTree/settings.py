@@ -281,7 +281,7 @@ QUERYCOUNT = {
         'MIN_TIME_TO_LOG': 0,
         'MIN_QUERY_COUNT_TO_LOG': 0,
     },
-    'IGNORE_REQUEST_PATTERNS': ['^(?!\/(api)?(plugin)?\/).*'],
+    'IGNORE_REQUEST_PATTERNS': [r'^(?!\/(api)?(plugin)?\/).*'],
     'IGNORE_SQL_PATTERNS': [],
     'DISPLAY_DUPLICATES': 1,
     'RESPONSE_HEADER': 'X-Django-Query-Count',

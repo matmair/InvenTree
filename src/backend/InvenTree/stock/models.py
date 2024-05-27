@@ -567,7 +567,7 @@ class StockItem(
             except (ValueError, StockItem.DoesNotExist):
                 pass
 
-        super(StockItem, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         # If user information is provided, and no existing note exists, create one!
         if user and self.tracking_info.count() == 0:
@@ -602,7 +602,7 @@ class StockItem(
         If the StockItem is serialized, the same serial number.
         cannot exist for the same part (or part tree).
         """
-        super(StockItem, self).validate_unique(exclude)
+        super().validate_unique(exclude)
 
         # If the serial number is set, make sure it is not a duplicate
         if self.serial:

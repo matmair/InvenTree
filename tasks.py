@@ -580,7 +580,7 @@ def export_records(
     print('Running data post-processing step...')
 
     # Post-process the file, to remove any "permissions" specified for a user or group
-    with open(tmpfile, 'r') as f_in:
+    with open(tmpfile) as f_in:
         data = json.loads(f_in.read())
 
     data_out = []
@@ -645,7 +645,7 @@ def import_records(
     # Pre-process the data, to remove any "permissions" specified for a user or group
     datafile = f'{filename}.data.json'
 
-    with open(filename, 'r') as f_in:
+    with open(filename) as f_in:
         try:
             data = json.loads(f_in.read())
         except json.JSONDecodeError as exc:
@@ -837,8 +837,8 @@ def test_translations(c):
     last_string = ''
 
     # loop through input file lines
-    with open(file_path, 'rt') as file_org:
-        with open(new_file_path, 'wt') as file_new:
+    with open(file_path) as file_org:
+        with open(new_file_path, 'w') as file_new:
             for line in file_org:
                 if line.startswith('msgstr "'):
                     # write output -> replace regex matches with x in the read in (multi)string

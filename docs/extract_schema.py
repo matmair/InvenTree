@@ -173,7 +173,7 @@ def parse_api_file(filename: str):
 
     The intent is to make the API schema easier to peruse on the documentation.
     """
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         data = yaml.safe_load(f)
 
     paths = data['paths']

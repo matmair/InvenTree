@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
     version = None
 
-    with open(version_file, 'r') as f:
+    with open(version_file) as f:
         text = f.read()
 
         # Extract the InvenTree software version

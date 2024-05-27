@@ -7,7 +7,7 @@ import sys
 
 def calculate_coverage(filename):
     """Calculate translation coverage for a .po file."""
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         lines = f.readlines()
 
     lines_count = 0

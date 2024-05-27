@@ -107,7 +107,7 @@ def construct_format_regex(fmt_string: str) -> str:
         if name:
             # Check if integer values are required
             if _fmt.endswith('d'):
-                c = '\d'
+                c = r'\d'
             else:
                 c = '.'
 
