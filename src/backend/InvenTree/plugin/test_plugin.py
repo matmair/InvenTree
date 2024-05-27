@@ -280,10 +280,10 @@ class RegistryTests(TestCase):
         # There should be at least one discovery error in the module `broken_file`
         _reg_disc = registry.errors.get('discovery')
         assert _reg_disc
-        self.assertTrue(len(_reg_disc) > 0)
+        self.assertGreater(len(_reg_disc), 0)
         self.assertEqual(_reg_disc[0]['broken_file'], "name 'bb' is not defined")
         # There should be at least one load error with an intentional KeyError
         _reg_load = registry.errors.get('load')
         assert _reg_load
-        self.assertTrue(len(_reg_load) > 0)
+        self.assertGreater(len(_reg_load), 0)
         self.assertEqual(_reg_load[0]['broken_sample'], "'This is a dummy error'")

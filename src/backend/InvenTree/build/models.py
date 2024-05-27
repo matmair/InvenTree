@@ -38,6 +38,7 @@ from common.notifications import trigger_notification, InvenTreeNotificationBodi
 from plugin.events import trigger_event
 
 import part.models
+import report.mixins
 import stock.models
 import users.models
 
@@ -45,7 +46,14 @@ import users.models
 logger = logging.getLogger('inventree')
 
 
-class Build(InvenTree.models.InvenTreeBarcodeMixin, InvenTree.models.InvenTreeNotesMixin, InvenTree.models.MetadataMixin, InvenTree.models.PluginValidationMixin, InvenTree.models.ReferenceIndexingMixin, MPTTModel):
+class Build(
+    report.mixins.InvenTreeReportMixin,
+    InvenTree.models.InvenTreeBarcodeMixin,
+    InvenTree.models.InvenTreeNotesMixin,
+    InvenTree.models.MetadataMixin,
+    InvenTree.models.PluginValidationMixin,
+    InvenTree.models.ReferenceIndexingMixin,
+    MPTTModel):
     """A Build object organises the creation of new StockItem objects from other existing StockItem objects.
 
     Attributes:
@@ -109,6 +117,12 @@ class Build(InvenTree.models.InvenTreeBarcodeMixin, InvenTree.models.InvenTreeNo
         self.validate_reference_field(self.reference)
         self.reference_int = self.rebuild_reference_field(self.reference)
 
+        # On first save (i.e. creation), run some extra checks
+        if self.pk is None:
+            # Set the destination location (if not specified)
+            if not self.destination:
+                self.destination = self.part.get_default_location()
+
         try:
             super().save(*args, **kwargs)
         except InvalidMove:
@@ -132,6 +146,21 @@ class Build(InvenTree.models.InvenTreeBarcodeMixin, InvenTree.models.InvenTreeNo
             raise ValidationError({
                 'part': _('Build order part cannot be changed')
             })
+
+    def report_context(self) -> dict:
+        """Generate custom report context data."""
+
+        return {
+            'bom_items': self.part.get_bom_items(),
+            'build': self,
+            'build_outputs': self.build_outputs.all(),
+            'line_items': self.build_lines.all(),
+            'part': self.part,
+            'quantity': self.quantity,
+            'reference': self.reference,
+            'title': str(self)
+        }
+
 
     @staticmethod
     def filterByDate(queryset, min_date, max_date):
@@ -552,11 +581,12 @@ class Build(InvenTree.models.InvenTreeBarcodeMixin, InvenTree.models.InvenTreeNo
         self.save()
 
         # Offload task to complete build allocations
-        InvenTree.tasks.offload_task(
+        if not InvenTree.tasks.offload_task(
             build.tasks.complete_build_allocations,
             self.pk,
             user.pk if user else None
-        )
+        ):
+            raise ValidationError(_("Failed to offload task to complete build allocations"))
 
         # Register an event
         trigger_event('build.completed', id=self.pk)
@@ -608,24 +638,29 @@ class Build(InvenTree.models.InvenTreeBarcodeMixin, InvenTree.models.InvenTreeNo
         - Set build status to CANCELLED
         - Save the Build object
         """
+
+        import build.tasks
+
         remove_allocated_stock = kwargs.get('remove_allocated_stock', False)
         remove_incomplete_outputs = kwargs.get('remove_incomplete_outputs', False)
 
-        # Find all BuildItem objects associated with this Build
-        items = self.allocated_stock
-
         if remove_allocated_stock:
-            for item in items:
-                item.complete_allocation(user)
+            # Offload task to remove allocated stock
+            if not InvenTree.tasks.offload_task(
+                build.tasks.complete_build_allocations,
+                self.pk,
+                user.pk if user else None
+            ):
+                raise ValidationError(_("Failed to offload task to complete build allocations"))
 
-        items.delete()
+        else:
+            self.allocated_stock.all().delete()
 
         # Remove incomplete outputs (if required)
         if remove_incomplete_outputs:
             outputs = self.build_outputs.filter(is_building=True)
 
-            for output in outputs:
-                output.delete()
+            outputs.delete()
 
         # Date of 'completion' is the date the build was cancelled
         self.completion_date = InvenTree.helpers.current_date()
@@ -676,9 +711,12 @@ class Build(InvenTree.models.InvenTreeBarcodeMixin, InvenTree.models.InvenTreeNo
         """
         user = kwargs.get('user', None)
         batch = kwargs.get('batch', self.batch)
-        location = kwargs.get('location', self.destination)
+        location = kwargs.get('location', None)
         serials = kwargs.get('serials', None)
         auto_allocate = kwargs.get('auto_allocate', False)
+
+        if location is None:
+            location = self.destination or self.part.get_default_location()
 
         """
         Determine if we can create a single output (with quantity > 0),
@@ -1276,7 +1314,7 @@ class BuildOrderAttachment(InvenTree.models.InvenTreeAttachment):
     build = models.ForeignKey(Build, on_delete=models.CASCADE, related_name='attachments')
 
 
-class BuildLine(InvenTree.models.InvenTreeModel):
+class BuildLine(report.mixins.InvenTreeReportMixin, InvenTree.models.InvenTreeModel):
     """A BuildLine object links a BOMItem to a Build.
 
     When a new Build is created, the BuildLine objects are created automatically.
@@ -1293,7 +1331,8 @@ class BuildLine(InvenTree.models.InvenTreeModel):
     """
 
     class Meta:
-        """Model meta options"""
+        """Model meta options."""
+        verbose_name = _('Build Order Line Item')
         unique_together = [
             ('build', 'bom_item'),
         ]
@@ -1302,6 +1341,19 @@ class BuildLine(InvenTree.models.InvenTreeModel):
     def get_api_url():
         """Return the API URL used to access this model"""
         return reverse('api-build-line-list')
+
+    def report_context(self):
+        """Generate custom report context for this BuildLine object."""
+
+        return {
+            'allocated_quantity': self.allocated_quantity,
+            'allocations': self.allocations,
+            'bom_item': self.bom_item,
+            'build': self.build,
+            'build_line': self,
+            'part': self.bom_item.sub_part,
+            'quantity': self.quantity,
+        }
 
     build = models.ForeignKey(
         Build, on_delete=models.CASCADE,
@@ -1369,7 +1421,7 @@ class BuildItem(InvenTree.models.InvenTreeMetadataModel):
     """
 
     class Meta:
-        """Model meta options"""
+        """Model meta options."""
         unique_together = [
             ('build_line', 'stock_item', 'install_into'),
         ]
@@ -1554,7 +1606,7 @@ class BuildItem(InvenTree.models.InvenTreeMetadataModel):
 
     build_line = models.ForeignKey(
         BuildLine,
-        on_delete=models.SET_NULL, null=True,
+        on_delete=models.CASCADE, null=True,
         related_name='allocations',
     )
 
