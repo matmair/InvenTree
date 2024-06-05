@@ -229,7 +229,7 @@ class ExchangeRateMixin:
 
 
 class InvenTreeTestCase(ExchangeRateMixin, UserMixin, TestCase):
-    """Testcase with user setup buildin."""
+    """Testcase with user setup build in."""
 
     pass
 
