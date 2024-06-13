@@ -530,6 +530,10 @@ class Part(
             # Only run if the check was not run previously (due to not existing in the database)
             self.ensure_trackable()
 
+        if _new:
+            # Only run if the check was not run previously (due to not existing in the database)
+            self.ensure_trackable()
+
     def __str__(self):
         """Return a string representation of the Part (for use in the admin interface)."""
         return f'{self.full_name} - {self.description}'
@@ -4170,7 +4174,7 @@ class BomItem(
         - allow_variants
         """
         # Seed the hash with the ID of this BOM item
-        result_hash = hashlib.md5(''.encode())
+        result_hash = hashlib.md5(b'')
 
         # The following components are used to calculate the checksum
         components = [

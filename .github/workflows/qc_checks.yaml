@@ -9,7 +9,7 @@ on:
     branches-ignore: ["l10*"]
 
 env:
-  python_version: 3.9
+  python_version: 3.11
   node_version: 18
   # The OS version must be set per job
   server_start_sleep: 60
@@ -338,7 +338,7 @@ jobs:
         uses: ./.github/actions/setup
         with:
           apt-dependency: gettext poppler-utils libpq-dev
-          pip-dependency: psycopg django-redis>=5.0.0
+          pip-dependency: psycopg psycopg2-binary django-redis>=5.0.0
           dev-install: true
           update: true
       - name: Run Tests
@@ -421,7 +421,7 @@ jobs:
         uses: ./.github/actions/setup
         with:
           apt-dependency: gettext poppler-utils libpq-dev
-          pip-dependency: psycopg
+          pip-dependency: psycopg psycopg2-binary
           dev-install: true
           update: true
       - name: Run Tests

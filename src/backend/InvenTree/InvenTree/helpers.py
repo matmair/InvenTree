@@ -834,10 +834,10 @@ def remove_non_printable_characters(
     if remove_unicode:
         # Remove Unicode control characters
         if remove_newline:
-            cleaned = regex.sub('[^\P{C}]+', '', cleaned)
+            cleaned = regex.sub(r'[^\P{C}]+', '', cleaned)
         else:
             # Use 'negative-lookahead' to exclude newline character
-            cleaned = regex.sub('(?![\x0a])[^\P{C}]+', '', cleaned)
+            cleaned = regex.sub('(?![\x0a])[^\\P{C}]+', '', cleaned)
 
     return cleaned
 

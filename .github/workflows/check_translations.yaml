@@ -26,6 +26,7 @@ jobs:
       INVENTREE_MEDIA_ROOT: ./media
       INVENTREE_STATIC_ROOT: ./static
       INVENTREE_BACKUP_DIR: ./backup
+      python_version: 3.11
       INVENTREE_SITE_URL: http://localhost:8000
 
     steps:

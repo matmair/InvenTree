@@ -35,7 +35,7 @@ def get_token_from_request(request):
     return None
 
 
-class AuthRequiredMiddleware(object):
+class AuthRequiredMiddleware:
     """Check for user to be authenticated."""
 
     def __init__(self, get_response):
