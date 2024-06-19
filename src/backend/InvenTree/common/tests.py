@@ -206,6 +206,7 @@ class SettingsTest(InvenTreeTestCase):
         report_test_obj = InvenTreeSetting.get_setting_object(
             'REPORT_ENABLE_TEST_REPORT'
         )
+        assert stale_days and instance_obj and report_size_obj and report_test_obj
 
         # check settings base fields
         self.assertEqual(instance_obj.name, 'Server Instance Name')
@@ -421,6 +422,7 @@ class SettingsTest(InvenTreeTestCase):
 
             # Any fields marked as 'boolean' must have a default value specified
             setting = InvenTreeSetting.get_setting_object(key)
+            assert setting
 
             if setting.is_bool():
                 if setting.default_value not in [True, False]:
@@ -530,6 +532,7 @@ class GlobalSettingsApiTest(InvenTreeAPITestCase):
     def test_company_name(self):
         """Test a settings object lifecycle e2e."""
         setting = InvenTreeSetting.get_setting_object('INVENTREE_COMPANY_NAME')
+        assert setting
 
         # Check default value
         self.assertEqual(setting.value, 'My company name')
@@ -630,6 +633,7 @@ class UserSettingsApiTest(InvenTreeAPITestCase):
         setting = InvenTreeUserSetting.get_setting_object(
             'SEARCH_PREVIEW_SHOW_PARTS', user=self.user
         )
+        assert setting
 
         # Check default values
         self.assertEqual(setting.to_native_value(), True)
@@ -676,6 +680,7 @@ class UserSettingsApiTest(InvenTreeAPITestCase):
         setting = InvenTreeUserSetting.get_setting_object(
             'DATE_DISPLAY_FORMAT', user=self.user
         )
+        assert setting
 
         url = reverse('api-user-setting-detail', kwargs={'key': setting.key})
 
@@ -700,6 +705,7 @@ class UserSettingsApiTest(InvenTreeAPITestCase):
         setting = InvenTreeUserSetting.get_setting_object(
             'SEARCH_PREVIEW_RESULTS', user=self.user, cache=False
         )
+        assert setting
 
         url = reverse('api-user-setting-detail', kwargs={'key': setting.key})
 
@@ -1356,6 +1362,7 @@ class ProjectCodesTest(InvenTreeAPITestCase):
 
         # Get the first project code
         code = ProjectCode.objects.first()
+        assert code
 
         # Delete it
         self.delete(
@@ -1453,6 +1460,7 @@ class CustomUnitAPITest(InvenTreeAPITestCase):
     def test_edit(self):
         """Test edit permissions for CustomUnit model."""
         unit = CustomUnit.objects.first()
+        assert unit
 
         # Try to edit without permission
         self.user.is_staff = False
@@ -1480,6 +1488,7 @@ class CustomUnitAPITest(InvenTreeAPITestCase):
     def test_validation(self):
         """Test that validation works as expected."""
         unit = CustomUnit.objects.first()
+        assert unit
 
         self.user.is_staff = True
         self.user.save()

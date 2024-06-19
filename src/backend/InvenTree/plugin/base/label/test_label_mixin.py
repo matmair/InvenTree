@@ -11,7 +11,7 @@ from pdfminer.high_level import extract_text
 from PIL import Image
 
 from InvenTree.settings import BASE_DIR
-from InvenTree.unit_test import InvenTreeAPITestCase
+from InvenTree.unit_test import InvenTreeAPITestCase, get_plugin_config
 from part.models import Part
 from plugin.base.label.mixins import LabelPrintingMixin
 from plugin.helpers import MixinNotImplementedError

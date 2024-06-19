@@ -211,6 +211,7 @@ class ContactTest(InvenTreeAPITestCase):
         n = Contact.objects.count()
 
         company = Company.objects.first()
+        assert company
 
         # Without required permissions, creation should fail
         self.post(
@@ -229,6 +230,8 @@ class ContactTest(InvenTreeAPITestCase):
         """Test that we can edit a Contact via the API."""
         # Get the first contact
         contact = Contact.objects.first()
+        assert contact
+
         # Use this contact in the tests
         url = reverse('api-contact-detail', kwargs={'pk': contact.pk})
 
@@ -246,12 +249,15 @@ class ContactTest(InvenTreeAPITestCase):
 
         # Get the contact again
         contact = Contact.objects.first()
+        assert contact
         self.assertEqual(contact.role, 'x')
 
     def test_delete(self):
         """Tests that we can delete a Contact via the API."""
         # Get the last contact
         contact = Contact.objects.first()
+        assert contact
+
         url = reverse('api-contact-detail', kwargs={'pk': contact.pk})
 
         # Delete (without required permissions)
@@ -306,6 +312,7 @@ class AddressTest(InvenTreeAPITestCase):
     def test_filter_list(self):
         """Test listing addresses filtered on company."""
         company = Company.objects.first()
+        assert company
 
         response = self.get(self.url, {'company': company.pk}, expected_code=200)
 
@@ -314,6 +321,7 @@ class AddressTest(InvenTreeAPITestCase):
     def test_create(self):
         """Test creating a new address."""
         company = Company.objects.first()
+        assert company
 
         self.post(self.url, {'company': company.pk, 'title': 'HQ'}, expected_code=403)
 
@@ -324,6 +332,7 @@ class AddressTest(InvenTreeAPITestCase):
     def test_get(self):
         """Test that objects are properly returned from a get."""
         addr = Address.objects.first()
+        assert addr
 
         url = reverse('api-address-detail', kwargs={'pk': addr.pk})
         response = self.get(url, expected_code=200)
@@ -344,6 +353,7 @@ class AddressTest(InvenTreeAPITestCase):
     def test_edit(self):
         """Test editing an object."""
         addr = Address.objects.first()
+        assert addr
 
         url = reverse('api-address-detail', kwargs={'pk': addr.pk})
 
@@ -360,6 +370,7 @@ class AddressTest(InvenTreeAPITestCase):
     def test_delete(self):
         """Test deleting an object."""
         addr = Address.objects.first()
+        assert addr
 
         url = reverse('api-address-detail', kwargs={'pk': addr.pk})
 

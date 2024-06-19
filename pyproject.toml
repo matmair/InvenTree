@@ -80,3 +80,18 @@ src_paths=["src/backend/InvenTree", ]
 skip_glob ="*/migrations/*.py"
 known_django="django"
 sections=["FUTURE","STDLIB","DJANGO","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
+
+[tool.pyright]
+include = ["src/backend/InvenTree"]
+exclude = ["**/node_modules","**/__pycache__","**/migrations/**"]
+defineConstant = { DEBUG = true }
+
+reportMissingImports = true
+reportMissingTypeStubs = false
+reportIncompatibleMethodOverride = false
+reportAttributeAccessIssue = false
+reportIndexIssue = false
+reportIncompatibleVariableOverride = false
+
+pythonVersion = "3.9"
+pythonPlatform = "Linux"

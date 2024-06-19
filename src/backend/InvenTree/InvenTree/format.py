@@ -1,5 +1,7 @@
 """Custom string formatting functions and helpers."""
 
+from __future__ import annotations
+
 import re
 import string
 
@@ -182,8 +184,8 @@ def extract_named_group(name: str, value: str, fmt_string: str) -> str:
 
 def format_money(
     money: Money,
-    decimal_places: int = None,
-    format: str = None,
+    decimal_places: int | None = None,
+    format: str | None = None,
     include_symbol: bool = True,
 ) -> str:
     """Format money object according to the currently set local.
