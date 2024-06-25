@@ -27,7 +27,7 @@ repos:
         --preview
       ]
 -   repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.2.13
+    rev: 0.1.40
     hooks:
       - id: pip-compile
         name: pip-compile requirements-dev.in
