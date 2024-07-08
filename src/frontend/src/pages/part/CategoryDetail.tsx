@@ -18,9 +18,10 @@ import {
   DeleteItemAction,
   EditItemAction
 } from '../../components/items/ActionDropdown';
+import InstanceDetail from '../../components/nav/InstanceDetail';
+import NavigationTree from '../../components/nav/NavigationTree';
 import { PageDetail } from '../../components/nav/PageDetail';
 import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
-import { PartCategoryTree } from '../../components/nav/PartCategoryTree';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
@@ -56,7 +57,8 @@ export default function CategoryDetail({}: {}) {
   const {
     instance: category,
     refreshInstance,
-    instanceQuery
+    instanceQuery,
+    requestStatus
   } = useInstance({
     endpoint: ApiEndpoints.category_list,
     hasPrimaryKey: true,
@@ -275,26 +277,34 @@ export default function CategoryDetail({}: {}) {
     <>
       {editCategory.modal}
       {deleteCategory.modal}
-      <Stack gap="xs">
-        <LoadingOverlay visible={instanceQuery.isFetching} />
-        <PartCategoryTree
-          opened={treeOpen}
-          onClose={() => {
-            setTreeOpen(false);
-          }}
-          selectedCategory={category?.pk}
-        />
-        <PageDetail
-          title={t`Part Category`}
-          subtitle={category?.name}
-          breadcrumbs={breadcrumbs}
-          breadcrumbAction={() => {
-            setTreeOpen(true);
-          }}
-          actions={categoryActions}
-        />
-        <PanelGroup pageKey="partcategory" panels={categoryPanels} />
-      </Stack>
+      <InstanceDetail
+        status={requestStatus}
+        loading={id ? instanceQuery.isFetching : false}
+      >
+        <Stack gap="xs">
+          <LoadingOverlay visible={instanceQuery.isFetching} />
+          <NavigationTree
+            modelType={ModelType.partcategory}
+            title={t`Part Categories`}
+            endpoint={ApiEndpoints.category_tree}
+            opened={treeOpen}
+            onClose={() => {
+              setTreeOpen(false);
+            }}
+            selectedId={category?.pk}
+          />
+          <PageDetail
+            title={t`Part Category`}
+            subtitle={category?.name}
+            breadcrumbs={breadcrumbs}
+            breadcrumbAction={() => {
+              setTreeOpen(true);
+            }}
+            actions={categoryActions}
+          />
+          <PanelGroup pageKey="partcategory" panels={categoryPanels} />
+        </Stack>
+      </InstanceDetail>
     </>
   );
 }

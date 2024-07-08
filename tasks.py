@@ -47,6 +47,8 @@ def apps():
         'build',
         'common',
         'company',
+        'importer',
+        'machine',
         'order',
         'part',
         'report',
@@ -86,6 +88,9 @@ def content_excludes(
         'common.notificationentry',
         'common.notificationmessage',
         'user_sessions.session',
+        'importer.dataimportsession',
+        'importer.dataimportcolumnmap',
+        'importer.dataimportrow',
         'report.labeloutput',
         'report.reportoutput',
     ]
@@ -131,17 +136,20 @@ def managePyPath():
     return managePyDir().joinpath('manage.py')
 
 
-def manage(c, cmd, pty: bool = False):
+def manage(c, cmd, pty: bool = False, env=None):
     """Runs a given command against django's "manage.py" script.
 
     Args:
         c: Command line context.
         cmd: Django command to run.
         pty (bool, optional): Run an interactive session. Defaults to False.
+        env (dict, optional): Environment variables to pass to the command. Defaults to None.
     """
+    env = env or {}
     c.run(
         'cd "{path}" && python3 manage.py {cmd}'.format(path=managePyDir(), cmd=cmd),
         pty=pty,
+        env=env,
     )
 
 
@@ -226,6 +234,9 @@ def plugins(c, uv=False):
     else:
         c.run('pip3 install --no-cache-dir --disable-pip-version-check uv')
         c.run(f"uv pip install -r '{plugin_file}'")
+
+    # Collect plugin static files
+    manage(c, 'collectplugins')
 
 
 @task(help={'uv': 'Use UV package manager (experimental)'})
@@ -317,8 +328,8 @@ def remove_mfa(c, mail=''):
     manage(c, f'remove_mfa {mail}')
 
 
-@task(help={'frontend': 'Build the frontend'})
-def static(c, frontend=False):
+@task(help={'frontend': 'Build the frontend', 'clear': 'Remove existing static files'})
+def static(c, frontend=False, clear=True):
     """Copies required static files to the STATIC_ROOT directory, as per Django requirements."""
     manage(c, 'prerender')
 
@@ -327,7 +338,16 @@ def static(c, frontend=False):
         frontend_build(c)
 
     print('Collecting static files...')
-    manage(c, 'collectstatic --no-input --clear --verbosity 0')
+
+    cmd = 'collectstatic --no-input --verbosity 0'
+
+    if clear:
+        cmd += ' --clear'
+
+    manage(c, cmd)
+
+    # Collect plugin static files
+    manage(c, 'collectplugins')
 
 
 @task
@@ -450,9 +470,16 @@ def migrate(c):
     manage(c, 'makemigrations')
     manage(c, 'runmigrations', pty=True)
     manage(c, 'migrate --run-syncdb')
+    manage(c, 'remove_stale_contenttypes --include-stale-apps --no-input', pty=True)
 
     print('========================================')
     print('InvenTree database migrations completed!')
+
+
+@task(help={'app': 'Specify an app to show migrations for (leave blank for all apps)'})
+def showmigrations(c, app=''):
+    """Show the migration status of the database."""
+    manage(c, f'showmigrations {app}', pty=True)
 
 
 @task(
@@ -765,18 +792,31 @@ def wait(c):
     return manage(c, 'wait_for_db')
 
 
-@task(pre=[wait], help={'address': 'Server address:port (default=0.0.0.0:8000)'})
-def gunicorn(c, address='0.0.0.0:8000'):
+@task(
+    pre=[wait],
+    help={
+        'address': 'Server address:port (default=0.0.0.0:8000)',
+        'workers': 'Specify number of worker threads (override config file)',
+    },
+)
+def gunicorn(c, address='0.0.0.0:8000', workers=None):
     """Launch a gunicorn webserver.
 
     Note: This server will not auto-reload in response to code changes.
     """
-    c.run(
-        'gunicorn -c ./docker/gunicorn.conf.py InvenTree.wsgi -b {address} --chdir ./InvenTree'.format(
-            address=address
-        ),
-        pty=True,
-    )
+    here = os.path.dirname(os.path.abspath(__file__))
+    config_file = os.path.join(here, 'contrib', 'container', 'gunicorn.conf.py')
+    chdir = os.path.join(here, 'src', 'backend', 'InvenTree')
+
+    cmd = f'gunicorn -c {config_file} InvenTree.wsgi -b {address} --chdir {chdir}'
+
+    if workers:
+        cmd += f' --workers={workers}'
+
+    print('Starting Gunicorn Server:')
+    print(cmd)
+
+    c.run(cmd, pty=True)
 
 
 @task(pre=[wait], help={'address': 'Server address:port (default=127.0.0.1:8000)'})
@@ -983,9 +1023,12 @@ def setup_test(c, ignore_update=False, dev=False, path='inventree-demo-dataset')
     help={
         'filename': "Output filename (default = 'schema.yml')",
         'overwrite': 'Overwrite existing files without asking first (default = off/False)',
+        'no_default': 'Do not use default settings for schema (default = off/False)',
     }
 )
-def schema(c, filename='schema.yml', overwrite=False, ignore_warnings=False):
+def schema(
+    c, filename='schema.yml', overwrite=False, ignore_warnings=False, no_default=False
+):
     """Export current API schema."""
     check_file_existance(filename, overwrite)
 
@@ -998,7 +1041,19 @@ def schema(c, filename='schema.yml', overwrite=False, ignore_warnings=False):
     if not ignore_warnings:
         cmd += ' --fail-on-warn'
 
-    manage(c, cmd, pty=True)
+    envs = {}
+    if not no_default:
+        envs['INVENTREE_SITE_URL'] = (
+            'http://localhost:8000'  # Default site URL - to ensure server field is stable
+        )
+        envs['INVENTREE_PLUGINS_ENABLED'] = (
+            'False'  # Disable plugins to ensure they are kep out of schema
+        )
+        envs['INVENTREE_CURRENCY_CODES'] = (
+            'AUD,CNY,EUR,USD'  # Default currency codes to ensure they are stable
+        )
+
+    manage(c, cmd, pty=True, env=envs)
 
     assert os.path.exists(filename)
 
@@ -1037,8 +1092,8 @@ API         {InvenTreeVersion.inventreeApiVersion()}
 Node        {node if node else 'N/A'}
 Yarn        {yarn if yarn else 'N/A'}
 
-Commit hash:{InvenTreeVersion.inventreeCommitHash()}
-Commit date:{InvenTreeVersion.inventreeCommitDate()}"""
+Commit hash: {InvenTreeVersion.inventreeCommitHash()}
+Commit date: {InvenTreeVersion.inventreeCommitDate()}"""
     )
     if len(sys.argv) == 1 and sys.argv[0].startswith('/opt/inventree/env/lib/python'):
         print(

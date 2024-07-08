@@ -33,8 +33,9 @@ import order.validators
 import report.mixins
 import stock.models
 import users.models as UserModels
+from common.currency import currency_code_default
 from common.notifications import InvenTreeNotificationBodies
-from common.settings import currency_code_default
+from common.settings import get_global_setting
 from company.models import Address, Company, Contact, SupplierPart
 from generic.states import StateTransitionMixin
 from InvenTree.exceptions import log_error
@@ -44,8 +45,8 @@ from InvenTree.fields import (
     RoundingDecimalField,
 )
 from InvenTree.helpers import decimal2string, pui_url
-from InvenTree.helpers_model import getSetting, notify_responsible
-from InvenTree.status_codes import (
+from InvenTree.helpers_model import notify_responsible
+from order.status_codes import (
     PurchaseOrderStatus,
     PurchaseOrderStatusGroups,
     ReturnOrderLineStatus,
@@ -53,11 +54,10 @@ from InvenTree.status_codes import (
     ReturnOrderStatusGroups,
     SalesOrderStatus,
     SalesOrderStatusGroups,
-    StockHistoryCode,
-    StockStatus,
 )
 from part import models as PartModels
 from plugin.events import trigger_event
+from stock.status_codes import StockHistoryCode, StockStatus
 
 logger = logging.getLogger('inventree')
 
@@ -184,6 +184,7 @@ class TotalPriceMixin(models.Model):
 
 class Order(
     StateTransitionMixin,
+    InvenTree.models.InvenTreeAttachmentMixin,
     InvenTree.models.InvenTreeBarcodeMixin,
     InvenTree.models.InvenTreeNotesMixin,
     report.mixins.InvenTreeReportMixin,
@@ -233,9 +234,7 @@ class Order(
 
         # Check if a responsible owner is required for this order type
         if self.REQUIRE_RESPONSIBLE_SETTING:
-            if common_models.InvenTreeSetting.get_setting(
-                self.REQUIRE_RESPONSIBLE_SETTING, backup_value=False
-            ):
+            if get_global_setting(self.REQUIRE_RESPONSIBLE_SETTING, backup_value=False):
                 if not self.responsible:
                     raise ValidationError({
                         'responsible': _('Responsible user or group must be specified')
@@ -401,7 +400,7 @@ class PurchaseOrder(TotalPriceMixin, Order):
         return PurchaseOrderStatusGroups
 
     @classmethod
-    def api_defaults(cls, request):
+    def api_defaults(cls, request=None):
         """Return default values for this model when issuing an API OPTIONS request."""
         defaults = {
             'reference': order.validators.generate_next_purchase_order_reference()
@@ -821,9 +820,7 @@ class PurchaseOrder(TotalPriceMixin, Order):
 
         # Has this order been completed?
         if len(self.pending_line_items()) == 0:
-            if common_models.InvenTreeSetting.get_setting(
-                'PURCHASEORDER_AUTO_COMPLETE', True
-            ):
+            if get_global_setting('PURCHASEORDER_AUTO_COMPLETE', True):
                 self.received_by = user
                 self.complete_order()  # This will save the model
 
@@ -868,7 +865,7 @@ class SalesOrder(TotalPriceMixin, Order):
         return SalesOrderStatusGroups
 
     @classmethod
-    def api_defaults(cls, request):
+    def api_defaults(cls, request=None):
         """Return default values for this model when issuing an API OPTIONS request."""
         defaults = {'reference': order.validators.generate_next_sales_order_reference()}
 
@@ -1024,6 +1021,12 @@ class SalesOrder(TotalPriceMixin, Order):
         Throws a ValidationError if cannot be completed.
         """
         try:
+            if self.status == SalesOrderStatus.COMPLETE.value:
+                raise ValidationError(_('Order is already complete'))
+
+            if self.status == SalesOrderStatus.CANCELLED.value:
+                raise ValidationError(_('Order is already cancelled'))
+
             # Only an open order can be marked as shipped
             if self.is_open and not self.is_completed:
                 raise ValidationError(_('Only an open order can be marked as complete'))
@@ -1067,7 +1070,11 @@ class SalesOrder(TotalPriceMixin, Order):
         if not self.can_complete(**kwargs):
             return False
 
-        if self.status == SalesOrderStatus.SHIPPED:
+        bypass_shipped = InvenTree.helpers.str2bool(
+            get_global_setting('SALESORDER_SHIP_COMPLETE')
+        )
+
+        if bypass_shipped or self.status == SalesOrderStatus.SHIPPED:
             self.status = SalesOrderStatus.COMPLETE.value
         else:
             self.status = SalesOrderStatus.SHIPPED.value
@@ -1222,46 +1229,12 @@ def after_save_sales_order(sender, instance: SalesOrder, created: bool, **kwargs
     if created:
         # A new SalesOrder has just been created
 
-        if getSetting('SALESORDER_DEFAULT_SHIPMENT'):
+        if get_global_setting('SALESORDER_DEFAULT_SHIPMENT'):
             # Create default shipment
             SalesOrderShipment.objects.create(order=instance, reference='1')
 
         # Notify the responsible users that the sales order has been created
         notify_responsible(instance, sender, exclude=instance.created_by)
-
-
-class PurchaseOrderAttachment(InvenTree.models.InvenTreeAttachment):
-    """Model for storing file attachments against a PurchaseOrder object."""
-
-    @staticmethod
-    def get_api_url():
-        """Return the API URL associated with the PurchaseOrderAttachment model."""
-        return reverse('api-po-attachment-list')
-
-    def getSubdir(self):
-        """Return the directory path where PurchaseOrderAttachment files are located."""
-        return os.path.join('po_files', str(self.order.id))
-
-    order = models.ForeignKey(
-        PurchaseOrder, on_delete=models.CASCADE, related_name='attachments'
-    )
-
-
-class SalesOrderAttachment(InvenTree.models.InvenTreeAttachment):
-    """Model for storing file attachments against a SalesOrder object."""
-
-    @staticmethod
-    def get_api_url():
-        """Return the API URL associated with the SalesOrderAttachment class."""
-        return reverse('api-so-attachment-list')
-
-    def getSubdir(self):
-        """Return the directory path where SalesOrderAttachment files are located."""
-        return os.path.join('so_files', str(self.order.id))
-
-    order = models.ForeignKey(
-        SalesOrder, on_delete=models.CASCADE, related_name='attachments'
-    )
 
 
 class OrderLineItem(InvenTree.models.InvenTreeMetadataModel):
@@ -1381,6 +1354,11 @@ class PurchaseOrderLineItem(OrderLineItem):
     Attributes:
         order: Reference to a PurchaseOrder object
     """
+
+    class Meta:
+        """Model meta options."""
+
+        verbose_name = _('Purchase Order Line Item')
 
     # Filter for determining if a particular PurchaseOrderLineItem is overdue
     OVERDUE_FILTER = (
@@ -1519,6 +1497,11 @@ class PurchaseOrderExtraLine(OrderExtraLine):
         price: The unit price for this OrderLine
     """
 
+    class Meta:
+        """Model meta options."""
+
+        verbose_name = _('Purchase Order Extra Line')
+
     @staticmethod
     def get_api_url():
         """Return the API URL associated with the PurchaseOrderExtraLine model."""
@@ -1542,6 +1525,11 @@ class SalesOrderLineItem(OrderLineItem):
         sale_price: The unit sale price for this OrderLineItem
         shipped: The number of items which have actually shipped against this line item
     """
+
+    class Meta:
+        """Model meta options."""
+
+        verbose_name = _('Sales Order Line Item')
 
     # Filter for determining if a particular SalesOrderLineItem is overdue
     OVERDUE_FILTER = (
@@ -1676,6 +1664,7 @@ class SalesOrderShipment(
 
         # Shipment reference must be unique for a given sales order
         unique_together = ['order', 'reference']
+        verbose_name = _('Sales Order Shipment')
 
     @staticmethod
     def get_api_url():
@@ -1833,6 +1822,11 @@ class SalesOrderExtraLine(OrderExtraLine):
         price: The unit price for this OrderLine
     """
 
+    class Meta:
+        """Model meta options."""
+
+        verbose_name = _('Sales Order Extra Line')
+
     @staticmethod
     def get_api_url():
         """Return the API URL associated with the SalesOrderExtraLine model."""
@@ -1856,6 +1850,11 @@ class SalesOrderAllocation(models.Model):
         item: StockItem reference
         quantity: Quantity to take from the StockItem
     """
+
+    class Meta:
+        """Model meta options."""
+
+        verbose_name = _('Sales Order Allocation')
 
     @staticmethod
     def get_api_url():
@@ -2028,7 +2027,7 @@ class ReturnOrder(TotalPriceMixin, Order):
         return ReturnOrderStatusGroups
 
     @classmethod
-    def api_defaults(cls, request):
+    def api_defaults(cls, request=None):
         """Return default values for this model when issuing an API OPTIONS request."""
         defaults = {
             'reference': order.validators.generate_next_return_order_reference()
@@ -2235,6 +2234,7 @@ class ReturnOrderLineItem(OrderLineItem):
     class Meta:
         """Metaclass options for this model."""
 
+        verbose_name = _('Return Order Line Item')
         unique_together = [('order', 'item')]
 
     @staticmethod
@@ -2297,6 +2297,11 @@ class ReturnOrderLineItem(OrderLineItem):
 class ReturnOrderExtraLine(OrderExtraLine):
     """Model for a single ExtraLine in a ReturnOrder."""
 
+    class Meta:
+        """Metaclass options for this model."""
+
+        verbose_name = _('Return Order Extra Line')
+
     @staticmethod
     def get_api_url():
         """Return the API URL associated with the ReturnOrderExtraLine model."""
@@ -2308,21 +2313,4 @@ class ReturnOrderExtraLine(OrderExtraLine):
         related_name='extra_lines',
         verbose_name=_('Order'),
         help_text=_('Return Order'),
-    )
-
-
-class ReturnOrderAttachment(InvenTree.models.InvenTreeAttachment):
-    """Model for storing file attachments against a ReturnOrder object."""
-
-    @staticmethod
-    def get_api_url():
-        """Return the API URL associated with the ReturnOrderAttachment class."""
-        return reverse('api-return-order-attachment-list')
-
-    def getSubdir(self):
-        """Return the directory path where ReturnOrderAttachment files are located."""
-        return os.path.join('return_files', str(self.order.id))
-
-    order = models.ForeignKey(
-        ReturnOrder, on_delete=models.CASCADE, related_name='attachments'
     )

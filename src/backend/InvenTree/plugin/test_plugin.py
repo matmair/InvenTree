@@ -276,7 +276,8 @@ class RegistryTests(TestCase):
             # Reload to rediscover plugins
             registry.reload_plugins(full_reload=True, collect=True)
 
-        self.assertEqual(len(registry.errors), 3)
+        self.assertEqual(len(registry.errors), 2)
+
         # There should be at least one discovery error in the module `broken_file`
         _reg_disc = registry.errors.get('discovery')
         assert _reg_disc

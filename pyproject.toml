@@ -69,6 +69,11 @@ indent-style = "space"
 skip-magic-trailing-comma = true
 line-ending = "auto"
 
+[tool.uv.pip]
+python-version = "3.9"
+no-strip-extras=true
+generate-hashes=true
+
 [tool.coverage.run]
 source = ["src/backend/InvenTree", "InvenTree"]
 
@@ -95,3 +100,6 @@ reportIncompatibleVariableOverride = false
 
 pythonVersion = "3.9"
 pythonPlatform = "Linux"
+
+[tool.codespell]
+ignore-words-list = ["assertIn","SME"]

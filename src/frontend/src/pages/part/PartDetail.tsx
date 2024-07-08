@@ -1,12 +1,5 @@
 import { t } from '@lingui/macro';
-import {
-  Alert,
-  Grid,
-  LoadingOverlay,
-  Skeleton,
-  Stack,
-  Table
-} from '@mantine/core';
+import { Alert, Grid, Skeleton, Stack, Table } from '@mantine/core';
 import {
   IconBookmarks,
   IconBuilding,
@@ -30,7 +23,7 @@ import {
   IconVersions
 } from '@tabler/icons-react';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { api } from '../../App';
@@ -40,6 +33,8 @@ import DetailsBadge from '../../components/details/DetailsBadge';
 import { DetailsImage } from '../../components/details/DetailsImage';
 import { ItemDetailsGrid } from '../../components/details/ItemDetails';
 import { PartIcons } from '../../components/details/PartIcons';
+import NotesEditor from '../../components/editors/NotesEditor';
+import { ApiFormFieldSet } from '../../components/forms/fields/ApiFormField';
 import { Thumbnail } from '../../components/images/Thumbnail';
 import {
   ActionDropdown,
@@ -51,10 +46,11 @@ import {
   UnlinkBarcodeAction,
   ViewBarcodeAction
 } from '../../components/items/ActionDropdown';
+import { PlaceholderPanel } from '../../components/items/Placeholder';
+import InstanceDetail from '../../components/nav/InstanceDetail';
+import NavigationTree from '../../components/nav/NavigationTree';
 import { PageDetail } from '../../components/nav/PageDetail';
 import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
-import { PartCategoryTree } from '../../components/nav/PartCategoryTree';
-import { NotesEditor } from '../../components/widgets/MarkdownEditor';
 import { formatPriceRange } from '../../defaults/formatters';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
@@ -103,7 +99,8 @@ export default function PartDetail() {
   const {
     instance: part,
     refreshInstance,
-    instanceQuery
+    instanceQuery,
+    requestStatus
   } = useInstance({
     endpoint: ApiEndpoints.part_list,
     pk: id,
@@ -266,6 +263,11 @@ export default function PartDetail() {
       },
       {
         type: 'boolean',
+        name: 'locked',
+        label: t`Locked`
+      },
+      {
+        type: 'boolean',
         name: 'template',
         label: t`Template Part`
       },
@@ -360,9 +362,13 @@ export default function PartDetail() {
                 });
             }
           });
-          return `${formatPriceRange(data.overall_min, data.overall_max)}${
-            part.units && ' / ' + part.units
-          }`;
+
+          return (
+            data &&
+            `${formatPriceRange(data.overall_min, data.overall_max)}${
+              part.units && ' / ' + part.units
+            }`
+          );
         }
       });
 
@@ -485,7 +491,12 @@ export default function PartDetail() {
         name: 'parameters',
         label: t`Parameters`,
         icon: <IconList />,
-        content: <PartParameterTable partId={id ?? -1} />
+        content: (
+          <PartParameterTable
+            partId={id ?? -1}
+            partLocked={part?.locked == true}
+          />
+        )
       },
       {
         name: 'stock',
@@ -512,14 +523,17 @@ export default function PartDetail() {
         name: 'allocations',
         label: t`Allocations`,
         icon: <IconBookmarks />,
-        hidden: !part.component && !part.salable
+        hidden: !part.component && !part.salable,
+        content: <PlaceholderPanel />
       },
       {
         name: 'bom',
         label: t`Bill of Materials`,
         icon: <IconListTree />,
         hidden: !part.assembly,
-        content: <BomTable partId={part.pk ?? -1} />
+        content: (
+          <BomTable partId={part.pk ?? -1} partLocked={part?.locked == true} />
+        )
       },
       {
         name: 'builds',
@@ -571,7 +585,8 @@ export default function PartDetail() {
         name: 'purchase_orders',
         label: t`Purchase Orders`,
         icon: <IconShoppingCart />,
-        hidden: !part.purchaseable
+        hidden: !part.purchaseable,
+        content: <PlaceholderPanel />
       },
       {
         name: 'sales_orders',
@@ -583,12 +598,14 @@ export default function PartDetail() {
       {
         name: 'scheduling',
         label: t`Scheduling`,
-        icon: <IconCalendarStats />
+        icon: <IconCalendarStats />,
+        content: <PlaceholderPanel />
       },
       {
         name: 'stocktake',
         label: t`Stocktake`,
-        icon: <IconClipboardList />
+        icon: <IconClipboardList />,
+        content: <PlaceholderPanel />
       },
       {
         name: 'test_templates',
@@ -612,11 +629,7 @@ export default function PartDetail() {
         label: t`Attachments`,
         icon: <IconPaperclip />,
         content: (
-          <AttachmentTable
-            endpoint={ApiEndpoints.part_attachment_list}
-            model="part"
-            pk={part.pk ?? -1}
-          />
+          <AttachmentTable model_type={ModelType.part} model_id={part?.pk} />
         )
       },
       {
@@ -625,14 +638,14 @@ export default function PartDetail() {
         icon: <IconNotes />,
         content: (
           <NotesEditor
-            url={apiUrl(ApiEndpoints.part_list, part.pk)}
-            data={part.notes ?? ''}
-            allowEdit={true}
+            modelType={ModelType.part}
+            modelId={part.pk}
+            editable={user.hasChangeRole(UserRoles.part)}
           />
         )
       }
     ];
-  }, [id, part]);
+  }, [id, part, user]);
 
   const breadcrumbs = useMemo(
     () => [
@@ -682,6 +695,12 @@ export default function PartDetail() {
         key="in_production"
       />,
       <DetailsBadge
+        label={t`Locked`}
+        color="black"
+        visible={part.locked}
+        key="locked"
+      />,
+      <DetailsBadge
         label={t`Inactive`}
         color="red"
         visible={part.active == false}
@@ -700,12 +719,34 @@ export default function PartDetail() {
     onFormSuccess: refreshInstance
   });
 
+  const createPartFields = usePartFields({ create: true });
+
+  const duplicatePartFields: ApiFormFieldSet = useMemo(() => {
+    return {
+      ...createPartFields,
+      duplicate: {
+        children: {
+          part: {
+            value: part.pk,
+            hidden: true
+          },
+          copy_image: {},
+          copy_bom: {},
+          copy_notes: {},
+          copy_parameters: {}
+        }
+      }
+    };
+  }, [createPartFields, part]);
+
   const duplicatePart = useCreateApiFormModal({
     url: ApiEndpoints.part_list,
     title: t`Add Part`,
-    fields: partFields,
+    fields: duplicatePartFields,
     initialData: {
-      ...part
+      ...part,
+      active: true,
+      locked: false
     },
     follow: true,
     modelType: ModelType.part
@@ -815,30 +856,34 @@ export default function PartDetail() {
       {duplicatePart.modal}
       {editPart.modal}
       {deletePart.modal}
-      <Stack gap="xs">
-        <LoadingOverlay visible={instanceQuery.isFetching} />
-        <PartCategoryTree
-          opened={treeOpen}
-          onClose={() => {
-            setTreeOpen(false);
-          }}
-          selectedCategory={part?.category}
-        />
-        <PageDetail
-          title={t`Part` + ': ' + part.full_name}
-          subtitle={part.description}
-          imageUrl={part.image}
-          badges={badges}
-          breadcrumbs={breadcrumbs}
-          breadcrumbAction={() => {
-            setTreeOpen(true);
-          }}
-          actions={partActions}
-        />
-        <PanelGroup pageKey="part" panels={partPanels} />
-        {transferStockItems.modal}
-        {countStockItems.modal}
-      </Stack>
+      <InstanceDetail status={requestStatus} loading={instanceQuery.isFetching}>
+        <Stack gap="xs">
+          <NavigationTree
+            title={t`Part Categories`}
+            modelType={ModelType.partcategory}
+            endpoint={ApiEndpoints.category_tree}
+            opened={treeOpen}
+            onClose={() => {
+              setTreeOpen(false);
+            }}
+            selectedId={part?.category}
+          />
+          <PageDetail
+            title={t`Part` + ': ' + part.full_name}
+            subtitle={part.description}
+            imageUrl={part.image}
+            badges={badges}
+            breadcrumbs={breadcrumbs}
+            breadcrumbAction={() => {
+              setTreeOpen(true);
+            }}
+            actions={partActions}
+          />
+          <PanelGroup pageKey="part" panels={partPanels} />
+          {transferStockItems.modal}
+          {countStockItems.modal}
+        </Stack>
+      </InstanceDetail>
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { t } from '@lingui/macro';
-import { Grid, LoadingOverlay, Skeleton, Stack } from '@mantine/core';
+import { Grid, Skeleton, Stack } from '@mantine/core';
 import {
   IconClipboardCheck,
   IconClipboardList,
@@ -20,6 +20,7 @@ import { PrintingActions } from '../../components/buttons/PrintingActions';
 import { DetailsField, DetailsTable } from '../../components/details/Details';
 import { DetailsImage } from '../../components/details/DetailsImage';
 import { ItemDetailsGrid } from '../../components/details/ItemDetails';
+import NotesEditor from '../../components/editors/NotesEditor';
 import {
   ActionDropdown,
   CancelItemAction,
@@ -29,10 +30,10 @@ import {
   UnlinkBarcodeAction,
   ViewBarcodeAction
 } from '../../components/items/ActionDropdown';
+import InstanceDetail from '../../components/nav/InstanceDetail';
 import { PageDetail } from '../../components/nav/PageDetail';
 import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
 import { StatusRenderer } from '../../components/render/StatusRenderer';
-import { NotesEditor } from '../../components/widgets/MarkdownEditor';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
@@ -61,7 +62,8 @@ export default function BuildDetail() {
   const {
     instance: build,
     refreshInstance,
-    instanceQuery
+    instanceQuery,
+    requestStatus
   } = useInstance({
     endpoint: ApiEndpoints.build_order_list,
     pk: id,
@@ -295,11 +297,7 @@ export default function BuildDetail() {
         label: t`Attachments`,
         icon: <IconPaperclip />,
         content: (
-          <AttachmentTable
-            endpoint={ApiEndpoints.build_order_attachment_list}
-            model="build"
-            pk={Number(id)}
-          />
+          <AttachmentTable model_type={ModelType.build} model_id={Number(id)} />
         )
       },
       {
@@ -308,14 +306,14 @@ export default function BuildDetail() {
         icon: <IconNotes />,
         content: (
           <NotesEditor
-            url={apiUrl(ApiEndpoints.build_order_list, build.pk)}
-            data={build.notes ?? ''}
-            allowEdit={true}
+            modelType={ModelType.build}
+            modelId={build.pk}
+            editable={user.hasChangeRole(UserRoles.build)}
           />
         )
       }
     ];
-  }, [build, id]);
+  }, [build, id, user]);
 
   const buildOrderFields = useBuildOrderFields({ create: false });
 
@@ -414,21 +412,22 @@ export default function BuildDetail() {
       {editBuild.modal}
       {duplicateBuild.modal}
       {cancelBuild.modal}
-      <Stack gap="xs">
-        <LoadingOverlay visible={instanceQuery.isFetching} />
-        <PageDetail
-          title={build.reference}
-          subtitle={build.title}
-          badges={buildBadges}
-          imageUrl={build.part_detail?.image ?? build.part_detail?.thumbnail}
-          breadcrumbs={[
-            { name: t`Build Orders`, url: '/build' },
-            { name: build.reference, url: `/build/${build.pk}` }
-          ]}
-          actions={buildActions}
-        />
-        <PanelGroup pageKey="build" panels={buildPanels} />
-      </Stack>
+      <InstanceDetail status={requestStatus} loading={instanceQuery.isFetching}>
+        <Stack gap="xs">
+          <PageDetail
+            title={build.reference}
+            subtitle={build.title}
+            badges={buildBadges}
+            imageUrl={build.part_detail?.image ?? build.part_detail?.thumbnail}
+            breadcrumbs={[
+              { name: t`Build Orders`, url: '/build' },
+              { name: build.reference, url: `/build/${build.pk}` }
+            ]}
+            actions={buildActions}
+          />
+          <PanelGroup pageKey="build" panels={buildPanels} />
+        </Stack>
+      </InstanceDetail>
     </>
   );
 }

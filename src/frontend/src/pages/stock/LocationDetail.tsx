@@ -1,5 +1,5 @@
 import { t } from '@lingui/macro';
-import { LoadingOverlay, Skeleton, Stack, Text } from '@mantine/core';
+import { Skeleton, Stack, Text } from '@mantine/core';
 import {
   IconDots,
   IconInfoCircle,
@@ -23,9 +23,10 @@ import {
   UnlinkBarcodeAction,
   ViewBarcodeAction
 } from '../../components/items/ActionDropdown';
+import InstanceDetail from '../../components/nav/InstanceDetail';
+import NavigationTree from '../../components/nav/NavigationTree';
 import { PageDetail } from '../../components/nav/PageDetail';
 import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
-import { StockLocationTree } from '../../components/nav/StockLocationTree';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
@@ -63,7 +64,8 @@ export default function Stock() {
   const {
     instance: location,
     refreshInstance,
-    instanceQuery
+    instanceQuery,
+    requestStatus
   } = useInstance({
     endpoint: ApiEndpoints.stock_location_list,
     hasPrimaryKey: true,
@@ -355,26 +357,33 @@ export default function Stock() {
     <>
       {editLocation.modal}
       {deleteLocation.modal}
-      <Stack>
-        <LoadingOverlay visible={instanceQuery.isFetching} />
-        <StockLocationTree
-          opened={treeOpen}
-          onClose={() => setTreeOpen(false)}
-          selectedLocation={location?.pk}
-        />
-        <PageDetail
-          title={t`Stock Items`}
-          subtitle={location?.name}
-          actions={locationActions}
-          breadcrumbs={breadcrumbs}
-          breadcrumbAction={() => {
-            setTreeOpen(true);
-          }}
-        />
-        <PanelGroup pageKey="stocklocation" panels={locationPanels} />
-        {transferStockItems.modal}
-        {countStockItems.modal}
-      </Stack>
+      <InstanceDetail
+        status={requestStatus}
+        loading={id ? instanceQuery.isFetching : false}
+      >
+        <Stack>
+          <NavigationTree
+            title={t`Stock Locations`}
+            modelType={ModelType.stocklocation}
+            endpoint={ApiEndpoints.stock_location_tree}
+            opened={treeOpen}
+            onClose={() => setTreeOpen(false)}
+            selectedId={location?.pk}
+          />
+          <PageDetail
+            title={t`Stock Items`}
+            subtitle={location?.name}
+            actions={locationActions}
+            breadcrumbs={breadcrumbs}
+            breadcrumbAction={() => {
+              setTreeOpen(true);
+            }}
+          />
+          <PanelGroup pageKey="stocklocation" panels={locationPanels} />
+          {transferStockItems.modal}
+          {countStockItems.modal}
+        </Stack>
+      </InstanceDetail>
     </>
   );
 }

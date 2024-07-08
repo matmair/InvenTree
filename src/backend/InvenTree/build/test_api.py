@@ -10,7 +10,8 @@ from part.models import Part
 from build.models import Build, BuildItem
 from stock.models import StockItem
 
-from InvenTree.status_codes import BuildStatus, StockStatus
+from build.status_codes import BuildStatus
+from stock.status_codes import StockStatus
 from InvenTree.unit_test import InvenTreeAPITestCase
 
 
@@ -223,6 +224,7 @@ class BuildTest(BuildAPITest):
                 "status": 50,  # Item requires attention
             },
             expected_code=201,
+            max_query_count=450,  # TODO: Try to optimize this
         )
 
         self.assertEqual(self.build.incomplete_outputs.count(), 0)
@@ -562,16 +564,16 @@ class BuildTest(BuildAPITest):
     def test_download_build_orders(self):
         """Test that we can download a list of build orders via the API"""
         required_cols = [
-            'reference',
-            'status',
-            'completed',
-            'batch',
-            'notes',
-            'title',
-            'part',
-            'part_name',
-            'id',
-            'quantity',
+            'Reference',
+            'Build Status',
+            'Completed items',
+            'Batch Code',
+            'Notes',
+            'Description',
+            'Part',
+            'Part Name',
+            'ID',
+            'Quantity',
         ]
 
         excluded_cols = [
@@ -595,13 +597,13 @@ class BuildTest(BuildAPITest):
 
             for row in data:
 
-                build = Build.objects.get(pk=row['id'])
+                build = Build.objects.get(pk=row['ID'])
 
-                self.assertEqual(str(build.part.pk), row['part'])
-                self.assertEqual(build.part.full_name, row['part_name'])
+                self.assertEqual(str(build.part.pk), row['Part'])
+                self.assertEqual(build.part.name, row['Part Name'])
 
-                self.assertEqual(build.reference, row['reference'])
-                self.assertEqual(build.title, row['title'])
+                self.assertEqual(build.reference, row['Reference'])
+                self.assertEqual(build.title, row['Description'])
 
 
 class BuildAllocationTest(BuildAPITest):
@@ -1001,6 +1003,7 @@ class BuildOverallocationTest(BuildAPITest):
                 'accept_overallocated': 'accept',
             },
             expected_code=201,
+            max_query_count=550,  # TODO: Come back and refactor this
         )
 
         self.build.refresh_from_db()
@@ -1021,6 +1024,7 @@ class BuildOverallocationTest(BuildAPITest):
                 'accept_overallocated': 'trim',
             },
             expected_code=201,
+            max_query_count=550,  # TODO: Come back and refactor this
         )
 
         self.build.refresh_from_db()

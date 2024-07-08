@@ -18,6 +18,7 @@ from common.models import (
     NotificationMessage,
 )
 from common.notifications import UIMessageNotification, storage
+from common.settings import get_global_setting, set_global_setting
 from InvenTree import version
 from InvenTree.templatetags import inventree_extras
 from InvenTree.unit_test import InvenTreeTestCase
@@ -373,6 +374,24 @@ class PartTest(TestCase):
         self.assertIsNotNone(p.last_stocktake)
         self.assertEqual(p.last_stocktake, ps.date)
 
+    def test_delete(self):
+        """Test delete operation for a Part instance."""
+        part = Part.objects.first()
+
+        for active, locked in [(True, True), (True, False), (False, True)]:
+            # Cannot delete part if it is active or locked
+            part.active = active
+            part.locked = locked
+            part.save()
+
+            with self.assertRaises(ValidationError):
+                part.delete()
+
+        part.active = False
+        part.locked = False
+
+        part.delete()
+
 
 class TestTemplateTest(TestCase):
     """Unit test for the TestTemplate class."""
@@ -505,17 +524,17 @@ class PartSettingsTest(InvenTreeTestCase):
     def test_custom(self):
         """Update some of the part values and re-test."""
         for val in [True, False]:
-            InvenTreeSetting.set_setting('PART_COMPONENT', val, self.user)
-            InvenTreeSetting.set_setting('PART_PURCHASEABLE', val, self.user)
-            InvenTreeSetting.set_setting('PART_SALABLE', val, self.user)
-            InvenTreeSetting.set_setting('PART_TRACKABLE', val, self.user)
-            InvenTreeSetting.set_setting('PART_ASSEMBLY', val, self.user)
-            InvenTreeSetting.set_setting('PART_TEMPLATE', val, self.user)
+            set_global_setting('PART_COMPONENT', val, self.user)
+            set_global_setting('PART_PURCHASEABLE', val, self.user)
+            set_global_setting('PART_SALABLE', val, self.user)
+            set_global_setting('PART_TRACKABLE', val, self.user)
+            set_global_setting('PART_ASSEMBLY', val, self.user)
+            set_global_setting('PART_TEMPLATE', val, self.user)
 
-            self.assertEqual(val, InvenTreeSetting.get_setting('PART_COMPONENT'))
-            self.assertEqual(val, InvenTreeSetting.get_setting('PART_PURCHASEABLE'))
-            self.assertEqual(val, InvenTreeSetting.get_setting('PART_SALABLE'))
-            self.assertEqual(val, InvenTreeSetting.get_setting('PART_TRACKABLE'))
+            self.assertEqual(val, get_global_setting('PART_COMPONENT'))
+            self.assertEqual(val, get_global_setting('PART_PURCHASEABLE'))
+            self.assertEqual(val, get_global_setting('PART_SALABLE'))
+            self.assertEqual(val, get_global_setting('PART_TRACKABLE'))
 
             part = self.make_part()
 
@@ -551,7 +570,7 @@ class PartSettingsTest(InvenTreeTestCase):
             part.validate_unique()
 
         # Now update the settings so duplicate IPN values are *not* allowed
-        InvenTreeSetting.set_setting('PART_ALLOW_DUPLICATE_IPN', False, self.user)
+        set_global_setting('PART_ALLOW_DUPLICATE_IPN', False, self.user)
 
         with self.assertRaises(ValidationError):
             part = Part(name='Hello', description='A thing', IPN='IPN123', revision='C')

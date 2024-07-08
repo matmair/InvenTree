@@ -1,5 +1,5 @@
 import { t } from '@lingui/macro';
-import { Grid, LoadingOverlay, Skeleton, Stack } from '@mantine/core';
+import { Grid, Skeleton, Stack } from '@mantine/core';
 import {
   IconBookmark,
   IconBoxPadding,
@@ -21,6 +21,7 @@ import { DetailsField, DetailsTable } from '../../components/details/Details';
 import DetailsBadge from '../../components/details/DetailsBadge';
 import { DetailsImage } from '../../components/details/DetailsImage';
 import { ItemDetailsGrid } from '../../components/details/ItemDetails';
+import NotesEditor from '../../components/editors/NotesEditor';
 import {
   ActionDropdown,
   BarcodeActionDropdown,
@@ -31,11 +32,12 @@ import {
   UnlinkBarcodeAction,
   ViewBarcodeAction
 } from '../../components/items/ActionDropdown';
+import { PlaceholderPanel } from '../../components/items/Placeholder';
+import InstanceDetail from '../../components/nav/InstanceDetail';
+import NavigationTree from '../../components/nav/NavigationTree';
 import { PageDetail } from '../../components/nav/PageDetail';
 import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
-import { StockLocationTree } from '../../components/nav/StockLocationTree';
 import { StatusRenderer } from '../../components/render/StatusRenderer';
-import { NotesEditor } from '../../components/widgets/MarkdownEditor';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
@@ -75,7 +77,8 @@ export default function StockDetail() {
   const {
     instance: stockitem,
     refreshInstance,
-    instanceQuery
+    instanceQuery,
+    requestStatus
   } = useInstance({
     endpoint: ApiEndpoints.stock_item_list,
     pk: id,
@@ -283,7 +286,9 @@ export default function StockDetail() {
         label: t`Allocations`,
         icon: <IconBookmark />,
         hidden:
-          !stockitem?.part_detail?.salable && !stockitem?.part_detail?.component
+          !stockitem?.part_detail?.salable &&
+          !stockitem?.part_detail?.component,
+        content: <PlaceholderPanel />
       },
       {
         name: 'testdata',
@@ -326,9 +331,8 @@ export default function StockDetail() {
         icon: <IconPaperclip />,
         content: (
           <AttachmentTable
-            endpoint={ApiEndpoints.stock_attachment_list}
-            model="stock_item"
-            pk={Number(id)}
+            model_type={ModelType.stockitem}
+            model_id={stockitem.pk}
           />
         )
       },
@@ -338,14 +342,14 @@ export default function StockDetail() {
         icon: <IconNotes />,
         content: (
           <NotesEditor
-            url={apiUrl(ApiEndpoints.stock_item_list, id)}
-            data={stockitem.notes ?? ''}
-            allowEdit={true}
+            modelType={ModelType.stockitem}
+            modelId={stockitem.pk}
+            editable={user.hasChangeRole(UserRoles.stock)}
           />
         )
       }
     ];
-  }, [stockitem, id]);
+  }, [stockitem, id, user]);
 
   const breadcrumbs = useMemo(
     () => [
@@ -501,6 +505,9 @@ export default function StockDetail() {
   );
 
   const stockBadges: ReactNode[] = useMemo(() => {
+    let available = (stockitem?.quantity ?? 0) - (stockitem?.allocated ?? 0);
+    available = Math.max(0, available);
+
     return instanceQuery.isLoading
       ? []
       : [
@@ -522,6 +529,12 @@ export default function StockDetail() {
             key="quantity"
           />,
           <DetailsBadge
+            color="yellow"
+            label={t`Available` + `: ${available}`}
+            visible={!stockitem.serial && available != stockitem.quantity}
+            key="available"
+          />,
+          <DetailsBadge
             color="blue"
             label={t`Batch Code` + `: ${stockitem.batch}`}
             visible={!!stockitem.batch}
@@ -537,32 +550,36 @@ export default function StockDetail() {
   }, [stockitem, instanceQuery]);
 
   return (
-    <Stack>
-      <LoadingOverlay visible={instanceQuery.isFetching} />
-      <StockLocationTree
-        opened={treeOpen}
-        onClose={() => setTreeOpen(false)}
-        selectedLocation={stockitem?.location}
-      />
-      <PageDetail
-        title={t`Stock Item`}
-        subtitle={stockitem.part_detail?.full_name}
-        imageUrl={stockitem.part_detail?.thumbnail}
-        badges={stockBadges}
-        breadcrumbs={breadcrumbs}
-        breadcrumbAction={() => {
-          setTreeOpen(true);
-        }}
-        actions={stockActions}
-      />
-      <PanelGroup pageKey="stockitem" panels={stockPanels} />
-      {editStockItem.modal}
-      {duplicateStockItem.modal}
-      {deleteStockItem.modal}
-      {countStockItem.modal}
-      {addStockItem.modal}
-      {removeStockItem.modal}
-      {transferStockItem.modal}
-    </Stack>
+    <InstanceDetail status={requestStatus} loading={instanceQuery.isFetching}>
+      <Stack>
+        <NavigationTree
+          title={t`Stock Locations`}
+          modelType={ModelType.stocklocation}
+          endpoint={ApiEndpoints.stock_location_tree}
+          opened={treeOpen}
+          onClose={() => setTreeOpen(false)}
+          selectedId={stockitem?.location}
+        />
+        <PageDetail
+          title={t`Stock Item`}
+          subtitle={stockitem.part_detail?.full_name}
+          imageUrl={stockitem.part_detail?.thumbnail}
+          badges={stockBadges}
+          breadcrumbs={breadcrumbs}
+          breadcrumbAction={() => {
+            setTreeOpen(true);
+          }}
+          actions={stockActions}
+        />
+        <PanelGroup pageKey="stockitem" panels={stockPanels} />
+        {editStockItem.modal}
+        {duplicateStockItem.modal}
+        {deleteStockItem.modal}
+        {countStockItem.modal}
+        {addStockItem.modal}
+        {removeStockItem.modal}
+        {transferStockItem.modal}
+      </Stack>
+    </InstanceDetail>
   );
 }

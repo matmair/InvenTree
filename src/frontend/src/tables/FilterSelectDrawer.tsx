@@ -41,7 +41,7 @@ function FilterItem({
 
   return (
     <Paper p="sm" shadow="sm" radius="xs">
-      <Group justify="space-between" key={flt.name}>
+      <Group justify="space-between" key={flt.name} wrap="nowrap">
         <Stack gap="xs">
           <Text size="sm">{flt.label}</Text>
           <Text size="xs">{flt.description}</Text>
@@ -55,12 +55,6 @@ function FilterItem({
       </Group>
     </Paper>
   );
-}
-
-interface FilterProps extends React.ComponentPropsWithoutRef<'div'> {
-  name: string;
-  label: string;
-  description?: string;
 }
 
 function FilterAddGroup({
@@ -182,6 +176,9 @@ export function FilterSelectDrawer({
       withCloseButton={true}
       opened={opened}
       onClose={onClose}
+      closeButtonProps={{
+        'aria-label': 'filter-drawer-close'
+      }}
       title={<StylishText size="lg">{t`Table Filters`}</StylishText>}
     >
       <Stack gap="xs">
