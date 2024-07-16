@@ -539,6 +539,7 @@ class TestReportTest(PrintTestMixins, ReportTest):
 
         # Now print with a valid StockItem
         item = StockItem.objects.first()
+        assert item
 
         response = self.post(
             url, {'template': template.pk, 'items': [item.pk]}, expected_code=201

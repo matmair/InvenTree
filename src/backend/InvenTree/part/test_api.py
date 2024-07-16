@@ -1574,6 +1574,7 @@ class PartDetailTests(PartAPITestBase):
         """Test that we can allocate an existing uploaded image to a new Part."""
         # First, upload an image for an existing part
         p = Part.objects.first()
+        assert p
 
         fn = BASE_DIR / '_testfolder' / 'part_image_123abc.png'
 
@@ -1620,6 +1621,7 @@ class PartDetailTests(PartAPITestBase):
         """Test that we can update the image of an existing part with an already existing image."""
         # First, upload an image for an existing part
         p = Part.objects.first()
+        assert p
 
         fn = BASE_DIR / '_testfolder' / 'part_image_123abc.png'
 
@@ -1662,6 +1664,8 @@ class PartDetailTests(PartAPITestBase):
 
         # Attempt to add a non-existent image to an existing part
         last_p = Part.objects.last()
+        assert last_p
+
         response = self.patch(
             reverse('api-part-detail', kwargs={'pk': last_p.pk}),
             {'existing_image': 'bogus_image.jpg'},
@@ -1899,6 +1903,7 @@ class PartAPIAggregationTest(InvenTreeAPITestCase):
     def test_stock_quantity(self):
         """Simple test for the stock quantity."""
         data = self.get_part_data()
+        assert data
 
         self.assertEqual(data['in_stock'], 600)
         self.assertEqual(data['stock_item_count'], 4)
@@ -1912,6 +1917,7 @@ class PartAPIAggregationTest(InvenTreeAPITestCase):
         StockItem.objects.create(part=self.part, quantity=9999, customer=customer)
 
         data = self.get_part_data()
+        assert data
 
         self.assertEqual(data['in_stock'], 1100)
         self.assertEqual(data['stock_item_count'], 105)
@@ -2184,7 +2190,7 @@ class BomItemTest(InvenTreeAPITestCase):
 
         # Now, let's validate an item
         bom_item = BomItem.objects.first()
-
+        assert bom_item
         bom_item.validate_hash()
 
         response = self.get(url, data={'validated': True}, expected_code=200)

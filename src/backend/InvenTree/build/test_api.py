@@ -740,6 +740,8 @@ class BuildAllocationTest(BuildAPITest):
                 wrong_line = line
                 break
 
+        assert wrong_line
+
         data = self.post(
             self.url,
             {
@@ -771,6 +773,7 @@ class BuildAllocationTest(BuildAPITest):
             if line.bom_item.sub_part.pk == si.part.pk:
                 right_line = line
                 break
+        assert right_line
 
         self.post(
             self.url,
@@ -790,6 +793,8 @@ class BuildAllocationTest(BuildAPITest):
         self.assertEqual(self.n + 1, BuildItem.objects.count())
 
         allocation = BuildItem.objects.last()
+        assert allocation
+        assert allocation.bom_item
 
         self.assertEqual(allocation.quantity, 5000)
         self.assertEqual(allocation.bom_item.pk, 1)
@@ -808,6 +813,7 @@ class BuildAllocationTest(BuildAPITest):
             if line.bom_item.sub_part.pk == si.part.pk:
                 right_line = line
                 break
+        assert right_line
 
         self.post(
             self.url,
@@ -827,6 +833,8 @@ class BuildAllocationTest(BuildAPITest):
         self.assertEqual(self.n + 1, BuildItem.objects.count())
 
         allocation = BuildItem.objects.last()
+        assert allocation
+        assert allocation.bom_item
 
         self.assertEqual(allocation.quantity, 3000)
         self.assertEqual(allocation.bom_item.pk, 1)
@@ -950,6 +958,7 @@ class BuildOverallocationTest(BuildAPITest):
             required = build_line.quantity + idx + 1
             sub_part = build_line.bom_item.sub_part
             si = StockItem.objects.filter(part=sub_part, quantity__gte=required).first()
+            assert si
 
             cls.state[sub_part] = (si, si.quantity, required)
 

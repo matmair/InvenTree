@@ -23,6 +23,15 @@
       "justMyCode": false
     },
     {
+      "name": "InvenTree Server - spec",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/InvenTree/manage.py",
+      "args": ["spectacular", "--fail-on-warn", "--validate", "--color"],
+      "django": true,
+      "justMyCode": false
+    },
+    {
       "name": "InvenTree Frontend - Vite",
       "type": "chrome",
       "request": "launch",

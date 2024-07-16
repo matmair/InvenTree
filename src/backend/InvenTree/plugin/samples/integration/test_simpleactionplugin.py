@@ -1,6 +1,6 @@
 """Unit tests for action plugins."""
 
-from InvenTree.unit_test import InvenTreeTestCase
+from InvenTree.unit_test import InvenTreeTestCase, get_plugin_config
 from plugin.registry import registry
 from plugin.samples.integration.simpleactionplugin import SimpleActionPlugin
 
@@ -16,7 +16,7 @@ class SimpleActionPluginTests(InvenTreeTestCase):
 
     def set_plugin_state(self, state: bool):
         """Set the enabled state of the SimpleActionPlugin."""
-        cfg = registry.get_plugin_config('simpleaction')
+        cfg = get_plugin_config('simpleaction')
         cfg.active = state
         cfg.save()
 

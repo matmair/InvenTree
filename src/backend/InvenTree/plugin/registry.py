@@ -4,6 +4,9 @@
 - Manages setup and teardown of plugin class instances
 """
 
+from __future__ import annotations
+
+import imp
 import importlib
 import importlib.machinery
 import importlib.util
@@ -180,7 +183,7 @@ class PluginsRegistry:
         return plugin_func(*args, **kwargs)
 
     # region registry functions
-    def with_mixin(self, mixin: str, active=True, builtin=None):
+    def with_mixin(self, mixin: str, active: bool | None = True, builtin=None):
         """Returns reference to all plugins that have a specified mixin enabled.
 
         Args:

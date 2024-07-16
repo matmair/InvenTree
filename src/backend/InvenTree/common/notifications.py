@@ -1,5 +1,7 @@
 """Base classes and functions for notifications."""
 
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
@@ -28,6 +30,8 @@ class NotificationMethod:
     CONTEXT_EXTRA = []
     GLOBAL_SETTING = None
     USER_SETTING = None
+
+    targets: list | None = None
 
     def __init__(self, obj, category, targets, context) -> None:
         """Check that the method is read.
@@ -185,7 +189,7 @@ class MethodStorageClass:
     Is initialized on startup as one instance named `storage` in this file.
     """
 
-    liste = None
+    liste: list | None = None
     user_settings = {}
 
     def collect(self, selected_classes=None):
@@ -234,6 +238,10 @@ class MethodStorageClass:
             list: All applicablae notification settings.
         """
         methods = []
+
+        if storage.liste is None:
+            return methods
+
         for item in storage.liste:
             if item.USER_SETTING:
                 new_key = f'NOTIFICATION_METHOD_{item.METHOD_NAME.upper()}'

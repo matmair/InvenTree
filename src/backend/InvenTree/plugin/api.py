@@ -1,5 +1,7 @@
 """API for the plugin app."""
 
+from __future__ import annotations
+
 from django.core.exceptions import ValidationError
 from django.urls import include, path, re_path
 from django.utils.translation import gettext_lazy as _
@@ -266,7 +268,7 @@ class PluginSettingList(ListAPI):
     filterset_fields = ['plugin__active', 'plugin__key']
 
 
-def check_plugin(plugin_slug: str, plugin_pk: int) -> InvenTreePlugin:
+def check_plugin(plugin_slug: str | None, plugin_pk: int | None) -> InvenTreePlugin:
     """Check that a plugin for the provided slug exists and get the config.
 
     Args:
