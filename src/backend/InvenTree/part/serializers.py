@@ -309,7 +309,9 @@ class PartBriefSerializer(InvenTree.serializers.InvenTreeModelSerializer):
             'image',
             'thumbnail',
             'active',
+            'locked',
             'assembly',
+            'component',
             'is_template',
             'purchaseable',
             'salable',
@@ -591,6 +593,21 @@ class InitialSupplierSerializer(serializers.Serializer):
         return data
 
 
+class DefaultLocationSerializer(InvenTree.serializers.InvenTreeModelSerializer):
+    """Brief serializer for a StockLocation object.
+
+    Defined here, rather than stock.serializers, to negotiate circular imports.
+    """
+
+    class Meta:
+        """Metaclass options."""
+
+        import stock.models as stock_models
+
+        model = stock_models.StockLocation
+        fields = ['pk', 'name', 'pathstring']
+
+
 @register_importer()
 class PartSerializer(
     DataImportExportSerializerMixin,
@@ -623,6 +640,7 @@ class PartSerializer(
             'creation_user',
             'default_expiry',
             'default_location',
+            'default_location_detail',
             'default_supplier',
             'description',
             'full_name',
@@ -642,6 +660,8 @@ class PartSerializer(
             'pk',
             'purchaseable',
             'revision',
+            'revision_of',
+            'revision_count',
             'salable',
             'starred',
             'thumbnail',
@@ -687,6 +707,7 @@ class PartSerializer(
         """
         self.starred_parts = kwargs.pop('starred_parts', [])
         category_detail = kwargs.pop('category_detail', False)
+        location_detail = kwargs.pop('location_detail', False)
         parameters = kwargs.pop('parameters', False)
         create = kwargs.pop('create', False)
         pricing = kwargs.pop('pricing', True)
@@ -696,6 +717,9 @@ class PartSerializer(
 
         if not category_detail:
             self.fields.pop('category_detail', None)
+
+        if not location_detail:
+            self.fields.pop('default_location_detail', None)
 
         if not parameters:
             self.fields.pop('parameters', None)
@@ -740,6 +764,11 @@ class PartSerializer(
 
         Performing database queries as efficiently as possible, to reduce database trips.
         """
+        queryset = queryset.prefetch_related('category', 'default_location')
+
+        # Annotate with the total number of revisions
+        queryset = queryset.annotate(revision_count=SubqueryCount('revisions'))
+
         # Annotate with the total number of stock items
         queryset = queryset.annotate(stock_item_count=SubqueryCount('stock_items'))
 
@@ -833,6 +862,10 @@ class PartSerializer(
         child=serializers.DictField(), source='category.get_path', read_only=True
     )
 
+    default_location_detail = DefaultLocationSerializer(
+        source='default_location', many=False, read_only=True
+    )
+
     category_name = serializers.CharField(
         source='category.name', read_only=True, label=_('Category Name')
     )
@@ -857,6 +890,7 @@ class PartSerializer(
     required_for_build_orders = serializers.IntegerField(read_only=True)
     required_for_sales_orders = serializers.IntegerField(read_only=True)
     stock_item_count = serializers.IntegerField(read_only=True, label=_('Stock Items'))
+    revision_count = serializers.IntegerField(read_only=True, label=_('Revisions'))
     suppliers = serializers.IntegerField(read_only=True, label=_('Suppliers'))
     total_in_stock = serializers.FloatField(read_only=True, label=_('Total Stock'))
     external_stock = serializers.FloatField(read_only=True, label=_('External Stock'))
@@ -1446,28 +1480,30 @@ class BomItemSerializer(
 ):
     """Serializer for BomItem object."""
 
+    import_exclude_fields = ['validated', 'substitutes']
+
     class Meta:
         """Metaclass defining serializer fields."""
 
         model = BomItem
         fields = [
+            'part',
+            'sub_part',
+            'reference',
+            'quantity',
+            'overage',
             'allow_variants',
             'inherited',
-            'note',
             'optional',
             'consumable',
-            'overage',
+            'note',
             'pk',
-            'part',
             'part_detail',
             'pricing_min',
             'pricing_max',
             'pricing_min_total',
             'pricing_max_total',
             'pricing_updated',
-            'quantity',
-            'reference',
-            'sub_part',
             'sub_part_detail',
             'substitutes',
             'validated',
@@ -1480,6 +1516,8 @@ class BomItemSerializer(
             'on_order',
             # Annotated field describing quantity being built
             'building',
+            # Annotate the total potential quantity we can build
+            'can_build',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -1533,6 +1571,8 @@ class BomItemSerializer(
     on_order = serializers.FloatField(label=_('On Order'), read_only=True)
 
     building = serializers.FloatField(label=_('In Production'), read_only=True)
+
+    can_build = serializers.FloatField(label=_('Can Build'), read_only=True)
 
     # Cached pricing fields
     pricing_min = InvenTree.serializers.InvenTreeMoneySerializer(
@@ -1704,6 +1744,20 @@ class BomItemSerializer(
                 - F('variant_bo_allocations')
                 - F('variant_so_allocations'),
                 output_field=FloatField(),
+            )
+        )
+
+        # Annotate the "can_build" quantity
+        queryset = queryset.alias(
+            total_stock=ExpressionWrapper(
+                F('available_variant_stock')
+                + F('available_substitute_stock')
+                + F('available_stock'),
+                output_field=FloatField(),
+            )
+        ).annotate(
+            can_build=ExpressionWrapper(
+                F('total_stock') / F('quantity'), output_field=FloatField()
             )
         )
 

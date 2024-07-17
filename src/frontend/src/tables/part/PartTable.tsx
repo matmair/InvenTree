@@ -35,6 +35,10 @@ function partTableColumns(): TableColumn[] {
       sortable: true
     },
     {
+      accessor: 'revision',
+      sortable: true
+    },
+    {
       accessor: 'units',
       sortable: true
     },
@@ -43,6 +47,11 @@ function partTableColumns(): TableColumn[] {
       accessor: 'category',
       sortable: true,
       render: (record: any) => record.category_detail?.pathstring
+    },
+    {
+      accessor: 'default_location',
+      sortable: true,
+      render: (record: any) => record.default_location_detail?.pathstring
     },
     {
       accessor: 'total_in_stock',
@@ -253,6 +262,16 @@ function partTableFilters(): TableFilter[] {
       type: 'boolean'
     },
     {
+      name: 'is_revision',
+      label: t`Is Revision`,
+      description: t`Filter by parts which are revisions`
+    },
+    {
+      name: 'has_revisions',
+      label: t`Has Revisions`,
+      description: t`Filter by parts which have revisions`
+    },
+    {
       name: 'has_pricing',
       label: t`Has Pricing`,
       description: t`Filter by parts which have pricing information`,
@@ -327,7 +346,8 @@ export function PartListTable({ props }: { props: InvenTreeTableProps }) {
           tableActions: tableActions,
           params: {
             ...props.params,
-            category_detail: true
+            category_detail: true,
+            location_detail: true
           }
         }}
       />

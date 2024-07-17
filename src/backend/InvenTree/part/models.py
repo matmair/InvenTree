@@ -5,6 +5,7 @@ from __future__ import annotations
 import decimal
 import hashlib
 import logging
+import math
 import os
 import re
 from datetime import timedelta
@@ -661,6 +662,49 @@ class Part(
             if match is None:
                 raise ValidationError(_(f'IPN must match regex pattern {pattern}'))
 
+    def validate_revision(self):
+        """Check the 'revision' and 'revision_of' fields."""
+        # Part cannot be a revision of itself
+        if self.revision_of:
+            if self.revision_of == self:
+                raise ValidationError({
+                    'revision_of': _('Part cannot be a revision of itself')
+                })
+
+            # Part cannot be a revision of a part which is itself a revision
+            if self.revision_of.revision_of:
+                raise ValidationError({
+                    'revision_of': _(
+                        'Cannot make a revision of a part which is already a revision'
+                    )
+                })
+
+            # If this part is a revision, it must have a revision code
+            if not self.revision:
+                raise ValidationError({
+                    'revision': _('Revision code must be specified')
+                })
+
+            if get_global_setting('PART_REVISION_ASSEMBLY_ONLY'):
+                if not self.assembly or not self.revision_of.assembly:
+                    raise ValidationError({
+                        'revision_of': _(
+                            'Revisions are only allowed for assembly parts'
+                        )
+                    })
+
+            # Cannot have a revision of a "template" part
+            if self.revision_of.is_template:
+                raise ValidationError({
+                    'revision_of': _('Cannot make a revision of a template part')
+                })
+
+            # parent part must point to the same template (via variant_of)
+            if self.variant_of != self.revision_of.variant_of:
+                raise ValidationError({
+                    'revision_of': _('Parent part must point to the same template')
+                })
+
     def validate_serial_number(
         self,
         serial: str,
@@ -841,15 +885,24 @@ class Part(
                     'IPN': _('Duplicate IPN not allowed in part settings')
                 })
 
+        if self.revision_of and self.revision:
+            if (
+                Part.objects.exclude(pk=self.pk)
+                .filter(revision_of=self.revision_of, revision=self.revision)
+                .exists()
+            ):
+                raise ValidationError(_('Duplicate part revision already exists.'))
+
         # Ensure unique across (Name, revision, IPN) (as specified)
-        if (
-            Part.objects.exclude(pk=self.pk)
-            .filter(name=self.name, revision=self.revision, IPN=self.IPN)
-            .exists()
-        ):
-            raise ValidationError(
-                _('Part with this Name, IPN and Revision already exists.')
-            )
+        if self.revision or self.IPN:
+            if (
+                Part.objects.exclude(pk=self.pk)
+                .filter(name=self.name, revision=self.revision, IPN=self.IPN)
+                .exists()
+            ):
+                raise ValidationError(
+                    _('Part with this Name, IPN and Revision already exists.')
+                )
 
     def clean(self):
         """Perform cleaning operations for the Part model.
@@ -865,6 +918,9 @@ class Part(
             raise ValidationError({
                 'category': _('Parts cannot be assigned to structural part categories!')
             })
+
+        # Check the 'revision' and 'revision_of' fields
+        self.validate_revision()
 
         super().clean()
 
@@ -951,6 +1007,16 @@ class Part(
         null=True,
         help_text=_('Part revision or version number'),
         verbose_name=_('Revision'),
+    )
+
+    revision_of = models.ForeignKey(
+        'part.Part',
+        related_name='revisions',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text=_('Is this part a revision of another part?'),
+        verbose_name=_('Revision Of'),
     )
 
     link = InvenTreeURLField(
@@ -3820,6 +3886,12 @@ class PartParameter(InvenTree.models.InvenTreeMetadataModel):
             except ValueError:
                 self.data_numeric = None
 
+        if self.data_numeric is not None and type(self.data_numeric) is float:
+            # Prevent out of range numbers, etc
+            # Ref: https://github.com/inventree/InvenTree/issues/7593
+            if math.isnan(self.data_numeric) or math.isinf(self.data_numeric):
+                self.data_numeric = None
+
     part = models.ForeignKey(
         Part,
         on_delete=models.CASCADE,
@@ -4101,16 +4173,16 @@ class BomItem(
         """
         # TODO: Perhaps control this with a global setting?
 
-        msg = _('BOM item cannot be modified - assembly is locked')
-
         if assembly.locked:
-            raise ValidationError(msg)
+            raise ValidationError(_('BOM item cannot be modified - assembly is locked'))
 
         # If this BOM item is inherited, check all variants of the assembly
         if self.inherited:
             for part in assembly.get_descendants(include_self=False):
                 if part.locked:
-                    raise ValidationError(msg)
+                    raise ValidationError(
+                        _('BOM item cannot be modified - variant assembly is locked')
+                    )
 
     # A link to the parent part
     # Each part will get a reverse lookup field 'bom_items'

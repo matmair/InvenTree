@@ -911,7 +911,27 @@ class PartFilter(rest_filters.FilterSet):
         """Metaclass options for this filter set."""
 
         model = Part
-        fields = []
+        fields = ['revision_of']
+
+    is_revision = rest_filters.BooleanFilter(
+        label=_('Is Revision'), method='filter_is_revision'
+    )
+
+    def filter_is_revision(self, queryset, name, value):
+        """Filter by whether the Part is a revision or not."""
+        if str2bool(value):
+            return queryset.exclude(revision_of=None)
+        return queryset.filter(revision_of=None)
+
+    has_revisions = rest_filters.BooleanFilter(
+        label=_('Has Revisions'), method='filter_has_revisions'
+    )
+
+    def filter_has_revisions(self, queryset, name, value):
+        """Filter by whether the Part has any revisions or not."""
+        if str2bool(value):
+            return queryset.exclude(revision_count=0)
+        return queryset.filter(revision_count=0)
 
     has_units = rest_filters.BooleanFilter(label='Has units', method='filter_has_units')
 
@@ -1204,6 +1224,7 @@ class PartMixin:
 
             kwargs['parameters'] = str2bool(params.get('parameters', None))
             kwargs['category_detail'] = str2bool(params.get('category_detail', False))
+            kwargs['location_detail'] = str2bool(params.get('location_detail', False))
             kwargs['path_detail'] = str2bool(params.get('path_detail', False))
 
         except AttributeError:
@@ -1354,11 +1375,14 @@ class PartList(PartMixin, DataExportViewMixin, ListCreateAPI):
         'total_in_stock',
         'unallocated_stock',
         'category',
+        'default_location',
         'last_stocktake',
         'units',
         'pricing_min',
         'pricing_max',
         'pricing_updated',
+        'revision',
+        'revision_count',
     ]
 
     ordering_field_aliases = {
@@ -1839,7 +1863,6 @@ class BomList(BomMixin, DataExportViewMixin, ListCreateDestroyAPIView):
     """
 
     filterset_class = BomFilter
-
     filter_backends = SEARCH_ORDER_FILTER_ALIAS
 
     search_fields = [
@@ -1853,6 +1876,7 @@ class BomList(BomMixin, DataExportViewMixin, ListCreateDestroyAPIView):
     ]
 
     ordering_fields = [
+        'can_build',
         'quantity',
         'sub_part',
         'available_stock',
@@ -1875,13 +1899,11 @@ class BomList(BomMixin, DataExportViewMixin, ListCreateDestroyAPIView):
         'pricing_updated': 'sub_part__pricing_data__updated',
     }
 
-    def filter_delete_queryset(self, queryset, request):
+    def validate_delete(self, queryset, request) -> None:
         """Ensure that there are no 'locked' items."""
         for bom_item in queryset:
             # Note: Calling check_part_lock may raise a ValidationError
             bom_item.check_part_lock(bom_item.part)
-
-        return super().filter_delete_queryset(queryset, request)
 
 
 class BomDetail(BomMixin, RetrieveUpdateDestroyAPI):
