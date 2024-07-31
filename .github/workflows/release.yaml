@@ -84,17 +84,33 @@ jobs:
     needs: ["build"]
     permissions:
       contents: write
-      pull-requests: write
     name: Publish frontend
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           path: artifacts
-      - name: Upload to release
+      - name: Upload frontend
         uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # pin@2.9.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: artifacts/*
-          file_glob: true
+          asset_name: frontend-build
+          file: artifacts/frontend-build.zip
           tag: ${{ github.ref }}
+          overwrite: true
+      - name: Upload Attestation
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # pin@2.9.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          asset_name: frontend-build.intoto.jsonl
+          file: artifacts/frontend-build.intoto.jsonl
+          tag: ${{ github.ref }}
+          overwrite: true
+      - name: Upload SBOM
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # pin@2.9.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          asset_name: frontend-build.spdx
+          file: artifacts/frontend-build.spdx
+          tag: ${{ github.ref }}
+          overwrite: true
