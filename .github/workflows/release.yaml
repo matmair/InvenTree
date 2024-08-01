@@ -72,30 +72,13 @@ jobs:
           name: frontend-build.intoto.jsonl
           path: ${{ steps.attest.outputs.bundle-path}}
           retention-days: 5
-      - name: Upload frontend
-        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # pin@v4.3.4
-        with:
-          name: frontend-build
-          path: src/backend/InvenTree/web/static/frontend-build.zip
-          retention-days: 5
 
-  publish:
-    runs-on: ubuntu-latest
-    needs: ["build"]
-    permissions:
-      contents: write
-    name: Publish frontend
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
-        with:
-          path: artifacts
       - name: Upload frontend
         uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # pin@2.9.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          asset_name: frontend-build
-          file: artifacts/frontend-build.zip
+          file: src/backend/InvenTree/web/static/frontend-build.zip
+          asset_name: frontend-build.zip
           tag: ${{ github.ref }}
           overwrite: true
       - name: Upload Attestation
@@ -103,7 +86,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           asset_name: frontend-build.intoto.jsonl
-          file: artifacts/frontend-build.intoto.jsonl
+          file: ${{ github.workspace}}//artifacts/frontend-build.intoto.jsonl
           tag: ${{ github.ref }}
           overwrite: true
       - name: Upload SBOM
@@ -111,6 +94,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           asset_name: frontend-build.spdx
-          file: artifacts/frontend-build.spdx
+          file: ${{ github.workspace}}/artifacts/frontend-build.spdx
           tag: ${{ github.ref }}
           overwrite: true
