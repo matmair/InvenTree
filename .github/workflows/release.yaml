@@ -50,9 +50,11 @@ jobs:
         run: cd src/frontend && npm run compile && npm run build
       - name: Create SBOM for frontend
         uses: anchore/sbom-action@v0
+        id: sbom
         with:
           artifact-name: frontend-build.spdx
           path: src/frontend
+          output-file: frontend-build.spdx
       - name: Write version file - SHA
         run: cd src/backend/InvenTree/web/static/web/.vite && echo "$GITHUB_SHA" > sha.txt
       - name: Write version file - TAG
@@ -80,7 +82,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           asset_name: frontend-build.spdx
-          file: ${{ github.workspace}}/artifacts/frontend-build.spdx
+          file: src/frontend/frontend-build.spdx
           tag: ${{ github.ref }}
           overwrite: true
       - name: Upload Attestation
