@@ -551,6 +551,14 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: inventree/InvenTree
           flags: pui
+      - uses: inception-health/otel-upload-test-artifact-action@v1
+        if: always()
+        with:
+            jobName: "platform_ui"
+            stepName: "tests"
+            path: "junit.xml"
+            type: "junit"
+            githubToken: ${{ secrets.GITHUB_TOKEN }}
 
   platform_ui_build:
     name: Build - UI Platform
