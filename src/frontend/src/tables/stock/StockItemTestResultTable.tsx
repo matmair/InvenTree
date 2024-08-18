@@ -16,9 +16,10 @@ import { PassFailButton } from '../../components/buttons/YesNoButton';
 import { ApiFormFieldSet } from '../../components/forms/fields/ApiFormField';
 import { AttachmentLink } from '../../components/items/AttachmentLink';
 import { RenderUser } from '../../components/render/User';
-import { renderDate } from '../../defaults/formatters';
+import { formatDate } from '../../defaults/formatters';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { UserRoles } from '../../enums/Roles';
+import { useTestResultFields } from '../../forms/StockForms';
 import {
   useCreateApiFormModal,
   useDeleteApiFormModal,
@@ -126,16 +127,14 @@ export default function StockItemTestResultTable({
         switchable: false,
         sortable: true,
         render: (record: any) => {
-          let required = record.required ?? record.template_detail?.required;
-          let enabled = record.enabled ?? record.template_detail?.enabled;
-          let installed =
+          const enabled = record.enabled ?? record.template_detail?.enabled;
+          const installed =
             record.stock_item != undefined && record.stock_item != itemId;
 
           return (
-            <Group justify="space-between">
+            <Group justify="space-between" wrap="nowrap">
               <Text
                 style={{ fontStyle: installed ? 'italic' : undefined }}
-                fw={required && 700}
                 c={enabled ? undefined : 'red'}
               >
                 {!record.templateId && '- '}
@@ -208,7 +207,7 @@ export default function StockItemTestResultTable({
         render: (record: any) => {
           return (
             <Group justify="space-between">
-              {renderDate(record.started_datetime, {
+              {formatDate(record.started_datetime, {
                 showTime: true,
                 showSeconds: true
               })}
@@ -223,7 +222,7 @@ export default function StockItemTestResultTable({
         render: (record: any) => {
           return (
             <Group justify="space-between">
-              {renderDate(record.finished_datetime, {
+              {formatDate(record.finished_datetime, {
                 showTime: true,
                 showSeconds: true
               })}
@@ -234,27 +233,10 @@ export default function StockItemTestResultTable({
     ];
   }, [itemId]);
 
-  const resultFields: ApiFormFieldSet = useMemo(() => {
-    return {
-      template: {
-        filters: {
-          include_inherited: true,
-          part: partId
-        }
-      },
-      result: {},
-      value: {},
-      attachment: {},
-      notes: {},
-      test_station: {},
-      started_datetime: {},
-      finished_datetime: {},
-      stock_item: {
-        value: itemId,
-        hidden: true
-      }
-    };
-  }, [partId, itemId]);
+  const resultFields: ApiFormFieldSet = useTestResultFields({
+    partId: partId,
+    itemId: itemId
+  });
 
   const [selectedTemplate, setSelectedTemplate] = useState<number | undefined>(
     undefined
@@ -262,7 +244,7 @@ export default function StockItemTestResultTable({
 
   const newTestModal = useCreateApiFormModal({
     url: ApiEndpoints.stock_test_result_list,
-    fields: resultFields,
+    fields: useMemo(() => ({ ...resultFields }), [resultFields]),
     initialData: {
       template: selectedTemplate,
       result: true
@@ -277,7 +259,7 @@ export default function StockItemTestResultTable({
   const editTestModal = useEditApiFormModal({
     url: ApiEndpoints.stock_test_result_list,
     pk: selectedTest,
-    fields: resultFields,
+    fields: useMemo(() => ({ ...resultFields }), [resultFields]),
     title: t`Edit Test Result`,
     table: table,
     successMessage: t`Test result updated`

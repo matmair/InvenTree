@@ -298,7 +298,8 @@ function constructDeleteForm(fields, options) {
  * - closeText: Text for the "close" button
  * - fields: list of fields to display, with the following options
  *      - filters: API query filters
- *      - onEdit: callback or array of callbacks which get fired when field is edited
+ *      - onEdit: callback or array of callbacks which get fired when field is edited - does not get triggered until the field loses focus, ref: https://api.jquery.com/change/
+ *      - onInput: callback or array of callbacks which get fired when an input is detected in the field
  *      - secondary: Define a secondary modal form for this field
  *      - label: Specify custom label
  *      - help_text: Specify custom help_text
@@ -1178,6 +1179,10 @@ function getFormFieldValue(name, field={}, options={}) {
         return null;
     }
 
+    if (field.hidden && !!field.value) {
+        return field.value;
+    }
+
     var value = null;
 
     let guessed_type = guessFieldType(el);
@@ -1497,8 +1502,23 @@ function handleFormErrors(errors, fields={}, options={}) {
 
     for (var field_name in errors) {
 
-        var field = fields[field_name] || {};
-        var field_errors = errors[field_name];
+        let field = fields[field_name] || null;
+        let field_errors = errors[field_name];
+
+        // No matching field - append to non_field_errors
+        if (!field || field.hidden) {
+
+            if (Array.isArray(field_errors)) {
+                field_errors.forEach((err) => {
+                    non_field_errors.append(`<div class='alert alert-block alert-danger'>${err}</div>`);
+                });
+            } else {
+                non_field_errors.append(`<div class='alert alert-block alert-danger'>${field_errors.toString()}</div>`);
+            }
+
+            continue;
+        }
+
 
         // for nested objects with children and dependent fields with a child defined, extract nested errors
         if (((field.type == 'nested object') && ('children' in field)) || ((field.type == 'dependent field') && ('child' in field))) {
@@ -1640,6 +1660,23 @@ function addFieldCallback(name, field, options) {
                 onEdit(value, name, field, options);
             }
         });
+    }
+
+    if(field.onInput){
+
+        el.on('input', function(){
+            var value = getFormFieldValue(name, field, options);
+            let onInputHandlers = field.onInput;
+
+            if (!Array.isArray(onInputHandlers)) {
+                onInputHandlers = [onInputHandlers];
+            }
+
+            for (const onInput of onInputHandlers) {
+                onInput(value, name, field, options);
+            }
+        });
+
     }
 
     // attach field callback for nested fields
@@ -2026,7 +2063,7 @@ function initializeRelatedField(field, fields, options={}) {
 
                 // Each 'row' must have the 'id' attribute
                 for (var idx = 0; idx < data.length; idx++) {
-                    data[idx].id = data[idx].pk;
+                    data[idx].id = data[idx][field.pk_field ?? 'pk'];
                 }
 
                 // Ref: https://select2.org/data-sources/formats
@@ -2050,7 +2087,9 @@ function initializeRelatedField(field, fields, options={}) {
                 data = item.element.instance;
             }
 
-            if (!data.pk) {
+            const pkField = field.pk_field ?? 'pk';
+
+            if (!data[pkField]) {
                 return $(searching());
             }
 
@@ -2071,6 +2110,8 @@ function initializeRelatedField(field, fields, options={}) {
             // Or, use the raw 'item' data as a backup
             var data = item;
 
+            const pkField = field.pk_field ?? 'pk';
+
             if (item.element && item.element.instance) {
                 data = item.element.instance;
             }
@@ -2080,7 +2121,7 @@ function initializeRelatedField(field, fields, options={}) {
                 field.onSelect(data, field, options);
             }
 
-            if (!data.pk) {
+            if (!data[pkField]) {
                 return field.placeholder || '';
             }
 
@@ -2210,7 +2251,6 @@ function initializeRelatedField(field, fields, options={}) {
                         data: rootNodes,
                         expandIcon: 'fas fa-plus-square large-treeview-icon',
                         collapseIcon: 'fa fa-minus-square large-treeview-icon',
-                        nodeIcon: field.tree_picker.defaultIcon,
                         color: "black",
                     });
                 }
@@ -2240,9 +2280,12 @@ function initializeRelatedField(field, fields, options={}) {
  */
 function setRelatedFieldData(name, data, options={}) {
 
-    var select = getFormFieldElement(name, options);
+    let select = getFormFieldElement(name, options);
 
-    var option = new Option(name, data.pk, true, true);
+    let fields = options?.fields ?? {};
+    let pkField = fields[name]?.pk_field ?? 'pk';
+
+    let option = new Option(name, data[pkField], true, true);
 
     // Assign the JSON data to the 'instance' attribute,
     // so we can access and render it later

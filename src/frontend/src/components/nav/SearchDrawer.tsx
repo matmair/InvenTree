@@ -33,6 +33,7 @@ import { api } from '../../App';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
+import { navigateToLink } from '../../functions/navigation';
 import { apiUrl } from '../../states/ApiState';
 import { useUserSettingsState } from '../../states/SettingsState';
 import { useUserState } from '../../states/UserState';
@@ -58,7 +59,7 @@ function QueryResultGroup({
 }: {
   query: SearchQuery;
   onRemove: (query: ModelType) => void;
-  onResultClick: (query: ModelType, pk: number) => void;
+  onResultClick: (query: ModelType, pk: number, event: any) => void;
 }) {
   if (query.results.count == 0) {
     return null;
@@ -92,7 +93,9 @@ function QueryResultGroup({
         <Stack>
           {query.results.results.map((result: any) => (
             <Anchor
-              onClick={() => onResultClick(query.model, result.pk)}
+              onClick={(event: any) =>
+                onResultClick(query.model, result.pk, event)
+              }
               key={result.pk}
             >
               <RenderInstance instance={result} model={query.model} />
@@ -130,7 +133,11 @@ export function SearchDrawer({
     return [
       {
         model: ModelType.part,
-        parameters: {},
+        parameters: {
+          active: userSettings.isSet('SEARCH_HIDE_INACTIVE_PARTS')
+            ? true
+            : undefined
+        },
         enabled:
           user.hasViewRole(UserRoles.part) &&
           userSettings.isSet('SEARCH_PREVIEW_SHOW_PARTS')
@@ -170,7 +177,10 @@ export function SearchDrawer({
         model: ModelType.stockitem,
         parameters: {
           part_detail: true,
-          location_detail: true
+          location_detail: true,
+          in_stock: userSettings.isSet('SEARCH_PREVIEW_HIDE_UNAVAILABLE_STOCK')
+            ? true
+            : undefined
         },
         enabled:
           user.hasViewRole(UserRoles.stock) &&
@@ -203,7 +213,12 @@ export function SearchDrawer({
       {
         model: ModelType.purchaseorder,
         parameters: {
-          supplier_detail: true
+          supplier_detail: true,
+          outstanding: userSettings.isSet(
+            'SEARCH_PREVIEW_EXCLUDE_INACTIVE_PURCHASE_ORDERS'
+          )
+            ? true
+            : undefined
         },
         enabled:
           user.hasViewRole(UserRoles.purchase_order) &&
@@ -212,7 +227,12 @@ export function SearchDrawer({
       {
         model: ModelType.salesorder,
         parameters: {
-          customer_detail: true
+          customer_detail: true,
+          outstanding: userSettings.isSet(
+            'SEARCH_PREVIEW_EXCLUDE_INACTIVE_SALES_ORDERS'
+          )
+            ? true
+            : undefined
         },
         enabled:
           user.hasViewRole(UserRoles.sales_order) &&
@@ -221,7 +241,12 @@ export function SearchDrawer({
       {
         model: ModelType.returnorder,
         parameters: {
-          customer_detail: true
+          customer_detail: true,
+          outstanding: userSettings.isSet(
+            'SEARCH_PREVIEW_EXCLUDE_INACTIVE_RETURN_ORDERS'
+          )
+            ? true
+            : undefined
         },
         enabled:
           user.hasViewRole(UserRoles.return_order) &&
@@ -247,7 +272,7 @@ export function SearchDrawer({
 
     let params: any = {
       offset: 0,
-      limit: 10, // TODO: Make this configurable (based on settings)
+      limit: userSettings.getSetting('SEARCH_PREVIEW_RESULTS', '10'),
       search: searchText,
       search_regex: searchRegex,
       search_whole: searchWhole
@@ -272,8 +297,7 @@ export function SearchDrawer({
   // Search query manager
   const searchQuery = useQuery({
     queryKey: ['search', searchText, searchRegex, searchWhole],
-    queryFn: performSearch,
-    refetchOnWindowFocus: false
+    queryFn: performSearch
   });
 
   // A list of queries which return valid results
@@ -316,11 +340,20 @@ export function SearchDrawer({
   const navigate = useNavigate();
 
   // Callback when one of the search results is clicked
-  function onResultClick(query: ModelType, pk: number) {
-    closeDrawer();
+  function onResultClick(query: ModelType, pk: number, event: any) {
     const targetModel = ModelInformationDict[query];
-    if (targetModel.url_detail == undefined) return;
-    navigate(targetModel.url_detail.replace(':pk', pk.toString()));
+    if (targetModel.url_detail == undefined) {
+      return;
+    }
+
+    if (event?.ctrlKey || event?.shiftKey) {
+      // Keep the drawer open in this condition
+    } else {
+      closeDrawer();
+    }
+
+    let url = targetModel.url_detail.replace(':pk', pk.toString());
+    navigateToLink(url, navigate, event);
   }
 
   return (
@@ -400,7 +433,9 @@ export function SearchDrawer({
                 key={idx}
                 query={query}
                 onRemove={(query) => removeResults(query)}
-                onResultClick={(query, pk) => onResultClick(query, pk)}
+                onResultClick={(query, pk, event) =>
+                  onResultClick(query, pk, event)
+                }
               />
             ))}
           </Stack>

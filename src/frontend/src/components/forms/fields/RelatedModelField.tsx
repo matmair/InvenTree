@@ -59,27 +59,39 @@ export function RelatedModelField({
     if (field.value === pk) return;
 
     if (
-      field.value !== null &&
-      field.value !== undefined &&
-      field.value !== ''
+      field?.value !== null &&
+      field?.value !== undefined &&
+      field?.value !== ''
     ) {
       const url = `${definition.api_url}${field.value}/`;
+
+      if (!url) {
+        setPk(null);
+        return;
+      }
+
       api.get(url).then((response) => {
-        if (response.data && response.data.pk) {
+        let pk_field = definition.pk_field ?? 'pk';
+        if (response.data && response.data[pk_field]) {
           const value = {
-            value: response.data.pk,
+            value: response.data[pk_field],
             data: response.data
           };
 
+          // Run custom callback for this field (if provided)
+          if (definition.onValueChange) {
+            definition.onValueChange(response.data[pk_field], response.data);
+          }
+
           setInitialData(value);
           dataRef.current = [value];
-          setPk(response.data.pk);
+          setPk(response.data[pk_field]);
         }
       });
     } else {
       setPk(null);
     }
-  }, [definition.api_url, field.value]);
+  }, [definition.api_url, definition.pk_field, field.value]);
 
   // Search input query
   const [value, setValue] = useState<string>('');
@@ -146,13 +158,15 @@ export function RelatedModelField({
           const results = response.data?.results ?? response.data ?? [];
 
           results.forEach((item: any) => {
-            // do not push already existing items into the values array
-            if (alreadyPresentPks.includes(item.pk)) return;
+            let pk_field = definition.pk_field ?? 'pk';
+            let pk = item[pk_field];
 
-            values.push({
-              value: item.pk ?? -1,
-              data: item
-            });
+            if (pk && !alreadyPresentPks.includes(pk)) {
+              values.push({
+                value: pk,
+                data: item
+              });
+            }
           });
 
           setData(values);
@@ -222,25 +236,23 @@ export function RelatedModelField({
   // Field doesn't follow Mantine theming
   // Define color theme to pass to field based on Mantine theme
   const theme = useMantineTheme();
-
-  const colorschema = vars.colors.primaryColors;
   const { colorScheme } = useMantineColorScheme();
 
   const colors = useMemo(() => {
     let colors: any;
     if (colorScheme === 'dark') {
       colors = {
-        neutral0: colorschema[6],
-        neutral5: colorschema[4],
-        neutral10: colorschema[4],
-        neutral20: colorschema[4],
-        neutral30: colorschema[3],
-        neutral40: colorschema[2],
-        neutral50: colorschema[1],
-        neutral60: colorschema[0],
-        neutral70: colorschema[0],
-        neutral80: colorschema[0],
-        neutral90: colorschema[0],
+        neutral0: vars.colors.dark[6],
+        neutral5: vars.colors.dark[4],
+        neutral10: vars.colors.dark[4],
+        neutral20: vars.colors.dark[4],
+        neutral30: vars.colors.dark[3],
+        neutral40: vars.colors.dark[2],
+        neutral50: vars.colors.dark[1],
+        neutral60: vars.colors.dark[0],
+        neutral70: vars.colors.dark[0],
+        neutral80: vars.colors.dark[0],
+        neutral90: vars.colors.dark[0],
         primary: vars.colors.primaryColors[7],
         primary25: vars.colors.primaryColors[6],
         primary50: vars.colors.primaryColors[5],
@@ -276,6 +288,7 @@ export function RelatedModelField({
     >
       <Select
         id={fieldId}
+        aria-label={`related-field-${field.name}`}
         value={currentValue}
         ref={field.ref}
         options={data}

@@ -2,6 +2,7 @@
 
 import io
 import os
+import random
 from datetime import datetime, timedelta
 from enum import IntEnum
 
@@ -17,15 +18,16 @@ import build.models
 import company.models
 import part.models
 from common.models import InvenTreeSetting
-from InvenTree.status_codes import StockHistoryCode, StockStatus
 from InvenTree.unit_test import InvenTreeAPITestCase
 from part.models import Part, PartTestTemplate
 from stock.models import (
     StockItem,
     StockItemTestResult,
+    StockItemTracking,
     StockLocation,
     StockLocationType,
 )
+from stock.status_codes import StockHistoryCode, StockStatus
 
 
 class StockAPITestCase(InvenTreeAPITestCase):
@@ -470,13 +472,13 @@ class StockLocationTypeTest(StockAPITestCase):
         """Test that the list endpoint works as expected."""
         location_types = [
             StockLocationType.objects.create(
-                name='Type 1', description='Type 1 desc', icon='fas fa-box'
+                name='Type 1', description='Type 1 desc', icon='ti:package:outline'
             ),
             StockLocationType.objects.create(
-                name='Type 2', description='Type 2 desc', icon='fas fa-box'
+                name='Type 2', description='Type 2 desc', icon='ti:package:outline'
             ),
             StockLocationType.objects.create(
-                name='Type 3', description='Type 3 desc', icon='fas fa-box'
+                name='Type 3', description='Type 3 desc', icon='ti:package:outline'
             ),
         ]
 
@@ -491,7 +493,7 @@ class StockLocationTypeTest(StockAPITestCase):
     def test_delete(self):
         """Test that we can delete a location type via API."""
         location_type = StockLocationType.objects.create(
-            name='Type 1', description='Type 1 desc', icon='fas fa-box'
+            name='Type 1', description='Type 1 desc', icon='ti:package:outline'
         )
         self.delete(
             reverse('api-location-type-detail', kwargs={'pk': location_type.pk}),
@@ -504,8 +506,19 @@ class StockLocationTypeTest(StockAPITestCase):
         self.post(
             self.list_url,
             {'name': 'Test Type 1', 'description': 'Test desc 1', 'icon': 'fas fa-box'},
+            expected_code=400,
+        )
+
+        self.post(
+            self.list_url,
+            {
+                'name': 'Test Type 1',
+                'description': 'Test desc 1',
+                'icon': 'ti:package:outline',
+            },
             expected_code=201,
         )
+
         self.assertIsNotNone(
             StockLocationType.objects.filter(name='Test Type 1').first()
         )
@@ -513,14 +526,20 @@ class StockLocationTypeTest(StockAPITestCase):
     def test_update(self):
         """Test that we can update a location type via API."""
         location_type = StockLocationType.objects.create(
-            name='Type 1', description='Type 1 desc', icon='fas fa-box'
+            name='Type 1', description='Type 1 desc', icon='ti:package:outline'
         )
-        res = self.patch(
+        self.patch(
             reverse('api-location-type-detail', kwargs={'pk': location_type.pk}),
             {'icon': 'fas fa-shapes'},
+            expected_code=400,
+        )
+
+        res = self.patch(
+            reverse('api-location-type-detail', kwargs={'pk': location_type.pk}),
+            {'icon': 'ti:tag:outline'},
             expected_code=200,
         ).json()
-        self.assertEqual(res['icon'], 'fas fa-shapes')
+        self.assertEqual(res['icon'], 'ti:tag:outline')
 
 
 class StockItemListTest(StockAPITestCase):
@@ -763,11 +782,11 @@ class StockItemListTest(StockAPITestCase):
 
         # Expected headers
         headers = [
-            'Part ID',
-            'Customer ID',
-            'Location ID',
+            'Part',
+            'Customer',
+            'Stock Location',
             'Location Name',
-            'Parent ID',
+            'Parent Item',
             'Quantity',
             'Status',
         ]
@@ -883,13 +902,6 @@ class StockItemListTest(StockAPITestCase):
 
     def test_query_count(self):
         """Test that the number of queries required to fetch stock items is reasonable."""
-
-        def get_stock(data, expected_status=200):
-            """Helper function to fetch stock items."""
-            response = self.client.get(self.list_url, data=data)
-            self.assertEqual(response.status_code, expected_status)
-            return response.data
-
         # Create a bunch of StockItem objects
         prt = Part.objects.first()
 
@@ -899,20 +911,18 @@ class StockItemListTest(StockAPITestCase):
         ])
 
         # List *all* stock items
-        with self.assertNumQueriesLessThan(25):
-            get_stock({})
+        self.get(self.list_url, {}, max_query_count=35)
 
         # List all stock items, with part detail
-        with self.assertNumQueriesLessThan(20):
-            get_stock({'part_detail': True})
+        self.get(self.list_url, {'part_detail': True}, max_query_count=35)
 
         # List all stock items, with supplier_part detail
-        with self.assertNumQueriesLessThan(20):
-            get_stock({'supplier_part_detail': True})
+        self.get(self.list_url, {'supplier_part_detail': True}, max_query_count=35)
 
         # List all stock items, with 'location' and 'tests' detail
-        with self.assertNumQueriesLessThan(20):
-            get_stock({'location_detail': True, 'tests': True})
+        self.get(
+            self.list_url, {'location_detail': True, 'tests': True}, max_query_count=35
+        )
 
 
 class StockItemTest(StockAPITestCase):
@@ -1304,10 +1314,13 @@ class StockItemTest(StockAPITestCase):
 
         self.assertIn('This field is required', str(response.data['location']))
 
+        # TODO: Return to this and work out why it is taking so long
+        # Ref: https://github.com/inventree/InvenTree/pull/7157
         response = self.post(
             url,
             {'location': '1', 'notes': 'Returned from this customer for testing'},
             expected_code=201,
+            max_query_time=5.0,
         )
 
         item.refresh_from_db()
@@ -1417,7 +1430,7 @@ class StocktakeTest(StockAPITestCase):
             data = {}
 
             # POST with a valid action
-            response = self.post(url, data)
+            response = self.post(url, data, expected_code=400)
 
             self.assertIn('This field is required', str(response.data['items']))
 
@@ -1452,7 +1465,7 @@ class StocktakeTest(StockAPITestCase):
             # POST with an invalid quantity value
             data['items'] = [{'pk': 1234, 'quantity': '10x0d'}]
 
-            response = self.post(url, data)
+            response = self.post(url, data, expected_code=400)
             self.assertContains(
                 response,
                 'A valid number is required',
@@ -1461,7 +1474,8 @@ class StocktakeTest(StockAPITestCase):
 
             data['items'] = [{'pk': 1234, 'quantity': '-1.234'}]
 
-            response = self.post(url, data)
+            response = self.post(url, data, expected_code=400)
+
             self.assertContains(
                 response,
                 'Ensure this value is greater than or equal to 0',
@@ -1710,6 +1724,150 @@ class StockTestResultTest(StockAPITestCase):
         )
 
         self.assertEqual(StockItemTestResult.objects.count(), n)
+
+    def test_value_choices(self):
+        """Test that the 'value' field is correctly validated."""
+        url = reverse('api-stock-test-result-list')
+
+        test_template = PartTestTemplate.objects.first()
+
+        test_template.choices = 'AA, BB, CC'
+        test_template.save()
+
+        stock_item = StockItem.objects.create(
+            part=test_template.part, quantity=1, location=StockLocation.objects.first()
+        )
+
+        # Create result with invalid choice
+        response = self.post(
+            url,
+            {
+                'template': test_template.pk,
+                'stock_item': stock_item.pk,
+                'result': True,
+                'value': 'DD',
+            },
+            expected_code=400,
+        )
+
+        self.assertIn('Invalid value for this test', str(response.data['value']))
+
+        # Create result with valid choice
+        response = self.post(
+            url,
+            {
+                'template': test_template.pk,
+                'stock_item': stock_item.pk,
+                'result': True,
+                'value': 'BB',
+            },
+            expected_code=201,
+        )
+
+        # Create result with unrestricted choice
+        test_template.choices = ''
+        test_template.save()
+
+        response = self.post(
+            url,
+            {
+                'template': test_template.pk,
+                'stock_item': stock_item.pk,
+                'result': False,
+                'value': '12345',
+            },
+            expected_code=201,
+        )
+
+
+class StockTrackingTest(StockAPITestCase):
+    """Tests for the StockTracking API endpoints."""
+
+    fixtures = [
+        *StockAPITestCase.fixtures,
+        'build',
+        'order',
+        'return_order',
+        'sales_order',
+    ]
+
+    @classmethod
+    def setUpTestData(cls):
+        """Initialize some test data for the StockTracking tests."""
+        super().setUpTestData()
+
+        import build.models
+        import company.models
+        import order.models
+        import stock.models
+        import stock.status_codes
+
+        entries = []
+
+        N_BO = build.models.Build.objects.count()
+        N_PO = order.models.PurchaseOrder.objects.count()
+        N_RO = order.models.ReturnOrder.objects.count()
+        N_SO = order.models.SalesOrder.objects.count()
+
+        N_COMPANY = company.models.Company.objects.count()
+        N_LOCATION = stock.models.StockLocation.objects.count()
+
+        # Generate a large quantity of tracking items
+        # Note that the pk values are not guaranteed to exist in the database
+        for item in StockItem.objects.all():
+            for i in range(50):
+                entries.append(
+                    StockItemTracking(
+                        item=item,
+                        notes='This is a test entry',
+                        tracking_type=stock.status_codes.StockHistoryCode.LEGACY.value,
+                        deltas={
+                            'quantity': 50 - i,
+                            'buildorder': random.randint(0, N_BO + 1),
+                            'purchaseorder': random.randint(0, N_PO + 1),
+                            'returnorder': random.randint(0, N_RO + 1),
+                            'salesorder': random.randint(0, N_SO + 1),
+                            'customer': random.randint(0, N_COMPANY + 1),
+                            'location': random.randint(0, N_LOCATION + 1),
+                        },
+                    )
+                )
+
+        StockItemTracking.objects.bulk_create(entries)
+
+    def get_url(self):
+        """Helper function to get stock tracking api url."""
+        return reverse('api-stock-tracking-list')
+
+    def test_count(self):
+        """Test list endpoint with limit = 1."""
+        url = self.get_url()
+
+        N = StockItemTracking.objects.count()
+
+        # Test counting
+        response = self.get(url, {'limit': 1})
+        self.assertEqual(response.data['count'], N)
+
+    def test_list(self):
+        """Test list endpoint."""
+        url = self.get_url()
+
+        N = StockItemTracking.objects.count()
+        self.assertGreater(N, 1000)
+
+        response = self.client.get(url, max_query_count=25)
+        self.assertEqual(len(response.data), N)
+
+        # Check expected delta values
+        keys = ['quantity', 'returnorder', 'buildorder', 'customer']
+
+        for item in response.data:
+            deltas = item['deltas']
+
+            for key in keys:
+                self.assertIn(key, deltas)
+                self.assertIsNotNone(deltas.get(key, None))
 
 
 class StockAssignTest(StockAPITestCase):

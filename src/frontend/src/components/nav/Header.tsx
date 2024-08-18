@@ -2,12 +2,13 @@ import { ActionIcon, Container, Group, Indicator, Tabs } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconBell, IconSearch } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useMatch, useNavigate } from 'react-router-dom';
 
 import { api } from '../../App';
 import { navTabs as mainNavTabs } from '../../defaults/links';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
+import { navigateToLink } from '../../functions/navigation';
 import * as classes from '../../main.css';
 import { apiUrl } from '../../states/ApiState';
 import { useLocalState } from '../../states/LocalState';
@@ -46,6 +47,10 @@ export function Header() {
     queryKey: ['notification-count'],
     enabled: isLoggedIn(),
     queryFn: async () => {
+      if (!isLoggedIn()) {
+        return null;
+      }
+
       try {
         const params = {
           params: {
@@ -59,14 +64,13 @@ export function Header() {
             return null;
           });
         setNotificationCount(response?.data?.count ?? 0);
-        return response?.data;
+        return response?.data ?? null;
       } catch (error) {
-        return error;
+        return null;
       }
     },
     refetchInterval: 30000,
-    refetchOnMount: true,
-    refetchOnWindowFocus: false
+    refetchOnMount: true
   });
 
   // Sync Navigation Drawer state with zustand
@@ -128,9 +132,34 @@ export function Header() {
 }
 
 function NavTabs() {
+  const user = useUserState();
   const navigate = useNavigate();
   const match = useMatch(':tabName/*');
   const tabValue = match?.params.tabName;
+
+  const tabs: ReactNode[] = useMemo(() => {
+    let _tabs: ReactNode[] = [];
+
+    mainNavTabs.forEach((tab) => {
+      if (tab.role && !user.hasViewRole(tab.role)) {
+        return;
+      }
+
+      _tabs.push(
+        <Tabs.Tab
+          value={tab.name}
+          key={tab.name}
+          onClick={(event: any) =>
+            navigateToLink(`/${tab.name}`, navigate, event)
+          }
+        >
+          {tab.text}
+        </Tabs.Tab>
+      );
+    });
+
+    return _tabs;
+  }, [mainNavTabs, user]);
 
   return (
     <Tabs
@@ -141,17 +170,8 @@ function NavTabs() {
         tab: classes.tab
       }}
       value={tabValue}
-      onChange={(value) =>
-        value == '/' ? navigate('/') : navigate(`/${value}`)
-      }
     >
-      <Tabs.List>
-        {mainNavTabs.map((tab) => (
-          <Tabs.Tab value={tab.name} key={tab.name}>
-            {tab.text}
-          </Tabs.Tab>
-        ))}
-      </Tabs.List>
+      <Tabs.List>{tabs.map((tab) => tab)}</Tabs.List>
     </Tabs>
   );
 }

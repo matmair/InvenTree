@@ -100,6 +100,22 @@
     </div>
 </div>
 
+<div class='panel panel-hidden' id='panel-test-statistics'>
+    <div class='panel-heading'>
+        <div class='d-flex flex-wrap'>
+            <h4>{% trans "Part Test Statistics" %}</h4>
+            {% include "spacer.html" %}
+        </div>
+    </div>
+    <div class='panel-content'>
+        <div id='teststatistics-button-toolbar'>
+            {% include "filter_list.html" with id="partteststatistics" %}
+        </div>
+
+        {% include "test_statistics_table.html" with prefix="part-" %}
+    </div>
+</div>
+
 <div class='panel panel-hidden' id='panel-purchase-orders'>
     <div class='panel-heading'>
         <div class='d-flex flex-wrap'>
@@ -404,6 +420,8 @@
             'part-notes',
             '{% url "api-part-detail" part.pk %}',
             {
+                model_type: "part",
+                model_id: {{ part.pk }},
                 editable: {% js_bool roles.part.change %},
             }
         );
@@ -439,7 +457,6 @@
                 location: {
                     tree_picker: {
                         url: '{% url "api-location-tree" %}',
-                        default_icon: global_settings.STOCK_LOCATION_DEFAULT_ICON,
                     },
                 },
                 generate_report: {
@@ -629,11 +646,7 @@
 
         {% if report_enabled %}
         $("#print-bom-report").click(function() {
-            printReports({
-                items: [{{ part.pk }}],
-                key: 'part',
-                url: '{% url "api-bom-report-list" %}'
-            });
+            printReports('part', [{{ part.pk }}]);
         });
         {% endif %}
     });
@@ -754,6 +767,9 @@
             });
         });
     });
+    onPanelLoad("test-statistics", function() {
+        prepareTestStatisticsTable('part', '{% url "api-test-statistics-by-part" part.pk %}')
+    });
 
     onPanelLoad("part-stock", function() {
         $('#new-stock-item').click(function () {
@@ -805,17 +821,7 @@
     });
 
     onPanelLoad("part-attachments", function() {
-        loadAttachmentTable('{% url "api-part-attachment-list" %}', {
-            filters: {
-                part: {{ part.pk }},
-            },
-            fields: {
-                part: {
-                    value: {{ part.pk }},
-                    hidden: true
-                }
-            }
-        });
+        loadAttachmentTable('part', {{ part.pk }});
     });
 
     onPanelLoad('pricing', function() {

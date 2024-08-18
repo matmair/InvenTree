@@ -27,7 +27,7 @@ export function useInstance<T = any>({
   updateInterval
 }: {
   endpoint: ApiEndpoints;
-  pk?: string | undefined;
+  pk?: string | number | undefined;
   hasPrimaryKey?: boolean;
   params?: any;
   pathParams?: PathParams;
@@ -39,11 +39,18 @@ export function useInstance<T = any>({
 }) {
   const [instance, setInstance] = useState<T | undefined>(defaultValue);
 
+  const [requestStatus, setRequestStatus] = useState<number>(0);
+
   const instanceQuery = useQuery<T>({
     queryKey: ['instance', endpoint, pk, params, pathParams],
     queryFn: async () => {
       if (hasPrimaryKey) {
-        if (pk == null || pk == undefined || pk.length == 0 || pk == '-1') {
+        if (
+          pk == null ||
+          pk == undefined ||
+          pk.toString().length == 0 ||
+          pk == '-1'
+        ) {
           setInstance(defaultValue);
           return defaultValue;
         }
@@ -57,6 +64,7 @@ export function useInstance<T = any>({
           params: params
         })
         .then((response) => {
+          setRequestStatus(response.status);
           switch (response.status) {
             case 200:
               setInstance(response.data);
@@ -67,8 +75,9 @@ export function useInstance<T = any>({
           }
         })
         .catch((error) => {
+          setRequestStatus(error.response?.status || 0);
           setInstance(defaultValue);
-          console.error(`Error fetching instance ${url}:`, error);
+          console.error(`ERR: Error fetching instance ${url}:`, error);
 
           if (throwError) throw error;
 
@@ -76,7 +85,7 @@ export function useInstance<T = any>({
         });
     },
     refetchOnMount: refetchOnMount,
-    refetchOnWindowFocus: refetchOnWindowFocus,
+    refetchOnWindowFocus: refetchOnWindowFocus ?? false,
     refetchInterval: updateInterval
   });
 
@@ -84,5 +93,11 @@ export function useInstance<T = any>({
     instanceQuery.refetch();
   }, []);
 
-  return { instance, refreshInstance, instanceQuery };
+  return {
+    instance,
+    setInstance,
+    refreshInstance,
+    instanceQuery,
+    requestStatus
+  };
 }

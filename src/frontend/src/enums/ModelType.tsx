@@ -15,14 +15,21 @@ export enum ModelType {
   stockhistory = 'stockhistory',
   build = 'build',
   buildline = 'buildline',
+  builditem = 'builditem',
   company = 'company',
   purchaseorder = 'purchaseorder',
-  purchaseorderline = 'purchaseorderline',
+  purchaseorderlineitem = 'purchaseorderlineitem',
   salesorder = 'salesorder',
   salesordershipment = 'salesordershipment',
   returnorder = 'returnorder',
+  returnorderlineitem = 'returnorderlineitem',
+  importsession = 'importsession',
   address = 'address',
   contact = 'contact',
   owner = 'owner',
-  user = 'user'
+  user = 'user',
+  group = 'group',
+  reporttemplate = 'reporttemplate',
+  labeltemplate = 'labeltemplate',
+  pluginconfig = 'pluginconfig'
 }

@@ -1,6 +1,5 @@
 """JSON API for the Stock app."""
 
-import json
 from collections import OrderedDict
 from datetime import timedelta
 
@@ -13,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django_filters import rest_framework as rest_filters
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.utils import extend_schema, extend_schema_field
 from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -28,20 +27,15 @@ from build.serializers import BuildSerializer
 from company.models import Company, SupplierPart
 from company.serializers import CompanySerializer
 from generic.states.api import StatusView
-from InvenTree.api import (
-    APIDownloadMixin,
-    AttachmentMixin,
-    ListCreateDestroyAPIView,
-    MetadataView,
-)
+from importer.mixins import DataExportViewMixin
+from InvenTree.api import ListCreateDestroyAPIView, MetadataView
 from InvenTree.filters import (
-    ORDER_FILTER,
+    ORDER_FILTER_ALIAS,
     SEARCH_ORDER_FILTER,
     SEARCH_ORDER_FILTER_ALIAS,
     InvenTreeDateFilter,
 )
 from InvenTree.helpers import (
-    DownloadFile,
     extract_serial_numbers,
     generateTestKey,
     is_ajax,
@@ -56,7 +50,6 @@ from InvenTree.mixins import (
     RetrieveAPI,
     RetrieveUpdateDestroyAPI,
 )
-from InvenTree.status_codes import StockHistoryCode, StockStatus
 from order.models import PurchaseOrder, ReturnOrder, SalesOrder, SalesOrderAllocation
 from order.serializers import (
     PurchaseOrderSerializer,
@@ -65,16 +58,15 @@ from order.serializers import (
 )
 from part.models import BomItem, Part, PartCategory
 from part.serializers import PartBriefSerializer
-from stock.admin import LocationResource, StockItemResource
 from stock.generators import generate_batch_code, generate_serial_number
 from stock.models import (
     StockItem,
-    StockItemAttachment,
     StockItemTestResult,
     StockItemTracking,
     StockLocation,
     StockLocationType,
 )
+from stock.status_codes import StockHistoryCode, StockStatus
 
 
 class GenerateBatchCode(GenericAPIView):
@@ -332,6 +324,21 @@ class StockLocationFilter(rest_filters.FilterSet):
 
         return queryset
 
+    top_level = rest_filters.BooleanFilter(
+        label=_('Top Level'),
+        method='filter_top_level',
+        help_text=_('Filter by top-level locations'),
+    )
+
+    def filter_top_level(self, queryset, name, value):
+        """Filter by top-level locations."""
+        cascade = str2bool(self.data.get('cascade', False))
+
+        if value and not cascade:
+            return queryset.filter(parent=None)
+
+        return queryset
+
     cascade = rest_filters.BooleanFilter(
         label=_('Cascade'),
         method='filter_cascade',
@@ -344,9 +351,10 @@ class StockLocationFilter(rest_filters.FilterSet):
         Note: If the "parent" filter is provided, we offload the logic to that method.
         """
         parent = self.data.get('parent', None)
+        top_level = str2bool(self.data.get('top_level', None))
 
         # If the parent is *not* provided, update the results based on the "cascade" value
-        if not parent:
+        if not parent or top_level:
             if not value:
                 # If "cascade" is False, only return top-level location
                 queryset = queryset.filter(parent=None)
@@ -389,7 +397,7 @@ class StockLocationFilter(rest_filters.FilterSet):
         return queryset
 
 
-class StockLocationList(APIDownloadMixin, ListCreateAPI):
+class StockLocationList(DataExportViewMixin, ListCreateAPI):
     """API endpoint for list view of StockLocation objects.
 
     - GET: Return list of StockLocation objects
@@ -400,14 +408,6 @@ class StockLocationList(APIDownloadMixin, ListCreateAPI):
     serializer_class = StockSerializers.LocationSerializer
     filterset_class = StockLocationFilter
 
-    def download_queryset(self, queryset, export_format):
-        """Download the filtered queryset as a data file."""
-        dataset = LocationResource().export(queryset=queryset)
-        filedata = dataset.export(export_format)
-        filename = f'InvenTree_Locations.{export_format}'
-
-        return DownloadFile(filedata, filename)
-
     def get_queryset(self, *args, **kwargs):
         """Return annotated queryset for the StockLocationList endpoint."""
         queryset = super().get_queryset(*args, **kwargs)
@@ -416,7 +416,7 @@ class StockLocationList(APIDownloadMixin, ListCreateAPI):
 
     filter_backends = SEARCH_ORDER_FILTER
 
-    search_fields = ['name', 'description', 'tags__name', 'tags__slug']
+    search_fields = ['name', 'description', 'pathstring', 'tags__name', 'tags__slug']
 
     ordering_fields = ['name', 'pathstring', 'items', 'level', 'tree_id', 'lft']
 
@@ -429,12 +429,14 @@ class StockLocationTree(ListAPI):
     queryset = StockLocation.objects.all()
     serializer_class = StockSerializers.LocationTreeSerializer
 
-    filter_backends = ORDER_FILTER
+    filter_backends = ORDER_FILTER_ALIAS
 
     ordering_fields = ['level', 'name', 'sublocations']
 
     # Order by tree level (top levels first) and then name
     ordering = ['level', 'name']
+
+    ordering_field_aliases = {'level': ['level', 'name'], 'name': ['name', 'level']}
 
     def get_queryset(self, *args, **kwargs):
         """Return annotated queryset for the StockLocationTree endpoint."""
@@ -858,7 +860,7 @@ class StockFilter(rest_filters.FilterSet):
             return queryset.exclude(stale_filter)
 
 
-class StockList(APIDownloadMixin, ListCreateDestroyAPIView):
+class StockList(DataExportViewMixin, ListCreateDestroyAPIView):
     """API endpoint for list view of Stock objects.
 
     - GET: Return a list of all StockItem objects (with optional query filters)
@@ -1076,19 +1078,6 @@ class StockList(APIDownloadMixin, ListCreateDestroyAPIView):
                 headers=self.get_success_headers(serializer.data),
             )
 
-    def download_queryset(self, queryset, export_format):
-        """Download this queryset as a file.
-
-        Uses the APIDownloadMixin mixin class
-        """
-        dataset = StockItemResource().export(queryset=queryset)
-
-        filedata = dataset.export(export_format)
-
-        filename = f'InvenTree_StockItems_{InvenTree.helpers.current_date().strftime("%d-%b-%Y")}.{export_format}'
-
-        return DownloadFile(filedata, filename)
-
     def get_queryset(self, *args, **kwargs):
         """Annotate queryset before returning."""
         queryset = super().get_queryset(*args, **kwargs)
@@ -1199,6 +1188,7 @@ class StockList(APIDownloadMixin, ListCreateDestroyAPIView):
         'updated',
         'stocktake_date',
         'expiry_date',
+        'packaging',
         'quantity',
         'stock',
         'status',
@@ -1217,22 +1207,6 @@ class StockList(APIDownloadMixin, ListCreateDestroyAPIView):
         'tags__name',
         'tags__slug',
     ]
-
-
-class StockAttachmentList(AttachmentMixin, ListCreateDestroyAPIView):
-    """API endpoint for listing, creating and bulk deleting a StockItemAttachment (file upload)."""
-
-    queryset = StockItemAttachment.objects.all()
-    serializer_class = StockSerializers.StockItemAttachmentSerializer
-
-    filterset_fields = ['stock_item']
-
-
-class StockAttachmentDetail(AttachmentMixin, RetrieveUpdateDestroyAPI):
-    """Detail endpoint for StockItemAttachment."""
-
-    queryset = StockItemAttachment.objects.all()
-    serializer_class = StockSerializers.StockItemAttachmentSerializer
 
 
 class StockItemTestResultMixin:
@@ -1312,6 +1286,54 @@ class StockItemTestResultFilter(rest_filters.FilterSet):
         return queryset.filter(template__key=key)
 
 
+class TestStatisticsFilter(rest_filters.FilterSet):
+    """API filter for the filtering the test results belonging to a specific build."""
+
+    class Meta:
+        """Metaclass options."""
+
+        model = StockItemTestResult
+        fields = []
+
+    # Created date filters
+    finished_before = InvenTreeDateFilter(
+        label='Finished before', field_name='finished_datetime', lookup_expr='lte'
+    )
+    finished_after = InvenTreeDateFilter(
+        label='Finished after', field_name='finished_datetime', lookup_expr='gte'
+    )
+
+
+class TestStatistics(GenericAPIView):
+    """API endpoint for accessing a test statistics broken down by test templates."""
+
+    queryset = StockItemTestResult.objects.all()
+    serializer_class = StockSerializers.TestStatisticsSerializer
+    pagination_class = None
+    filterset_class = TestStatisticsFilter
+    filter_backends = SEARCH_ORDER_FILTER_ALIAS
+
+    @extend_schema(
+        responses={200: StockSerializers.TestStatisticsSerializer(many=False)}
+    )
+    def get(self, request, pk, *args, **kwargs):
+        """Return test execution count matrix broken down by test result."""
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        if request.resolver_match.url_name == 'api-test-statistics-by-part':
+            serializer.context['type'] = 'by-part'
+        elif request.resolver_match.url_name == 'api-test-statistics-by-build':
+            serializer.context['type'] = 'by-build'
+        serializer.context['finished_datetime_after'] = self.request.query_params.get(
+            'finished_datetime_after'
+        )
+        serializer.context['finished_datetime_before'] = self.request.query_params.get(
+            'finished_datetime_before'
+        )
+        serializer.context['pk'] = pk
+        return Response([serializer.data])
+
+
 class StockItemTestResultList(StockItemTestResultMixin, ListCreateDestroyAPIView):
     """API endpoint for listing (and creating) a StockItemTestResult object."""
 
@@ -1374,7 +1396,7 @@ class StockTrackingDetail(RetrieveAPI):
     serializer_class = StockSerializers.StockTrackingSerializer
 
 
-class StockTrackingList(ListAPI):
+class StockTrackingList(DataExportViewMixin, ListAPI):
     """API endpoint for list view of StockItemTracking objects.
 
     StockItemTracking objects are read-only
@@ -1406,6 +1428,22 @@ class StockTrackingList(ListAPI):
 
         return self.serializer_class(*args, **kwargs)
 
+    def get_delta_model_map(self) -> dict:
+        """Return a mapping of delta models to their respective models and serializers.
+
+        This is used to generate additional context information for the historical data,
+        with some attempt at caching so that we can reduce the number of database hits.
+        """
+        return {
+            'part': (Part, PartBriefSerializer),
+            'location': (StockLocation, StockSerializers.LocationSerializer),
+            'customer': (Company, CompanySerializer),
+            'purchaseorder': (PurchaseOrder, PurchaseOrderSerializer),
+            'salesorder': (SalesOrder, SalesOrderSerializer),
+            'returnorder': (ReturnOrder, ReturnOrderSerializer),
+            'buildorder': (Build, BuildSerializer),
+        }
+
     def list(self, request, *args, **kwargs):
         """List all stock tracking entries."""
         queryset = self.filter_queryset(self.get_queryset())
@@ -1419,84 +1457,36 @@ class StockTrackingList(ListAPI):
 
         data = serializer.data
 
-        # Attempt to add extra context information to the historical data
+        delta_models = self.get_delta_model_map()
+
+        # Construct a set of related models we need to lookup for later
+        related_model_lookups = {key: set() for key in delta_models.keys()}
+
+        # Run a first pass through the data to determine which related models we need to lookup
         for item in data:
-            deltas = item['deltas']
+            deltas = item['deltas'] or {}
 
-            if not deltas:
-                deltas = {}
+            for key in delta_models.keys():
+                if key in deltas:
+                    related_model_lookups[key].add(deltas[key])
 
-            # Add part detail
-            if 'part' in deltas:
-                try:
-                    part = Part.objects.get(pk=deltas['part'])
-                    serializer = PartBriefSerializer(part)
-                    deltas['part_detail'] = serializer.data
-                except Exception:
-                    pass
+        for key in delta_models.keys():
+            model, serializer = delta_models[key]
 
-            # Add location detail
-            if 'location' in deltas:
-                try:
-                    location = StockLocation.objects.get(pk=deltas['location'])
-                    serializer = StockSerializers.LocationSerializer(location)
-                    deltas['location_detail'] = serializer.data
-                except Exception:
-                    pass
+            # Fetch all related models in one go
+            related_models = model.objects.filter(pk__in=related_model_lookups[key])
 
-            # Add stockitem detail
-            if 'stockitem' in deltas:
-                try:
-                    stockitem = StockItem.objects.get(pk=deltas['stockitem'])
-                    serializer = StockSerializers.StockItemSerializer(stockitem)
-                    deltas['stockitem_detail'] = serializer.data
-                except Exception:
-                    pass
+            # Construct a mapping of pk -> serialized data
+            related_data = {obj.pk: serializer(obj).data for obj in related_models}
 
-            # Add customer detail
-            if 'customer' in deltas:
-                try:
-                    customer = Company.objects.get(pk=deltas['customer'])
-                    serializer = CompanySerializer(customer)
-                    deltas['customer_detail'] = serializer.data
-                except Exception:
-                    pass
+            # Now, update the data with the serialized data
+            for item in data:
+                deltas = item['deltas'] or {}
 
-            # Add PurchaseOrder detail
-            if 'purchaseorder' in deltas:
-                try:
-                    order = PurchaseOrder.objects.get(pk=deltas['purchaseorder'])
-                    serializer = PurchaseOrderSerializer(order)
-                    deltas['purchaseorder_detail'] = serializer.data
-                except Exception:
-                    pass
-
-            # Add SalesOrder detail
-            if 'salesorder' in deltas:
-                try:
-                    order = SalesOrder.objects.get(pk=deltas['salesorder'])
-                    serializer = SalesOrderSerializer(order)
-                    deltas['salesorder_detail'] = serializer.data
-                except Exception:
-                    pass
-
-            # Add ReturnOrder detail
-            if 'returnorder' in deltas:
-                try:
-                    order = ReturnOrder.objects.get(pk=deltas['returnorder'])
-                    serializer = ReturnOrderSerializer(order)
-                    deltas['returnorder_detail'] = serializer.data
-                except Exception:
-                    pass
-
-            # Add BuildOrder detail
-            if 'buildorder' in deltas:
-                try:
-                    order = Build.objects.get(pk=deltas['buildorder'])
-                    serializer = BuildSerializer(order)
-                    deltas['buildorder_detail'] = serializer.data
-                except Exception:
-                    pass
+                if key in deltas:
+                    item['deltas'][f'{key}_detail'] = related_data.get(
+                        deltas[key], None
+                    )
 
         if page is not None:
             return self.get_paginated_response(data)
@@ -1639,18 +1629,6 @@ stock_api_urls = [
     path('assign/', StockAssign.as_view(), name='api-stock-assign'),
     path('merge/', StockMerge.as_view(), name='api-stock-merge'),
     path('change_status/', StockChangeStatus.as_view(), name='api-stock-change-status'),
-    # StockItemAttachment API endpoints
-    path(
-        'attachment/',
-        include([
-            path(
-                '<int:pk>/',
-                StockAttachmentDetail.as_view(),
-                name='api-stock-attachment-detail',
-            ),
-            path('', StockAttachmentList.as_view(), name='api-stock-attachment-list'),
-        ]),
-    ),
     # StockItemTestResult API endpoints
     path(
         'test/',
@@ -1730,4 +1708,28 @@ stock_api_urls = [
     ),
     # Anything else
     path('', StockList.as_view(), name='api-stock-list'),
+]
+
+test_statistics_api_urls = [
+    # Test statistics endpoints
+    path(
+        'by-part/',
+        include([
+            path(
+                '<int:pk>/',
+                TestStatistics.as_view(),
+                name='api-test-statistics-by-part',
+            )
+        ]),
+    ),
+    path(
+        'by-build/',
+        include([
+            path(
+                '<int:pk>/',
+                TestStatistics.as_view(),
+                name='api-test-statistics-by-build',
+            )
+        ]),
+    ),
 ]

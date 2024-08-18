@@ -12,7 +12,7 @@ import {
   Text,
   Tooltip
 } from '@mantine/core';
-import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { StylishText } from '../components/items/StylishText';
 import { TableState } from '../hooks/UseTable';
@@ -41,7 +41,7 @@ function FilterItem({
 
   return (
     <Paper p="sm" shadow="sm" radius="xs">
-      <Group justify="space-between" key={flt.name}>
+      <Group justify="space-between" key={flt.name} wrap="nowrap">
         <Stack gap="xs">
           <Text size="sm">{flt.label}</Text>
           <Text size="xs">{flt.description}</Text>
@@ -56,24 +56,6 @@ function FilterItem({
     </Paper>
   );
 }
-
-interface FilterProps extends React.ComponentPropsWithoutRef<'div'> {
-  name: string;
-  label: string;
-  description?: string;
-}
-
-/*
- * Custom component for the filter select
- */
-const FilterSelectItem = forwardRef<HTMLDivElement, FilterProps>(
-  ({ label, description, ...others }, ref) => (
-    <div ref={ref} {...others}>
-      <Text size="sm">{label}</Text>
-      <Text size="xs">{description}</Text>
-    </div>
-  )
-);
 
 function FilterAddGroup({
   tableState,
@@ -144,7 +126,6 @@ function FilterAddGroup({
       <Divider />
       <Select
         data={filterOptions}
-        component={FilterSelectItem}
         searchable={true}
         placeholder={t`Select filter`}
         label={t`Filter`}
@@ -155,6 +136,7 @@ function FilterAddGroup({
         <Select
           data={valueOptions}
           label={t`Value`}
+          searchable={true}
           placeholder={t`Select filter value`}
           onChange={(value: string | null) => setSelectedValue(value)}
           maxDropdownHeight={800}
@@ -195,6 +177,9 @@ export function FilterSelectDrawer({
       withCloseButton={true}
       opened={opened}
       onClose={onClose}
+      closeButtonProps={{
+        'aria-label': 'filter-drawer-close'
+      }}
       title={<StylishText size="lg">{t`Table Filters`}</StylishText>}
     >
       <Stack gap="xs">

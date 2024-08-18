@@ -6,6 +6,7 @@ import {
   Menu,
   Tooltip
 } from '@mantine/core';
+import { modals } from '@mantine/modals';
 import {
   IconCopy,
   IconEdit,
@@ -14,11 +15,13 @@ import {
   IconTrash,
   IconUnlink
 } from '@tabler/icons-react';
-import { color } from '@uiw/react-codemirror';
 import { ReactNode, useMemo } from 'react';
 
+import { ModelType } from '../../enums/ModelType';
+import { identifierString } from '../../functions/conversion';
 import { InvenTreeIcon } from '../../functions/icons';
 import { notYetImplemented } from '../../functions/notifications';
+import { InvenTreeQRCode } from './QRCode';
 
 export type ActionDropdownItem = {
   icon: ReactNode;
@@ -39,30 +42,38 @@ export function ActionDropdown({
   icon,
   tooltip,
   actions,
-  disabled = false
+  disabled = false,
+  hidden = false
 }: {
   icon: ReactNode;
-  tooltip?: string;
+  tooltip: string;
   actions: ActionDropdownItem[];
   disabled?: boolean;
+  hidden?: boolean;
 }) {
   const hasActions = useMemo(() => {
     return actions.some((action) => !action.hidden);
   }, [actions]);
+
   const indicatorProps = useMemo(() => {
     return actions.find((action) => action.indicator);
   }, [actions]);
 
-  return hasActions ? (
-    <Menu position="bottom-end">
+  const menuName: string = useMemo(() => {
+    return identifierString(`action-menu-${tooltip}`);
+  }, [tooltip]);
+
+  return !hidden && hasActions ? (
+    <Menu position="bottom-end" key={menuName}>
       <Indicator disabled={!indicatorProps} {...indicatorProps?.indicator}>
         <Menu.Target>
           <Tooltip label={tooltip} hidden={!tooltip}>
             <ActionIcon
               size="lg"
               radius="sm"
-              variant="outline"
+              variant="transparent"
               disabled={disabled}
+              aria-label={menuName}
             >
               {icon}
             </ActionIcon>
@@ -70,15 +81,21 @@ export function ActionDropdown({
         </Menu.Target>
       </Indicator>
       <Menu.Dropdown>
-        {actions.map((action) =>
-          action.hidden ? null : (
+        {actions.map((action) => {
+          const id: string = identifierString(`${menuName}-${action.name}`);
+          return action.hidden ? null : (
             <Indicator
               disabled={!action.indicator}
               {...action.indicator}
               key={action.name}
             >
-              <Tooltip label={action.tooltip}>
+              <Tooltip
+                label={action.tooltip}
+                hidden={!action.tooltip}
+                position="left"
+              >
                 <Menu.Item
+                  aria-label={id}
                   leftSection={action.icon}
                   onClick={() => {
                     if (action.onClick != undefined) {
@@ -93,8 +110,8 @@ export function ActionDropdown({
                 </Menu.Item>
               </Tooltip>
             </Indicator>
-          )
-        )}
+          );
+        })}
       </Menu.Dropdown>
     </Menu>
   ) : null;
@@ -108,7 +125,6 @@ export function BarcodeActionDropdown({
 }) {
   return (
     <ActionDropdown
-      key="barcode-actions"
       tooltip={t`Barcode Actions`}
       icon={<IconQrcode />}
       actions={actions}
@@ -119,11 +135,20 @@ export function BarcodeActionDropdown({
 // Common action button for viewing a barcode
 export function ViewBarcodeAction({
   hidden = false,
-  onClick
+  model,
+  pk
 }: {
   hidden?: boolean;
-  onClick?: () => void;
+  model: ModelType;
+  pk: number;
 }): ActionDropdownItem {
+  const onClick = () => {
+    modals.open({
+      title: t`View Barcode`,
+      children: <InvenTreeQRCode model={model} pk={pk} />
+    });
+  };
+
   return {
     icon: <IconQrcode />,
     name: t`View`,
@@ -205,6 +230,24 @@ export function DeleteItemAction({
     onClick: onClick,
     hidden: hidden,
     disabled: disabled
+  };
+}
+
+export function HoldItemAction({
+  hidden = false,
+  tooltip,
+  onClick
+}: {
+  hidden?: boolean;
+  tooltip?: string;
+  onClick?: () => void;
+}): ActionDropdownItem {
+  return {
+    icon: <InvenTreeIcon icon="hold" iconProps={{ color: 'orange' }} />,
+    name: t`Hold`,
+    tooltip: tooltip ?? t`Hold`,
+    onClick: onClick,
+    hidden: hidden
   };
 }
 

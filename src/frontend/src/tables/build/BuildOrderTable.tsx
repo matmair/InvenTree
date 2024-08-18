@@ -2,18 +2,13 @@ import { t } from '@lingui/macro';
 import { useMemo } from 'react';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
-import { PartHoverCard } from '../../components/images/Thumbnail';
 import { ProgressBar } from '../../components/items/ProgressBar';
 import { RenderUser } from '../../components/render/User';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { useBuildOrderFields } from '../../forms/BuildForms';
-import {
-  useOwnerFilters,
-  useProjectCodeFilters,
-  useUserFilters
-} from '../../hooks/UseFilter';
+import { useOwnerFilters, useProjectCodeFilters } from '../../hooks/UseFilter';
 import { useCreateApiFormModal } from '../../hooks/UseForm';
 import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
@@ -22,6 +17,7 @@ import { TableColumn } from '../Column';
 import {
   CreationDateColumn,
   DateColumn,
+  PartColumn,
   ProjectCodeColumn,
   ReferenceColumn,
   ResponsibleColumn,
@@ -41,7 +37,13 @@ function buildOrderTableColumns(): TableColumn[] {
       accessor: 'part',
       sortable: true,
       switchable: false,
-      render: (record: any) => <PartHoverCard part={record.part_detail} />
+      render: (record: any) => PartColumn(record.part_detail)
+    },
+    {
+      accessor: 'part_detail.IPN',
+      sortable: true,
+      switchable: true,
+      title: t`IPN`
     },
     {
       accessor: 'title',
@@ -97,8 +99,7 @@ export function BuildOrderTable({
   const tableColumns = useMemo(() => buildOrderTableColumns(), []);
 
   const projectCodeFilters = useProjectCodeFilters();
-  const userFilters = useUserFilters();
-  const responsibleFilters = useOwnerFilters();
+  const ownerFilters = useOwnerFilters();
 
   const tableFilters: TableFilter[] = useMemo(() => {
     return [
@@ -141,20 +142,16 @@ export function BuildOrderTable({
         name: 'issued_by',
         label: t`Issued By`,
         description: t`Filter by user who issued this order`,
-        choices: userFilters.choices
+        choices: ownerFilters.choices
       },
       {
         name: 'assigned_to',
         label: t`Responsible`,
         description: t`Filter by responsible owner`,
-        choices: responsibleFilters.choices
+        choices: ownerFilters.choices
       }
     ];
-  }, [
-    projectCodeFilters.choices,
-    userFilters.choices,
-    responsibleFilters.choices
-  ]);
+  }, [projectCodeFilters.choices, ownerFilters.choices]);
 
   const user = useUserState();
 
@@ -194,7 +191,6 @@ export function BuildOrderTable({
         tableState={table}
         columns={tableColumns}
         props={{
-          enableDownload: true,
           params: {
             part: partId,
             sales_order: salesOrderId,
@@ -203,7 +199,10 @@ export function BuildOrderTable({
           },
           tableActions: tableActions,
           tableFilters: tableFilters,
-          modelType: ModelType.build
+          modelType: ModelType.build,
+          enableSelection: true,
+          enableReports: true,
+          enableDownload: true
         }}
       />
     </>

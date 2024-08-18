@@ -10,7 +10,11 @@ import { IconMenu2 } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { identifierString } from '../../functions/conversion';
+import { navigateToLink } from '../../functions/navigation';
+
 export type Breadcrumb = {
+  icon?: React.ReactNode;
   name: string;
   url: string;
 };
@@ -45,7 +49,8 @@ export function BreadcrumbList({
       <Group gap="xs">
         {navCallback && (
           <ActionIcon
-            key="nav-action"
+            key="nav-breadcrumb-action"
+            aria-label="nav-breadcrumb-action"
             onClick={navCallback}
             variant="transparent"
           >
@@ -57,9 +62,18 @@ export function BreadcrumbList({
             return (
               <Anchor
                 key={index}
-                onClick={() => breadcrumb.url && navigate(breadcrumb.url)}
+                aria-label={`breadcrumb-${index}-${identifierString(
+                  breadcrumb.name
+                )}`}
+                onClick={(event: any) =>
+                  breadcrumb.url &&
+                  navigateToLink(breadcrumb.url, navigate, event)
+                }
               >
-                <Text size="sm">{breadcrumb.name}</Text>
+                <Group gap={4}>
+                  {breadcrumb.icon}
+                  <Text size="sm">{breadcrumb.name}</Text>
+                </Group>
               </Anchor>
             );
           })}

@@ -15,10 +15,7 @@
 {% block heading %}
 {% if location %}
 {% trans "Stock Location" %}:
-{% settings_value "STOCK_LOCATION_DEFAULT_ICON" as default_icon %}
-{% if location.icon or default_icon %}
-<span class="{{ location.icon|default:default_icon }}"></span>
-{% endif %}
+<span id="location-icon"></span>
 {{ location.name }}
 {% else %}
 {% trans "Stock" %}
@@ -203,9 +200,11 @@
             <h4>{% trans "Stock Items" %}</h4>
             {% include "spacer.html" %}
             <div class='btn-group' role='group'>
+                {% if roles.stock.add and not part.virtual %}
                 <button type='button' class='btn btn-success' id='item-create' title='{% trans "Create new stock item" %}'>
                     <span class='fas fa-plus-circle'></span> {% trans "New Stock Item" %}
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -242,6 +241,10 @@
 {% block js_ready %}
 {{ block.super }}
 
+    loadApiIconPacks().then(() => {
+        $('#location-icon').addClass(getApiIconClass('{{ location.icon }}'));
+    });
+
     {% settings_value "STOCKTAKE_ENABLE" as stocktake_enable %}
     {% if stocktake_enable and roles.stocktake.add %}
     $('#location-stocktake').click(function() {
@@ -249,14 +252,12 @@
             category: {
                 tree_picker: {
                     url: '{% url "api-part-category-tree" %}',
-                    default_icon: global_settings.PART_CATEGORY_DEFAULT_ICON,
                 },
             },
             location: {
                 {% if location %}value: {{ location.pk }},{% endif %}
                 tree_picker: {
                     url: '{% url "api-location-tree" %}',
-                    default_icon: global_settings.STOCK_LOCATION_DEFAULT_ICON,
                 },
             },
             generate_report: {},
@@ -278,6 +279,8 @@
             params: {
                 {% if location %}
                 parent: {{ location.pk }},
+                {% else %}
+                top_level: true,
                 {% endif %}
             },
             allowTreeView: true,
@@ -291,9 +294,8 @@
 
         printLabels({
             items: locs,
+            model_type: 'stocklocation',
             singular_name: '{% trans "stock location" escape %}',
-            key: 'location',
-            url: '{% url "api-stocklocation-label-list" %}',
         });
     });
     {% endif %}
@@ -301,11 +303,7 @@
     {% if report_enabled %}
     $('#print-location-report').click(function() {
 
-        printReports({
-            items: [{{ location.pk }}],
-            key: 'location',
-            url: '{% url "api-stocklocation-report-list" %}',
-        });
+        printReports('stocklocation', [{{ location.pk }}]);
     });
     {% endif %}
 
@@ -393,7 +391,7 @@
     $('#show-qr-code').click(function() {
         showQRDialog(
             '{% trans "Stock Location QR Code" escape %}',
-            '{"stocklocation": {{ location.pk }} }'
+            '{{ location.barcode }}'
         );
     });
 
@@ -456,7 +454,6 @@
 
             return node;
         },
-        defaultIcon: global_settings.STOCK_LOCATION_DEFAULT_ICON,
     });
 
 {% endblock js_ready %}

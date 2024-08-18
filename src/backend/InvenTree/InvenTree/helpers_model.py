@@ -15,23 +15,15 @@ from djmoney.contrib.exchange.models import convert_money
 from djmoney.money import Money
 from PIL import Image
 
-import common.models
-import InvenTree
-import InvenTree.helpers_model
-import InvenTree.version
 from common.notifications import (
     InvenTreeNotificationBodies,
     NotificationBody,
     trigger_notification,
 )
+from common.settings import get_global_setting
 from InvenTree.format import format_money
 
 logger = logging.getLogger('inventree')
-
-
-def getSetting(key, backup_value=None):
-    """Shortcut for reading a setting value from the database."""
-    return common.models.InvenTreeSetting.get_setting(key, backup_value=backup_value)
 
 
 def get_base_url(request=None):
@@ -62,9 +54,7 @@ def get_base_url(request=None):
 
     # Check if a global InvenTree setting is provided
     try:
-        if site_url := common.models.InvenTreeSetting.get_setting(
-            'INVENTREE_BASE_URL', create=False, cache=False
-        ):
+        if site_url := get_global_setting('INVENTREE_BASE_URL', create=False):
             return site_url
     except (ProgrammingError, OperationalError):
         pass
@@ -118,19 +108,12 @@ def download_image_from_url(remote_url, timeout=2.5):
 
     # Calculate maximum allowable image size (in bytes)
     max_size = (
-        int(
-            common.models.InvenTreeSetting.get_setting(
-                'INVENTREE_DOWNLOAD_IMAGE_MAX_SIZE'
-            )
-        )
-        * 1024
-        * 1024
+        int(get_global_setting('INVENTREE_DOWNLOAD_IMAGE_MAX_SIZE')) * 1024 * 1024
     )
 
     # Add user specified user-agent to request (if specified)
-    user_agent = common.models.InvenTreeSetting.get_setting(
-        'INVENTREE_DOWNLOAD_FROM_URL_USER_AGENT'
-    )
+    user_agent = get_global_setting('INVENTREE_DOWNLOAD_FROM_URL_USER_AGENT')
+
     if user_agent:
         headers = {'User-Agent': user_agent}
     else:
@@ -231,19 +214,13 @@ def render_currency(
             pass
 
     if decimal_places is None:
-        decimal_places = common.models.InvenTreeSetting.get_setting(
-            'PRICING_DECIMAL_PLACES', 6
-        )
+        decimal_places = get_global_setting('PRICING_DECIMAL_PLACES', 6)
 
     if min_decimal_places is None:
-        min_decimal_places = common.models.InvenTreeSetting.get_setting(
-            'PRICING_DECIMAL_PLACES_MIN', 0
-        )
+        min_decimal_places = get_global_setting('PRICING_DECIMAL_PLACES_MIN', 0)
 
     if max_decimal_places is None:
-        max_decimal_places = common.models.InvenTreeSetting.get_setting(
-            'PRICING_DECIMAL_PLACES', 6
-        )
+        max_decimal_places = get_global_setting('PRICING_DECIMAL_PLACES', 6)
 
     value = Decimal(str(money.amount)).normalize()
     value = str(value)
@@ -266,7 +243,7 @@ def render_currency(
 
 
 def getModelsWithMixin(mixin_class) -> list:
-    """Return a list of models that inherit from the given mixin class.
+    """Return a list of database models that inherit from the given mixin class.
 
     Args:
         mixin_class: The mixin class to search for
@@ -345,9 +322,7 @@ def notify_users(
         'instance': instance,
         'name': content.name.format(**content_context),
         'message': content.message.format(**content_context),
-        'link': InvenTree.helpers_model.construct_absolute_url(
-            instance.get_absolute_url()
-        ),
+        'link': construct_absolute_url(instance.get_absolute_url()),
         'template': {'subject': content.name.format(**content_context)},
     }
 

@@ -11,6 +11,7 @@ import { ApiFormFieldSet } from '../../components/forms/fields/ApiFormField';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
+import { usePartParameterFields } from '../../forms/PartForms';
 import { cancelEvent } from '../../functions/events';
 import {
   useCreateApiFormModal,
@@ -21,6 +22,7 @@ import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
 import { TableColumn } from '../Column';
 import { DescriptionColumn, PartColumn } from '../ColumnRenderers';
+import { TableFilter } from '../Filter';
 import { InvenTreeTable } from '../InvenTreeTable';
 import { TableHoverCard } from '../TableHoverCard';
 
@@ -116,17 +118,7 @@ export default function ParametricPartTable({
   const [selectedTemplate, setSelectedTemplate] = useState<number>(0);
   const [selectedParameter, setSelectedParameter] = useState<number>(0);
 
-  const partParameterFields: ApiFormFieldSet = useMemo(() => {
-    return {
-      part: {
-        disabled: true
-      },
-      template: {
-        disabled: true
-      },
-      data: {}
-    };
-  }, []);
+  const partParameterFields: ApiFormFieldSet = usePartParameterFields();
 
   const addParameter = useCreateApiFormModal({
     url: ApiEndpoints.part_parameter_list,
@@ -223,6 +215,26 @@ export default function ParametricPartTable({
     });
   }, [user, categoryParmeters.data]);
 
+  const tableFilters: TableFilter[] = useMemo(() => {
+    return [
+      {
+        name: 'active',
+        label: t`Active`,
+        description: t`Show active parts`
+      },
+      {
+        name: 'locked',
+        label: t`Locked`,
+        description: t`Show locked parts`
+      },
+      {
+        name: 'assembly',
+        label: t`Assembly`,
+        description: t`Show assembly parts`
+      }
+    ];
+  }, []);
+
   const tableColumns: TableColumn[] = useMemo(() => {
     const partColumns: TableColumn[] = [
       {
@@ -262,7 +274,8 @@ export default function ParametricPartTable({
             category_detail: true,
             parameters: true
           },
-          modelType: ModelType.part
+          modelType: ModelType.part,
+          tableFilters: tableFilters
         }}
       />
     </>

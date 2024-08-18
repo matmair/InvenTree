@@ -1,5 +1,5 @@
 import { t } from '@lingui/macro';
-import { Grid, LoadingOverlay, Skeleton, Stack } from '@mantine/core';
+import { Accordion, Grid, Skeleton, Stack } from '@mantine/core';
 import {
   IconBookmark,
   IconBoxPadding,
@@ -16,10 +16,12 @@ import { ReactNode, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import AdminButton from '../../components/buttons/AdminButton';
+import { PrintingActions } from '../../components/buttons/PrintingActions';
 import { DetailsField, DetailsTable } from '../../components/details/Details';
 import DetailsBadge from '../../components/details/DetailsBadge';
 import { DetailsImage } from '../../components/details/DetailsImage';
 import { ItemDetailsGrid } from '../../components/details/ItemDetails';
+import NotesEditor from '../../components/editors/NotesEditor';
 import {
   ActionDropdown,
   BarcodeActionDropdown,
@@ -30,11 +32,12 @@ import {
   UnlinkBarcodeAction,
   ViewBarcodeAction
 } from '../../components/items/ActionDropdown';
+import { StylishText } from '../../components/items/StylishText';
+import InstanceDetail from '../../components/nav/InstanceDetail';
+import NavigationTree from '../../components/nav/NavigationTree';
 import { PageDetail } from '../../components/nav/PageDetail';
 import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
-import { StockLocationTree } from '../../components/nav/StockLocationTree';
 import { StatusRenderer } from '../../components/render/StatusRenderer';
-import { NotesEditor } from '../../components/widgets/MarkdownEditor';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
@@ -54,9 +57,10 @@ import {
   useEditApiFormModal
 } from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
-import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
+import BuildAllocatedStockTable from '../../tables/build/BuildAllocatedStockTable';
 import { AttachmentTable } from '../../tables/general/AttachmentTable';
+import SalesOrderAllocationTable from '../../tables/sales/SalesOrderAllocationTable';
 import InstalledItemsTable from '../../tables/stock/InstalledItemsTable';
 import { StockItemTable } from '../../tables/stock/StockItemTable';
 import StockItemTestResultTable from '../../tables/stock/StockItemTestResultTable';
@@ -74,7 +78,8 @@ export default function StockDetail() {
   const {
     instance: stockitem,
     refreshInstance,
-    instanceQuery
+    instanceQuery,
+    requestStatus
   } = useInstance({
     endpoint: ApiEndpoints.stock_item_list,
     pk: id,
@@ -114,7 +119,7 @@ export default function StockDetail() {
         name: 'tests',
         label: `Completed Tests`,
         icon: 'progress',
-        hidden: !part?.trackable
+        hidden: !part?.testable
       },
       {
         type: 'text',
@@ -149,6 +154,12 @@ export default function StockDetail() {
         name: 'available_stock',
         label: t`Available`,
         icon: 'quantity'
+      },
+      {
+        type: 'text',
+        name: 'batch',
+        label: t`Batch Code`,
+        hidden: !stockitem.batch
       }
       // TODO: allocated_to_sales_orders
       // TODO: allocated_to_build_orders
@@ -259,6 +270,19 @@ export default function StockDetail() {
     );
   }, [stockitem, instanceQuery]);
 
+  const showBuildAllocations = useMemo(() => {
+    // Determine if "build allocations" should be shown for this stock item
+    return (
+      stockitem?.part_detail?.component && // Must be a "component"
+      !stockitem?.sales_order && // Must not be assigned to a sales order
+      !stockitem?.belongs_to
+    ); // Must not be installed into another item
+  }, [stockitem]);
+
+  const showSalesAlloctions = useMemo(() => {
+    return stockitem?.part_detail?.salable;
+  }, [stockitem]);
+
   const stockPanels: PanelType[] = useMemo(() => {
     return [
       {
@@ -281,14 +305,50 @@ export default function StockDetail() {
         name: 'allocations',
         label: t`Allocations`,
         icon: <IconBookmark />,
-        hidden:
-          !stockitem?.part_detail?.salable && !stockitem?.part_detail?.component
+        hidden: !showSalesAlloctions && !showBuildAllocations,
+        content: (
+          <Accordion
+            multiple={true}
+            defaultValue={['buildallocations', 'salesallocations']}
+          >
+            {showBuildAllocations && (
+              <Accordion.Item value="buildallocations" key="buildallocations">
+                <Accordion.Control>
+                  <StylishText size="lg">{t`Build Order Allocations`}</StylishText>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <BuildAllocatedStockTable
+                    stockId={stockitem.pk}
+                    modelField="build"
+                    modelTarget={ModelType.build}
+                    showBuildInfo
+                  />
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
+            {showSalesAlloctions && (
+              <Accordion.Item value="salesallocations" key="salesallocations">
+                <Accordion.Control>
+                  <StylishText size="lg">{t`Sales Order Allocations`}</StylishText>
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <SalesOrderAllocationTable
+                    stockId={stockitem.pk}
+                    modelField="order"
+                    modelTarget={ModelType.salesorder}
+                    showOrderInfo
+                  />
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
+          </Accordion>
+        )
       },
       {
         name: 'testdata',
         label: t`Test Data`,
         icon: <IconChecklist />,
-        hidden: !stockitem?.part_detail?.trackable,
+        hidden: !stockitem?.part_detail?.testable,
         content: stockitem?.pk ? (
           <StockItemTestResultTable
             itemId={stockitem.pk}
@@ -325,9 +385,8 @@ export default function StockDetail() {
         icon: <IconPaperclip />,
         content: (
           <AttachmentTable
-            endpoint={ApiEndpoints.stock_attachment_list}
-            model="stock_item"
-            pk={Number(id)}
+            model_type={ModelType.stockitem}
+            model_id={stockitem.pk}
           />
         )
       },
@@ -337,14 +396,14 @@ export default function StockDetail() {
         icon: <IconNotes />,
         content: (
           <NotesEditor
-            url={apiUrl(ApiEndpoints.stock_item_list, id)}
-            data={stockitem.notes ?? ''}
-            allowEdit={true}
+            modelType={ModelType.stockitem}
+            modelId={stockitem.pk}
+            editable={user.hasChangeRole(UserRoles.stock)}
           />
         )
       }
     ];
-  }, [stockitem, id]);
+  }, [stockitem, id, user]);
 
   const breadcrumbs = useMemo(
     () => [
@@ -418,7 +477,10 @@ export default function StockDetail() {
       <AdminButton model={ModelType.stockitem} pk={stockitem.pk} />,
       <BarcodeActionDropdown
         actions={[
-          ViewBarcodeAction({}),
+          ViewBarcodeAction({
+            model: ModelType.stockitem,
+            pk: stockitem.pk
+          }),
           LinkBarcodeAction({
             hidden:
               stockitem?.barcode_hash || !user.hasChangeRole(UserRoles.stock)
@@ -429,8 +491,13 @@ export default function StockDetail() {
           })
         ]}
       />,
+      <PrintingActions
+        modelType={ModelType.stockitem}
+        items={[stockitem.pk]}
+        enableReports
+        enableLabels
+      />,
       <ActionDropdown
-        key="operations"
         tooltip={t`Stock Operations`}
         icon={<IconPackages />}
         actions={[
@@ -473,7 +540,6 @@ export default function StockDetail() {
         ]}
       />,
       <ActionDropdown
-        key="stock"
         tooltip={t`Stock Item Actions`}
         icon={<IconDots />}
         actions={[
@@ -496,6 +562,9 @@ export default function StockDetail() {
   );
 
   const stockBadges: ReactNode[] = useMemo(() => {
+    let available = (stockitem?.quantity ?? 0) - (stockitem?.allocated ?? 0);
+    available = Math.max(0, available);
+
     return instanceQuery.isLoading
       ? []
       : [
@@ -517,6 +586,12 @@ export default function StockDetail() {
             key="quantity"
           />,
           <DetailsBadge
+            color="yellow"
+            label={t`Available` + `: ${available}`}
+            visible={!stockitem.serial && available != stockitem.quantity}
+            key="available"
+          />,
+          <DetailsBadge
             color="blue"
             label={t`Batch Code` + `: ${stockitem.batch}`}
             visible={!!stockitem.batch}
@@ -532,32 +607,38 @@ export default function StockDetail() {
   }, [stockitem, instanceQuery]);
 
   return (
-    <Stack>
-      <LoadingOverlay visible={instanceQuery.isFetching} />
-      <StockLocationTree
-        opened={treeOpen}
-        onClose={() => setTreeOpen(false)}
-        selectedLocation={stockitem?.location}
-      />
-      <PageDetail
-        title={t`Stock Item`}
-        subtitle={stockitem.part_detail?.full_name}
-        imageUrl={stockitem.part_detail?.thumbnail}
-        badges={stockBadges}
-        breadcrumbs={breadcrumbs}
-        breadcrumbAction={() => {
-          setTreeOpen(true);
-        }}
-        actions={stockActions}
-      />
-      <PanelGroup pageKey="stockitem" panels={stockPanels} />
-      {editStockItem.modal}
-      {duplicateStockItem.modal}
-      {deleteStockItem.modal}
-      {countStockItem.modal}
-      {addStockItem.modal}
-      {removeStockItem.modal}
-      {transferStockItem.modal}
-    </Stack>
+    <InstanceDetail status={requestStatus} loading={instanceQuery.isFetching}>
+      <Stack>
+        <NavigationTree
+          title={t`Stock Locations`}
+          modelType={ModelType.stocklocation}
+          endpoint={ApiEndpoints.stock_location_tree}
+          opened={treeOpen}
+          onClose={() => setTreeOpen(false)}
+          selectedId={stockitem?.location}
+        />
+        <PageDetail
+          title={t`Stock Item`}
+          subtitle={stockitem.part_detail?.full_name}
+          imageUrl={stockitem.part_detail?.thumbnail}
+          editAction={editStockItem.open}
+          editEnabled={user.hasChangePermission(ModelType.stockitem)}
+          badges={stockBadges}
+          breadcrumbs={breadcrumbs}
+          breadcrumbAction={() => {
+            setTreeOpen(true);
+          }}
+          actions={stockActions}
+        />
+        <PanelGroup pageKey="stockitem" panels={stockPanels} />
+        {editStockItem.modal}
+        {duplicateStockItem.modal}
+        {deleteStockItem.modal}
+        {countStockItem.modal}
+        {addStockItem.modal}
+        {removeStockItem.modal}
+        {transferStockItem.modal}
+      </Stack>
+    </InstanceDetail>
   );
 }
