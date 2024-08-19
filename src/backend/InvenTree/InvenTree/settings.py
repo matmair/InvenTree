@@ -186,7 +186,9 @@ INVENTREE_ADMIN_URL = get_setting(
 INSTALLED_APPS = [
     # Admin site integration
     'django.contrib.admin',
+    'django.contrib.auth',
     # InvenTree apps
+    'accounts',
     'build.apps.BuildConfig',
     'common.apps.CommonConfig',
     'company.apps.CompanyConfig',
@@ -202,7 +204,6 @@ INSTALLED_APPS = [
     'generic',
     'InvenTree.apps.InvenTreeConfig',  # InvenTree app runs last
     # Core django modules
-    'django.contrib.auth',
     'django.contrib.contenttypes',
     'user_sessions',  # db user sessions
     'whitenoise.runserver_nostatic',
@@ -1348,3 +1349,5 @@ SPECTACULAR_SETTINGS = {
 
 if SITE_URL and not TESTING:
     SPECTACULAR_SETTINGS['SERVERS'] = [{'url': SITE_URL}]
+
+AUTH_USER_MODEL = 'accounts.InvenTreeUser'

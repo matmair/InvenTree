@@ -25,24 +25,8 @@ import InvenTree.helpers
 import InvenTree.models
 from common.settings import get_global_setting
 from InvenTree.ready import canAppAccessDatabase, isImportingData
-from users.CustomUser import CustomUser
 
 logger = logging.getLogger('inventree')
-
-
-#  OVERRIDE START
-# Overrides Django User model __str__ with a custom function to be able to change
-# string representation of a user
-def user_model_str(self):
-    """Function to override the default Django User __str__."""
-    if get_global_setting('DISPLAY_FULL_NAMES', cache=True):
-        if self.first_name or self.last_name:
-            return f'{self.first_name} {self.last_name}'
-    return self.username
-
-
-CustomUser.add_to_class('__str__', user_model_str)  # Overriding User.__str__
-#  OVERRIDE END
 
 
 def default_token():

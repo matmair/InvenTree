@@ -296,6 +296,4 @@ class OwnerAdmin(admin.ModelAdmin):
 
 admin.site.unregister(Group)
 admin.site.register(Group, RoleGroupAdmin)
-
-admin.site.unregister(CustomUser)
 admin.site.register(CustomUser, InvenTreeUserAdmin)
