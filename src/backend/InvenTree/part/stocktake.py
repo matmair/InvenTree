@@ -4,7 +4,7 @@ import io
 import logging
 import time
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser
 from django.core.files.base import ContentFile
 from django.utils.translation import gettext_lazy as _
 
@@ -22,7 +22,11 @@ logger = logging.getLogger('inventree')
 
 
 def perform_stocktake(
-    target: part.models.Part, user: User, note: str = '', commit=True, **kwargs
+    target: part.models.Part,
+    user: type[AbstractBaseUser],
+    note: str = '',
+    commit=True,
+    **kwargs,
 ):
     """Perform stocktake action on a single part.
 

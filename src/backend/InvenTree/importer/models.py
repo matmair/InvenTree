@@ -3,7 +3,7 @@
 import json
 import logging
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -85,7 +85,11 @@ class DataImportSession(models.Model):
     )
 
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, blank=True, null=True, verbose_name=_('User')
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name=_('User'),
     )
 
     field_defaults = models.JSONField(

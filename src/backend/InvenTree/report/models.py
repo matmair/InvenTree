@@ -5,7 +5,6 @@ import os
 import sys
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.validators import FileExtensionValidator, MinValueValidator
@@ -431,7 +430,11 @@ class TemplateOutput(models.Model):
     created = models.DateField(auto_now_add=True, editable=False)
 
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, blank=True, null=True, related_name='+'
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='+',
     )
 
     items = models.PositiveIntegerField(

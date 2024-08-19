@@ -20,7 +20,7 @@ from typing import Any, Callable, TypedDict, Union
 from django.apps import apps
 from django.conf import settings
 from django.conf import settings as django_settings
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.humanize.templatetags.humanize import naturaltime
@@ -2614,7 +2614,9 @@ class ColorTheme(models.Model):
     name = models.CharField(max_length=20, default='', blank=True)
 
     user = models.CharField(max_length=150, unique=True)
-    user_obj = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    user_obj = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True
+    )
 
     @classmethod
     def get_color_themes_choices(cls):
@@ -3284,7 +3286,7 @@ class Attachment(InvenTree.models.MetadataMixin, InvenTree.models.InvenTreeModel
     )
 
     upload_user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
