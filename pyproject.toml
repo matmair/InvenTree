@@ -1,3 +1,13 @@
+[project]
+name = "inventree_server"
+requires-python = ">=3.9,<3.13"
+description = "InvenTree backend server"
+readme = "README.md"
+dynamic = ["dependencies", "optional-dependencies", "version"]
+[tool.setuptools.dynamic]
+dependencies = {file = ["src/backend/requirements.in"]}
+optional-dependencies = {dev = { file = ["src/backend/requirements-dev.in"] },docker = { file = ["contrib/container/requirements.in"] },doc = { file = ["docs/requirements.in"] }}
+version = { attr = "src.backend.InvenTree.InvenTree.version.INVENTREE_SW_VERSION" }
 
 [tool.ruff]
 exclude = [
