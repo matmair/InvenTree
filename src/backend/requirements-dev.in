@@ -1,5 +1,5 @@
 # Dev requirements for InvenTree
--c requirements.txt
+#-c requirements.txt
 coverage[toml]                          # Unit test coverage
 django-admin-shell                      # Remote shell access
 django-querycount                       # Display number of URL queries for requests
