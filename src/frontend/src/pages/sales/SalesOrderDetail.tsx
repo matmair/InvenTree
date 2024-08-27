@@ -2,7 +2,6 @@ import { t } from '@lingui/macro';
 import { Accordion, Grid, Skeleton, Stack } from '@mantine/core';
 import {
   IconBookmark,
-  IconDots,
   IconInfoCircle,
   IconList,
   IconNotes,
@@ -451,7 +450,6 @@ export default function SalesOrderDetail() {
       />,
       <ActionDropdown
         tooltip={t`Order Actions`}
-        icon={<IconDots />}
         actions={[
           EditItemAction({
             hidden: !canEdit,

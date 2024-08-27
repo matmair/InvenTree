@@ -2,7 +2,6 @@ import { t } from '@lingui/macro';
 import { Grid, Skeleton, Stack } from '@mantine/core';
 import {
   IconCurrencyDollar,
-  IconDots,
   IconInfoCircle,
   IconNotes,
   IconPackages,
@@ -274,7 +273,6 @@ export default function SupplierPartDetail() {
       />,
       <ActionDropdown
         tooltip={t`Supplier Part Actions`}
-        icon={<IconDots />}
         actions={[
           DuplicateItemAction({
             hidden: !user.hasAddRole(UserRoles.purchase_order),

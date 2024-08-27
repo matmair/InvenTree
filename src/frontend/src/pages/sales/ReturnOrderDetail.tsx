@@ -1,7 +1,6 @@
 import { t } from '@lingui/macro';
 import { Accordion, Grid, Skeleton, Stack } from '@mantine/core';
 import {
-  IconDots,
   IconInfoCircle,
   IconList,
   IconNotes,
@@ -411,7 +410,6 @@ export default function ReturnOrderDetail() {
       />,
       <ActionDropdown
         tooltip={t`Order Actions`}
-        icon={<IconDots />}
         actions={[
           EditItemAction({
             hidden: !user.hasChangeRole(UserRoles.return_order),

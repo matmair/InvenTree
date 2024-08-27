@@ -2,7 +2,6 @@ import { t } from '@lingui/macro';
 import { Group, LoadingOverlay, Skeleton, Stack, Text } from '@mantine/core';
 import {
   IconCategory,
-  IconDots,
   IconInfoCircle,
   IconListDetails,
   IconSitemap
@@ -214,7 +213,6 @@ export default function CategoryDetail() {
       <AdminButton model={ModelType.partcategory} pk={category.pk} />,
       <ActionDropdown
         tooltip={t`Category Actions`}
-        icon={<IconDots />}
         actions={[
           EditItemAction({
             hidden: !id || !user.hasChangeRole(UserRoles.part_category),

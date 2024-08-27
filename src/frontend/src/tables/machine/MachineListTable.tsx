@@ -16,7 +16,7 @@ import {
   Title
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconCheck, IconDots, IconRefresh } from '@tabler/icons-react';
+import { IconCheck, IconRefresh } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -257,7 +257,6 @@ function MachineDrawer({
           )}
           <ActionDropdown
             tooltip={t`Machine Actions`}
-            icon={<IconDots />}
             actions={[
               EditItemAction({
                 tooltip: t`Edit machine`,

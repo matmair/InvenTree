@@ -9,6 +9,7 @@ import {
 import { modals } from '@mantine/modals';
 import {
   IconCopy,
+  IconDotsVertical,
   IconEdit,
   IconLink,
   IconQrcode,
@@ -38,13 +39,13 @@ export type ActionDropdownItem = {
  * If no "active" actions are provided, the menu will not be rendered
  */
 export function ActionDropdown({
-  icon,
+  icon = <IconDotsVertical />,
   tooltip,
   actions,
   disabled = false,
   hidden = false
 }: {
-  icon: ReactNode;
+  icon?: ReactNode;
   tooltip: string;
   actions: ActionDropdownItem[];
   disabled?: boolean;

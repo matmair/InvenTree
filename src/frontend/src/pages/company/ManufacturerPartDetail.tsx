@@ -2,7 +2,6 @@ import { t } from '@lingui/macro';
 import { Grid, Skeleton, Stack } from '@mantine/core';
 import {
   IconBuildingWarehouse,
-  IconDots,
   IconInfoCircle,
   IconList,
   IconNotes,
@@ -238,7 +237,6 @@ export default function ManufacturerPartDetail() {
       />,
       <ActionDropdown
         tooltip={t`Manufacturer Part Actions`}
-        icon={<IconDots />}
         actions={[
           DuplicateItemAction({
             hidden: !user.hasAddRole(UserRoles.purchase_order),

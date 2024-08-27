@@ -4,7 +4,6 @@ import {
   IconBookmark,
   IconBoxPadding,
   IconChecklist,
-  IconDots,
   IconHistory,
   IconInfoCircle,
   IconNotes,
@@ -528,7 +527,6 @@ export default function StockDetail() {
       />,
       <ActionDropdown
         tooltip={t`Stock Item Actions`}
-        icon={<IconDots />}
         actions={[
           DuplicateItemAction({
             hidden: !user.hasAddRole(UserRoles.stock),

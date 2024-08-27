@@ -3,7 +3,6 @@ import { Grid, Skeleton, Stack } from '@mantine/core';
 import {
   IconBuildingFactory2,
   IconBuildingWarehouse,
-  IconDots,
   IconInfoCircle,
   IconMap2,
   IconNotes,
@@ -304,7 +303,6 @@ export default function CompanyDetail(props: Readonly<CompanyDetailProps>) {
       <AdminButton model={ModelType.company} pk={company.pk} />,
       <ActionDropdown
         tooltip={t`Company Actions`}
-        icon={<IconDots />}
         actions={[
           EditItemAction({
             hidden: !user.hasChangeRole(UserRoles.purchase_order),
