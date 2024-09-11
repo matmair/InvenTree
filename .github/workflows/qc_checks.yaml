@@ -551,6 +551,14 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: inventree/InvenTree
           flags: pui
+      - uses: inception-health/otel-upload-test-artifact-action@v1
+        if: always()
+        with:
+            jobName: "Tests - Platform UI"
+            stepName: "Run Playwright tests"
+            path: "junit.xml"
+            type: "junit"
+            githubToken: ${{ secrets.GITHUB_TOKEN }}
 
   platform_ui_build:
     name: Build - UI Platform
@@ -577,3 +585,16 @@ jobs:
         with:
           name: frontend-build
           path: src/backend/InvenTree/web/static/web
+
+  otel-export-trace:
+            if: always()
+            name: OpenTelemetry Export Trace
+            runs-on: ubuntu-latest
+            needs: ['paths-filter', 'platform_ui_build', 'platform_ui', 'mysql', 'coverage', 'migration-tests', 'migrations-checks', 'schema-push']
+            steps:
+              - name: Export Workflow Trace
+                uses: inception-health/otel-export-trace-action@latest
+                with:
+                  otlpEndpoint: grpc://api.honeycomb.io:443/
+                  otlpHeaders: ${{ secrets.OTLP_HEADERS }}
+                  githubToken: ${{ secrets.GITHUB_TOKEN }}
