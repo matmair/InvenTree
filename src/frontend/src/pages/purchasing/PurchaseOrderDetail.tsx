@@ -447,7 +447,7 @@ export default function PurchaseOrderDetail() {
       <InstanceDetail status={requestStatus} loading={instanceQuery.isFetching}>
         <Stack gap='xs'>
           <PageDetail
-            title={t`Purchase Order` + `: ${order.reference}`}
+            title={`${t`Purchase Order`}: ${order.reference}`}
             subtitle={order.description}
             imageUrl={order.supplier_detail?.image}
             breadcrumbs={[{ name: t`Purchasing`, url: '/purchasing/' }]}

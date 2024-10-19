@@ -500,7 +500,7 @@ export function InvenTreeTable<T extends Record<string, any>>({
             break;
           default:
             setMissingRecordsText(
-              t`Unknown error` + ': ' + response.statusText
+              `${t`Unknown error`}: ${response.statusText}`
             );
             break;
         }
@@ -508,7 +508,7 @@ export function InvenTreeTable<T extends Record<string, any>>({
         return [];
       })
       .catch((error) => {
-        setMissingRecordsText(t`Error` + ': ' + error.message);
+        setMissingRecordsText(`${t`Error`}: ${error.message}`);
         return [];
       });
   };

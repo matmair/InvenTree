@@ -200,7 +200,7 @@ function BuildOutputFormRow({
     if (record.serial) {
       return `# ${record.serial}`;
     } else {
-      return t`Quantity` + `: ${record.quantity}`;
+      return `${t`Quantity`}: ${record.quantity}`;
     }
   }, [record]);
 
