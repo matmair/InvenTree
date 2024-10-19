@@ -75,7 +75,7 @@ function MachineStatusIndicator({ machine }: Readonly<{ machine: MachineI }>) {
   if (!machine.active) {
     return (
       <Indicator style={style} color='gray'>
-        <Box></Box>
+        <Box />
       </Indicator>
     );
   }
@@ -94,7 +94,7 @@ function MachineStatusIndicator({ machine }: Readonly<{ machine: MachineI }>) {
 
   return (
     <Indicator processing={processing} style={style} color={color}>
-      <Box></Box>
+      <Box />
     </Indicator>
   );
 }
@@ -242,7 +242,7 @@ function MachineDrawer({
       {machineDeleteModal.modal}
 
       <Group justify='space-between'>
-        <Box></Box>
+        <Box />
 
         <Group>
           {machine && <MachineStatusIndicator machine={machine} />}

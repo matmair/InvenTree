@@ -78,7 +78,7 @@ export const getPluginTemplateEditor = (
             <Text>{error}</Text>
           </Alert>
         )}
-        <div ref={elRef as any} style={{ display: 'flex', flex: 1 }}></div>
+        <div ref={elRef as any} style={{ display: 'flex', flex: 1 }} />
       </Stack>
     );
   }) as EditorComponent;
@@ -125,7 +125,7 @@ export const getPluginTemplatePreview = (
             <Text>{error}</Text>
           </Alert>
         )}
-        <div ref={elRef as any} style={{ display: 'flex', flex: 1 }}></div>
+        <div ref={elRef as any} style={{ display: 'flex', flex: 1 }} />
       </Stack>
     );
   }) as PreviewAreaComponent;

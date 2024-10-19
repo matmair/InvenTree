@@ -79,7 +79,7 @@ export default function PluginSettingsPanel({
             <Text>{error}</Text>
           </Alert>
         )}
-        <div ref={ref as any}></div>
+        <div ref={ref as any} />
       </Stack>
     </>
   );
