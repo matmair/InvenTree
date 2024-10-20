@@ -4284,18 +4284,11 @@ msgstr "不允许空域。"
 msgid "Invalid domain name: {domain}"
 msgstr "无效的域名: {domain}"
 
-#: common/views.py:84 order/templates/order/order_wizard/po_upload.html:51
-#: order/templates/order/purchase_order_detail.html:24 order/views.py:118
-#: part/templates/part/import_wizard/part_upload.html:58 part/views.py:109
-#: templates/patterns/wizard/upload.html:37
+#: common/views.py:84
 msgid "Upload File"
 msgstr "上传文件"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "匹配字段"
 
@@ -6858,6 +6851,10 @@ msgstr "默认位置"
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
 msgstr "库存总量"
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
+msgstr ""
 
 #: part/forms.py:49
 msgid "Input quantity for price calculation"
@@ -9686,6 +9683,10 @@ msgstr "二维码"
 msgid "QR code"
 msgstr "二维码"
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr "所需材料"
@@ -9800,6 +9801,10 @@ msgstr "地点路径"
 #: stock/admin.py:149
 msgid "Stock Item ID"
 msgstr "库存项 ID"
+
+#: stock/admin.py:163
+msgid "Batch"
+msgstr "批量"
 
 #: stock/admin.py:168
 msgid "Status Code"
@@ -10988,8 +10993,7 @@ msgstr "认证失败"
 msgid "You have been logged out from InvenTree."
 msgstr "您已从InvenTree注销。"
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr "登录"
 

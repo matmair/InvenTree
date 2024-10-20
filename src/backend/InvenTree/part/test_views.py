@@ -5,11 +5,9 @@ from django.urls import reverse
 
 from InvenTree.unit_test import InvenTreeTestCase
 
-from .models import Part
 
-
-class PartViewTestCase(InvenTreeTestCase):
-    """Base class for unit testing the various Part views."""
+class PartDetailTest(InvenTreeTestCase):
+    """Unit tests for the PartDetail view."""
 
     fixtures = ['category', 'part', 'bom', 'location', 'company', 'supplier_part']
 

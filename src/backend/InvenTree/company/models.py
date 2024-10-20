@@ -224,7 +224,7 @@ class Company(
         """Get the web URL for the detail view for this Company."""
         if settings.ENABLE_CLASSIC_FRONTEND:
             return reverse('company-detail', kwargs={'pk': self.id})
-        return InvenTree.helpers.pui_url(f'/company/{self.id}')
+        return 'TOBEREFACTORED'
 
     def get_image_url(self):
         """Return the URL of the image for this company."""

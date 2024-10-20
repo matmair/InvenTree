@@ -19,7 +19,6 @@ from plugin.mixins import (
     SettingsMixin,
     UrlsMixin,
 )
-from plugin.registry import registry
 from plugin.urls import PLUGIN_BASE
 
 

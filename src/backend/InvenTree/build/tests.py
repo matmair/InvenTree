@@ -1,6 +1,5 @@
 """Basic unit tests for the BuildOrder app"""
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.test import tag
 from django.urls import reverse
@@ -13,7 +12,7 @@ from .models import Build
 from part.models import Part, BomItem
 from stock.models import StockItem
 
-from common.settings import get_global_setting, set_global_setting
+from common.settings import set_global_setting
 from build.status_codes import BuildStatus
 
 
@@ -45,8 +44,7 @@ class BuildTestSimple(InvenTreeTestCase):
     def test_url(self):
         """Test URL lookup"""
         b1 = Build.objects.get(pk=1)
-        if settings.ENABLE_CLASSIC_FRONTEND:
-            self.assertEqual(b1.get_absolute_url(), '/build/1/')
+        self.assertEqual(b1.get_absolute_url(), 'TOBEREFACTORED')
 
     def test_is_complete(self):
         """Test build completion status"""

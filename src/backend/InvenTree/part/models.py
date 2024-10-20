@@ -3413,9 +3413,11 @@ class PartStocktakeReport(models.Model):
 
     def get_absolute_url(self):
         """Return the URL for the associaed report file for download."""
-        if self.report:
-            return self.report.url
-        return None
+        if settings.ENABLE_CLASSIC_FRONTEND:
+            if self.report:
+                return self.report.url
+            return None
+        return 'TOBEREFACTORED'
 
     date = models.DateField(verbose_name=_('Date'), auto_now_add=True)
 

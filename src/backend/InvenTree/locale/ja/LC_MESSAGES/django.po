@@ -4291,11 +4291,7 @@ msgstr ""
 msgid "Upload File"
 msgstr ""
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr ""
 
@@ -6857,6 +6853,10 @@ msgstr ""
 #: part/bom.py:184 part/serializers.py:957
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
+msgstr ""
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
 msgstr ""
 
 #: part/forms.py:49
@@ -9686,6 +9686,10 @@ msgstr ""
 msgid "QR code"
 msgstr ""
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr ""
@@ -9799,6 +9803,10 @@ msgstr ""
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
+msgstr ""
+
+#: stock/admin.py:163
+msgid "Batch"
 msgstr ""
 
 #: stock/admin.py:168
@@ -10988,8 +10996,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr ""
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr ""
 
@@ -15551,3 +15558,158 @@ msgstr "項目を編集する権限"
 msgid "Permission to delete items"
 msgstr "項目を削除する権限"
 
+#~ msgid "Enter password"
+#~ msgstr "パスワードを入力してください"
+
+#~ msgid "Enter new password"
+#~ msgstr "新しいパスワードを入力してください。"
+
+#~ msgid "Confirm password"
+#~ msgstr "パスワードの確認"
+
+#~ msgid "Confirm new password"
+#~ msgstr "新しいパスワードの確認"
+
+#~ msgid "Old password"
+#~ msgstr "古いパスワード"
+
+#~ msgid "Edit User Information"
+#~ msgstr "ユーザー情報を編集"
+
+#~ msgid "Set Password"
+#~ msgstr "パスワードを設定"
+
+#~ msgid "Password fields must match"
+#~ msgstr "パスワードが一致しません"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "パスワードが間違っています"
+
+#~ msgid "System Information"
+#~ msgstr "システム情報"
+
+#~ msgid "About InvenTree"
+#~ msgstr "InvenTree について"
+
+#~ msgid "Edit Build"
+#~ msgstr "組立を編集"
+
+#~ msgid "Cancel Build"
+#~ msgstr "組立をキャンセル"
+
+#~ msgid "Delete Build"
+#~ msgstr "組立を削除"
+
+#~ msgid "Order required parts"
+#~ msgstr "注文必須パーツ"
+
+#~ msgid "Order Parts"
+#~ msgstr "パーツの注文"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "サプライヤー・パーツ"
+
+#~ msgid "Create new supplier part"
+#~ msgstr "新しいサプライヤー・パーツを作成"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "新しいサプライヤー・パーツ"
+
+#~ msgid "Manufacturer Parts"
+#~ msgstr "メーカー・パーツ"
+
+#~ msgid "Create new manufacturer part"
+#~ msgstr "新しいメーカー・パーツを作成"
+
+#~ msgid "New Manufacturer Part"
+#~ msgstr "新しいメーカ―・パーツ"
+
+#~ msgid "Manufacturers"
+#~ msgstr "メーカー"
+
+#~ msgid "Order part"
+#~ msgstr "パーツの注文"
+
+#~ msgid "Edit manufacturer part"
+#~ msgstr "メーカー・パーツの編集"
+
+#~ msgid "Delete manufacturer part"
+#~ msgstr "メーカー・パーツを削除"
+
+#~ msgid "Internal Part"
+#~ msgstr "内部パーツ"
+
+#~ msgid "Parameters"
+#~ msgstr "パラメータ"
+
+#~ msgid "New Parameter"
+#~ msgstr "新規パラメータ"
+
+#~ msgid "Subscribe to notifications for this category"
+#~ msgstr "このカテゴリの通知を受け取る"
+
+#~ msgid "Edit category"
+#~ msgstr "カテゴリを編集"
+
+#~ msgid "Edit Category"
+#~ msgstr "カテゴリを編集"
+
+#~ msgid "Delete Category"
+#~ msgstr "カテゴリを削除"
+
+#~ msgid "Top level part category"
+#~ msgstr "トップレベルのパーツカテゴリ"
+
+#~ msgid "Subcategories"
+#~ msgstr "サブカテゴリ"
+
+#~ msgid "Parts (Including subcategories)"
+#~ msgstr "パーツ (サブカテゴリを含む)"
+
+#~ msgid "Create new part"
+#~ msgstr "新規パーツを作成"
+
+#~ msgid "New Part"
+#~ msgstr "新規パーツ"
+
+#~ msgid "Part Parameters"
+#~ msgstr "パーツパラメータ"
+
+#~ msgid "New Category"
+#~ msgstr "新規カテゴリ"
+
+#~ msgid "Import Parts"
+#~ msgstr "パーツをインポート"
+
+#~ msgid "Subscribe to notifications for this part"
+#~ msgstr "このパーツの通知を受け取る"
+
+#~ msgid "Search for serial number"
+#~ msgstr "シリアル番号で検索"
+
+#~ msgid "Stock"
+#~ msgstr "在庫"
+
+#~ msgid "Price Category"
+#~ msgstr "価格カテゴリ"
+
+#~ msgid "No Stock"
+#~ msgstr "在庫切れ"
+
+#~ msgid "Build"
+#~ msgstr "組立"
+
+#~ msgid "Category Settings"
+#~ msgstr "カテゴリ設定"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Add Email"
+#~ msgstr "メールアドレスを追加"
+
+#~ msgid "Confirm"
+#~ msgstr "確認"
+
+#~ msgid "Email Settings"
+#~ msgstr "メール設定"
