@@ -602,6 +602,7 @@ class TestReportTest(PrintTestMixins, ReportTest):
 
         # Now print with a valid StockItem
         item = StockItem.objects.first()
+        assert item
 
         n = item.attachments.count()
 

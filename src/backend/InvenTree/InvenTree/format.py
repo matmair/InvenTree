@@ -1,8 +1,9 @@
 """Custom string formatting functions and helpers."""
 
+from __future__ import annotations
+
 import re
 import string
-from typing import Optional
 
 from django.conf import settings
 from django.utils import translation
@@ -180,8 +181,8 @@ def extract_named_group(name: str, value: str, fmt_string: str) -> str:
 
 def format_money(
     money: Money,
-    decimal_places: Optional[int] = None,
-    fmt: Optional[str] = None,
+    decimal_places: int | None = None,
+    fmt: str | None = None,
     include_symbol: bool = True,
 ) -> str:
     """Format money object according to the currently set local.

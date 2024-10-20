@@ -56,6 +56,7 @@ class TransitionTests(InvenTreeTestCase):
 
         # Ensure registering works
         storage.collect()
+        assert storage.list
 
         # Ensure the class is registered
         self.assertIn(RaisingImplementation, storage.list)
@@ -90,6 +91,7 @@ class TransitionTests(InvenTreeTestCase):
                     return False  # pragma: no cover # Return false to keep other transitions working
 
         storage.collect()
+        assert storage.list
         self.assertIn(ValidImplementationNoEffect, storage.list)
         self.assertIn(ValidImplementation, storage.list)
 

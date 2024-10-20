@@ -80,6 +80,7 @@ class LocatePluginTests(InvenTreeAPITestCase):
         url = reverse('api-locate-plugin')
 
         item = StockItem.objects.get(pk=1)
+        assert item
 
         # The sample plugin will set the 'located' metadata tag
         item.set_metadata('located', False)
@@ -91,6 +92,7 @@ class LocatePluginTests(InvenTreeAPITestCase):
         self.assertEqual(response.data['item'], 1)
 
         item.refresh_from_db()
+        assert item.metadata
 
         # Item metadata should have been altered!
         self.assertTrue(item.metadata['located'])
@@ -111,6 +113,7 @@ class LocatePluginTests(InvenTreeAPITestCase):
             self.assertEqual(response.data['location'], location.pk)
 
             location.refresh_from_db()
+            assert location.metadata
 
             # Item metadata should have been altered!
             self.assertTrue(location.metadata['located'])

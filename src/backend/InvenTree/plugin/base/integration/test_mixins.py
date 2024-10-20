@@ -8,7 +8,7 @@ from django.urls import include, path, re_path, reverse
 
 from error_report.models import Error
 
-from InvenTree.unit_test import InvenTreeTestCase
+from InvenTree.unit_test import InvenTreeTestCase, get_plugin_config
 from plugin import InvenTreePlugin
 from plugin.base.integration.PanelMixin import PanelMixin
 from plugin.helpers import MixinNotImplementedError
@@ -93,7 +93,7 @@ class UrlsMixinTest(BaseMixinDefinition, TestCase):
         """Setup for all tests."""
 
         class UrlsCls(UrlsMixin, InvenTreePlugin):
-            def test():
+            def test(self):
                 return 'ccc'
 
             URLS = [path('testpath', test, name='test')]
@@ -108,6 +108,7 @@ class UrlsMixinTest(BaseMixinDefinition, TestCase):
     def test_function(self):
         """Test that the mixin functions."""
         plg_name = self.mixin.plugin_name()
+        assert plg_name
 
         # base_url
         target_url = f'{PLUGIN_BASE}/{plg_name}/'
@@ -117,13 +118,14 @@ class UrlsMixinTest(BaseMixinDefinition, TestCase):
         target_pattern = re_path(
             f'^{plg_name}/', include((self.mixin.urls, plg_name)), name=plg_name
         )
-        self.assertEqual(
-            self.mixin.urlpatterns.reverse_dict, target_pattern.reverse_dict
-        )
+
+        mx_patterns = self.mixin.urlpatterns
+        assert mx_patterns
+        self.assertEqual(mx_patterns.reverse_dict, target_pattern.reverse_dict)
 
         # resolve the view
-        self.assertEqual(self.mixin.urlpatterns.resolve('/testpath').func(), 'ccc')
-        self.assertEqual(self.mixin.urlpatterns.reverse('test'), 'testpath')
+        self.assertEqual(mx_patterns.resolve('/testpath').func(None), 'ccc')
+        self.assertEqual(mx_patterns.reverse('test'), 'testpath')
 
         # no url
         self.assertIsNone(self.mixin_nothing.urls)
@@ -370,12 +372,13 @@ class PanelMixinTests(InvenTreeTestCase):
     def test_disabled(self):
         """Test that the panels *do not load* if the plugin is not enabled."""
         plugin = registry.get_plugin('samplepanel')
+        assert plugin
 
         plugin.set_setting('ENABLE_HELLO_WORLD', True)
         plugin.set_setting('ENABLE_BROKEN_PANEL', True)
 
         # Ensure that the plugin is *not* enabled
-        config = plugin.plugin_config()
+        config = get_plugin_config('samplepanel')
 
         self.assertFalse(config.active)
 
@@ -397,12 +400,10 @@ class PanelMixinTests(InvenTreeTestCase):
     @tag('cui')
     def test_enabled(self):
         """Test that the panels *do* load if the plugin is enabled."""
-        plugin = registry.get_plugin('samplepanel')
-
         self.assertEqual(len(registry.with_mixin('panel', active=True)), 0)
 
         # Ensure that the plugin is enabled
-        config = plugin.plugin_config()
+        config = get_plugin_config('samplepanel')
         config.active = True
         config.save()
 
@@ -416,6 +417,8 @@ class PanelMixinTests(InvenTreeTestCase):
             reverse('stock-location-detail', kwargs={'pk': 2}),
         ]
 
+        plugin = registry.get_plugin('samplepanel')
+        assert plugin
         plugin.set_setting('ENABLE_HELLO_WORLD', False)
         plugin.set_setting('ENABLE_BROKEN_PANEL', False)
 

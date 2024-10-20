@@ -140,7 +140,7 @@ class StatusCode(BaseEnum):
     @classmethod
     def items(cls):
         """All status code items."""
-        return [(x.value, x.label) for x in cls.values()]
+        return [(x.value, x.label) for x in cls.values()] if cls else []
 
     @classmethod
     def keys(cls):
