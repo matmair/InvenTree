@@ -1,11 +1,11 @@
 import { test } from './baseFixtures.js';
 import { doQuickLogin } from './login.js';
 
-test('PUI - Modals as admin', async ({ page }) => {
+test('Modals as admin', async ({ page }) => {
   await doQuickLogin(page, 'admin', 'inventree');
 
   // use server info
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page
     .getByRole('button', {
       name: 'Server Information About this Inventree instance'
@@ -17,7 +17,7 @@ test('PUI - Modals as admin', async ({ page }) => {
   await page.waitForURL('**/platform/home');
 
   // use license info
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page
     .getByRole('button', {
       name: 'License Information Licenses for dependencies of the service'
@@ -34,7 +34,7 @@ test('PUI - Modals as admin', async ({ page }) => {
   await page.getByRole('button', { name: '@sentry/utils MIT' }).click();
   await page
     .getByLabel('@sentry/utilsMIT')
-    .getByText('Copyright (c) 2019 Sentry (')
+    .getByText('Copyright (c) 2019')
     .waitFor();
 
   await page
@@ -44,7 +44,7 @@ test('PUI - Modals as admin', async ({ page }) => {
     .click();
 
   // use about
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page
     .getByRole('button', { name: 'About InvenTree About the InvenTree org' })
     .click();

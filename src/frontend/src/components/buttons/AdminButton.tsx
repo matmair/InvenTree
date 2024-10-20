@@ -1,11 +1,8 @@
 import { t } from '@lingui/macro';
 import { IconUserStar } from '@tabler/icons-react';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { ModelType } from '../../enums/ModelType';
-import { navigateToLink } from '../../functions/navigation';
-import { base_url } from '../../main';
 import { useLocalState } from '../../states/LocalState';
 import { useUserState } from '../../states/UserState';
 import { ModelInformationDict } from '../render/ModelType';
@@ -25,7 +22,7 @@ export type AdminButtonProps = {
  * - The user has "superuser" role
  * - The user has at least read rights for the selected item
  */
-export default function AdminButton(props: AdminButtonProps) {
+export default function AdminButton(props: Readonly<AdminButtonProps>) {
   const user = useUserState();
 
   const enabled: boolean = useMemo(() => {
@@ -83,6 +80,7 @@ export default function AdminButton(props: AdminButtonProps) {
       tooltip={t`Open in admin interface`}
       hidden={!enabled}
       onClick={openAdmin}
+      tooltipAlignment="bottom"
     />
   );
 }

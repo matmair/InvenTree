@@ -20,7 +20,7 @@ import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
 import { TableColumn } from '../Column';
 import { InvenTreeTable } from '../InvenTreeTable';
-import { RowDeleteAction, RowEditAction } from '../RowActions';
+import { RowAction, RowDeleteAction, RowEditAction } from '../RowActions';
 
 export function calculateSupplierPartUnitPrice(record: any) {
   let pack_quantity = record?.part_detail?.pack_quantity_native ?? 1;
@@ -61,7 +61,11 @@ export function SupplierPriceBreakColumns(): TableColumn[] {
       render: (record: any) => {
         return (
           <Anchor
-            href={getDetailUrl(ModelType.supplierpart, record.part_detail.pk)}
+            href={getDetailUrl(
+              ModelType.supplierpart,
+              record.part_detail.pk,
+              true
+            )}
           >
             {record.part_detail.SKU}
           </Anchor>
@@ -108,9 +112,9 @@ export function SupplierPriceBreakColumns(): TableColumn[] {
 
 export default function SupplierPriceBreakTable({
   supplierPartId
-}: {
+}: Readonly<{
   supplierPartId: number;
-}) {
+}>) {
   const table = useTable('supplierpricebreaks');
 
   const user = useUserState();
@@ -161,6 +165,7 @@ export default function SupplierPriceBreakTable({
   const tableActions = useMemo(() => {
     return [
       <AddItemButton
+        key="add-price-break"
         tooltip={t`Add Price Break`}
         onClick={() => {
           newPriceBreak.open();
@@ -171,7 +176,7 @@ export default function SupplierPriceBreakTable({
   }, [user]);
 
   const rowActions = useCallback(
-    (record: any) => {
+    (record: any): RowAction[] => {
       return [
         RowEditAction({
           hidden: !user.hasChangeRole(UserRoles.purchase_order),

@@ -14,6 +14,7 @@ import { identifierString } from '../../functions/conversion';
 import { navigateToLink } from '../../functions/navigation';
 
 export type Breadcrumb = {
+  icon?: React.ReactNode;
   name: string;
   url: string;
 };
@@ -24,10 +25,10 @@ export type Breadcrumb = {
 export function BreadcrumbList({
   breadcrumbs,
   navCallback
-}: {
+}: Readonly<{
   breadcrumbs: Breadcrumb[];
   navCallback?: () => void;
-}) {
+}>) {
   const navigate = useNavigate();
 
   const elements = useMemo(() => {
@@ -69,7 +70,10 @@ export function BreadcrumbList({
                   navigateToLink(breadcrumb.url, navigate, event)
                 }
               >
-                <Text size="sm">{breadcrumb.name}</Text>
+                <Group gap={4}>
+                  {breadcrumb.icon}
+                  <Text size="sm">{breadcrumb.name}</Text>
+                </Group>
               </Anchor>
             );
           })}

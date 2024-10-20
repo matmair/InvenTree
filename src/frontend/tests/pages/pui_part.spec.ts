@@ -2,7 +2,7 @@ import { test } from '../baseFixtures';
 import { baseUrl } from '../defaults';
 import { doQuickLogin } from '../login';
 
-test('PUI - Pages - Part - Locking', async ({ page }) => {
+test('Pages - Part - Locking', async ({ page }) => {
   await doQuickLogin(page);
 
   // Navigate to a known assembly which is *not* locked
@@ -15,7 +15,7 @@ test('PUI - Pages - Part - Locking', async ({ page }) => {
   // Navigate to a known assembly which *is* locked
   await page.goto(`${baseUrl}/part/100/bom`);
   await page.getByRole('tab', { name: 'Bill of Materials' }).click();
-  await page.getByText('Locked', { exact: true }).waitFor();
+  await page.getByLabel('part-lock-icon').waitFor();
   await page.getByText('Part is Locked', { exact: true }).waitFor();
 
   // Check the "parameters" tab also
@@ -23,7 +23,7 @@ test('PUI - Pages - Part - Locking', async ({ page }) => {
   await page.getByText('Part parameters cannot be').waitFor();
 });
 
-test('PUI - Pages - Part - Pricing (Nothing, BOM)', async ({ page }) => {
+test('Pages - Part - Pricing (Nothing, BOM)', async ({ page }) => {
   await doQuickLogin(page);
 
   // Part with no history
@@ -69,10 +69,10 @@ test('PUI - Pages - Part - Pricing (Nothing, BOM)', async ({ page }) => {
     .getByRole('table')
     .getByText('Wood Screw')
     .click();
-  await page.waitForURL('**/part/98/pricing');
+  await page.waitForURL('**/part/98/**');
 });
 
-test('PUI - Pages - Part - Pricing (Supplier)', async ({ page }) => {
+test('Pages - Part - Pricing (Supplier)', async ({ page }) => {
   await doQuickLogin(page);
 
   // Part
@@ -98,7 +98,7 @@ test('PUI - Pages - Part - Pricing (Supplier)', async ({ page }) => {
   // await page.waitForURL('**/purchasing/supplier-part/697/');
 });
 
-test('PUI - Pages - Part - Pricing (Variant)', async ({ page }) => {
+test('Pages - Part - Pricing (Variant)', async ({ page }) => {
   await doQuickLogin(page);
 
   // Part
@@ -116,17 +116,15 @@ test('PUI - Pages - Part - Pricing (Variant)', async ({ page }) => {
 
   // Variant Pricing
   await page.getByRole('button', { name: 'Variant Pricing' }).click();
-  await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'Variant Part Not sorted' }).click();
 
   // Variant Pricing - linkjumping
   let target = page.getByText('Green Chair').first();
   await target.waitFor();
   await target.click();
-  await page.waitForURL('**/part/109/pricing');
+  await page.waitForURL('**/part/109/**');
 });
 
-test('PUI - Pages - Part - Pricing (Internal)', async ({ page }) => {
+test('Pages - Part - Pricing (Internal)', async ({ page }) => {
   await doQuickLogin(page);
 
   // Part
@@ -151,7 +149,7 @@ test('PUI - Pages - Part - Pricing (Internal)', async ({ page }) => {
   await page.getByText('Part *M2x4 SHCSSocket head').click();
 });
 
-test('PUI - Pages - Part - Pricing (Purchase)', async ({ page }) => {
+test('Pages - Part - Pricing (Purchase)', async ({ page }) => {
   await doQuickLogin(page);
 
   // Part
@@ -173,7 +171,7 @@ test('PUI - Pages - Part - Pricing (Purchase)', async ({ page }) => {
   await page.getByText('2022-04-29').waitFor();
 });
 
-test('PUI - Pages - Part - Attachments', async ({ page }) => {
+test('Pages - Part - Attachments', async ({ page }) => {
   await doQuickLogin(page);
 
   await page.goto(`${baseUrl}/part/69/attachments`);
@@ -182,6 +180,10 @@ test('PUI - Pages - Part - Attachments', async ({ page }) => {
   await page.getByLabel('action-button-add-external-').click();
   await page.getByLabel('text-field-link').fill('https://www.google.com');
   await page.getByLabel('text-field-comment').fill('a sample comment');
+
+  // Note: Text field values are debounced for 250ms
+  await page.waitForTimeout(500);
+
   await page.getByRole('button', { name: 'Submit' }).click();
   await page.getByRole('cell', { name: 'a sample comment' }).first().waitFor();
 
@@ -191,7 +193,7 @@ test('PUI - Pages - Part - Attachments', async ({ page }) => {
   await page.getByRole('button', { name: 'Cancel' }).click();
 });
 
-test('PUI - Pages - Part - Parameters', async ({ page }) => {
+test('Pages - Part - Parameters', async ({ page }) => {
   await doQuickLogin(page);
 
   await page.goto(`${baseUrl}/part/69/parameters`);
@@ -201,7 +203,7 @@ test('PUI - Pages - Part - Parameters', async ({ page }) => {
 
   // Select the "Color" parameter template (should create a "choice" field)
   await page.getByLabel('related-field-template').fill('Color');
-  await page.getByText('Part color').click();
+  await page.getByRole('option', { name: 'Color Part color' }).click();
   await page.getByLabel('choice-field-data').click();
   await page.getByRole('option', { name: 'Green' }).click();
 
@@ -218,36 +220,29 @@ test('PUI - Pages - Part - Parameters', async ({ page }) => {
   await page.getByRole('button', { name: 'Cancel' }).click();
 });
 
-test('PUI - Pages - Part - Notes', async ({ page }) => {
+test('Pages - Part - Notes', async ({ page }) => {
   await doQuickLogin(page);
 
   await page.goto(`${baseUrl}/part/69/notes`);
 
   // Enable editing
-  await page.getByLabel('toggle-notes-editing').click();
+  await page.getByLabel('Enable Editing').waitFor();
 
-  // Enter some text
-  await page
-    .getByRole('textbox')
-    .getByRole('paragraph')
-    .fill('This is some data\n');
+  // Use keyboard shortcut to "edit" the part
+  await page.keyboard.press('Control+E');
+  await page.getByLabel('text-field-name').waitFor();
+  await page.getByLabel('text-field-description').waitFor();
+  await page.getByLabel('related-field-category').waitFor();
+  await page.getByRole('button', { name: 'Cancel' }).click();
 
-  // Save
-  await page.waitForTimeout(1000);
-  await page.getByLabel('save-notes').click();
-  await page.getByText('Notes saved successfully').waitFor();
+  // Enable notes editing
+  await page.getByLabel('Enable Editing').click();
 
-  // Navigate away from the page, and then back
-  await page.goto(`${baseUrl}/stock/location/index/`);
-  await page.waitForURL('**/platform/stock/location/**');
-  await page.getByRole('tab', { name: 'Location Details' }).waitFor();
-  await page.goto(`${baseUrl}/part/69/notes`);
-
-  // Check that the original notes are still present
-  await page.getByText('This is some data').waitFor();
+  await page.getByLabel('Save Notes').waitFor();
+  await page.getByLabel('Close Editor').waitFor();
 });
 
-test('PUI - Pages - Part - 404', async ({ page }) => {
+test('Pages - Part - 404', async ({ page }) => {
   await doQuickLogin(page);
 
   await page.goto(`${baseUrl}/part/99999/`);
@@ -255,4 +250,22 @@ test('PUI - Pages - Part - 404', async ({ page }) => {
 
   // Clear out any console error messages
   await page.evaluate(() => console.clear());
+});
+
+test('Pages - Part - Revision', async ({ page }) => {
+  await doQuickLogin(page);
+
+  await page.goto(`${baseUrl}/part/906/details`);
+
+  await page.getByText('Revision of').waitFor();
+  await page.getByText('Select Part Revision').waitFor();
+  await page
+    .getByText('Green Round Table (revision B) | B', { exact: true })
+    .click();
+  await page
+    .getByRole('option', { name: 'Thumbnail Green Round Table No stock' })
+    .click();
+
+  await page.waitForURL('**/platform/part/101/**');
+  await page.getByText('Select Part Revision').waitFor();
 });

@@ -7,19 +7,19 @@ import {
   Drawer,
   Group,
   Loader,
-  LoadingOverlay,
   Space,
   Stack,
   Text,
   Tooltip
 } from '@mantine/core';
-import { IconBellCheck, IconBellPlus } from '@tabler/icons-react';
+import { IconArrowRight, IconBellCheck } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { api } from '../../App';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
+import { navigateToLink } from '../../functions/navigation';
 import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
 import { StylishText } from '../items/StylishText';
@@ -30,10 +30,10 @@ import { StylishText } from '../items/StylishText';
 export function NotificationDrawer({
   opened,
   onClose
-}: {
+}: Readonly<{
   opened: boolean;
   onClose: () => void;
-}) {
+}>) {
   const { isLoggedIn } = useUserState();
 
   const navigate = useNavigate();
@@ -53,13 +53,25 @@ export function NotificationDrawer({
         .catch((error) => {
           return error;
         }),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false
+    refetchOnMount: false
   });
 
   const hasNotifications: boolean = useMemo(() => {
     return (notificationQuery.data?.results?.length ?? 0) > 0;
   }, [notificationQuery.data]);
+
+  const markAllAsRead = useCallback(() => {
+    api
+      .get(apiUrl(ApiEndpoints.notifications_readall), {
+        params: {
+          read: false
+        }
+      })
+      .catch((_error) => {})
+      .then((_response) => {
+        notificationQuery.refetch();
+      });
+  }, []);
 
   return (
     <Drawer
@@ -79,15 +91,29 @@ export function NotificationDrawer({
       title={
         <Group justify="space-between" wrap="nowrap">
           <StylishText size="lg">{t`Notifications`}</StylishText>
-          <ActionIcon
-            onClick={() => {
-              onClose();
-              navigate('/notifications/unread');
-            }}
-            variant="transparent"
-          >
-            <IconBellPlus />
-          </ActionIcon>
+          <Group justify="end" wrap="nowrap">
+            <Tooltip label={t`Mark all as read`}>
+              <ActionIcon
+                variant="transparent"
+                onClick={() => {
+                  markAllAsRead();
+                }}
+              >
+                <IconBellCheck />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label={t`View all notifications`}>
+              <ActionIcon
+                onClick={(event: any) => {
+                  onClose();
+                  navigateToLink('/notifications/unread', navigate, event);
+                }}
+                variant="transparent"
+              >
+                <IconArrowRight />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
         </Group>
       }
     >

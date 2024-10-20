@@ -15,15 +15,15 @@ import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
 import { TableColumn } from '../Column';
 import { InvenTreeTable } from '../InvenTreeTable';
-import { RowDeleteAction, RowEditAction } from '../RowActions';
+import { RowAction, RowDeleteAction, RowEditAction } from '../RowActions';
 
 export function ContactTable({
   companyId,
   params
-}: {
+}: Readonly<{
   companyId: number;
   params?: any;
-}) {
+}>) {
   const user = useUserState();
 
   const table = useTable('contact');
@@ -91,7 +91,7 @@ export function ContactTable({
   });
 
   const rowActions = useCallback(
-    (record: any) => {
+    (record: any): RowAction[] => {
       let can_edit =
         user.hasChangeRole(UserRoles.purchase_order) ||
         user.hasChangeRole(UserRoles.sales_order);
@@ -126,6 +126,7 @@ export function ContactTable({
 
     return [
       <AddItemButton
+        key="add-contact"
         tooltip={t`Add contact`}
         onClick={() => newContact.open()}
         hidden={!can_add}

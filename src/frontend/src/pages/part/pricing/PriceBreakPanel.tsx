@@ -19,18 +19,22 @@ import { apiUrl } from '../../../states/ApiState';
 import { useUserState } from '../../../states/UserState';
 import { TableColumn } from '../../../tables/Column';
 import { InvenTreeTable } from '../../../tables/InvenTreeTable';
-import { RowDeleteAction, RowEditAction } from '../../../tables/RowActions';
+import {
+  RowAction,
+  RowDeleteAction,
+  RowEditAction
+} from '../../../tables/RowActions';
 import { NoPricingData } from './PricingPanel';
 
 export default function PriceBreakPanel({
   part,
   endpoint
-}: {
+}: Readonly<{
   part: any;
   endpoint: ApiEndpoints;
-}) {
+}>) {
   const user = useUserState();
-  const table = useTable('pricing-internal');
+  const table = useTable('pricinginternal');
 
   const priceBreakFields: ApiFormFieldSet = useMemo(() => {
     return {
@@ -103,6 +107,7 @@ export default function PriceBreakPanel({
   const tableActions = useMemo(() => {
     return [
       <AddItemButton
+        key="add-price-break"
         tooltip={t`Add Price Break`}
         onClick={() => {
           newPriceBreak.open();
@@ -113,7 +118,7 @@ export default function PriceBreakPanel({
   }, [user]);
 
   const rowActions = useCallback(
-    (record: any) => {
+    (record: any): RowAction[] => {
       return [
         RowEditAction({
           hidden: !user.hasChangeRole(UserRoles.part),

@@ -1,39 +1,54 @@
 """JSON serializers for Build API."""
 
-from django.db import transaction
-from django.core.exceptions import ValidationError as DjangoValidationError
-from django.utils.translation import gettext_lazy as _
+from decimal import Decimal
 
-from django.db import models
-from django.db.models import ExpressionWrapper, F, FloatField
-from django.db.models import Case, Sum, When, Value
-from django.db.models import BooleanField, Q
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import models, transaction
+from django.db.models import (
+    BooleanField,
+    Case,
+    ExpressionWrapper,
+    F,
+    FloatField,
+    Q,
+    Sum,
+    Value,
+    When,
+)
 from django.db.models.functions import Coalesce
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
-from InvenTree.serializers import InvenTreeModelSerializer, UserSerializer
-
+import build.tasks
+import common.models
+import company.serializers
 import InvenTree.helpers
-from InvenTree.serializers import InvenTreeDecimalField, NotesFieldMixin
-from stock.status_codes import StockStatus
-
+import InvenTree.tasks
+import part.filters
+import part.serializers as part_serializers
+from common.serializers import ProjectCodeSerializer
+from common.settings import get_global_setting
+from generic.states.fields import InvenTreeCustomStatusSerializerMixin
+from importer.mixins import DataImportExportSerializerMixin
+from InvenTree.serializers import (
+    InvenTreeDecimalField,
+    InvenTreeModelSerializer,
+    NotesFieldMixin,
+    UserSerializer,
+)
 from stock.generators import generate_batch_code
 from stock.models import StockItem, StockLocation
-from stock.serializers import StockItemSerializerBrief, LocationSerializer
-
-import common.models
-from common.serializers import ProjectCodeSerializer
-from importer.mixins import DataImportExportSerializerMixin
-import part.filters
-from part.serializers import BomItemSerializer, PartSerializer, PartBriefSerializer
+from stock.serializers import LocationBriefSerializer, StockItemSerializerBrief
+from stock.status_codes import StockStatus
 from users.serializers import OwnerSerializer
 
-from .models import Build, BuildLine, BuildItem
+from .models import Build, BuildItem, BuildLine
+from .status_codes import BuildStatus
 
 
-class BuildSerializer(NotesFieldMixin, DataImportExportSerializerMixin, InvenTreeModelSerializer):
+class BuildSerializer(NotesFieldMixin, DataImportExportSerializerMixin, InvenTreeCustomStatusSerializerMixin, InvenTreeModelSerializer):
     """Serializes a Build object."""
 
     class Meta:
@@ -54,6 +69,7 @@ class BuildSerializer(NotesFieldMixin, DataImportExportSerializerMixin, InvenTre
             'part_name',
             'part_detail',
             'project_code',
+            'project_code_label',
             'project_code_detail',
             'overdue',
             'reference',
@@ -61,6 +77,7 @@ class BuildSerializer(NotesFieldMixin, DataImportExportSerializerMixin, InvenTre
             'quantity',
             'status',
             'status_text',
+            'status_custom_key',
             'target_date',
             'take_from',
             'notes',
@@ -70,6 +87,10 @@ class BuildSerializer(NotesFieldMixin, DataImportExportSerializerMixin, InvenTre
             'responsible',
             'responsible_detail',
             'priority',
+            'level',
+
+            # Additional fields used only for build order creation
+            'create_child_builds',
         ]
 
         read_only_fields = [
@@ -78,13 +99,18 @@ class BuildSerializer(NotesFieldMixin, DataImportExportSerializerMixin, InvenTre
             'completion_data',
             'status',
             'status_text',
+            'level',
         ]
+
+    reference = serializers.CharField(required=True)
+
+    level = serializers.IntegerField(label=_('Build Level'), read_only=True)
 
     url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     status_text = serializers.CharField(source='get_status_display', read_only=True)
 
-    part_detail = PartBriefSerializer(source='part', many=False, read_only=True)
+    part_detail = part_serializers.PartBriefSerializer(source='part', many=False, read_only=True)
 
     part_name = serializers.CharField(source='part.name', read_only=True, label=_('Part Name'))
 
@@ -98,7 +124,15 @@ class BuildSerializer(NotesFieldMixin, DataImportExportSerializerMixin, InvenTre
 
     barcode_hash = serializers.CharField(read_only=True)
 
+    project_code_label = serializers.CharField(source='project_code.code', read_only=True, label=_('Project Code Label'))
+
     project_code_detail = ProjectCodeSerializer(source='project_code', many=False, read_only=True)
+
+    create_child_builds = serializers.BooleanField(
+        default=False, required=False, write_only=True,
+        label=_('Create Child Builds'),
+        help_text=_('Automatically generate child build orders'),
+    )
 
     @staticmethod
     def annotate_queryset(queryset):
@@ -124,13 +158,19 @@ class BuildSerializer(NotesFieldMixin, DataImportExportSerializerMixin, InvenTre
     def __init__(self, *args, **kwargs):
         """Determine if extra serializer fields are required"""
         part_detail = kwargs.pop('part_detail', True)
+        create = kwargs.pop('create', False)
 
         super().__init__(*args, **kwargs)
 
-        if part_detail is not True:
+        if not create:
+            self.fields.pop('create_child_builds', None)
+
+        if not part_detail:
             self.fields.pop('part_detail', None)
 
-    reference = serializers.CharField(required=True)
+    def skip_create_fields(self):
+        """Return a list of fields to skip during model creation."""
+        return ['create_child_builds']
 
     def validate_reference(self, reference):
         """Custom validation for the Build reference field"""
@@ -138,6 +178,22 @@ class BuildSerializer(NotesFieldMixin, DataImportExportSerializerMixin, InvenTre
         Build.validate_reference_field(reference)
 
         return reference
+
+    def create(self, validated_data):
+        """Save the Build object."""
+
+        build_order = super().create(validated_data)
+
+        create_child_builds = self.validated_data.pop('create_child_builds', False)
+
+        if create_child_builds:
+            # Pass child build creation off to the background thread
+            InvenTree.tasks.offload_task(
+                build.tasks.create_child_builds,
+                build_order.pk,
+            )
+
+        return build_order
 
 
 class BuildOutputSerializer(serializers.Serializer):
@@ -205,7 +261,7 @@ class BuildOutputQuantitySerializer(BuildOutputSerializer):
     quantity = serializers.DecimalField(
         max_digits=15,
         decimal_places=5,
-        min_value=0,
+        min_value=Decimal(0),
         required=True,
         label=_('Quantity'),
         help_text=_('Enter quantity for build output'),
@@ -252,7 +308,7 @@ class BuildOutputCreateSerializer(serializers.Serializer):
     quantity = serializers.DecimalField(
         max_digits=15,
         decimal_places=5,
-        min_value=0,
+        min_value=Decimal(0),
         required=True,
         label=_('Quantity'),
         help_text=_('Enter quantity for build output'),
@@ -340,7 +396,8 @@ class BuildOutputCreateSerializer(serializers.Serializer):
                 self.serials = InvenTree.helpers.extract_serial_numbers(
                     serial_numbers,
                     quantity,
-                    part.get_latest_serial_number()
+                    part.get_latest_serial_number(),
+                    part=part
                 )
             except DjangoValidationError as e:
                 raise ValidationError({
@@ -348,11 +405,7 @@ class BuildOutputCreateSerializer(serializers.Serializer):
                 })
 
             # Check for conflicting serial numbesr
-            existing = []
-
-            for serial in self.serials:
-                if not part.validate_serial_number(serial):
-                    existing.append(serial)
+            existing = part.find_conflicting_serial_numbers(self.serials)
 
             if len(existing) > 0:
 
@@ -499,7 +552,7 @@ class BuildOutputCompleteSerializer(serializers.Serializer):
         fields = [
             'outputs',
             'location',
-            'status',
+            'status_custom_key',
             'accept_incomplete_allocation',
             'notes',
         ]
@@ -517,7 +570,7 @@ class BuildOutputCompleteSerializer(serializers.Serializer):
         help_text=_("Location for completed build outputs"),
     )
 
-    status = serializers.ChoiceField(
+    status_custom_key = serializers.ChoiceField(
         choices=StockStatus.items(),
         default=StockStatus.OK.value,
         label=_("Status"),
@@ -565,8 +618,8 @@ class BuildOutputCompleteSerializer(serializers.Serializer):
 
         data = self.validated_data
 
-        location = data['location']
-        status = data['status']
+        location = data.get('location', None)
+        status = data.get('status_custom_key', StockStatus.OK.value)
         notes = data.get('notes', '')
 
         outputs = data.get('outputs', [])
@@ -589,6 +642,33 @@ class BuildOutputCompleteSerializer(serializers.Serializer):
                     required_tests=required_tests,
                     prevent_on_incomplete=prevent_on_incomplete,
                 )
+
+
+class BuildIssueSerializer(serializers.Serializer):
+    """DRF serializer for issuing a build order."""
+
+    class Meta:
+        """Serializer metaclass"""
+        fields = []
+
+    def save(self):
+        """Issue the specified build order"""
+        build = self.context['build']
+        build.issue_build()
+
+
+class BuildHoldSerializer(serializers.Serializer):
+    """DRF serializer for placing a BuildOrder on hold."""
+
+    class Meta:
+        """Serializer metaclass."""
+        fields = []
+
+    def save(self):
+        """Place the specified build on hold."""
+        build = self.context['build']
+
+        build.hold_build()
 
 
 class BuildCancelSerializer(serializers.Serializer):
@@ -731,6 +811,12 @@ class BuildCompleteSerializer(serializers.Serializer):
         """Perform validation of this serializer prior to saving"""
         build = self.context['build']
 
+        if get_global_setting('BUILDORDER_REQUIRE_CLOSED_CHILDS') and build.has_open_child_builds:
+            raise ValidationError(_("Build order has open child build orders"))
+
+        if build.status != BuildStatus.PRODUCTION.value:
+            raise ValidationError(_("Build order must be in production state"))
+
         if build.incomplete_count > 0:
             raise ValidationError(_("Build order has incomplete outputs"))
 
@@ -802,8 +888,8 @@ class BuildUnallocationSerializer(serializers.Serializer):
         data = self.validated_data
 
         build.deallocate_stock(
-            build_line=data['build_line'],
-            output=data['output']
+            build_line=data.get('build_line', None),
+            output=data.get('output', None),
         )
 
 
@@ -860,7 +946,7 @@ class BuildAllocationItemSerializer(serializers.Serializer):
     quantity = serializers.DecimalField(
         max_digits=15,
         decimal_places=5,
-        min_value=0,
+        min_value=Decimal(0),
         required=True
     )
 
@@ -1058,11 +1144,20 @@ class BuildItemSerializer(DataImportExportSerializerMixin, InvenTreeModelSeriali
 
     # These fields are only used for data export
     export_only_fields = [
+        'bom_part_id',
+        'bom_part_name',
         'build_reference',
-        'bom_reference',
         'sku',
         'mpn',
         'location_name',
+        'part_id',
+        'part_name',
+        'part_ipn',
+        'part_description',
+        'available_quantity',
+        'item_batch_code',
+        'item_serial',
+        'item_packaging',
     ]
 
     class Meta:
@@ -1082,33 +1177,25 @@ class BuildItemSerializer(DataImportExportSerializerMixin, InvenTreeModelSeriali
             'location_detail',
             'part_detail',
             'stock_item_detail',
+            'supplier_part_detail',
 
             # The following fields are only used for data export
             'bom_reference',
+            'bom_part_id',
+            'bom_part_name',
             'build_reference',
             'location_name',
             'mpn',
             'sku',
+            'part_id',
+            'part_name',
+            'part_ipn',
+            'part_description',
+            'available_quantity',
+            'item_batch_code',
+            'item_serial_number',
+            'item_packaging',
         ]
-
-    # Export-only fields
-    sku = serializers.CharField(source='stock_item.supplier_part.SKU', label=_('Supplier Part Number'), read_only=True)
-    mpn = serializers.CharField(source='stock_item.supplier_part.manufacturer_part.MPN', label=_('Manufacturer Part Number'), read_only=True)
-    location_name = serializers.CharField(source='stock_item.location.name', label=_('Location Name'), read_only=True)
-    build_reference = serializers.CharField(source='build.reference', label=_('Build Reference'), read_only=True)
-    bom_reference = serializers.CharField(source='build_line.bom_item.reference', label=_('BOM Reference'), read_only=True)
-
-    # Annotated fields
-    build = serializers.PrimaryKeyRelatedField(source='build_line.build', many=False, read_only=True)
-
-    # Extra (optional) detail fields
-    part_detail = PartBriefSerializer(source='stock_item.part', many=False, read_only=True, pricing=False)
-    stock_item_detail = StockItemSerializerBrief(source='stock_item', read_only=True)
-    location = serializers.PrimaryKeyRelatedField(source='stock_item.location', many=False, read_only=True)
-    location_detail = LocationSerializer(source='stock_item.location', read_only=True)
-    build_detail = BuildSerializer(source='build_line.build', many=False, read_only=True)
-
-    quantity = InvenTreeDecimalField()
 
     def __init__(self, *args, **kwargs):
         """Determine which extra details fields should be included"""
@@ -1131,12 +1218,52 @@ class BuildItemSerializer(DataImportExportSerializerMixin, InvenTreeModelSeriali
         if not build_detail:
             self.fields.pop('build_detail', None)
 
+    # Export-only fields
+    sku = serializers.CharField(source='stock_item.supplier_part.SKU', label=_('Supplier Part Number'), read_only=True)
+    mpn = serializers.CharField(source='stock_item.supplier_part.manufacturer_part.MPN', label=_('Manufacturer Part Number'), read_only=True)
+    location_name = serializers.CharField(source='stock_item.location.name', label=_('Location Name'), read_only=True)
+    build_reference = serializers.CharField(source='build.reference', label=_('Build Reference'), read_only=True)
+    bom_reference = serializers.CharField(source='build_line.bom_item.reference', label=_('BOM Reference'), read_only=True)
+    item_packaging = serializers.CharField(source='stock_item.packaging', label=_('Packaging'), read_only=True)
+
+    # Part detail fields
+    part_id = serializers.PrimaryKeyRelatedField(source='stock_item.part', label=_('Part ID'), many=False, read_only=True)
+    part_name = serializers.CharField(source='stock_item.part.name', label=_('Part Name'), read_only=True)
+    part_ipn = serializers.CharField(source='stock_item.part.IPN', label=_('Part IPN'), read_only=True)
+    part_description = serializers.CharField(source='stock_item.part.description', label=_('Part Description'), read_only=True)
+
+    # BOM Item Part ID (it may be different to the allocated part)
+    bom_part_id = serializers.PrimaryKeyRelatedField(source='build_line.bom_item.sub_part', label=_('BOM Part ID'), many=False, read_only=True)
+    bom_part_name = serializers.CharField(source='build_line.bom_item.sub_part.name', label=_('BOM Part Name'), read_only=True)
+
+    item_batch_code = serializers.CharField(source='stock_item.batch', label=_('Batch Code'), read_only=True)
+    item_serial_number = serializers.CharField(source='stock_item.serial', label=_('Serial Number'), read_only=True)
+
+    # Annotated fields
+    build = serializers.PrimaryKeyRelatedField(source='build_line.build', many=False, read_only=True)
+
+    # Extra (optional) detail fields
+    part_detail = part_serializers.PartBriefSerializer(source='stock_item.part', many=False, read_only=True, pricing=False)
+    stock_item_detail = StockItemSerializerBrief(source='stock_item', read_only=True)
+    location = serializers.PrimaryKeyRelatedField(source='stock_item.location', many=False, read_only=True)
+    location_detail = LocationBriefSerializer(source='stock_item.location', read_only=True)
+    build_detail = BuildSerializer(source='build_line.build', many=False, read_only=True)
+    supplier_part_detail = company.serializers.SupplierPartSerializer(source='stock_item.supplier_part', many=False, read_only=True, brief=True)
+
+    quantity = InvenTreeDecimalField(label=_('Allocated Quantity'))
+    available_quantity = InvenTreeDecimalField(source='stock_item.quantity', read_only=True, label=_('Available Quantity'))
+
 
 class BuildLineSerializer(DataImportExportSerializerMixin, InvenTreeModelSerializer):
     """Serializer for a BuildItem object."""
 
     export_exclude_fields = [
         'allocations',
+    ]
+
+    export_only_fields = [
+        'part_description',
+        'part_category_name',
     ]
 
     class Meta:
@@ -1156,12 +1283,16 @@ class BuildLineSerializer(DataImportExportSerializerMixin, InvenTreeModelSeriali
             'reference',
             'consumable',
             'optional',
+            'testable',
             'trackable',
+            'inherited',
+            'allow_variants',
 
             # Part detail fields
             'part',
             'part_name',
             'part_IPN',
+            'part_category_id',
 
             # Annotated fields
             'allocated',
@@ -1172,6 +1303,10 @@ class BuildLineSerializer(DataImportExportSerializerMixin, InvenTreeModelSeriali
             'available_variant_stock',
             'total_available_stock',
             'external_stock',
+
+            # Extra fields only for data export
+            'part_description',
+            'part_category_name',
         ]
 
         read_only_fields = [
@@ -1185,19 +1320,26 @@ class BuildLineSerializer(DataImportExportSerializerMixin, InvenTreeModelSeriali
     part_name = serializers.CharField(source='bom_item.sub_part.name', label=_('Part Name'), read_only=True)
     part_IPN = serializers.CharField(source='bom_item.sub_part.IPN', label=_('Part IPN'), read_only=True)
 
+    part_description = serializers.CharField(source='bom_item.sub_part.description', label=_('Part Description'), read_only=True)
+    part_category_id = serializers.PrimaryKeyRelatedField(source='bom_item.sub_part.category', label=_('Part Category ID'), read_only=True)
+    part_category_name = serializers.CharField(source='bom_item.sub_part.category.name', label=_('Part Category Name'), read_only=True)
+
     # BOM item info fields
     reference = serializers.CharField(source='bom_item.reference', label=_('Reference'), read_only=True)
     consumable = serializers.BooleanField(source='bom_item.consumable', label=_('Consumable'), read_only=True)
     optional = serializers.BooleanField(source='bom_item.optional', label=_('Optional'), read_only=True)
+    testable = serializers.BooleanField(source='bom_item.sub_part.testable', label=_('Testable'), read_only=True)
     trackable = serializers.BooleanField(source='bom_item.sub_part.trackable', label=_('Trackable'), read_only=True)
+    inherited = serializers.BooleanField(source='bom_item.inherited', label=_('Inherited'), read_only=True)
+    allow_variants = serializers.BooleanField(source='bom_item.allow_variants', label=_('Allow Variants'), read_only=True)
 
     quantity = serializers.FloatField(label=_('Quantity'))
 
     bom_item = serializers.PrimaryKeyRelatedField(label=_('BOM Item'), read_only=True)
 
     # Foreign key fields
-    bom_item_detail = BomItemSerializer(source='bom_item', many=False, read_only=True, pricing=False)
-    part_detail = PartSerializer(source='bom_item.sub_part', many=False, read_only=True, pricing=False)
+    bom_item_detail = part_serializers.BomItemSerializer(source='bom_item', many=False, read_only=True, pricing=False)
+    part_detail = part_serializers.PartBriefSerializer(source='bom_item.sub_part', many=False, read_only=True, pricing=False)
     allocations = BuildItemSerializer(many=True, read_only=True)
 
     # Annotated (calculated) fields
@@ -1243,16 +1385,20 @@ class BuildLineSerializer(DataImportExportSerializerMixin, InvenTreeModelSeriali
 
         """
         queryset = queryset.select_related(
-            'build', 'bom_item',
+            'build',
+            'bom_item',
+            'bom_item__part',
+            'bom_item__part__pricing_data',
+            'bom_item__sub_part',
+            'bom_item__sub_part__pricing_data',
         )
 
         # Pre-fetch related fields
         queryset = queryset.prefetch_related(
-            'bom_item__sub_part',
+            'bom_item__sub_part__tags',
             'bom_item__sub_part__stock_items',
             'bom_item__sub_part__stock_items__allocations',
             'bom_item__sub_part__stock_items__sales_order_allocations',
-            'bom_item__sub_part__tags',
 
             'bom_item__substitutes',
             'bom_item__substitutes__part__stock_items',
@@ -1264,6 +1410,11 @@ class BuildLineSerializer(DataImportExportSerializerMixin, InvenTreeModelSeriali
             'allocations__stock_item__part',
             'allocations__stock_item__location',
             'allocations__stock_item__location__tags',
+            'allocations__stock_item__supplier_part',
+            'allocations__stock_item__supplier_part__part',
+            'allocations__stock_item__supplier_part__supplier',
+            'allocations__stock_item__supplier_part__manufacturer_part',
+            'allocations__stock_item__supplier_part__manufacturer_part__manufacturer',
         )
 
         # Annotate the "allocated" quantity

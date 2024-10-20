@@ -10,10 +10,25 @@ import {
   PdfPreview,
   TemplateEditor
 } from '../../components/editors/TemplateEditor';
+import {
+  Editor,
+  PreviewArea
+} from '../../components/editors/TemplateEditor/TemplateEditor';
 import { ApiFormFieldSet } from '../../components/forms/fields/ApiFormField';
+import { AttachmentLink } from '../../components/items/AttachmentLink';
 import { DetailDrawer } from '../../components/nav/DetailDrawer';
+import {
+  getPluginTemplateEditor,
+  getPluginTemplatePreview
+} from '../../components/plugins/PluginUIFeature';
+import {
+  TemplateEditorUIFeature,
+  TemplatePreviewUIFeature
+} from '../../components/plugins/PluginUIFeatureTypes';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
+import { GetIcon } from '../../functions/icons';
+import { notYetImplemented } from '../../functions/notifications';
 import { useFilters } from '../../hooks/UseFilter';
 import {
   useCreateApiFormModal,
@@ -21,6 +36,7 @@ import {
   useEditApiFormModal
 } from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
+import { usePluginUIFeature } from '../../hooks/UsePluginUIFeature';
 import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
@@ -47,6 +63,7 @@ export type TemplateI = {
 };
 
 export interface TemplateProps {
+  modelType: ModelType.labeltemplate | ModelType.reporttemplate;
   templateEndpoint: ApiEndpoints;
   printingEndpoint: ApiEndpoints;
   additionalFormFields?: ApiFormFieldSet;
@@ -55,11 +72,11 @@ export interface TemplateProps {
 export function TemplateDrawer({
   id,
   templateProps
-}: {
+}: Readonly<{
   id: string | number;
   templateProps: TemplateProps;
-}) {
-  const { templateEndpoint, printingEndpoint } = templateProps;
+}>) {
+  const { modelType, templateEndpoint, printingEndpoint } = templateProps;
 
   const {
     instance: template,
@@ -70,6 +87,62 @@ export function TemplateDrawer({
     pk: id,
     throwError: true
   });
+
+  // Editors
+  const extraEditors = usePluginUIFeature<TemplateEditorUIFeature>({
+    enabled: template?.model_type !== undefined,
+    featureType: 'template_editor',
+    context: { template_type: modelType, template_model: template?.model_type! }
+  });
+  const editors = useMemo(() => {
+    const editors = [CodeEditor];
+
+    if (!template) {
+      return editors;
+    }
+
+    editors.push(
+      ...(extraEditors?.map(
+        (editor) =>
+          ({
+            key: editor.options.key,
+            name: editor.options.title,
+            icon: GetIcon(editor.options.icon),
+            component: getPluginTemplateEditor(editor.func, template)
+          } as Editor)
+      ) || [])
+    );
+
+    return editors;
+  }, [extraEditors, template]);
+
+  // Previews
+  const extraPreviews = usePluginUIFeature<TemplatePreviewUIFeature>({
+    enabled: template?.model_type !== undefined,
+    featureType: 'template_preview',
+    context: { template_type: modelType, template_model: template?.model_type! }
+  });
+  const previews = useMemo(() => {
+    const previews = [PdfPreview];
+
+    if (!template) {
+      return previews;
+    }
+
+    previews.push(
+      ...(extraPreviews?.map(
+        (preview) =>
+          ({
+            key: preview.options.key,
+            name: preview.options.title,
+            icon: GetIcon(preview.options.icon),
+            component: getPluginTemplatePreview(preview.func, template)
+          } as PreviewArea)
+      ) || [])
+    );
+
+    return previews;
+  }, [extraPreviews, template]);
 
   if (isFetching) {
     return <LoadingOverlay visible={true} />;
@@ -97,8 +170,8 @@ export function TemplateDrawer({
         templateUrl={apiUrl(templateEndpoint, id)}
         printingUrl={apiUrl(printingEndpoint)}
         template={template}
-        editors={[CodeEditor]}
-        previewAreas={[PdfPreview]}
+        editors={editors}
+        previewAreas={previews}
       />
     </Stack>
   );
@@ -106,9 +179,9 @@ export function TemplateDrawer({
 
 export function TemplateTable({
   templateProps
-}: {
+}: Readonly<{
   templateProps: TemplateProps;
-}) {
+}>) {
   const { templateEndpoint, additionalFormFields } = templateProps;
 
   const table = useTable(`${templateEndpoint}-template`);
@@ -134,7 +207,11 @@ export function TemplateTable({
         sortable: false,
         switchable: true,
         render: (record: any) => {
-          return record.template?.split('/')?.pop() ?? '-';
+          if (!record.template) {
+            return '-';
+          }
+
+          return <AttachmentLink attachment={record.template} />;
         }
       },
       {
@@ -154,8 +231,11 @@ export function TemplateTable({
       },
       ...Object.entries(additionalFormFields || {})?.map(([key, field]) => ({
         accessor: key,
+        ...field,
+        title: field.label,
         sortable: false,
-        switchable: true
+        switchable: true,
+        render: field.modelRenderer
       })),
       BooleanColumn({ accessor: 'enabled', title: t`Enabled` })
     ];
@@ -170,18 +250,23 @@ export function TemplateTable({
           title: t`Modify`,
           tooltip: t`Modify template file`,
           icon: <IconFileCode />,
-          onClick: () => openDetailDrawer(record.pk)
+          onClick: () => openDetailDrawer(record.pk),
+          hidden: !user.hasChangePermission(templateProps.modelType)
         },
         RowEditAction({
+          hidden: !user.hasChangePermission(templateProps.modelType),
           onClick: () => {
             setSelectedTemplate(record.pk);
             editTemplate.open();
           }
         }),
         RowDuplicateAction({
+          hidden: true,
           // TODO: Duplicate selected template
+          onClick: notYetImplemented
         }),
         RowDeleteAction({
+          hidden: !user.hasDeletePermission(templateProps.modelType),
           onClick: () => {
             setSelectedTemplate(record.pk);
             deleteTemplate.open();
@@ -247,9 +332,10 @@ export function TemplateTable({
         key="add-template"
         onClick={() => newTemplate.open()}
         tooltip={t`Add template`}
+        hidden={!user.hasAddPermission(templateProps.modelType)}
       />
     ];
-  }, []);
+  }, [user]);
 
   const modelTypeFilters = useFilters({
     url: apiUrl(templateEndpoint),
@@ -269,7 +355,7 @@ export function TemplateTable({
         name: 'enabled',
         label: t`Enabled`,
         description: t`Filter by enabled status`,
-        type: 'checkbox'
+        type: 'boolean'
       },
       {
         name: 'model_type',

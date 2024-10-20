@@ -31,11 +31,11 @@ export function SettingList({
   settingsState,
   keys,
   onChange
-}: {
+}: Readonly<{
   settingsState: SettingsStateProps;
   keys?: string[];
   onChange?: () => void;
-}) {
+}>) {
   useEffect(() => {
     settingsState.fetchSettings();
   }, []);
@@ -136,6 +136,10 @@ export function SettingList({
             (s: any) => s.key === key
           );
 
+          if (settingsState?.settings && !setting) {
+            console.error(`Setting ${key} not found`);
+          }
+
           return (
             <React.Fragment key={key}>
               {setting ? (
@@ -146,7 +150,7 @@ export function SettingList({
                   onToggle={onValueToggle}
                 />
               ) : (
-                <Text size="sm" style={{ fontStyle: 'italic' }} color="red">
+                <Text size="sm" style={{ fontStyle: 'italic' }} c="red">
                   Setting {key} not found
                 </Text>
               )}
@@ -163,19 +167,21 @@ export function SettingList({
   );
 }
 
-export function UserSettingList({ keys }: { keys: string[] }) {
+export function UserSettingList({ keys }: Readonly<{ keys: string[] }>) {
   const userSettings = useUserSettingsState();
 
   return <SettingList settingsState={userSettings} keys={keys} />;
 }
 
-export function GlobalSettingList({ keys }: { keys: string[] }) {
+export function GlobalSettingList({ keys }: Readonly<{ keys: string[] }>) {
   const globalSettings = useGlobalSettingsState();
 
   return <SettingList settingsState={globalSettings} keys={keys} />;
 }
 
-export function PluginSettingList({ pluginKey }: { pluginKey: string }) {
+export function PluginSettingList({
+  pluginKey
+}: Readonly<{ pluginKey: string }>) {
   const pluginSettingsStore = useRef(
     createPluginSettingsState({ plugin: pluginKey })
   ).current;
@@ -188,11 +194,11 @@ export function MachineSettingList({
   machinePk,
   configType,
   onChange
-}: {
+}: Readonly<{
   machinePk: string;
   configType: 'M' | 'D';
   onChange?: () => void;
-}) {
+}>) {
   const machineSettingsStore = useRef(
     createMachineSettingsState({
       machine: machinePk,

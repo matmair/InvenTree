@@ -1,6 +1,6 @@
 """Custom validation routines for the 'importer' app."""
 
-import os
+import json
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -36,7 +36,7 @@ def validate_importer_model_type(value):
     """Validate that the given model type is supported for importing."""
     from importer.registry import supported_models
 
-    if value not in supported_models().keys():
+    if value not in supported_models():
         raise ValidationError(f"Unsupported model type '{value}'")
 
 
@@ -46,4 +46,8 @@ def validate_field_defaults(value):
         return
 
     if type(value) is not dict:
-        raise ValidationError(_('Value must be a valid dictionary object'))
+        # OK if we can parse it as JSON
+        try:
+            value = json.loads(value)
+        except json.JSONDecodeError:
+            raise ValidationError(_('Value must be a valid dictionary object'))

@@ -5,7 +5,6 @@ from django.test import TestCase
 
 from common.models import InvenTreeSetting
 from InvenTree.unit_test import get_plugin_config
-from plugin import registry
 from plugin.base.event.events import trigger_event
 
 from .filtered_event_sample import logger

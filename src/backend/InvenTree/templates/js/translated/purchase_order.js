@@ -98,7 +98,8 @@ function purchaseOrderFields(options={}) {
 
                     return fields;
                 }
-            }
+            },
+            disabled: !!options.duplicate_order,
         },
         supplier_reference: {},
         project_code: {
@@ -155,35 +156,13 @@ function purchaseOrderFields(options={}) {
 
     // Add fields for order duplication (only if required)
     if (options.duplicate_order) {
-        fields.duplicate_order = {
+        fields.duplicate__order_id = {
             value: options.duplicate_order,
-            group: 'duplicate',
-            required: 'true',
-            type: 'related field',
-            model: 'purchaseorder',
-            filters: {
-                supplier_detail: true,
-            },
-            api_url: '{% url "api-po-list" %}',
-            label: '{% trans "Purchase Order" %}',
-            help_text: '{% trans "Select purchase order to duplicate" %}',
+            hidden: true,
         };
 
-        fields.duplicate_line_items = {
-            value: true,
-            group: 'duplicate',
-            type: 'boolean',
-            label: '{% trans "Duplicate Line Items" %}',
-            help_text: '{% trans "Duplicate all line items from the selected order" %}',
-        };
-
-        fields.duplicate_extra_lines = {
-            value: true,
-            group: 'duplicate',
-            type: 'boolean',
-            label: '{% trans "Duplicate Extra Lines" %}',
-            help_text: '{% trans "Duplicate extra line items from the selected order" %}',
-        };
+        fields.duplicate__copy_lines = {};
+        fields.duplicate__copy_extra_lines = {};
     }
 
     if (!global_settings.PROJECT_CODES_ENABLED) {
@@ -343,7 +322,7 @@ function poLineItemFields(options={}) {
         reference: {},
         purchase_price: {
             icon: 'fa-dollar-sign',
-            onEdit: function(value, name, field, opts) {
+            onInput: function(value, name, field, opts) {
                 updateFieldValue('auto_pricing', value === '', {}, opts);
             }
         },
@@ -1136,7 +1115,7 @@ function receivePurchaseOrderItems(order_id, line_items, options={}) {
         );
 
         // Hidden barcode input
-        var barcode_input = constructField(
+        const barcode_input = constructField(
             `items_barcode_${pk}`,
             {
                 type: 'string',
@@ -1145,7 +1124,8 @@ function receivePurchaseOrderItems(order_id, line_items, options={}) {
             }
         );
 
-        var sn_input = constructField(
+        // Hidden serial number input
+        const sn_input = constructField(
             `items_serial_numbers_${pk}`,
             {
                 type: 'string',
@@ -1153,6 +1133,37 @@ function receivePurchaseOrderItems(order_id, line_items, options={}) {
                 label: '{% trans "Serial Numbers" %}',
                 help_text: '{% trans "Enter serial numbers for incoming stock items" %}',
                 icon: 'fa-hashtag',
+            },
+            {
+                hideLabels: true,
+            }
+        );
+
+        // Hidden packaging input
+        const packaging_input = constructField(
+            `items_packaging_${pk}`,
+            {
+                type: 'string',
+                required: false,
+                label: '{% trans "Packaging" %}',
+                help_text: '{% trans "Specify packaging for incoming stock items" %}',
+                icon: 'fa-boxes',
+                value: line_item.supplier_part_detail.packaging,
+            },
+            {
+                hideLabels: true,
+            }
+        );
+
+        // Hidden note input
+        const note_input = constructField(
+            `items_note_${pk}`,
+            {
+                type: 'string',
+                required: false,
+                label: '{% trans "Note" %}',
+                icon: 'fa-sticky-note',
+                value: '',
             },
             {
                 hideLabels: true,
@@ -1220,6 +1231,16 @@ function receivePurchaseOrderItems(order_id, line_items, options={}) {
             }
         );
 
+        buttons += makeIconButton(
+            'fa-boxes',
+            'button-row-add-packaging',
+            pk,
+            '{% trans "Specify packaging" %}',
+            {
+                collapseTarget: `row-packaging-${pk}`
+            }
+        );
+
         if (line_item.part_detail.trackable) {
             buttons += makeIconButton(
                 'fa-hashtag',
@@ -1231,6 +1252,16 @@ function receivePurchaseOrderItems(order_id, line_items, options={}) {
                 }
             );
         }
+
+        buttons += makeIconButton(
+            'fa-sticky-note',
+            'button-row-add-note',
+            pk,
+            '{% trans "Add note" %}',
+            {
+                collapseTarget: `row-note-${pk}`,
+            }
+        );
 
         if (line_items.length > 1) {
             buttons += makeRemoveButton('button-row-remove', pk, '{% trans "Remove row" %}');
@@ -1275,12 +1306,23 @@ function receivePurchaseOrderItems(order_id, line_items, options={}) {
             <td colspan='2'>${batch_input}</td>
             <td></td>
         </tr>
+        <tr id='row-packaging-${pk}' class='collapse'>
+            <td colspan='2'></td>
+            <th>{% trans "Packaging" %}</th>
+            <td colspan='2'>${packaging_input}</td>
+            <td></td>
+        </tr>
         <tr id='row-serials-${pk}' class='collapse'>
             <td colspan='2'></td>
             <th>{% trans "Serials" %}</th>
             <td colspan=2'>${sn_input}</td>
             <td></td>
         </tr>
+        <tr id='row-note-${pk}' class='collapse'>
+            <td colspan='2'></td>
+            <th>{% trans "Note" %}</th>
+            <td colspan='2'>${note_input}</td>
+        <td></td>
         `;
 
         return html;
@@ -1324,7 +1366,6 @@ function receivePurchaseOrderItems(order_id, line_items, options={}) {
                 },
                 tree_picker: {
                     url: '{% url "api-location-tree" %}',
-                    default_icon: global_settings.STOCK_LOCATION_DEFAULT_ICON,
                 },
             },
         },
@@ -1470,6 +1511,14 @@ function receivePurchaseOrderItems(order_id, line_items, options={}) {
 
                     if (getFormFieldElement(`items_batch_code_${pk}`).exists()) {
                         line.batch_code = getFormFieldValue(`items_batch_code_${pk}`);
+                    }
+
+                    if (getFormFieldElement(`items_packaging_${pk}`).exists()) {
+                        line.packaging = getFormFieldValue(`items_packaging_${pk}`);
+                    }
+
+                    if (getFormFieldElement(`items_note_${pk}`).exists()) {
+                        line.note = getFormFieldValue(`items_note_${pk}`);
                     }
 
                     if (getFormFieldElement(`items_serial_numbers_${pk}`).exists()) {
@@ -1718,12 +1767,12 @@ function loadPurchaseOrderTable(table, options) {
                 }
             },
             {
-                field: 'status',
+                field: 'status_custom_key',
                 title: '{% trans "Status" %}',
                 switchable: true,
                 sortable: true,
                 formatter: function(value, row) {
-                    return purchaseOrderStatusDisplay(row.status);
+                    return purchaseOrderStatusDisplay(row.status_custom_key);
                 }
             },
             {

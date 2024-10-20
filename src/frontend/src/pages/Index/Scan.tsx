@@ -41,7 +41,7 @@ import {
 } from '@tabler/icons-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { CameraDevice } from 'html5-qrcode/camera/core';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { api } from '../../App';
 import { DocInfo } from '../../components/items/DocInfo';
@@ -55,7 +55,7 @@ import { notYetImplemented } from '../../functions/notifications';
 import { IS_DEV_OR_DEMO } from '../../main';
 import { apiUrl } from '../../states/ApiState';
 
-interface ScanItem {
+export interface ScanItem {
   id: string;
   ref: string;
   data: any;
@@ -222,7 +222,21 @@ export default function Scan() {
       case InputMethod.Manual:
         return <InputManual action={addItems} />;
       case InputMethod.ImageBarcode:
-        return <InputImageBarcode action={addItems} />;
+        return (
+          <InputImageBarcode
+            action={(decodedText: string) => {
+              addItems([
+                {
+                  id: randomId(),
+                  ref: decodedText,
+                  data: decodedText,
+                  timestamp: new Date(),
+                  source: InputMethod.ImageBarcode
+                }
+              ]);
+            }}
+          />
+        );
       default:
         return <Text>No input selected</Text>;
     }
@@ -401,11 +415,11 @@ function HistoryTable({
   data,
   selection,
   setSelection
-}: {
+}: Readonly<{
   data: ScanItem[];
   selection: string[];
   setSelection: React.Dispatch<React.SetStateAction<string[]>>;
-}) {
+}>) {
   const toggleRow = (id: string) =>
     setSelection((current) =>
       current.includes(id)
@@ -489,8 +503,13 @@ enum InputMethod {
   ImageBarcode = 'imageBarcode'
 }
 
-interface ScanInputInterface {
+export interface ScanInputInterface {
   action: (items: ScanItem[]) => void;
+}
+
+interface BarcodeInputProps {
+  action: (decodedText: string) => void;
+  notScanningPlaceholder?: string;
 }
 
 function InputManual({ action }: Readonly<ScanInputInterface>) {
@@ -545,7 +564,10 @@ function InputManual({ action }: Readonly<ScanInputInterface>) {
 }
 
 /* Input that uses QR code detection from images */
-function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
+export function InputImageBarcode({
+  action,
+  notScanningPlaceholder = t`Start scanning by selecting a camera and pressing the play button.`
+}: Readonly<BarcodeInputProps>) {
   const [qrCodeScanner, setQrCodeScanner] = useState<Html5Qrcode | null>(null);
   const [camId, setCamId] = useLocalStorage<CameraDevice | null>({
     key: 'camId',
@@ -553,7 +575,7 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
   });
   const [cameras, setCameras] = useState<any[]>([]);
   const [cameraValue, setCameraValue] = useState<string | null>(null);
-  const [ScanningEnabled, setIsScanning] = useState<boolean>(false);
+  const [scanningEnabled, setScanningEnabled] = useState<boolean>(false);
   const [wasAutoPaused, setWasAutoPaused] = useState<boolean>(false);
   const documentState = useDocumentVisibility();
 
@@ -580,7 +602,7 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
 
   // Stop/start when leaving or reentering page
   useEffect(() => {
-    if (ScanningEnabled && documentState === 'hidden') {
+    if (scanningEnabled && documentState === 'hidden') {
       btnStopScanning();
       setWasAutoPaused(true);
     } else if (wasAutoPaused && documentState === 'visible') {
@@ -601,15 +623,7 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
     lastValue = decodedText;
 
     // submit value upstream
-    action([
-      {
-        id: randomId(),
-        ref: decodedText,
-        data: decodedText,
-        timestamp: new Date(),
-        source: InputMethod.ImageBarcode
-      }
-    ]);
+    action(decodedText);
 
     qrCodeScanner?.resume();
   }
@@ -642,7 +656,7 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
   }
 
   function btnStartScanning() {
-    if (camId && qrCodeScanner && !ScanningEnabled) {
+    if (camId && qrCodeScanner && !scanningEnabled) {
       qrCodeScanner
         .start(
           camId.id,
@@ -662,12 +676,12 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
             icon: <IconX />
           });
         });
-      setIsScanning(true);
+      setScanningEnabled(true);
     }
   }
 
   function btnStopScanning() {
-    if (qrCodeScanner && ScanningEnabled) {
+    if (qrCodeScanner && scanningEnabled) {
       qrCodeScanner.stop().catch((err: string) => {
         showNotification({
           title: t`Error while stopping`,
@@ -676,7 +690,7 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
           icon: <IconX />
         });
       });
-      setIsScanning(false);
+      setScanningEnabled(false);
     }
   }
 
@@ -690,7 +704,7 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
     const cam = cameras.find((cam) => cam.id === cameraValue);
 
     // stop scanning if cam changed while scanning
-    if (qrCodeScanner && ScanningEnabled) {
+    if (qrCodeScanner && scanningEnabled) {
       // stop scanning
       qrCodeScanner.stop().then(() => {
         // change ID
@@ -714,17 +728,19 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
 
   return (
     <Stack gap="xs">
-      <Group gap="xs">
+      <Group gap="xs" preventGrowOverflow>
         <Select
           value={cameraValue}
           onChange={setCameraValue}
           data={cameras.map((device) => {
             return { value: device.id, label: device.label };
           })}
+          maw={200}
           size="sm"
         />
-        {ScanningEnabled ? (
+        {scanningEnabled ? (
           <ActionIcon
+            size="input-sm"
             onClick={btnStopScanning}
             title={t`Stop scanning`}
             variant="default"
@@ -733,6 +749,7 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
           </ActionIcon>
         ) : (
           <ActionIcon
+            size="input-sm"
             onClick={btnStartScanning}
             title={t`Start scanning`}
             disabled={!camId}
@@ -742,11 +759,17 @@ function InputImageBarcode({ action }: Readonly<ScanInputInterface>) {
           </ActionIcon>
         )}
         <Space style={{ flex: 1 }} />
-        <Badge color={ScanningEnabled ? 'green' : 'orange'}>
-          {ScanningEnabled ? t`Scanning` : t`Not scanning`}
+        <Badge color={scanningEnabled ? 'green' : 'orange'}>
+          {scanningEnabled ? t`Scanning` : t`Not scanning`}
         </Badge>
       </Group>
-      <Container px={0} id="reader" w={'100%'} mih="300px" />
+      {scanningEnabled ? (
+        <Container px={0} id="reader" w={'100%'} mih="300px" />
+      ) : (
+        <Container px={0} id="reader" w={'100%'} mih="300px">
+          {notScanningPlaceholder}
+        </Container>
+      )}
       {!camId && (
         <Button onClick={btnSelectCamera}>
           <Trans>Select Camera</Trans>

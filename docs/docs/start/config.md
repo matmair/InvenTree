@@ -26,7 +26,7 @@ The InvenTree server tries to locate the `config.yaml` configuration file on sta
 
 The configuration file *template* can be found on [GitHub]({{ sourcefile("src/backend/InvenTree/config_template.yaml") }}), and is shown below:
 
-{{ includefile("src/backend/InvenTree/config_template.yaml", "Configuration File Template", format="yaml") }}
+{{ includefile("src/backend/InvenTree/config_template.yaml", "Configuration File Template", fmt="yaml") }}
 
 !!! info "Template File"
     The default configuration file (as defined by the template linked above) will be copied to the specified configuration file location on first run, if a configuration file is not found in that location.
@@ -54,6 +54,8 @@ The following basic options are available:
 | --- | --- | --- | --- |
 | INVENTREE_SITE_URL | site_url | Specify a fixed site URL | *Not specified* |
 | INVENTREE_DEBUG | debug | Enable [debug mode](./intro.md#debug-mode) | True |
+| INVENTREE_DEBUG_QUERYCOUNT | debug_querycount | Enable [query count logging](https://github.com/bradmontgomery/django-querycount) in the terminal | False |
+| INVENTREE_DEBUG_SHELL | debug_shell | Enable [administrator shell](https://github.com/djk2/django-admin-shell) (only in debug mode) | False |
 | INVENTREE_LOG_LEVEL | log_level | Set level of logging to terminal | WARNING |
 | INVENTREE_DB_LOGGING | db_logging | Enable logging of database messages | False |
 | INVENTREE_TIMEZONE | timezone | Server timezone | UTC |
@@ -105,7 +107,22 @@ Depending on how your InvenTree installation is configured, you will need to pay
 | INVENTREE_USE_X_FORWARDED_HOST | use_x_forwarded_host | Use forwarded host header | `False` |
 | INVENTREE_USE_X_FORWARDED_PORT | use_x_forwarded_port | Use forwarded port header | `False` |
 | INVENTREE_SESSION_COOKIE_SECURE | cookie.secure | Enforce secure session cookies | `False` |
-| INVENTREE_COOKIE_SAMESITE | cookie.samesite | Session cookie mode. Must be one of `Strict | Lax | None`. Refer to the [mozilla developer docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) for more information. | `None` |
+| INVENTREE_COOKIE_SAMESITE | cookie.samesite | Session cookie mode. Must be one of `Strict | Lax | None | False`. Refer to the [mozilla developer docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) and the [django documentation]({% include "django.html" %}/ref/settings/#std-setting-SESSION_COOKIE_SAMESITE) for more information. | False |
+
+### Debug Mode
+
+Note that in [debug mode](./intro.md#debug-mode), some of the above settings are automatically adjusted to allow for easier development:
+
+| Setting | Value in Debug Mode | Description |
+| --- | --- | --- |
+| `INVENTREE_ALLOWED_HOSTS` | `*` | Allow all host in debug mode |
+| `CSRF_TRUSTED_ORIGINS` | Value is appended to allow `http://*.localhost:*` | Allow all connections from localhost, for development purposes |
+| `INVENTREE_COOKIE_SAMESITE` | `False` | Disable all same-site cookie checks in debug mode |
+| `INVENTREE_SESSION_COOKIE_SECURE` | `False` | Disable secure session cookies in debug mode (allow non-https cookies) |
+
+### INVENTREE_COOKIE_SAMESITE vs INVENTREE_SESSION_COOKIE_SECURE
+
+Note that if you set the `INVENTREE_COOKIE_SAMESITE` to `None`, then `INVENTREE_SESSION_COOKIE_SECURE` is automatically set to `True` to ensure that the session cookie is secure! This means that the session cookie will only be sent over secure (https) connections.
 
 ### Proxy Settings
 
@@ -296,6 +313,10 @@ Alternatively this location can be specified with the `INVENTREE_BACKUP_DIR` env
 ## Authentication
 
 InvenTree provides allowance for additional sign-in options. The following options are not enabled by default, and care must be taken by the system administrator when configuring these settings.
+
+| Environment Variable | Configuration File | Description | Default |
+| --- | --- | --- | --- |
+| INVENTREE_MFA_ENABLED | mfa_enabled | Enable or disable multi-factor authentication support for the InvenTree server | True |
 
 ### Single Sign On
 

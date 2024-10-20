@@ -1,9 +1,8 @@
 import { Trans, t } from '@lingui/macro';
-import { Stack } from '@mantine/core';
+import { Skeleton, Stack } from '@mantine/core';
 import {
   IconBellCog,
   IconCategory,
-  IconClipboardCheck,
   IconCurrencyDollar,
   IconFileAnalytics,
   IconFingerprint,
@@ -11,7 +10,6 @@ import {
   IconQrcode,
   IconServerCog,
   IconShoppingCart,
-  IconSitemap,
   IconTag,
   IconTools,
   IconTruckDelivery,
@@ -21,8 +19,9 @@ import { useMemo } from 'react';
 
 import PermissionDenied from '../../../components/errors/PermissionDenied';
 import { PlaceholderPanel } from '../../../components/items/Placeholder';
-import { PanelGroup, PanelType } from '../../../components/nav/PanelGroup';
 import { SettingsHeader } from '../../../components/nav/SettingsHeader';
+import { PanelType } from '../../../components/panels/Panel';
+import { PanelGroup } from '../../../components/panels/PanelGroup';
 import { GlobalSettingList } from '../../../components/settings/SettingList';
 import { useServerApiState } from '../../../states/ApiState';
 import { useUserState } from '../../../states/UserState';
@@ -98,7 +97,10 @@ export default function SystemSettings() {
               'BARCODE_ENABLE',
               'BARCODE_INPUT_DELAY',
               'BARCODE_WEBCAM_SUPPORT',
-              'BARCODE_SHOW_TEXT'
+              'BARCODE_SHOW_TEXT',
+              'BARCODE_GENERATION_PLUGIN',
+              'BARCODE_STORE_RESULTS',
+              'BARCODE_RESULTS_MAX_NUM'
             ]}
           />
         )
@@ -160,18 +162,10 @@ export default function SystemSettings() {
               'REPORT_ENABLE',
               'REPORT_DEFAULT_PAGE_SIZE',
               'REPORT_DEBUG_MODE',
-              'REPORT_LOG_ERRORS',
-              'REPORT_ENABLE_TEST_REPORT',
-              'REPORT_ATTACH_TEST_REPORT'
+              'REPORT_LOG_ERRORS'
             ]}
           />
         )
-      },
-      {
-        name: 'categories',
-        label: t`Part Categories`,
-        icon: <IconSitemap />,
-        content: <PlaceholderPanel />
       },
       {
         name: 'parts',
@@ -180,11 +174,12 @@ export default function SystemSettings() {
         content: (
           <GlobalSettingList
             keys={[
-              'PART_ENABLE_REVISION',
               'PART_IPN_REGEX',
               'PART_ALLOW_DUPLICATE_IPN',
               'PART_ALLOW_EDIT_IPN',
               'PART_ALLOW_DELETE_FROM_ASSEMBLY',
+              'PART_ENABLE_REVISION',
+              'PART_REVISION_ASSEMBLY_ONLY',
               'PART_NAME_FORMAT',
               'PART_SHOW_RELATED',
               'PART_CREATE_INITIAL',
@@ -225,16 +220,11 @@ export default function SystemSettings() {
               'STOCK_SHOW_INSTALLED_ITEMS',
               'STOCK_ENFORCE_BOM_INSTALLATION',
               'STOCK_ALLOW_OUT_OF_STOCK_TRANSFER',
-              'TEST_STATION_DATA'
+              'TEST_STATION_DATA',
+              'TEST_UPLOAD_CREATE_TEMPLATE'
             ]}
           />
         )
-      },
-      {
-        name: 'stocktake',
-        label: t`Stocktake`,
-        icon: <IconClipboardCheck />,
-        content: <PlaceholderPanel />
       },
       {
         name: 'buildorders',
@@ -248,6 +238,7 @@ export default function SystemSettings() {
               'BUILDORDER_REQUIRE_ACTIVE_PART',
               'BUILDORDER_REQUIRE_LOCKED_PART',
               'BUILDORDER_REQUIRE_VALID_BOM',
+              'BUILDORDER_REQUIRE_CLOSED_CHILDS',
               'PREVENT_BUILD_COMPLETION_HAVING_INCOMPLETED_TESTS'
             ]}
           />
@@ -306,17 +297,25 @@ export default function SystemSettings() {
 
   const [server] = useServerApiState((state) => [state.server]);
 
+  if (!user.isLoggedIn()) {
+    return <Skeleton />;
+  }
+
   return (
     <>
       {user.isStaff() ? (
         <Stack gap="xs">
           <SettingsHeader
+            label="system"
             title={t`System Settings`}
             subtitle={server.instance || ''}
-            switch_link="/settings/user"
-            switch_text={<Trans>Switch to User Setting</Trans>}
           />
-          <PanelGroup pageKey="system-settings" panels={systemSettingsPanels} />
+          <PanelGroup
+            pageKey="system-settings"
+            panels={systemSettingsPanels}
+            model="systemsettings"
+            id={null}
+          />
         </Stack>
       ) : (
         <PermissionDenied />

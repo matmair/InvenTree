@@ -1,16 +1,9 @@
 import { t } from '@lingui/macro';
-import {
-  Accordion,
-  Alert,
-  Divider,
-  Paper,
-  SimpleGrid,
-  Stack,
-  Text
-} from '@mantine/core';
+import { Accordion, Alert, Divider, Stack, Text } from '@mantine/core';
 import { lazy } from 'react';
 
 import { StylishText } from '../../../../components/items/StylishText';
+import { FactCollection } from '../../../../components/settings/FactCollection';
 import { ApiEndpoints } from '../../../../enums/ApiEndpoints';
 import { Loadable } from '../../../../functions/loading';
 import { useInstance } from '../../../../hooks/UseInstance';
@@ -27,17 +20,6 @@ const FailedTasksTable = Loadable(
   lazy(() => import('../../../../tables/settings/FailedTasksTable'))
 );
 
-function TaskCountOverview({ title, value }: { title: string; value: number }) {
-  return (
-    <Paper p="md" shadow="xs">
-      <Stack gap="xs">
-        <StylishText size="md">{title}</StylishText>
-        <Text>{value}</Text>
-      </Stack>
-    </Paper>
-  );
-}
-
 export default function TaskManagementPanel() {
   const { instance: taskInfo } = useInstance({
     endpoint: ApiEndpoints.task_overview,
@@ -49,26 +31,19 @@ export default function TaskManagementPanel() {
 
   return (
     <>
-      {!taskInfo.is_running && (
-        <Alert title={t`Background Worker Not Running`} color="red">
+      {taskInfo?.is_running == false && (
+        <Alert title={t`Background worker not running`} color="red">
           <Text>{t`The background task manager service is not running. Contact your system administrator.`}</Text>
         </Alert>
       )}
       <Stack gap="xs">
-        <SimpleGrid cols={3} spacing="xs">
-          <TaskCountOverview
-            title={t`Pending Tasks`}
-            value={taskInfo?.pending_tasks}
-          />
-          <TaskCountOverview
-            title={t`Scheduled Tasks`}
-            value={taskInfo?.scheduled_tasks}
-          />
-          <TaskCountOverview
-            title={t`Failed Tasks`}
-            value={taskInfo?.failed_tasks}
-          />
-        </SimpleGrid>
+        <FactCollection
+          items={[
+            { title: t`Pending Tasks`, value: taskInfo?.pending_tasks },
+            { title: t`Scheduled Tasks`, value: taskInfo?.scheduled_tasks },
+            { title: t`Failed Tasks`, value: taskInfo?.failed_tasks }
+          ]}
+        />
         <Divider />
         <Accordion defaultValue="pending">
           <Accordion.Item value="pending" key="pending-tasks">

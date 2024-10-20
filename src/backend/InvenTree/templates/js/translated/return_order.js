@@ -326,10 +326,10 @@ function loadReturnOrderTable(table, options={}) {
             },
             {
                 sortable: true,
-                field: 'status',
+                field: 'status_custom_key',
                 title: '{% trans "Status" %}',
                 formatter: function(value, row) {
-                    return returnOrderStatusDisplay(row.status);
+                    return returnOrderStatusDisplay(row.status_custom_key);
                 }
             },
             {
@@ -552,7 +552,6 @@ function receiveReturnOrderItems(order_id, line_items, options={}) {
                 },
                 tree_picker: {
                     url: '{% url "api-location-tree" %}',
-                    default_icon: global_settings.STOCK_LOCATION_DEFAULT_ICON,
                 },
             }
         },

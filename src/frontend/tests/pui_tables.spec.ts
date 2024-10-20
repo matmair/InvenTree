@@ -20,11 +20,11 @@ const clearFilters = async (page) => {
   await page.getByLabel('filter-drawer-close').click();
 };
 
-test('PUI - Tables - Filters', async ({ page }) => {
+test('Tables - Filters', async ({ page }) => {
   await doQuickLogin(page);
 
   // Head to the "build order list" page
-  await page.goto(`${baseUrl}/build/`);
+  await page.goto(`${baseUrl}/manufacturing/index/`);
 
   await setFilter(page, 'Status', 'Complete');
   await setFilter(page, 'Responsible', 'allaccess');
@@ -50,7 +50,7 @@ test('PUI - Tables - Filters', async ({ page }) => {
   await clearFilters(page);
 });
 
-test('PUI - Tables - Columns', async ({ page }) => {
+test('Tables - Columns', async ({ page }) => {
   await doQuickLogin(page);
 
   // Go to the "stock list" page
@@ -62,6 +62,4 @@ test('PUI - Tables - Columns', async ({ page }) => {
   // De-select some items
   await page.getByRole('menuitem', { name: 'Description' }).click();
   await page.getByRole('menuitem', { name: 'Stocktake' }).click();
-
-  await page.waitForTimeout(2500);
 });

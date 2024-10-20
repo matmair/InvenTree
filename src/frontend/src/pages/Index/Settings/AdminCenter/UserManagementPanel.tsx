@@ -14,6 +14,8 @@ export default function UserManagementPanel() {
       </Title>
       <UserTable />
 
+      <Divider />
+
       <Title order={5}>
         <Trans>Groups</Trans>
       </Title>
@@ -32,7 +34,7 @@ export default function UserManagementPanel() {
             </Trans>
           </Text>
           <Anchor component={Link} to={'/settings/system'}>
-            <Trans>System settings</Trans>
+            <Trans>System Settings</Trans>
           </Anchor>
         </Group>
       </Stack>

@@ -10,18 +10,21 @@ import { ApiFormFieldType } from './ApiFormField';
  */
 export function ChoiceField({
   controller,
-  definition
-}: {
+  definition,
+  fieldName
+}: Readonly<{
   controller: UseControllerReturn<FieldValues, any>;
   definition: ApiFormFieldType;
   fieldName: string;
-}) {
+}>) {
   const fieldId = useId();
 
   const {
     field,
     fieldState: { error }
   } = controller;
+
+  const { value } = field;
 
   // Build a set of choices for the field
   const choices: any[] = useMemo(() => {
@@ -48,6 +51,14 @@ export function ChoiceField({
     [field.onChange, definition]
   );
 
+  const choiceValue = useMemo(() => {
+    if (!value) {
+      return '';
+    } else {
+      return value.toString();
+    }
+  }, [value]);
+
   return (
     <Select
       id={fieldId}
@@ -57,7 +68,7 @@ export function ChoiceField({
       {...field}
       onChange={onChange}
       data={choices}
-      value={field.value}
+      value={choiceValue}
       label={definition.label}
       description={definition.description}
       placeholder={definition.placeholder}

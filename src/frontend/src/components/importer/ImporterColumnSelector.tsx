@@ -2,21 +2,28 @@ import { t } from '@lingui/macro';
 import {
   Alert,
   Button,
-  Divider,
   Group,
+  Paper,
   Select,
-  SimpleGrid,
+  Space,
   Stack,
+  Table,
   Text
 } from '@mantine/core';
+import { IconCheck } from '@tabler/icons-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { api } from '../../App';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ImportSessionState } from '../../hooks/UseImportSession';
 import { apiUrl } from '../../states/ApiState';
+import { StandaloneField } from '../forms/StandaloneField';
+import { ApiFormFieldType } from '../forms/fields/ApiFormField';
 
-function ImporterColumn({ column, options }: { column: any; options: any[] }) {
+function ImporterColumn({
+  column,
+  options
+}: Readonly<{ column: any; options: any[] }>) {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const [selectedColumn, setSelectedColumn] = useState<string>(
@@ -54,6 +61,7 @@ function ImporterColumn({ column, options }: { column: any; options: any[] }) {
     <Select
       error={errorMessage}
       clearable
+      searchable
       placeholder={t`Select column, or leave blank to ignore this field.`}
       label={undefined}
       data={options}
@@ -63,11 +71,97 @@ function ImporterColumn({ column, options }: { column: any; options: any[] }) {
   );
 }
 
-export default function ImporterColumnSelector({
+function ImporterDefaultField({
+  fieldName,
   session
 }: {
+  fieldName: string;
   session: ImportSessionState;
 }) {
+  const onChange = useCallback(
+    (value: any) => {
+      // Update the default value for the field
+      let defaults = {
+        ...session.fieldDefaults,
+        [fieldName]: value
+      };
+
+      api
+        .patch(apiUrl(ApiEndpoints.import_session_list, session.sessionId), {
+          field_defaults: defaults
+        })
+        .then((response: any) => {
+          session.setSessionData(response.data);
+        })
+        .catch(() => {
+          // TODO: Error message?
+        });
+    },
+    [fieldName, session, session.fieldDefaults]
+  );
+
+  const fieldDef: ApiFormFieldType = useMemo(() => {
+    let def: any = session.availableFields[fieldName];
+
+    if (def) {
+      def = {
+        ...def,
+        value: session.fieldDefaults[fieldName],
+        field_type: def.type,
+        description: def.help_text,
+        onValueChange: onChange
+      };
+    }
+
+    return def;
+  }, [fieldName, session.availableFields, session.fieldDefaults]);
+
+  return (
+    fieldDef && <StandaloneField fieldDefinition={fieldDef} hideLabels={true} />
+  );
+}
+
+function ImporterColumnTableRow({
+  session,
+  column,
+  options
+}: Readonly<{
+  session: ImportSessionState;
+  column: any;
+  options: any;
+}>) {
+  return (
+    <Table.Tr key={column.label ?? column.field}>
+      <Table.Td>
+        <Group gap="xs">
+          <Text fw={column.required ? 700 : undefined}>
+            {column.label ?? column.field}
+          </Text>
+          {column.required && (
+            <Text c="red" fw={700}>
+              *
+            </Text>
+          )}
+        </Group>
+      </Table.Td>
+      <Table.Td>
+        <Text size="sm">{column.description}</Text>
+      </Table.Td>
+      <Table.Td>
+        <ImporterColumn column={column} options={options} />
+      </Table.Td>
+      <Table.Td>
+        <ImporterDefaultField fieldName={column.field} session={session} />
+      </Table.Td>
+    </Table.Tr>
+  );
+}
+
+export default function ImporterColumnSelector({
+  session
+}: Readonly<{
+  session: ImportSessionState;
+}>) {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const acceptMapping = useCallback(() => {
@@ -88,7 +182,7 @@ export default function ImporterColumnSelector({
 
   const columnOptions: any[] = useMemo(() => {
     return [
-      { value: '', label: t`Select a column from the data file` },
+      { value: '', label: t`Ignore this field` },
       ...session.availableColumns.map((column: any) => {
         return {
           value: column,
@@ -100,45 +194,45 @@ export default function ImporterColumnSelector({
 
   return (
     <Stack gap="xs">
-      <Group justify="apart">
-        <Text>{t`Map data columns to database fields`}</Text>
-        <Button
-          color="green"
-          variant="filled"
-          onClick={acceptMapping}
-        >{t`Accept Column Mapping`}</Button>
-      </Group>
+      <Paper shadow="xs" p="xs">
+        <Group grow justify="apart">
+          <Text size="lg">{t`Mapping data columns to database fields`}</Text>
+          <Space />
+          <Button color="green" variant="filled" onClick={acceptMapping}>
+            <Group>
+              <IconCheck />
+              {t`Accept Column Mapping`}
+            </Group>
+          </Button>
+        </Group>
+      </Paper>
       {errorMessage && (
         <Alert color="red" title={t`Error`}>
           <Text>{errorMessage}</Text>
         </Alert>
       )}
-      <SimpleGrid cols={3} spacing="xs">
-        <Text fw={700}>{t`Database Field`}</Text>
-        <Text fw={700}>{t`Field Description`}</Text>
-        <Text fw={700}>{t`Imported Column Name`}</Text>
-        <Divider />
-        <Divider />
-        <Divider />
-        {session.columnMappings.map((column: any) => {
-          return [
-            <Group gap="xs">
-              <Text fw={column.required ? 700 : undefined}>
-                {column.label ?? column.field}
-              </Text>
-              {column.required && (
-                <Text c="red" fw={700}>
-                  *
-                </Text>
-              )}
-            </Group>,
-            <Text size="sm" fs="italic">
-              {column.description}
-            </Text>,
-            <ImporterColumn column={column} options={columnOptions} />
-          ];
-        })}
-      </SimpleGrid>
+      <Table>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>{t`Database Field`}</Table.Th>
+            <Table.Th>{t`Field Description`}</Table.Th>
+            <Table.Th>{t`Imported Column`}</Table.Th>
+            <Table.Th>{t`Default Value`}</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {session.columnMappings.map((column: any) => {
+            return (
+              <ImporterColumnTableRow
+                key={`import-${column.field}}`}
+                session={session}
+                column={column}
+                options={columnOptions}
+              />
+            );
+          })}
+        </Table.Tbody>
+      </Table>
     </Stack>
   );
 }

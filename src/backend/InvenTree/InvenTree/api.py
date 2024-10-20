@@ -8,7 +8,6 @@ from pathlib import Path
 from django.conf import settings
 from django.db import transaction
 from django.http import JsonResponse
-from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
 
 from django_q.models import OrmQ
@@ -21,15 +20,13 @@ from rest_framework.views import APIView
 
 import InvenTree.version
 import users.models
-from InvenTree.filters import SEARCH_ORDER_FILTER
 from InvenTree.mixins import ListCreateAPI
-from InvenTree.permissions import RolePermission
 from InvenTree.templatetags.inventree_extras import plugins_info
 from part.models import Part
 from plugin.serializers import MetadataSerializer
 from users.models import ApiToken
 
-from .email import is_email_configured
+from .helpers_email import is_email_configured
 from .mixins import ListAPI, RetrieveUpdateAPI
 from .status import check_system_health, is_worker_running
 from .version import inventreeApiText
@@ -80,7 +77,7 @@ class LicenseView(APIView):
         # Ensure we do not have any duplicate 'name' values in the list
         for entry in data:
             name = None
-            for key in entry.keys():
+            for key in entry:
                 if key.lower() == 'name':
                     name = entry[key]
                     break
@@ -311,8 +308,25 @@ class BulkDeleteMixin:
     - Speed (single API call and DB query)
     """
 
+    def validate_delete(self, queryset, request) -> None:
+        """Perform validation right before deletion.
+
+        Arguments:
+            queryset: The queryset to be deleted
+            request: The request object
+
+        Returns:
+            None
+
+        Raises:
+            ValidationError: If the deletion should not proceed
+        """
+
     def filter_delete_queryset(self, queryset, request):
-        """Provide custom filtering for the queryset *before* it is deleted."""
+        """Provide custom filtering for the queryset *before* it is deleted.
+
+        The default implementation does nothing, just returns the queryset.
+        """
         return queryset
 
     def delete(self, request, *args, **kwargs):
@@ -365,11 +379,29 @@ class BulkDeleteMixin:
 
             # Filter by provided item ID values
             if items:
-                queryset = queryset.filter(id__in=items)
+                try:
+                    queryset = queryset.filter(id__in=items)
+                except Exception:
+                    raise ValidationError({
+                        'non_field_errors': _('Invalid items list provided')
+                    })
 
             # Filter by provided filters
             if filters:
-                queryset = queryset.filter(**filters)
+                try:
+                    queryset = queryset.filter(**filters)
+                except Exception:
+                    raise ValidationError({
+                        'non_field_errors': _('Invalid filters provided')
+                    })
+
+            if queryset.count() == 0:
+                raise ValidationError({
+                    'non_field_errors': _('No items found to delete')
+                })
+
+            # Run a final validation step (should raise an error if the deletion should not proceed)
+            self.validate_delete(queryset, request)
 
             n_deleted = queryset.count()
             queryset.delete()
@@ -379,8 +411,6 @@ class BulkDeleteMixin:
 
 class ListCreateDestroyAPIView(BulkDeleteMixin, ListCreateAPI):
     """Custom API endpoint which provides BulkDelete functionality in addition to List and Create."""
-
-    ...
 
 
 class APISearchViewSerializer(serializers.Serializer):

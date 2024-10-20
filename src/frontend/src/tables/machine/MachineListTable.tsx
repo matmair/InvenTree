@@ -16,7 +16,7 @@ import {
   Title
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconCheck, IconDots, IconRefresh } from '@tabler/icons-react';
+import { IconCheck, IconRefresh } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -25,9 +25,9 @@ import { api } from '../../App';
 import { AddItemButton } from '../../components/buttons/AddItemButton';
 import { YesNoButton } from '../../components/buttons/YesNoButton';
 import {
-  ActionDropdown,
   DeleteItemAction,
-  EditItemAction
+  EditItemAction,
+  OptionsActionDropdown
 } from '../../components/items/ActionDropdown';
 import { InfoItem } from '../../components/items/InfoItem';
 import { UnavailableIndicator } from '../../components/items/UnavailableIndicator';
@@ -41,8 +41,11 @@ import {
 } from '../../components/render/StatusRenderer';
 import { MachineSettingList } from '../../components/settings/SettingList';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
-import { openDeleteApiForm, openEditApiForm } from '../../functions/forms';
-import { useCreateApiFormModal } from '../../hooks/UseForm';
+import {
+  useCreateApiFormModal,
+  useDeleteApiFormModal,
+  useEditApiFormModal
+} from '../../hooks/UseForm';
 import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
 import { TableColumn } from '../Column';
@@ -65,7 +68,7 @@ interface MachineI {
   restart_required: boolean;
 }
 
-function MachineStatusIndicator({ machine }: { machine: MachineI }) {
+function MachineStatusIndicator({ machine }: Readonly<{ machine: MachineI }>) {
   const style = { marginLeft: '4px' };
 
   // machine is not active, show a gray dot
@@ -139,10 +142,10 @@ export function useMachineTypeDriver({
 function MachineDrawer({
   machinePk,
   refreshTable
-}: {
+}: Readonly<{
   machinePk: string;
   refreshTable: () => void;
-}) {
+}>) {
   const navigate = useNavigate();
   const {
     data: machine,
@@ -205,8 +208,39 @@ function MachineDrawer({
     [refreshAll]
   );
 
+  const machineEditModal = useEditApiFormModal({
+    title: t`Edit machine`,
+    url: ApiEndpoints.machine_list,
+    pk: machinePk,
+    fields: useMemo(
+      () => ({
+        name: {},
+        active: {}
+      }),
+      []
+    ),
+    onClose: () => refreshAll()
+  });
+
+  const machineDeleteModal = useDeleteApiFormModal({
+    title: t`Delete machine`,
+    successMessage: t`Machine successfully deleted.`,
+    url: ApiEndpoints.machine_list,
+    pk: machinePk,
+    preFormContent: (
+      <Text>{t`Are you sure you want to remove the machine "${machine?.name}"?`}</Text>
+    ),
+    onFormSuccess: () => {
+      refreshTable();
+      navigate(-1);
+    }
+  });
+
   return (
     <Stack gap="xs">
+      {machineEditModal.modal}
+      {machineDeleteModal.modal}
+
       <Group justify="space-between">
         <Box></Box>
 
@@ -221,42 +255,16 @@ function MachineDrawer({
               <Trans>Restart required</Trans>
             </Badge>
           )}
-          <ActionDropdown
+          <OptionsActionDropdown
             tooltip={t`Machine Actions`}
-            icon={<IconDots />}
             actions={[
               EditItemAction({
                 tooltip: t`Edit machine`,
-                onClick: () => {
-                  openEditApiForm({
-                    title: t`Edit machine`,
-                    url: ApiEndpoints.machine_list,
-                    pk: machinePk,
-                    fields: {
-                      name: {},
-                      active: {}
-                    },
-                    onClose: () => refreshAll()
-                  });
-                }
+                onClick: machineEditModal.open
               }),
               DeleteItemAction({
                 tooltip: t`Delete machine`,
-                onClick: () => {
-                  openDeleteApiForm({
-                    title: t`Delete machine`,
-                    successMessage: t`Machine successfully deleted.`,
-                    url: ApiEndpoints.machine_list,
-                    pk: machinePk,
-                    preFormContent: (
-                      <Text>{t`Are you sure you want to remove the machine "${machine?.name}"?`}</Text>
-                    ),
-                    onFormSuccess: () => {
-                      refreshTable();
-                      navigate(-1);
-                    }
-                  });
-                }
+                onClick: machineDeleteModal.open
               }),
               {
                 icon: <IconRefresh />,
@@ -398,11 +406,11 @@ export function MachineListTable({
   props,
   renderMachineDrawer = true,
   createProps
-}: {
+}: Readonly<{
   props: InvenTreeTableProps;
   renderMachineDrawer?: boolean;
   createProps?: { machine_type?: string; driver?: string };
-}) {
+}>) {
   const { machineTypes, machineDrivers } = useMachineTypeDriver();
 
   const table = useTable('machine');
@@ -535,6 +543,7 @@ export function MachineListTable({
   const tableActions = useMemo(() => {
     return [
       <AddItemButton
+        key="outline"
         variant="outline"
         onClick={() => {
           setCreateFormMachineType(null);

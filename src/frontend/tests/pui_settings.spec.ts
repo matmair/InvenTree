@@ -1,8 +1,9 @@
-import { test } from './baseFixtures.js';
-import { baseUrl } from './defaults.js';
-import { doLogout, doQuickLogin } from './login.js';
+import { expect, test } from './baseFixtures.js';
+import { apiUrl, baseUrl } from './defaults.js';
+import { doQuickLogin } from './login.js';
+import { setSettingState } from './settings.js';
 
-test('PUI - Admin', async ({ page }) => {
+test('Admin', async ({ page }) => {
   // Note here we login with admin access
   await doQuickLogin(page, 'admin', 'inventree');
 
@@ -20,7 +21,7 @@ test('PUI - Admin', async ({ page }) => {
   await page.getByText('Inline report display').waitFor();
 
   // System Settings
-  await page.getByRole('link', { name: 'Switch to System Setting' }).click();
+  await page.locator('label').filter({ hasText: 'System Settings' }).click();
   await page.getByText('Base URL', { exact: true }).waitFor();
   await page.getByRole('tab', { name: 'Login' }).click();
   await page.getByRole('tab', { name: 'Barcodes' }).click();
@@ -28,9 +29,7 @@ test('PUI - Admin', async ({ page }) => {
   await page.getByRole('tab', { name: 'Pricing' }).click();
   await page.getByRole('tab', { name: 'Labels' }).click();
   await page.getByRole('tab', { name: 'Reporting' }).click();
-  await page.getByRole('tab', { name: 'Part Categories' }).click();
 
-  await page.getByRole('tab', { name: 'Stocktake' }).click();
   await page.getByRole('tab', { name: 'Build Orders' }).click();
   await page.getByRole('tab', { name: 'Purchase Orders' }).click();
   await page.getByRole('tab', { name: 'Sales Orders' }).click();
@@ -49,10 +48,82 @@ test('PUI - Admin', async ({ page }) => {
   await page.getByRole('tab', { name: 'Label Templates' }).click();
   await page.getByRole('tab', { name: 'Report Templates' }).click();
   await page.getByRole('tab', { name: 'Plugins' }).click();
-  await page.getByRole('tab', { name: 'Machines' }).click();
+
+  // Adjust some "location type" items
+  await page.getByRole('tab', { name: 'Location Types' }).click();
+
+  // Edit first item
+  await page.getByLabel('row-action-menu-0').click();
+  await page.getByRole('menuitem', { name: 'Edit' }).click();
+  await expect(page.getByLabel('text-field-name')).toHaveValue('Room');
+  await expect(page.getByLabel('text-field-description')).toHaveValue('A room');
+  await page.getByLabel('text-field-name').fill('Large Room');
+  await page.waitForTimeout(500);
+  await page.getByLabel('text-field-description').fill('A large room');
+  await page.waitForTimeout(500);
+  await page.getByRole('button', { name: 'Submit' }).click();
+
+  // Edit second item
+  await page.getByLabel('row-action-menu-1').click();
+  await page.getByRole('menuitem', { name: 'Edit' }).click();
+  await expect(page.getByLabel('text-field-name')).toHaveValue('Box (Large)');
+  await expect(page.getByLabel('text-field-description')).toHaveValue(
+    'Large cardboard box'
+  );
+  await page.getByRole('button', { name: 'Cancel' }).click();
+
+  // Edit first item again (revert values)
+  await page.getByLabel('row-action-menu-0').click();
+  await page.getByRole('menuitem', { name: 'Edit' }).click();
+  await expect(page.getByLabel('text-field-name')).toHaveValue('Large Room');
+  await expect(page.getByLabel('text-field-description')).toHaveValue(
+    'A large room'
+  );
+  await page.getByLabel('text-field-name').fill('Room');
+  await page.waitForTimeout(500);
+  await page.getByLabel('text-field-description').fill('A room');
+  await page.waitForTimeout(500);
+  await page.getByRole('button', { name: 'Submit' }).click();
 });
 
-test('PUI - Admin - Unauthorized', async ({ page }) => {
+test('Admin - Barcode History', async ({ page, request }) => {
+  // Login with admin credentials
+  await doQuickLogin(page, 'admin', 'inventree');
+
+  // Ensure that the "save scans" setting is enabled
+  await setSettingState({
+    request: request,
+    setting: 'BARCODE_STORE_RESULTS',
+    value: true
+  });
+
+  // Scan some barcodes (via API calls)
+  const barcodes = ['ABC1234', 'XYZ5678', 'QRS9012'];
+
+  barcodes.forEach(async (barcode) => {
+    await request.post(`${apiUrl}/barcode/`, {
+      data: {
+        barcode: barcode
+      },
+      headers: {
+        Authorization: `Basic ${btoa('admin:inventree')}`
+      }
+    });
+  });
+
+  await page.getByRole('button', { name: 'admin' }).click();
+  await page.getByRole('menuitem', { name: 'Admin Center' }).click();
+  await page.getByRole('tab', { name: 'Barcode Scans' }).click();
+
+  await page.waitForTimeout(2000);
+
+  // Barcode history is displayed in table
+  barcodes.forEach(async (barcode) => {
+    await page.getByText(barcode).first().waitFor();
+  });
+});
+
+test('Admin - Unauthorized', async ({ page }) => {
   // Try to access "admin" page with a non-staff user
   await doQuickLogin(page, 'allaccess', 'nolimits');
 

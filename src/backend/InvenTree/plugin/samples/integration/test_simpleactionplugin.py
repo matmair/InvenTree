@@ -1,7 +1,6 @@
 """Unit tests for action plugins."""
 
 from InvenTree.unit_test import InvenTreeTestCase, get_plugin_config
-from plugin.registry import registry
 from plugin.samples.integration.simpleactionplugin import SimpleActionPlugin
 
 

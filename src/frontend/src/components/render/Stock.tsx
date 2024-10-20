@@ -1,8 +1,10 @@
 import { t } from '@lingui/macro';
+import { Text } from '@mantine/core';
 import { ReactNode } from 'react';
 
 import { ModelType } from '../../enums/ModelType';
 import { getDetailUrl } from '../../functions/urls';
+import { ApiIcon } from '../items/ApiIcon';
 import { InstanceRenderInterface, RenderInlineModel } from './Instance';
 
 /**
@@ -16,6 +18,13 @@ export function RenderStockLocation(
   return (
     <RenderInlineModel
       {...props}
+      tooltip={instance.pathstring}
+      prefix={
+        <>
+          <div style={{ width: 10 * (instance.level || 0) }}></div>
+          {instance.icon && <ApiIcon name={instance.icon} />}
+        </>
+      }
       primary={instance.name}
       secondary={instance.description}
       url={
@@ -36,7 +45,7 @@ export function RenderStockLocationType({
   return (
     <RenderInlineModel
       primary={instance.name}
-      // TODO: render location icon here too (ref: #7237)
+      prefix={instance.icon && <ApiIcon name={instance.icon} />}
       secondary={instance.description + ` (${instance.location_count})`}
     />
   );
@@ -58,7 +67,7 @@ export function RenderStockItem(
     <RenderInlineModel
       {...props}
       primary={instance.part_detail?.full_name}
-      suffix={quantity_string}
+      suffix={<Text size="sm">{quantity_string}</Text>}
       image={instance.part_detail?.thumbnail || instance.part_detail?.image}
       url={
         props.link ? getDetailUrl(ModelType.stockitem, instance.pk) : undefined

@@ -1,11 +1,6 @@
 import { t } from '@lingui/macro';
-import { Skeleton, Stack, Text } from '@mantine/core';
-import {
-  IconDots,
-  IconInfoCircle,
-  IconPackages,
-  IconSitemap
-} from '@tabler/icons-react';
+import { Group, Skeleton, Stack, Text } from '@mantine/core';
+import { IconInfoCircle, IconPackages, IconSitemap } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -19,14 +14,14 @@ import {
   BarcodeActionDropdown,
   DeleteItemAction,
   EditItemAction,
-  LinkBarcodeAction,
-  UnlinkBarcodeAction,
-  ViewBarcodeAction
+  OptionsActionDropdown
 } from '../../components/items/ActionDropdown';
+import { ApiIcon } from '../../components/items/ApiIcon';
 import InstanceDetail from '../../components/nav/InstanceDetail';
 import NavigationTree from '../../components/nav/NavigationTree';
 import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
+import { PanelType } from '../../components/panels/Panel';
+import { PanelGroup } from '../../components/panels/PanelGroup';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
@@ -37,6 +32,7 @@ import {
   useTransferStockItem
 } from '../../forms/StockForms';
 import { InvenTreeIcon } from '../../functions/icons';
+import { notYetImplemented } from '../../functions/notifications';
 import { getDetailUrl } from '../../functions/urls';
 import {
   useDeleteApiFormModal,
@@ -85,7 +81,13 @@ export default function Stock() {
         type: 'text',
         name: 'name',
         label: t`Name`,
-        copy: true
+        copy: true,
+        value_formatter: () => (
+          <Group gap="xs">
+            {location.icon && <ApiIcon name={location.icon} />}
+            {location.name}
+          </Group>
+        )
       },
       {
         type: 'text',
@@ -210,7 +212,7 @@ export default function Stock() {
     url: ApiEndpoints.stock_location_list,
     pk: id,
     title: t`Edit Stock Location`,
-    fields: stockLocationFields({}),
+    fields: stockLocationFields(),
     onFormSuccess: refreshInstance
   });
 
@@ -273,26 +275,30 @@ export default function Stock() {
       <AdminButton model={ModelType.stocklocation} pk={location.pk} />,
       <ActionButton
         icon={<InvenTreeIcon icon="stocktake" />}
+        onClick={notYetImplemented}
         variant="outline"
         size="lg"
       />,
-      <BarcodeActionDropdown
-        actions={[
-          ViewBarcodeAction({}),
-          LinkBarcodeAction({}),
-          UnlinkBarcodeAction({}),
-          {
-            name: 'Scan in stock items',
-            icon: <InvenTreeIcon icon="stock" />,
-            tooltip: 'Scan items'
-          },
-          {
-            name: 'Scan in container',
-            icon: <InvenTreeIcon icon="unallocated_stock" />,
-            tooltip: 'Scan container'
-          }
-        ]}
-      />,
+      location.pk ? (
+        <BarcodeActionDropdown
+          model={ModelType.stocklocation}
+          pk={location.pk}
+          actions={[
+            {
+              name: 'Scan in stock items',
+              icon: <InvenTreeIcon icon="stock" />,
+              tooltip: 'Scan items',
+              onClick: notYetImplemented
+            },
+            {
+              name: 'Scan in container',
+              icon: <InvenTreeIcon icon="unallocated_stock" />,
+              tooltip: 'Scan container',
+              onClick: notYetImplemented
+            }
+          ]}
+        />
+      ) : null,
       <PrintingActions
         modelType={ModelType.stocklocation}
         items={[location.pk ?? 0]}
@@ -305,11 +311,11 @@ export default function Stock() {
         icon={<InvenTreeIcon icon="stock" />}
         actions={[
           {
-            name: 'Count Stock',
+            name: t`Count Stock`,
             icon: (
               <InvenTreeIcon icon="stocktake" iconProps={{ color: 'blue' }} />
             ),
-            tooltip: 'Count Stock',
+            tooltip: t`Count Stock`,
             onClick: () => countStockItems.open()
           },
           {
@@ -322,9 +328,8 @@ export default function Stock() {
           }
         ]}
       />,
-      <ActionDropdown
+      <OptionsActionDropdown
         tooltip={t`Location Actions`}
-        icon={<IconDots />}
         actions={[
           EditItemAction({
             hidden: !id || !user.hasChangeRole(UserRoles.stock_location),
@@ -347,7 +352,8 @@ export default function Stock() {
       { name: t`Stock`, url: '/stock' },
       ...(location.path ?? []).map((l: any) => ({
         name: l.name,
-        url: getDetailUrl(ModelType.stocklocation, l.pk)
+        url: getDetailUrl(ModelType.stocklocation, l.pk),
+        icon: l.icon ? <ApiIcon name={l.icon} /> : undefined
       }))
     ],
     [location]
@@ -373,13 +379,22 @@ export default function Stock() {
           <PageDetail
             title={t`Stock Items`}
             subtitle={location?.name}
+            icon={location?.icon && <ApiIcon name={location?.icon} />}
             actions={locationActions}
+            editAction={editLocation.open}
+            editEnabled={user.hasChangePermission(ModelType.stocklocation)}
             breadcrumbs={breadcrumbs}
             breadcrumbAction={() => {
               setTreeOpen(true);
             }}
           />
-          <PanelGroup pageKey="stocklocation" panels={locationPanels} />
+          <PanelGroup
+            pageKey="stocklocation"
+            panels={locationPanels}
+            model={ModelType.stocklocation}
+            id={location.pk}
+            instance={location}
+          />
           {transferStockItems.modal}
           {countStockItems.modal}
         </Stack>

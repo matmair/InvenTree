@@ -1,7 +1,6 @@
 import { Trans } from '@lingui/macro';
 import {
   ActionIcon,
-  Alert,
   Button,
   Card,
   Center,
@@ -20,13 +19,13 @@ export default function ErrorPage({
   title,
   message,
   status
-}: {
+}: Readonly<{
   title: string;
   message: string;
   status?: number;
   redirectMessage?: string;
   redirectTarget?: string;
-}) {
+}>) {
   const navigate = useNavigate();
 
   return (

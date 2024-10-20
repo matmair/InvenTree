@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-import imp
 import importlib
 import importlib.machinery
 import importlib.util
@@ -575,7 +574,7 @@ class PluginsRegistry:
                 try:
                     self._init_plugin(plg, plugin_configs)
                     break
-                except IntegrationPluginError as error:
+                except IntegrationPluginError:
                     # Error has been handled downstream
                     pass
                 except Exception as error:
@@ -745,11 +744,12 @@ class PluginsRegistry:
     def plugin_settings_keys(self):
         """A list of keys which are used to store plugin settings."""
         return [
-            'ENABLE_PLUGINS_URL',
-            'ENABLE_PLUGINS_NAVIGATION',
             'ENABLE_PLUGINS_APP',
-            'ENABLE_PLUGINS_SCHEDULE',
             'ENABLE_PLUGINS_EVENTS',
+            'ENABLE_PLUGINS_INTERFACE',
+            'ENABLE_PLUGINS_NAVIGATION',
+            'ENABLE_PLUGINS_SCHEDULE',
+            'ENABLE_PLUGINS_URL',
         ]
 
     def calculate_plugin_hash(self):
@@ -771,7 +771,7 @@ class PluginsRegistry:
 
         for k in self.plugin_settings_keys():
             try:
-                val = get_global_setting(k)
+                val = get_global_setting(k, create=False)
                 msg = f'{k}-{val}'
 
                 data.update(msg.encode())

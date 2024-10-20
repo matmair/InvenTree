@@ -1,15 +1,30 @@
 import { t } from '@lingui/macro';
-import { Flex, Group, NumberInput, Skeleton, Table, Text } from '@mantine/core';
+import { Flex, Group, Skeleton, Table, Text } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { modals } from '@mantine/modals';
+import {
+  IconCalendarExclamation,
+  IconCoins,
+  IconCurrencyDollar,
+  IconLink,
+  IconPackage,
+  IconUsersGroup
+} from '@tabler/icons-react';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
-import { Suspense, useCallback, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 
 import { api } from '../App';
 import { ActionButton } from '../components/buttons/ActionButton';
+import RemoveRowButton from '../components/buttons/RemoveRowButton';
+import { StandaloneField } from '../components/forms/StandaloneField';
 import {
   ApiFormAdjustFilterType,
   ApiFormFieldSet
 } from '../components/forms/fields/ApiFormField';
+import {
+  TableFieldExtraRow,
+  TableFieldRowProps
+} from '../components/forms/fields/TableField';
 import { Thumbnail } from '../components/images/Thumbnail';
 import { StylishText } from '../components/items/StylishText';
 import { StatusRenderer } from '../components/render/StatusRenderer';
@@ -25,16 +40,26 @@ import {
   useBatchCodeGenerator,
   useSerialNumberGenerator
 } from '../hooks/UseGenerator';
+import { useSerialNumberPlaceholder } from '../hooks/UsePlaceholder';
 import { apiUrl } from '../states/ApiState';
+import { useGlobalSettingsState } from '../states/SettingsState';
 
 /**
  * Construct a set of fields for creating / editing a StockItem instance
  */
 export function useStockFields({
+  item_detail,
+  part_detail,
+  partId,
   create = false
 }: {
+  partId?: number;
+  item_detail?: any;
+  part_detail?: any;
   create: boolean;
 }): ApiFormFieldSet {
+  const globalSettings = useGlobalSettingsState();
+
   const [part, setPart] = useState<number | null>(null);
   const [supplierPart, setSupplierPart] = useState<number | null>(null);
 
@@ -58,8 +83,11 @@ export function useStockFields({
   return useMemo(() => {
     const fields: ApiFormFieldSet = {
       part: {
-        value: part,
+        value: partId,
         disabled: !create,
+        filters: {
+          active: create ? true : undefined
+        },
         onValueChange: (value, record) => {
           setPart(value);
           // TODO: implement remaining functionality from old stock.py
@@ -78,7 +106,7 @@ export function useStockFields({
         }
       },
       supplier_part: {
-        // TODO: icon
+        hidden: part_detail?.purchaseable == false,
         value: supplierPart,
         onValueChange: (value) => {
           setSupplierPart(value);
@@ -101,6 +129,7 @@ export function useStockFields({
         description: t`Add given quantity as packs instead of individual items`
       },
       location: {
+        // Cannot adjust location for existing stock items
         hidden: !create,
         onValueChange: (value) => {
           batchGenerator.update({ location: value });
@@ -127,32 +156,36 @@ export function useStockFields({
         onValueChange: (value) => setSerialNumbers(value)
       },
       serial: {
-        hidden: create
-        // TODO: icon
+        hidden:
+          create ||
+          part_detail?.trackable == false ||
+          (!item_detail?.quantity != undefined && item_detail?.quantity != 1)
       },
       batch: {
-        // TODO: icon
         value: batchCode,
         onValueChange: (value) => setBatchCode(value)
       },
-      status: {},
+      status_custom_key: {
+        label: t`Stock Status`
+      },
       expiry_date: {
-        // TODO: icon
+        icon: <IconCalendarExclamation />,
+        hidden: !globalSettings.isSet('STOCK_ENABLE_EXPIRY')
       },
       purchase_price: {
-        // TODO: icon
+        icon: <IconCurrencyDollar />
       },
       purchase_price_currency: {
-        // TODO: icon
+        icon: <IconCoins />
       },
       packaging: {
-        // TODO: icon,
+        icon: <IconPackage />
       },
       link: {
-        // TODO: icon
+        icon: <IconLink />
       },
       owner: {
-        // TODO: icon
+        icon: <IconUsersGroup />
       },
       delete_on_deplete: {}
     };
@@ -161,7 +194,18 @@ export function useStockFields({
     // TODO: refer to stock.py in original codebase
 
     return fields;
-  }, [part, supplierPart, batchCode, serialNumbers, trackable, create]);
+  }, [
+    item_detail,
+    part_detail,
+    part,
+    globalSettings,
+    supplierPart,
+    batchCode,
+    serialNumbers,
+    trackable,
+    create,
+    partId
+  ]);
 }
 
 /**
@@ -177,13 +221,109 @@ export function useCreateStockItem() {
   });
 }
 
+/**
+ * Form set for manually removing (uninstalling) a StockItem from an existing StockItem
+ */
+export function useStockItemUninstallFields(): ApiFormFieldSet {
+  return useMemo(() => {
+    return {
+      location: {
+        filters: {
+          structural: false
+        }
+      },
+      note: {}
+    };
+  }, []);
+}
+
+/**
+ * Form set for manually installing a StockItem into an existing StockItem
+ */
+export function useStockItemInstallFields({
+  stockItem
+}: {
+  stockItem: any;
+}): ApiFormFieldSet {
+  const globalSettings = useGlobalSettingsState();
+
+  const [selectedPart, setSelectedPart] = useState<number | null>(null);
+
+  useEffect(() => {
+    setSelectedPart(null);
+  }, [stockItem]);
+
+  return useMemo(() => {
+    // Note: The 'part' field is not a part of the API endpoint, so we construct it manually
+    return {
+      part: {
+        field_type: 'related field',
+        required: true,
+        exclude: true,
+        label: t`Part`,
+        description: t`Select the part to install`,
+        model: ModelType.part,
+        api_url: apiUrl(ApiEndpoints.part_list),
+        onValueChange: (value) => {
+          setSelectedPart(value);
+        },
+        filters: {
+          trackable: true,
+          in_bom_for: globalSettings.isSet('STOCK_ENFORCE_BOM_INSTALLATION')
+            ? stockItem.part
+            : undefined
+        }
+      },
+      stock_item: {
+        disabled: !selectedPart,
+        filters: {
+          part_detail: true,
+          in_stock: true,
+          available: true,
+          tracked: true,
+          part: selectedPart ? selectedPart : undefined
+        }
+      },
+      quantity: {},
+      note: {}
+    };
+  }, [globalSettings, selectedPart, stockItem]);
+}
+
+/**
+ * Form set for serializing an existing StockItem
+ */
+export function useStockItemSerializeFields({
+  partId,
+  trackable
+}: {
+  partId: number;
+  trackable: boolean;
+}) {
+  const snPlaceholder = useSerialNumberPlaceholder({
+    partId: partId,
+    key: 'stock-item-serialize',
+    enabled: trackable
+  });
+
+  return useMemo(() => {
+    return {
+      quantity: {},
+      serial_numbers: {
+        placeholder: snPlaceholder
+      },
+      destination: {}
+    };
+  }, [snPlaceholder]);
+}
+
 function StockItemDefaultMove({
   stockItem,
   value
-}: {
+}: Readonly<{
   stockItem: any;
   value: any;
-}) {
+}>) {
   const { data } = useSuspenseQuery({
     queryKey: [
       'location',
@@ -291,37 +431,40 @@ type StockRow = {
 };
 
 function StockOperationsRow({
-  input,
+  props,
   transfer = false,
   add = false,
   setMax = false,
   merge = false,
   record
 }: {
-  input: StockRow;
+  props: TableFieldRowProps;
   transfer?: boolean;
   add?: boolean;
   setMax?: boolean;
   merge?: boolean;
   record?: any;
 }) {
-  const item = input.item;
-
-  const [value, setValue] = useState<StockItemQuantity>(
-    add ? 0 : item.quantity ?? 0
-  );
-
-  const onChange = useCallback(
-    (value: any) => {
-      setValue(value);
-      input.changeFn(input.idx, 'quantity', value);
-    },
-    [item]
+  const [quantity, setQuantity] = useState<StockItemQuantity>(
+    add ? 0 : props.item?.quantity ?? 0
   );
 
   const removeAndRefresh = () => {
-    input.removeFn(input.idx);
+    props.removeFn(props.idx);
   };
+
+  const [packagingOpen, packagingHandlers] = useDisclosure(false, {
+    onOpen: () => {
+      if (transfer) {
+        props.changeFn(props.idx, 'packaging', record?.packaging || undefined);
+      }
+    },
+    onClose: () => {
+      if (transfer) {
+        props.changeFn(props.idx, 'packaging', undefined);
+      }
+    }
+  });
 
   const stockString: string = useMemo(() => {
     if (!record) {
@@ -338,64 +481,86 @@ function StockOperationsRow({
   return !record ? (
     <div>{t`Loading...`}</div>
   ) : (
-    <Table.Tr>
-      <Table.Td>
-        <Flex gap="sm" align="center">
-          <Thumbnail
-            size={40}
-            src={record.part_detail?.thumbnail}
-            align="center"
-          />
-          <div>{record.part_detail?.name}</div>
-        </Flex>
-      </Table.Td>
-      <Table.Td>
-        {record.location ? record.location_detail?.pathstring : '-'}
-      </Table.Td>
-      <Table.Td>
-        <Flex align="center" gap="xs">
-          <Group justify="space-between">
+    <>
+      <Table.Tr>
+        <Table.Td>
+          <Flex gap="sm" align="center">
+            <Thumbnail
+              size={40}
+              src={record.part_detail?.thumbnail}
+              align="center"
+            />
+            <div>{record.part_detail?.name}</div>
+          </Flex>
+        </Table.Td>
+        <Table.Td>
+          {record.location ? record.location_detail?.pathstring : '-'}
+        </Table.Td>
+        <Table.Td>
+          <Group grow justify="space-between" wrap="nowrap">
             <Text>{stockString}</Text>
             <StatusRenderer status={record.status} type={ModelType.stockitem} />
           </Group>
-        </Flex>
-      </Table.Td>
-      {!merge && (
-        <Table.Td>
-          <NumberInput
-            value={value}
-            onChange={onChange}
-            disabled={!!record.serial && record.quantity == 1}
-            max={setMax ? record.quantity : undefined}
-            min={0}
-            style={{ maxWidth: '100px' }}
-          />
         </Table.Td>
-      )}
-      <Table.Td>
-        <Flex gap="3px">
-          {transfer && (
-            <ActionButton
-              onClick={() => moveToDefault(record, value, removeAndRefresh)}
-              icon={<InvenTreeIcon icon="default_location" />}
-              tooltip={t`Move to default location`}
-              tooltipAlignment="top"
-              disabled={
-                !record.part_detail?.default_location &&
-                !record.part_detail?.category_default_location
-              }
+        {!merge && (
+          <Table.Td>
+            <StandaloneField
+              fieldName="quantity"
+              fieldDefinition={{
+                field_type: 'number',
+                value: quantity,
+                onValueChange: (value: any) => {
+                  setQuantity(value);
+                  props.changeFn(props.idx, 'quantity', value);
+                }
+              }}
+              error={props.rowErrors?.quantity?.message}
             />
-          )}
-          <ActionButton
-            onClick={() => input.removeFn(input.idx)}
-            icon={<InvenTreeIcon icon="square_x" />}
-            tooltip={t`Remove item from list`}
-            tooltipAlignment="top"
-            color="red"
-          />
-        </Flex>
-      </Table.Td>
-    </Table.Tr>
+          </Table.Td>
+        )}
+        <Table.Td>
+          <Flex gap="3px">
+            {transfer && (
+              <ActionButton
+                onClick={() =>
+                  moveToDefault(record, props.item.quantity, removeAndRefresh)
+                }
+                icon={<InvenTreeIcon icon="default_location" />}
+                tooltip={t`Move to default location`}
+                tooltipAlignment="top"
+                disabled={
+                  !record.part_detail?.default_location &&
+                  !record.part_detail?.category_default_location
+                }
+              />
+            )}
+            {transfer && (
+              <ActionButton
+                size="sm"
+                icon={<InvenTreeIcon icon="packaging" />}
+                tooltip={t`Adjust Packaging`}
+                onClick={() => packagingHandlers.toggle()}
+                variant={packagingOpen ? 'filled' : 'transparent'}
+              />
+            )}
+            <RemoveRowButton onClick={() => props.removeFn(props.idx)} />
+          </Flex>
+        </Table.Td>
+      </Table.Tr>
+      {transfer && (
+        <TableFieldExtraRow
+          visible={transfer && packagingOpen}
+          onValueChange={(value: any) => {
+            props.changeFn(props.idx, 'packaging', value || undefined);
+          }}
+          fieldDefinition={{
+            field_type: 'string',
+            label: t`Packaging`
+          }}
+          defaultValue={record.packaging}
+        />
+      )}
+    </>
   );
 }
 
@@ -414,9 +579,9 @@ function mapAdjustmentItems(items: any[]) {
     return {
       pk: elem.pk,
       quantity: elem.quantity,
-      batch: elem.batch,
-      status: elem.status,
-      packaging: elem.packaging,
+      batch: elem.batch || undefined,
+      status: elem.status || undefined,
+      packaging: elem.packaging || undefined,
       obj: elem
     };
   });
@@ -435,14 +600,16 @@ function stockTransferFields(items: any[]): ApiFormFieldSet {
     items: {
       field_type: 'table',
       value: mapAdjustmentItems(items),
-      modelRenderer: (val) => {
+      modelRenderer: (row: TableFieldRowProps) => {
+        const record = records[row.item.pk];
+
         return (
           <StockOperationsRow
-            input={val}
+            props={row}
             transfer
             setMax
-            key={val.item.pk}
-            record={records[val.item.pk]}
+            key={record.pk}
+            record={record}
           />
         );
       },
@@ -470,13 +637,16 @@ function stockRemoveFields(items: any[]): ApiFormFieldSet {
     items: {
       field_type: 'table',
       value: mapAdjustmentItems(items),
-      modelRenderer: (val) => {
+      modelRenderer: (row: TableFieldRowProps) => {
+        const record = records[row.item.pk];
+
         return (
           <StockOperationsRow
-            input={val}
+            props={row}
             setMax
-            key={val.item.pk}
-            record={records[val.item.pk]}
+            add
+            key={record.pk}
+            record={record}
           />
         );
       },
@@ -499,14 +669,11 @@ function stockAddFields(items: any[]): ApiFormFieldSet {
     items: {
       field_type: 'table',
       value: mapAdjustmentItems(items),
-      modelRenderer: (val) => {
+      modelRenderer: (row: TableFieldRowProps) => {
+        const record = records[row.item.pk];
+
         return (
-          <StockOperationsRow
-            input={val}
-            add
-            key={val.item.pk}
-            record={records[val.item.pk]}
-          />
+          <StockOperationsRow props={row} add key={record.pk} record={record} />
         );
       },
       headers: [t`Part`, t`Location`, t`In Stock`, t`Add`, t`Actions`]
@@ -528,12 +695,12 @@ function stockCountFields(items: any[]): ApiFormFieldSet {
     items: {
       field_type: 'table',
       value: mapAdjustmentItems(items),
-      modelRenderer: (val) => {
+      modelRenderer: (row: TableFieldRowProps) => {
         return (
           <StockOperationsRow
-            input={val}
-            key={val.item.pk}
-            record={records[val.item.pk]}
+            props={row}
+            key={row.item.pk}
+            record={records[row.item.pk]}
           />
         );
       },
@@ -558,13 +725,13 @@ function stockChangeStatusFields(items: any[]): ApiFormFieldSet {
       value: items.map((elem) => {
         return elem.pk;
       }),
-      modelRenderer: (val) => {
+      modelRenderer: (row: TableFieldRowProps) => {
         return (
           <StockOperationsRow
-            input={val}
-            key={val.item}
+            props={row}
+            key={row.item}
             merge
-            record={records[val.item]}
+            record={records[row.item]}
           />
         );
       },
@@ -593,13 +760,13 @@ function stockMergeFields(items: any[]): ApiFormFieldSet {
           obj: elem
         };
       }),
-      modelRenderer: (val) => {
+      modelRenderer: (row: TableFieldRowProps) => {
         return (
           <StockOperationsRow
-            input={val}
-            key={val.item.item}
+            props={row}
+            key={row.item.item}
             merge
-            record={records[val.item.item]}
+            record={records[row.item.item]}
           />
         );
       },
@@ -635,13 +802,13 @@ function stockAssignFields(items: any[]): ApiFormFieldSet {
           obj: elem
         };
       }),
-      modelRenderer: (val) => {
+      modelRenderer: (row: TableFieldRowProps) => {
         return (
           <StockOperationsRow
-            input={val}
-            key={val.item.item}
+            props={row}
+            key={row.item.item}
             merge
-            record={records[val.item.item]}
+            record={records[row.item.item]}
           />
         );
       },
@@ -671,13 +838,15 @@ function stockDeleteFields(items: any[]): ApiFormFieldSet {
       value: items.map((elem) => {
         return elem.pk;
       }),
-      modelRenderer: (val) => {
+      modelRenderer: (row: TableFieldRowProps) => {
+        const record = records[row.item];
+
         return (
           <StockOperationsRow
-            input={val}
-            key={val.item}
+            props={row}
+            key={record.pk}
             merge
-            record={records[val.item]}
+            record={record}
           />
         );
       },
@@ -765,6 +934,7 @@ function stockOperationModal({
     url: endpoint,
     fields: fields,
     title: title,
+    size: '80%',
     onFormSuccess: () => refresh()
   });
 }
@@ -850,7 +1020,7 @@ export function useDeleteStockItem(props: StockOperationProps) {
   });
 }
 
-export function stockLocationFields({}: {}): ApiFormFieldSet {
+export function stockLocationFields(): ApiFormFieldSet {
   let fields: ApiFormFieldSet = {
     parent: {
       description: t`Parent stock location`,
@@ -860,7 +1030,9 @@ export function stockLocationFields({}: {}): ApiFormFieldSet {
     description: {},
     structural: {},
     external: {},
-    icon: {},
+    custom_icon: {
+      field_type: 'icon'
+    },
     location_type: {}
   };
 
@@ -870,10 +1042,16 @@ export function stockLocationFields({}: {}): ApiFormFieldSet {
 // Construct a set of fields for
 export function useTestResultFields({
   partId,
-  itemId
+  itemId,
+  templateId,
+  editing = false,
+  editTemplate = false
 }: {
   partId: number;
   itemId: number;
+  templateId: number | undefined;
+  editing?: boolean;
+  editTemplate?: boolean;
 }): ApiFormFieldSet {
   // Valid field choices
   const [choices, setChoices] = useState<any[]>([]);
@@ -881,13 +1059,21 @@ export function useTestResultFields({
   // Field type for the "value" input
   const [fieldType, setFieldType] = useState<'string' | 'choice'>('string');
 
+  const settings = useGlobalSettingsState();
+
+  const includeTestStation = useMemo(
+    () => settings.isSet('TEST_STATION_DATA'),
+    [settings]
+  );
+
   return useMemo(() => {
-    return {
+    let fields: ApiFormFieldSet = {
       stock_item: {
         value: itemId,
         hidden: true
       },
       template: {
+        disabled: !editTemplate && !!templateId,
         filters: {
           include_inherited: true,
           part: partId
@@ -921,8 +1107,31 @@ export function useTestResultFields({
       },
       attachment: {},
       notes: {},
-      started_datetime: {},
-      finished_datetime: {}
+      started_datetime: {
+        hidden: !includeTestStation
+      },
+      finished_datetime: {
+        hidden: !includeTestStation
+      },
+      test_station: {
+        hidden: !includeTestStation
+      }
     };
-  }, [choices, fieldType, partId, itemId]);
+
+    if (editing) {
+      // Prevent changing uploaded attachments
+      delete fields.attachment;
+    }
+
+    return fields;
+  }, [
+    choices,
+    editing,
+    editTemplate,
+    fieldType,
+    partId,
+    itemId,
+    templateId,
+    includeTestStation
+  ]);
 }

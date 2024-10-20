@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/macro';
 import { Carousel } from '@mantine/carousel';
-import { Anchor, Button, Paper, Text, Title, rem } from '@mantine/core';
+import { Anchor, Button, Paper, Text, Title } from '@mantine/core';
 
 import { DocumentationLinkItem } from './DocumentationLinks';
 import * as classes from './GettingStartedCarousel.css';
@@ -24,7 +24,7 @@ function StartedCard({
       </div>
       <Anchor href={link} target="_blank">
         <Button>
-          <Trans>Read more</Trans>
+          <Trans>Read More</Trans>
         </Button>
       </Anchor>
     </Paper>
@@ -33,9 +33,9 @@ function StartedCard({
 
 export function GettingStartedCarousel({
   items
-}: {
+}: Readonly<{
   items: DocumentationLinkItem[];
-}) {
+}>) {
   const slides = items.map((item) => (
     <Carousel.Slide key={item.id}>
       <StartedCard {...item} />

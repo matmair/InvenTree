@@ -130,8 +130,8 @@ The following keyword arguments are available to the `render_currency` function:
 | --- | --- |
 | currency | Specify the currency code to render in (will attempt conversion if different to provided currency) |
 | decimal_places | Specify the number of decimal places to render |
-| min_decimal_places | Specify the minimum number of decimal places to render (ignored if *decimal_places* is specified) |
-| max_decimal_places | Specify the maximum number of decimal places to render (ignored if *decimal_places* is specified) |
+| min_decimal_places | Specify the minimum number of decimal places to render |
+| max_decimal_places | Specify the maximum number of decimal places to render |
 | include_symbol | Include currency symbol in rendered value (default = True) |
 
 ## Maths Operations
@@ -258,6 +258,31 @@ A shortcut function is provided for rendering an image associated with a Company
 #### Image Variations
 
 *Preview* and *thumbnail* image variations can be rendered for the `company_image` tag, in a similar manner to [part image variations](#image-variations)
+
+## Icons
+
+Some models (e.g. part categories and locations) allow to specify a custom icon. To render these icons in a report, there is a `{% raw %}{% icon location.icon %}{% endraw %}` template tag from the report template library available.
+
+This tag renders the required html for the icon.
+
+!!! info "Loading fonts"
+    Additionally the icon fonts need to be loaded into the template. This can be done using the `{% raw %}{% include_icon_fonts %}{% endraw %}` template tag inside of a style block
+
+!!! tip "Custom classes for styling the icon further"
+    The icon template tag accepts an optional `class` argument which can be used to apply a custom class to the rendered icon used to style the icon further e.g. positioning it, changing it's size, ... `{% raw %}{% icon location.icon class="my-class" %}{% endraw %}`.
+
+```html
+{% raw %}
+{% load report %}
+
+{% block style %}
+{% include_icon_fonts %}
+{% endblock style %}
+
+{% icon location.icon %}
+
+{% endraw %}
+```
 
 ## InvenTree Logo
 

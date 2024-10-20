@@ -3,8 +3,6 @@
 from typing import Union
 
 from django.core.exceptions import ValidationError
-from django.db.models.query import QuerySet
-from django.http import JsonResponse
 from django.utils.translation import gettext_lazy as _
 
 import pdf2image
@@ -85,7 +83,7 @@ class LabelPrintingMixin:
                 [`pdf2image.convert_from_bytes`](https://pdf2image.readthedocs.io/en/latest/reference.html#pdf2image.pdf2image.convert_from_bytes) method (optional)
         """
         # Check if pdf data is provided
-        pdf_data = kwargs.get('pdf_data', None)
+        pdf_data = kwargs.get('pdf_data')
 
         if not pdf_data:
             pdf_data = (
@@ -253,8 +251,6 @@ class LabelPrintingMixin:
 
     def before_printing(self):
         """Hook method called before printing labels."""
-        pass
 
     def after_printing(self):
         """Hook method called after printing labels."""
-        pass
