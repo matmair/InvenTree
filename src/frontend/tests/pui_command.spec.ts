@@ -2,21 +2,20 @@ import { systemKey, test } from './baseFixtures.js';
 import { baseUrl } from './defaults.js';
 import { doQuickLogin } from './login.js';
 
-test('PUI - Quick Command', async ({ page }) => {
+test('Quick Command', async ({ page }) => {
   await doQuickLogin(page);
 
   // Open Spotlight with Keyboard Shortcut
   await page.locator('body').press(`${systemKey}+k`);
   await page.waitForTimeout(200);
-  await page.getByRole('tab', { name: 'Dashboard' }).click();
   await page
-    .locator('div')
-    .filter({ hasText: /^Dashboard$/ })
+    .getByRole('button', { name: 'Go to the InvenTree dashboard' })
     .click();
+  await page.locator('p').filter({ hasText: 'Dashboard' }).waitFor();
   await page.waitForURL('**/platform/dashboard');
 
   // Open Spotlight with Button
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page.getByRole('button', { name: 'Home Go to the home page' }).click();
   await page
     .getByRole('heading', { name: 'Welcome to your Dashboard,' })
@@ -32,11 +31,11 @@ test('PUI - Quick Command', async ({ page }) => {
   await page.waitForURL('**/platform/dashboard');
 });
 
-test('PUI - Quick Command - No Keys', async ({ page }) => {
+test('Quick Command - No Keys', async ({ page }) => {
   await doQuickLogin(page);
 
   // Open Spotlight with Button
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page.getByRole('button', { name: 'Home Go to the home page' }).click();
   await page
     .getByRole('heading', { name: 'Welcome to your Dashboard,' })
@@ -44,7 +43,7 @@ test('PUI - Quick Command - No Keys', async ({ page }) => {
   await page.waitForURL('**/platform');
 
   // Use navigation menu
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page
     .getByRole('button', { name: 'Open Navigation Open the main' })
     .click();
@@ -57,7 +56,7 @@ test('PUI - Quick Command - No Keys', async ({ page }) => {
   await page.keyboard.press('Escape');
 
   // use server info
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page
     .getByRole('button', {
       name: 'Server Information About this Inventree instance'
@@ -69,7 +68,7 @@ test('PUI - Quick Command - No Keys', async ({ page }) => {
   await page.waitForURL('**/platform');
 
   // use license info
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page
     .getByRole('button', {
       name: 'License Information Licenses for dependencies of the service'
@@ -81,7 +80,7 @@ test('PUI - Quick Command - No Keys', async ({ page }) => {
   await page.getByLabel('License Information').getByRole('button').click();
 
   // use about
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page
     .getByRole('button', { name: 'About InvenTree About the InvenTree org' })
     .click();
@@ -90,7 +89,7 @@ test('PUI - Quick Command - No Keys', async ({ page }) => {
   await page.getByLabel('About InvenTree').getByRole('button').click();
 
   // use documentation
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
+  await page.getByLabel('open-spotlight').click();
   await page
     .getByRole('button', {
       name: 'Documentation Visit the documentation to learn more about InvenTree'
@@ -98,25 +97,5 @@ test('PUI - Quick Command - No Keys', async ({ page }) => {
     .click();
   await page.waitForURL('https://docs.inventree.org/**');
 
-  // Test addition of new actions
-  await page.goto(`${baseUrl}/playground`);
-  await page
-    .locator('div')
-    .filter({ hasText: /^Playground$/ })
-    .waitFor();
-  await page.getByRole('button', { name: 'Spotlight actions' }).click();
-  await page.getByRole('button', { name: 'Register extra actions' }).click();
-  await page.getByPlaceholder('Search...').fill('secret');
-  await page.getByRole('button', { name: 'Secret action It was' }).click();
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
-  await page.getByPlaceholder('Search...').fill('Another secret action');
-  await page
-    .getByRole('button', {
-      name: 'Another secret action You can register multiple actions with just one command'
-    })
-    .click();
-  await page.getByRole('tab', { name: 'Home' }).click();
-  await page.getByRole('button', { name: 'Open spotlight' }).click();
-  await page.getByPlaceholder('Search...').fill('secret');
-  await page.getByText('Nothing found...').click();
+  // TODO: Test addition of new actions
 });

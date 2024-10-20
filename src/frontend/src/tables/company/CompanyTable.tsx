@@ -1,7 +1,6 @@
 import { t } from '@lingui/macro';
 import { Group, Text } from '@mantine/core';
-import { access } from 'fs';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
@@ -10,13 +9,18 @@ import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { companyFields } from '../../forms/CompanyForms';
-import { useCreateApiFormModal } from '../../hooks/UseForm';
+import { navigateToLink } from '../../functions/navigation';
+import {
+  useCreateApiFormModal,
+  useEditApiFormModal
+} from '../../hooks/UseForm';
 import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
 import { BooleanColumn, DescriptionColumn } from '../ColumnRenderers';
 import { TableFilter } from '../Filter';
 import { InvenTreeTable } from '../InvenTreeTable';
+import { RowAction, RowEditAction } from '../RowActions';
 
 /**
  * A table which displays a list of company records,
@@ -25,10 +29,10 @@ import { InvenTreeTable } from '../InvenTreeTable';
 export function CompanyTable({
   params,
   path
-}: {
+}: Readonly<{
   params?: any;
   path?: string;
-}) {
+}>) {
   const table = useTable('company');
 
   const navigate = useNavigate();
@@ -41,7 +45,7 @@ export function CompanyTable({
         sortable: true,
         render: (record: any) => {
           return (
-            <Group spacing="xs" noWrap={true}>
+            <Group gap="xs" wrap="nowrap">
               <Thumbnail
                 src={record.thumbnail ?? record.image ?? ''}
                 alt={record.name}
@@ -68,17 +72,21 @@ export function CompanyTable({
 
   const newCompany = useCreateApiFormModal({
     url: ApiEndpoints.company_list,
-    title: t`New Company`,
+    title: t`Add Company`,
     fields: companyFields(),
     initialData: params,
-    onFormSuccess: (response) => {
-      if (response.pk) {
-        let base = path ?? 'company';
-        navigate(`/${base}/${response.pk}`);
-      } else {
-        table.refreshTable();
-      }
-    }
+    follow: true,
+    modelType: ModelType.company
+  });
+
+  const [selectedCompany, setSelectedCompany] = useState<number>(0);
+
+  const editCompany = useEditApiFormModal({
+    url: ApiEndpoints.company_list,
+    pk: selectedCompany,
+    title: t`Edit Company`,
+    fields: companyFields(),
+    onFormSuccess: (record: any) => table.updateRecord(record)
   });
 
   const tableFilters: TableFilter[] = useMemo(() => {
@@ -113,6 +121,7 @@ export function CompanyTable({
 
     return [
       <AddItemButton
+        key="add-company"
         tooltip={t`Add Company`}
         onClick={() => newCompany.open()}
         hidden={!can_add}
@@ -120,9 +129,27 @@ export function CompanyTable({
     ];
   }, [user]);
 
+  const rowActions = useCallback(
+    (record: any): RowAction[] => {
+      return [
+        RowEditAction({
+          hidden:
+            !user.hasChangeRole(UserRoles.purchase_order) &&
+            !user.hasChangeRole(UserRoles.sales_order),
+          onClick: () => {
+            setSelectedCompany(record.pk);
+            editCompany.open();
+          }
+        })
+      ];
+    },
+    [user]
+  );
+
   return (
     <>
       {newCompany.modal}
+      {editCompany.modal}
       <InvenTreeTable
         url={apiUrl(ApiEndpoints.company_list)}
         tableState={table}
@@ -131,14 +158,17 @@ export function CompanyTable({
           params: {
             ...params
           },
+          onRowClick: (record: any, index: number, event: any) => {
+            if (record.pk) {
+              let base = path ?? 'company';
+              navigateToLink(`/${base}/${record.pk}`, navigate, event);
+            }
+          },
+          modelType: ModelType.company,
           tableFilters: tableFilters,
           tableActions: tableActions,
-          onRowClick: (row: any) => {
-            if (row.pk) {
-              let base = path ?? 'company';
-              navigate(`/${base}/${row.pk}`);
-            }
-          }
+          enableDownload: true,
+          rowActions: rowActions
         }}
       />
     </>

@@ -1,6 +1,5 @@
 import { t } from '@lingui/macro';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
 import { Thumbnail } from '../../components/images/Thumbnail';
@@ -9,7 +8,7 @@ import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { useSalesOrderFields } from '../../forms/SalesOrderForms';
-import { getDetailUrl } from '../../functions/urls';
+import { useOwnerFilters, useProjectCodeFilters } from '../../hooks/UseFilter';
 import { useCreateApiFormModal } from '../../hooks/UseForm';
 import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
@@ -20,12 +19,16 @@ import {
   LineItemsProgressColumn,
   ProjectCodeColumn,
   ReferenceColumn,
+  ResponsibleColumn,
   ShipmentDateColumn,
   StatusColumn,
   TargetDateColumn
 } from '../ColumnRenderers';
 import {
   AssignedToMeFilter,
+  HasProjectCodeFilter,
+  MaxDateFilter,
+  MinDateFilter,
   OutstandingFilter,
   OverdueFilter,
   StatusFilterOptions,
@@ -36,17 +39,18 @@ import { InvenTreeTable } from '../InvenTreeTable';
 export function SalesOrderTable({
   partId,
   customerId
-}: {
+}: Readonly<{
   partId?: number;
   customerId?: number;
-}) {
-  const table = useTable('sales-order');
+}>) {
+  const table = useTable(!!partId ? 'salesorder-part' : 'salesorder-index');
   const user = useUserState();
 
-  const navigate = useNavigate();
+  const projectCodeFilters = useProjectCodeFilters();
+  const responsibleFilters = useOwnerFilters();
 
   const tableFilters: TableFilter[] = useMemo(() => {
-    return [
+    let filters: TableFilter[] = [
       {
         name: 'status',
         label: t`Status`,
@@ -55,13 +59,37 @@ export function SalesOrderTable({
       },
       OutstandingFilter(),
       OverdueFilter(),
-      AssignedToMeFilter()
-      // TODO: has_project_code
-      // TODO: project_code
+      AssignedToMeFilter(),
+      MinDateFilter(),
+      MaxDateFilter(),
+      {
+        name: 'project_code',
+        label: t`Project Code`,
+        description: t`Filter by project code`,
+        choices: projectCodeFilters.choices
+      },
+      HasProjectCodeFilter(),
+      {
+        name: 'assigned_to',
+        label: t`Responsible`,
+        description: t`Filter by responsible owner`,
+        choices: responsibleFilters.choices
+      }
     ];
-  }, []);
 
-  const salesOrderFields = useSalesOrderFields();
+    if (!!partId) {
+      filters.push({
+        name: 'include_variants',
+        type: 'boolean',
+        label: t`Include Variants`,
+        description: t`Include orders for part variants`
+      });
+    }
+
+    return filters;
+  }, [partId, projectCodeFilters.choices, responsibleFilters.choices]);
+
+  const salesOrderFields = useSalesOrderFields({});
 
   const newSalesOrder = useCreateApiFormModal({
     url: ApiEndpoints.sales_order_list,
@@ -70,18 +98,14 @@ export function SalesOrderTable({
     initialData: {
       customer: customerId
     },
-    onFormSuccess: (response) => {
-      if (response.pk) {
-        navigate(getDetailUrl(ModelType.salesorder, response.pk));
-      } else {
-        table.refreshTable();
-      }
-    }
+    follow: true,
+    modelType: ModelType.salesorder
   });
 
   const tableActions = useMemo(() => {
     return [
       <AddItemButton
+        key="add-sales-order"
         tooltip={t`Add Sales Order`}
         onClick={() => newSalesOrder.open()}
         hidden={!user.hasAddRole(UserRoles.sales_order)}
@@ -91,7 +115,7 @@ export function SalesOrderTable({
 
   const tableColumns = useMemo(() => {
     return [
-      ReferenceColumn(),
+      ReferenceColumn({}),
       {
         accessor: 'customer__name',
         title: t`Customer`,
@@ -114,11 +138,12 @@ export function SalesOrderTable({
       },
       DescriptionColumn({}),
       LineItemsProgressColumn(),
-      StatusColumn(ModelType.salesorder),
-      ProjectCodeColumn(),
-      CreationDateColumn(),
-      TargetDateColumn(),
-      ShipmentDateColumn(),
+      StatusColumn({ model: ModelType.salesorder }),
+      ProjectCodeColumn({}),
+      CreationDateColumn({}),
+      TargetDateColumn({}),
+      ShipmentDateColumn({}),
+      ResponsibleColumn({}),
       {
         accessor: 'total_price',
         title: t`Total Price`,
@@ -147,7 +172,10 @@ export function SalesOrderTable({
           },
           tableFilters: tableFilters,
           tableActions: tableActions,
-          modelType: ModelType.salesorder
+          modelType: ModelType.salesorder,
+          enableSelection: true,
+          enableDownload: true,
+          enableReports: true
         }}
       />
     </>

@@ -15,16 +15,17 @@ import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
 import { TableColumn } from '../Column';
+import { LinkColumn } from '../ColumnRenderers';
 import { InvenTreeTable } from '../InvenTreeTable';
-import { RowDeleteAction, RowEditAction } from '../RowActions';
+import { RowAction, RowDeleteAction, RowEditAction } from '../RowActions';
 
 export function AddressTable({
   companyId,
   params
-}: {
+}: Readonly<{
   companyId: number;
   params?: any;
-}) {
+}>) {
   const user = useUserState();
 
   const table = useTable('address');
@@ -91,11 +92,7 @@ export function AddressTable({
         sortable: false,
         switchable: true
       },
-      {
-        accessor: 'link',
-        sortable: false,
-        switchable: true
-      }
+      LinkColumn({})
     ];
   }, []);
 
@@ -124,7 +121,7 @@ export function AddressTable({
       company: companyId
     },
     successMessage: t`Address created`,
-    onFormSuccess: table.refreshTable
+    table: table
   });
 
   const [selectedAddress, setSelectedAddress] = useState<number>(-1);
@@ -134,19 +131,19 @@ export function AddressTable({
     pk: selectedAddress,
     title: t`Edit Address`,
     fields: addressFields,
-    onFormSuccess: (record: any) => table.updateRecord(record)
+    table: table
   });
 
   const deleteAddress = useDeleteApiFormModal({
     url: ApiEndpoints.address_list,
     pk: selectedAddress,
     title: t`Delete Address`,
-    onFormSuccess: table.refreshTable,
-    preFormWarning: t`Are you sure you want to delete this address?`
+    preFormWarning: t`Are you sure you want to delete this address?`,
+    table: table
   });
 
   const rowActions = useCallback(
-    (record: any) => {
+    (record: any): RowAction[] => {
       let can_edit =
         user.hasChangeRole(UserRoles.purchase_order) ||
         user.hasChangeRole(UserRoles.sales_order);
@@ -182,6 +179,7 @@ export function AddressTable({
 
     return [
       <AddItemButton
+        key="add-address"
         tooltip={t`Add Address`}
         onClick={() => newAddress.open()}
         hidden={!can_add}
@@ -199,6 +197,7 @@ export function AddressTable({
         tableState={table}
         columns={columns}
         props={{
+          enableDownload: true,
           rowActions: rowActions,
           tableActions: tableActions,
           params: {

@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react';
 
 export function TableSearchInput({
   searchCallback
-}: {
+}: Readonly<{
   searchCallback: (searchTerm: string) => void;
-}) {
+}>) {
   const [value, setValue] = useState<string>('');
   const [searchText] = useDebouncedValue(value, 500);
 
@@ -19,7 +19,7 @@ export function TableSearchInput({
   return (
     <TextInput
       value={value}
-      icon={<IconSearch />}
+      leftSection={<IconSearch />}
       placeholder={t`Search`}
       onChange={(event) => setValue(event.target.value)}
       rightSection={

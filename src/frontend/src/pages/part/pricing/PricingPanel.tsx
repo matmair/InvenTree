@@ -4,6 +4,8 @@ import {
   AccordionControlProps,
   Alert,
   Box,
+  Center,
+  Loader,
   Space,
   Stack,
   Text,
@@ -17,12 +19,11 @@ import { panelOptions } from '../PartPricingPanel';
 
 function AccordionControl(props: AccordionControlProps) {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Box style={{ display: 'flex', alignItems: 'center' }}>
       {props.disabled && (
-        <Tooltip
-          label={t`No data available`}
-          children={<IconAlertCircle size="1rem" color="gray" />}
-        />
+        <Tooltip label={t`No data available`}>
+          <IconAlertCircle size="1rem" color="gray" />
+        </Tooltip>
       )}
       <Accordion.Control
         {...props}
@@ -60,11 +61,22 @@ export default function PricingPanel({
 
 export function NoPricingData() {
   return (
-    <Stack spacing="xs">
+    <Stack gap="xs">
       <Alert icon={<IconExclamationCircle />} color="blue" title={t`No Data`}>
         <Text>{t`No pricing data available`}</Text>
       </Alert>
       <Space />
     </Stack>
+  );
+}
+
+export function LoadingPricingData() {
+  return (
+    <Center>
+      <Stack gap="xs">
+        <Text>{t`Loading pricing data`}</Text>
+        <Loader />
+      </Stack>
+    </Center>
   );
 }

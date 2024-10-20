@@ -1,59 +1,78 @@
 import { t } from '@lingui/macro';
-import type { SpotlightAction } from '@mantine/spotlight';
+import type { SpotlightActionData } from '@mantine/spotlight';
 import { IconHome, IconLink, IconPointer } from '@tabler/icons-react';
 import { NavigateFunction } from 'react-router-dom';
 
 import { useLocalState } from '../states/LocalState';
+import { useUserState } from '../states/UserState';
 import { aboutInvenTree, docLinks, licenseInfo, serverInfo } from './links';
 import { menuItems } from './menuItems';
 
 export function getActions(navigate: NavigateFunction) {
   const setNavigationOpen = useLocalState((state) => state.setNavigationOpen);
+  const { user } = useUserState();
 
-  const actions: SpotlightAction[] = [
+  const actions: SpotlightActionData[] = [
     {
-      title: t`Home`,
+      id: 'home',
+      label: t`Home`,
       description: `Go to the home page`,
-      onTrigger: () => navigate(menuItems.home.link),
-      icon: <IconHome size="1.2rem" />
+      onClick: () => navigate(menuItems.home.link),
+      leftSection: <IconHome size="1.2rem" />
     },
     {
-      title: t`Dashboard`,
+      id: 'dashboard',
+      label: t`Dashboard`,
       description: t`Go to the InvenTree dashboard`,
-      onTrigger: () => navigate(menuItems.dashboard.link),
-      icon: <IconLink size="1.2rem" />
+      onClick: () => navigate(menuItems.dashboard.link),
+      leftSection: <IconLink size="1.2rem" />
     },
     {
-      title: t`Documentation`,
+      id: 'documentation',
+      label: t`Documentation`,
       description: t`Visit the documentation to learn more about InvenTree`,
-      onTrigger: () => (window.location.href = docLinks.faq),
-      icon: <IconLink size="1.2rem" />
+      onClick: () => (window.location.href = docLinks.faq),
+      leftSection: <IconLink size="1.2rem" />
     },
     {
-      title: t`About InvenTree`,
+      id: 'about',
+      label: t`About InvenTree`,
       description: t`About the InvenTree org`,
-      onTrigger: () => aboutInvenTree(),
-      icon: <IconLink size="1.2rem" />
+      onClick: () => aboutInvenTree(),
+      leftSection: <IconLink size="1.2rem" />
     },
     {
-      title: t`Server Information`,
+      id: 'server-info',
+      label: t`Server Information`,
       description: t`About this Inventree instance`,
-      onTrigger: () => serverInfo(),
-      icon: <IconLink size="1.2rem" />
+      onClick: () => serverInfo(),
+      leftSection: <IconLink size="1.2rem" />
     },
     {
-      title: t`License Information`,
+      id: 'license-info',
+      label: t`License Information`,
       description: t`Licenses for dependencies of the service`,
-      onTrigger: () => licenseInfo(),
-      icon: <IconLink size="1.2rem" />
+      onClick: () => licenseInfo(),
+      leftSection: <IconLink size="1.2rem" />
     },
     {
-      title: t`Open Navigation`,
+      id: 'navigation',
+      label: t`Open Navigation`,
       description: t`Open the main navigation menu`,
-      onTrigger: () => setNavigationOpen(true),
-      icon: <IconPointer size="1.2rem" />
+      onClick: () => setNavigationOpen(true),
+      leftSection: <IconPointer size="1.2rem" />
     }
   ];
+
+  // Staff actions
+  user?.is_staff &&
+    actions.push({
+      id: 'admin-center',
+      label: t`Admin Center`,
+      description: t`Go to the Admin Center`,
+      onClick: () => navigate(menuItems['settings-admin'].link),
+      leftSection: <IconLink size="1.2rem" />
+    });
 
   return actions;
 }

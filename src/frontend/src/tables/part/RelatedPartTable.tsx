@@ -17,12 +17,14 @@ import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
 import { TableColumn } from '../Column';
 import { InvenTreeTable } from '../InvenTreeTable';
-import { RowDeleteAction } from '../RowActions';
+import { RowAction, RowDeleteAction } from '../RowActions';
 
 /**
  * Construct a table listing related parts for a given part
  */
-export function RelatedPartTable({ partId }: { partId: number }): ReactNode {
+export function RelatedPartTable({
+  partId
+}: Readonly<{ partId: number }>): ReactNode {
   const table = useTable('relatedparts');
 
   const navigate = useNavigate();
@@ -47,8 +49,8 @@ export function RelatedPartTable({ partId }: { partId: number }): ReactNode {
           let part = getPart(record);
           return (
             <Group
-              noWrap={true}
-              position="left"
+              wrap="nowrap"
+              justify="left"
               onClick={() => {
                 navigate(`/part/${part.pk}/`);
               }}
@@ -86,7 +88,7 @@ export function RelatedPartTable({ partId }: { partId: number }): ReactNode {
     initialData: {
       part_1: partId
     },
-    onFormSuccess: table.refreshTable
+    table: table
   });
 
   const [selectedRelatedPart, setSelectedRelatedPart] = useState<
@@ -97,13 +99,14 @@ export function RelatedPartTable({ partId }: { partId: number }): ReactNode {
     url: ApiEndpoints.related_part_list,
     pk: selectedRelatedPart,
     title: t`Delete Related Part`,
-    onFormSuccess: table.refreshTable
+    table: table
   });
 
   const tableActions: ReactNode[] = useMemo(() => {
     return [
       <AddItemButton
-        tooltip={t`Add related part`}
+        key="add-related-part"
+        tooltip={t`Add Related Part`}
         hidden={!user.hasAddRole(UserRoles.part)}
         onClick={() => newRelatedPart.open()}
       />
@@ -111,7 +114,7 @@ export function RelatedPartTable({ partId }: { partId: number }): ReactNode {
   }, [user]);
 
   const rowActions = useCallback(
-    (record: any) => {
+    (record: any): RowAction[] => {
       return [
         RowDeleteAction({
           hidden: !user.hasDeleteRole(UserRoles.part),

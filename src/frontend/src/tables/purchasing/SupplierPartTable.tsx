@@ -8,7 +8,6 @@ import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { useSupplierPartFields } from '../../forms/CompanyForms';
-import { openDeleteApiForm, openEditApiForm } from '../../functions/forms';
 import {
   useCreateApiFormModal,
   useDeleteApiFormModal,
@@ -27,14 +26,16 @@ import {
 } from '../ColumnRenderers';
 import { TableFilter } from '../Filter';
 import { InvenTreeTable } from '../InvenTreeTable';
-import { RowDeleteAction, RowEditAction } from '../RowActions';
+import { RowAction, RowDeleteAction, RowEditAction } from '../RowActions';
 import { TableHoverCard } from '../TableHoverCard';
 
 /*
  * Construct a table listing supplier parts
  */
 
-export function SupplierPartTable({ params }: { params: any }): ReactNode {
+export function SupplierPartTable({
+  params
+}: Readonly<{ params: any }>): ReactNode {
   const table = useTable('supplierparts');
 
   const user = useUserState();
@@ -46,7 +47,7 @@ export function SupplierPartTable({ params }: { params: any }): ReactNode {
         accessor: 'part',
         switchable: 'part' in params,
         sortable: true,
-        render: (record: any) => PartColumn(record?.part_detail)
+        render: (record: any) => PartColumn({ part: record?.part_detail })
       },
       {
         accessor: 'supplier',
@@ -135,7 +136,7 @@ export function SupplierPartTable({ params }: { params: any }): ReactNode {
         }
       },
       LinkColumn({}),
-      NoteColumn(),
+      NoteColumn({}),
       {
         accessor: 'available',
         sortable: true,
@@ -167,13 +168,14 @@ export function SupplierPartTable({ params }: { params: any }): ReactNode {
       part: params?.part,
       supplier: params?.supplier
     },
-    onFormSuccess: table.refreshTable,
+    table: table,
     successMessage: t`Supplier part created`
   });
 
   const tableActions = useMemo(() => {
     return [
       <AddItemButton
+        key="add-supplier-part"
         tooltip={t`Add supplier part`}
         onClick={() => addSupplierPart.open()}
         hidden={!user.hasAddRole(UserRoles.purchase_order)}
@@ -210,19 +212,19 @@ export function SupplierPartTable({ params }: { params: any }): ReactNode {
     pk: selectedSupplierPart,
     title: t`Edit Supplier Part`,
     fields: editSupplierPartFields,
-    onFormSuccess: () => table.refreshTable()
+    table: table
   });
 
   const deleteSupplierPart = useDeleteApiFormModal({
     url: ApiEndpoints.supplier_part_list,
     pk: selectedSupplierPart,
     title: t`Delete Supplier Part`,
-    onFormSuccess: () => table.refreshTable()
+    table: table
   });
 
   // Row action callback
   const rowActions = useCallback(
-    (record: any) => {
+    (record: any): RowAction[] => {
       return [
         RowEditAction({
           hidden: !user.hasChangeRole(UserRoles.purchase_order),
@@ -260,6 +262,7 @@ export function SupplierPartTable({ params }: { params: any }): ReactNode {
             manufacturer_detail: true
           },
           rowActions: rowActions,
+          enableDownload: true,
           tableActions: tableActions,
           tableFilters: tableFilters,
           modelType: ModelType.supplierpart

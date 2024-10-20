@@ -12,8 +12,10 @@ from django.db.models import Sum
 from InvenTree import status_codes as status
 
 import common.models
+from common.settings import set_global_setting
 import build.tasks
 from build.models import Build, BuildItem, BuildLine, generate_next_build_reference
+from build.status_codes import BuildStatus
 from part.models import Part, BomItem, BomItemSubstitute, PartTestTemplate
 from stock.models import StockItem, StockItemTestResult
 from users.models import Owner
@@ -53,6 +55,7 @@ class BuildTestBase(TestCase):
             description="Why does it matter what my description is?",
             assembly=True,
             trackable=True,
+            testable=True,
         )
 
         # create one build with one required test template
@@ -61,6 +64,7 @@ class BuildTestBase(TestCase):
             description="Why does it matter what my description is?",
             assembly=True,
             trackable=True,
+            testable=True,
         )
 
         cls.test_template_required = PartTestTemplate.objects.create(
@@ -96,6 +100,7 @@ class BuildTestBase(TestCase):
             description="Why does it matter what my description is?",
             assembly=True,
             trackable=True,
+            testable=True,
         )
 
         cls.test_template_non_required = PartTestTemplate.objects.create(
@@ -174,6 +179,7 @@ class BuildTestBase(TestCase):
             part=cls.assembly,
             quantity=10,
             issued_by=get_user_model().objects.get(pk=1),
+            status=BuildStatus.PENDING,
         )
 
         # Create some BuildLine items we can use later on
@@ -215,7 +221,7 @@ class BuildTest(BuildTestBase):
     def test_ref_int(self):
         """Test the "integer reference" field used for natural sorting"""
         # Set build reference to new value
-        common.models.InvenTreeSetting.set_setting('BUILDORDER_REFERENCE_PATTERN', 'BO-{ref}-???', change_user=None)
+        set_global_setting('BUILDORDER_REFERENCE_PATTERN', 'BO-{ref}-???', change_user=None)
 
         refs = {
             'BO-123-456': 123,
@@ -238,7 +244,7 @@ class BuildTest(BuildTestBase):
             self.assertEqual(build.reference_int, ref_int)
 
         # Set build reference back to default value
-        common.models.InvenTreeSetting.set_setting('BUILDORDER_REFERENCE_PATTERN', 'BO-{ref:04d}', change_user=None)
+        set_global_setting('BUILDORDER_REFERENCE_PATTERN', 'BO-{ref:04d}', change_user=None)
 
     def test_ref_validation(self):
         """Test that the reference field validation works as expected"""
@@ -271,7 +277,7 @@ class BuildTest(BuildTestBase):
             )
 
         # Try a new validator pattern
-        common.models.InvenTreeSetting.set_setting('BUILDORDER_REFERENCE_PATTERN', '{ref}-BO', change_user=None)
+        set_global_setting('BUILDORDER_REFERENCE_PATTERN', '{ref}-BO', change_user=None)
 
         for ref in [
             '1234-BO',
@@ -285,11 +291,11 @@ class BuildTest(BuildTestBase):
             )
 
         # Set build reference back to default value
-        common.models.InvenTreeSetting.set_setting('BUILDORDER_REFERENCE_PATTERN', 'BO-{ref:04d}', change_user=None)
+        set_global_setting('BUILDORDER_REFERENCE_PATTERN', 'BO-{ref:04d}', change_user=None)
 
     def test_next_ref(self):
         """Test that the next reference is automatically generated"""
-        common.models.InvenTreeSetting.set_setting('BUILDORDER_REFERENCE_PATTERN', 'XYZ-{ref:06d}', change_user=None)
+        set_global_setting('BUILDORDER_REFERENCE_PATTERN', 'XYZ-{ref:06d}', change_user=None)
 
         build = Build.objects.create(
             part=self.assembly,
@@ -311,7 +317,7 @@ class BuildTest(BuildTestBase):
         self.assertEqual(build.reference_int, 988)
 
         # Set build reference back to default value
-        common.models.InvenTreeSetting.set_setting('BUILDORDER_REFERENCE_PATTERN', 'BO-{ref:04d}', change_user=None)
+        set_global_setting('BUILDORDER_REFERENCE_PATTERN', 'BO-{ref:04d}', change_user=None)
 
     def test_init(self):
         """Perform some basic tests before we start the ball rolling"""
@@ -319,6 +325,10 @@ class BuildTest(BuildTestBase):
 
         # Build is PENDING
         self.assertEqual(self.build.status, status.BuildStatus.PENDING)
+
+        self.assertTrue(self.build.is_active)
+        self.assertTrue(self.build.can_hold)
+        self.assertTrue(self.build.can_issue)
 
         # Build has two build outputs
         self.assertEqual(self.build.output_count, 2)
@@ -469,6 +479,11 @@ class BuildTest(BuildTestBase):
 
     def test_overallocation_and_trim(self):
         """Test overallocation of stock and trim function"""
+
+        self.assertEqual(self.build.status, status.BuildStatus.PENDING)
+        self.build.issue_build()
+        self.assertEqual(self.build.status, status.BuildStatus.PRODUCTION)
+
         # Fully allocate tracked stock (not eligible for trimming)
         self.allocate_stock(
             self.output_1,
@@ -515,6 +530,7 @@ class BuildTest(BuildTestBase):
 
         self.build.complete_build_output(self.output_1, None)
         self.build.complete_build_output(self.output_2, None)
+
         self.assertTrue(self.build.can_complete)
 
         n = StockItem.objects.filter(consumed_by=self.build).count()
@@ -582,6 +598,8 @@ class BuildTest(BuildTestBase):
         self.stock_2_1.quantity = 30
         self.stock_2_1.save()
 
+        self.build.issue_build()
+
         # Allocate non-tracked parts
         self.allocate_stock(
             None,
@@ -647,7 +665,7 @@ class BuildTest(BuildTestBase):
         """Test the prevention completion when a required test is missing feature"""
 
         # with required tests incompleted the save should fail
-        common.models.InvenTreeSetting.set_setting('PREVENT_BUILD_COMPLETION_HAVING_INCOMPLETED_TESTS', True, change_user=None)
+        set_global_setting('PREVENT_BUILD_COMPLETION_HAVING_INCOMPLETED_TESTS', True, change_user=None)
 
         with self.assertRaises(ValidationError):
             self.build_w_tests_trackable.complete_build_output(self.stockitem_with_required_test, None)

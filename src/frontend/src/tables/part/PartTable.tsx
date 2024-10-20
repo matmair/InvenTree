@@ -1,7 +1,6 @@
 import { t } from '@lingui/macro';
 import { Group, Text } from '@mantine/core';
 import { ReactNode, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
 import { formatPriceRange } from '../../defaults/formatters';
@@ -9,8 +8,6 @@ import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { usePartFields } from '../../forms/PartForms';
-import { shortenString } from '../../functions/tables';
-import { getDetailUrl } from '../../functions/urls';
 import { useCreateApiFormModal } from '../../hooks/UseForm';
 import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
@@ -28,12 +25,17 @@ function partTableColumns(): TableColumn[] {
   return [
     {
       accessor: 'name',
+      title: t`Part`,
       sortable: true,
       noWrap: true,
-      render: (record: any) => PartColumn(record)
+      render: (record: any) => PartColumn({ part: record })
     },
     {
       accessor: 'IPN',
+      sortable: true
+    },
+    {
+      accessor: 'revision',
       sortable: true
     },
     {
@@ -44,13 +46,12 @@ function partTableColumns(): TableColumn[] {
     {
       accessor: 'category',
       sortable: true,
-
-      render: function (record: any) {
-        // TODO: Link to the category detail page
-        return shortenString({
-          str: record.category_detail?.pathstring
-        });
-      }
+      render: (record: any) => record.category_detail?.pathstring
+    },
+    {
+      accessor: 'default_location',
+      sortable: true,
+      render: (record: any) => record.default_location_detail?.pathstring
     },
     {
       accessor: 'total_in_stock',
@@ -72,7 +73,7 @@ function partTableColumns(): TableColumn[] {
 
         if (min_stock > stock) {
           extra.push(
-            <Text key="min-stock" color="orange">
+            <Text key="min-stock" c="orange">
               {t`Minimum stock` + `: ${min_stock}`}
             </Text>
           );
@@ -140,10 +141,10 @@ function partTableColumns(): TableColumn[] {
         return (
           <TableHoverCard
             value={
-              <Group spacing="xs" position="left" noWrap>
-                <Text color={color}>{text}</Text>
+              <Group gap="xs" justify="left" wrap="nowrap">
+                <Text c={color}>{text}</Text>
                 {record.units && (
-                  <Text size="xs" color={color}>
+                  <Text size="xs" c={color}>
                     [{record.units}]
                   </Text>
                 )}
@@ -179,6 +180,12 @@ function partTableFilters(): TableFilter[] {
       type: 'boolean'
     },
     {
+      name: 'locked',
+      label: t`Locked`,
+      description: t`Filter by part locked status`,
+      type: 'boolean'
+    },
+    {
       name: 'assembly',
       label: t`Assembly`,
       description: t`Filter by assembly attribute`,
@@ -194,6 +201,12 @@ function partTableFilters(): TableFilter[] {
       name: 'component',
       label: t`Component`,
       description: t`Filter by component attribute`,
+      type: 'boolean'
+    },
+    {
+      name: 'testable',
+      label: t`Testable`,
+      description: t`Filter by testable attribute`,
       type: 'boolean'
     },
     {
@@ -247,14 +260,47 @@ function partTableFilters(): TableFilter[] {
         { value: 'true', label: t`Virtual` },
         { value: 'false', label: t`Not Virtual` }
       ]
+    },
+    {
+      name: 'is_template',
+      label: t`Is Template`,
+      description: t`Filter by parts which are templates`,
+      type: 'boolean'
+    },
+    {
+      name: 'is_revision',
+      label: t`Is Revision`,
+      description: t`Filter by parts which are revisions`
+    },
+    {
+      name: 'has_revisions',
+      label: t`Has Revisions`,
+      description: t`Filter by parts which have revisions`
+    },
+    {
+      name: 'has_pricing',
+      label: t`Has Pricing`,
+      description: t`Filter by parts which have pricing information`,
+      type: 'boolean'
+    },
+    {
+      name: 'unallocated_stock',
+      label: t`Available Stock`,
+      description: t`Filter by parts which have available stock`,
+      type: 'boolean'
+    },
+    {
+      name: 'starred',
+      label: t`Subscribed`,
+      description: t`Filter by parts to which the user is subscribed`,
+      type: 'boolean'
+    },
+    {
+      name: 'stocktake',
+      label: t`Has Stocktake`,
+      description: t`Filter by parts which have stocktake information`,
+      type: 'boolean'
     }
-    // unallocated_stock
-    // starred
-    // stocktake
-    // is_template
-    // virtual
-    // has_pricing
-    // TODO: Any others from table_filters.js?
   ];
 }
 
@@ -263,31 +309,36 @@ function partTableFilters(): TableFilter[] {
  * @param {Object} params - The query parameters to pass to the API
  * @returns
  */
-export function PartListTable({ props }: { props: InvenTreeTableProps }) {
+export function PartListTable({
+  props,
+  defaultPartData
+}: Readonly<{
+  props: InvenTreeTableProps;
+  defaultPartData?: any;
+}>) {
   const tableColumns = useMemo(() => partTableColumns(), []);
   const tableFilters = useMemo(() => partTableFilters(), []);
 
   const table = useTable('part-list');
   const user = useUserState();
-  const navigate = useNavigate();
+
+  const initialPartData = useMemo(() => {
+    return defaultPartData ?? props.params ?? {};
+  }, [defaultPartData, props.params]);
 
   const newPart = useCreateApiFormModal({
     url: ApiEndpoints.part_list,
     title: t`Add Part`,
     fields: usePartFields({ create: true }),
-    initialData: {
-      ...(props.params ?? {})
-    },
-    onFormSuccess: (data: any) => {
-      if (data.pk) {
-        navigate(getDetailUrl(ModelType.part, data.pk));
-      }
-    }
+    initialData: initialPartData,
+    follow: true,
+    modelType: ModelType.part
   });
 
   const tableActions = useMemo(() => {
     return [
       <AddItemButton
+        key="add-part"
         hidden={!user.hasAddRole(UserRoles.part)}
         tooltip={t`Add Part`}
         onClick={() => newPart.open()}
@@ -310,7 +361,8 @@ export function PartListTable({ props }: { props: InvenTreeTableProps }) {
           tableActions: tableActions,
           params: {
             ...props.params,
-            category_detail: true
+            category_detail: true,
+            location_detail: true
           }
         }}
       />

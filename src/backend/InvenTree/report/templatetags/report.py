@@ -7,15 +7,17 @@ from decimal import Decimal
 
 from django import template
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.safestring import SafeString, mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from PIL import Image
 
+import common.icons
 import InvenTree.helpers
 import InvenTree.helpers_model
 import report.helpers
-from common.models import InvenTreeSetting
+from common.settings import get_global_setting
 from company.models import Company
 from part.models import Part
 
@@ -87,7 +89,7 @@ def asset(filename):
         filename = '' + filename
 
     # If in debug mode, return URL to the image, not a local file
-    debug_mode = InvenTreeSetting.get_setting('REPORT_DEBUG_MODE', cache=False)
+    debug_mode = get_global_setting('REPORT_DEBUG_MODE', cache=False)
 
     # Test if the file actually exists
     full_path = settings.MEDIA_ROOT.joinpath('report', 'assets', filename).resolve()
@@ -108,7 +110,7 @@ def uploaded_image(
     validate=True,
     **kwargs,
 ):
-    """Return a fully-qualified path for an 'uploaded' image.
+    """Return raw image data from an 'uploaded' image.
 
     Arguments:
         filename: The filename of the image relative to the MEDIA_ROOT directory
@@ -122,7 +124,7 @@ def uploaded_image(
         rotate: Optional rotation to apply to the image
 
     Returns:
-        A fully qualified path to the image
+        Binary image data to be rendered directly in a <img> tag
 
     Raises:
         FileNotFoundError if the file does not exist
@@ -132,7 +134,7 @@ def uploaded_image(
         filename = '' + filename
 
     # If in debug mode, return URL to the image, not a local file
-    debug_mode = InvenTreeSetting.get_setting('REPORT_DEBUG_MODE', cache=False)
+    debug_mode = get_global_setting('REPORT_DEBUG_MODE', cache=False)
 
     # Check if the file exists
     if not filename:
@@ -167,8 +169,20 @@ def uploaded_image(
         # A placeholder image showing that the image is missing
         img = Image.new('RGB', (64, 64), color='red')
 
-    width = kwargs.get('width', None)
-    height = kwargs.get('height', None)
+    width = kwargs.get('width')
+    height = kwargs.get('height')
+
+    if width is not None:
+        try:
+            width = int(width)
+        except ValueError:
+            width = None
+
+    if height is not None:
+        try:
+            height = int(height)
+        except ValueError:
+            height = None
 
     if width is not None and height is not None:
         # Resize the image, width *and* height are provided
@@ -176,19 +190,21 @@ def uploaded_image(
     elif width is not None:
         # Resize the image, width only
         wpercent = width / float(img.size[0])
-        hsize = int((float(img.size[1]) * float(wpercent)))
+        hsize = int(float(img.size[1]) * float(wpercent))
         img = img.resize((width, hsize))
     elif height is not None:
         # Resize the image, height only
         hpercent = height / float(img.size[1])
-        wsize = int((float(img.size[0]) * float(hpercent)))
+        wsize = int(float(img.size[0]) * float(hpercent))
         img = img.resize((wsize, height))
 
     # Optionally rotate the image
-    rotate = kwargs.get('rotate', None)
-
-    if rotate is not None:
-        img = img.rotate(rotate)
+    if rotate := kwargs.get('rotate'):
+        try:
+            rotate = int(rotate)
+            img = img.rotate(rotate)
+        except ValueError:
+            pass
 
     # Return a base-64 encoded image
     img_data = report.helpers.encode_image_base64(img)
@@ -300,7 +316,7 @@ def logo_image(**kwargs):
     - Otherwise, return a path to the default InvenTree logo
     """
     # If in debug mode, return URL to the image, not a local file
-    debug_mode = InvenTreeSetting.get_setting('REPORT_DEBUG_MODE', cache=False)
+    debug_mode = get_global_setting('REPORT_DEBUG_MODE', cache=False)
 
     return InvenTree.helpers.getLogoImage(as_file=not debug_mode, **kwargs)
 
@@ -401,7 +417,7 @@ def format_number(number, **kwargs):
     # Normalize the number (remove trailing zeroes)
     number = number.normalize()
 
-    decimals = kwargs.get('decimal_places', None)
+    decimals = kwargs.get('decimal_places')
 
     if decimals is not None:
         try:
@@ -415,7 +431,7 @@ def format_number(number, **kwargs):
     value = format(value, 'f')
     value = str(value)
 
-    leading = kwargs.get('leading', None)
+    leading = kwargs.get('leading')
 
     if leading is not None:
         try:
@@ -428,34 +444,92 @@ def format_number(number, **kwargs):
 
 
 @register.simple_tag
-def format_datetime(datetime, timezone=None, format=None):
+def format_datetime(datetime, timezone=None, fmt=None):
     """Format a datetime object for display.
 
     Arguments:
         datetime: The datetime object to format
         timezone: The timezone to use for the date (defaults to the server timezone)
-        format: The format string to use (defaults to ISO formatting)
+        fmt: The format string to use (defaults to ISO formatting)
     """
     datetime = InvenTree.helpers.to_local_time(datetime, timezone)
 
-    if format:
-        return datetime.strftime(format)
+    if fmt:
+        return datetime.strftime(fmt)
     else:
         return datetime.isoformat()
 
 
 @register.simple_tag
-def format_date(date, timezone=None, format=None):
+def format_date(date, timezone=None, fmt=None):
     """Format a date object for display.
 
     Arguments:
         date: The date to format
         timezone: The timezone to use for the date (defaults to the server timezone)
-        format: The format string to use (defaults to ISO formatting)
+        fmt: The format string to use (defaults to ISO formatting)
     """
     date = InvenTree.helpers.to_local_time(date, timezone).date()
 
-    if format:
-        return date.strftime(format)
+    if fmt:
+        return date.strftime(fmt)
     else:
         return date.isoformat()
+
+
+@register.simple_tag()
+def icon(name, **kwargs):
+    """Render an icon from the icon packs.
+
+    Arguments:
+        name: The name of the icon to render
+
+    Keyword Arguments:
+        class: Optional class name(s) to apply to the icon element
+    """
+    if not name:
+        return ''
+
+    try:
+        pack, icon, variant = common.icons.validate_icon(name)
+    except ValidationError:
+        return ''
+
+    unicode = chr(int(icon['variants'][variant], 16))
+    return mark_safe(
+        f'<i class="icon {kwargs.get("class", "")}" style="font-family: inventree-icon-font-{pack.prefix}">{unicode}</i>'
+    )
+
+
+@register.simple_tag()
+def include_icon_fonts():
+    """Return the CSS font-face rule for the icon fonts used on the current page (or all)."""
+    fonts = []
+
+    for font in common.icons.get_icon_packs().values():
+        # generate the font src string (prefer ttf over woff, woff2 is not supported by weasyprint)
+        if 'truetype' in font.fonts:
+            font_format, url = 'truetype', font.fonts['truetype']
+        elif 'woff' in font.fonts:
+            font_format, url = 'woff', font.fonts['woff']
+
+        fonts.append(f"""
+@font-face {'{'}
+    font-family: 'inventree-icon-font-{font.prefix}';
+    src: url('{InvenTree.helpers_model.construct_absolute_url(url)}') format('{font_format}');
+{'}'}\n""")
+
+    icon_class = f"""
+.icon {'{'}
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    /* Better font rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+{'}'}
+    """
+
+    return mark_safe(icon_class + '\n'.join(fonts))

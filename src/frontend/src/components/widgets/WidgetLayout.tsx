@@ -4,9 +4,9 @@ import {
   Container,
   Group,
   Indicator,
-  createStyles
+  Menu,
+  Text
 } from '@mantine/core';
-import { Menu, Text } from '@mantine/core';
 import { useDisclosure, useHotkeys } from '@mantine/hooks';
 import {
   IconArrowBackUpDouble,
@@ -18,6 +18,8 @@ import {
 import { useEffect, useState } from 'react';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
+import * as classes from './WidgetLayout.css';
+
 const ReactGridLayout = WidthProvider(Responsive);
 
 interface LayoutStorage {
@@ -25,21 +27,6 @@ interface LayoutStorage {
 }
 
 const compactType = 'vertical';
-
-const useItemStyle = createStyles((theme) => ({
-  backgroundItem: {
-    backgroundColor:
-      theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.white,
-    maxWidth: '100%',
-    padding: '8px',
-    boxShadow: theme.shadows.md
-  },
-
-  baseItem: {
-    maxWidth: '100%',
-    padding: '8px'
-  }
-}));
 
 export interface LayoutItemType {
   i: number;
@@ -56,16 +43,15 @@ export function WidgetLayout({
   className = 'layout',
   localstorageName = 'argl',
   rowHeight = 30
-}: {
+}: Readonly<{
   items: LayoutItemType[];
   className?: string;
   localstorageName?: string;
   rowHeight?: number;
-}) {
+}>) {
   const [layouts, setLayouts] = useState({});
   const [editable, setEditable] = useDisclosure(false);
   const [boxShown, setBoxShown] = useDisclosure(true);
-  const { classes } = useItemStyle();
 
   useEffect(() => {
     let layout = getFromLS('layouts') || [];
@@ -144,17 +130,17 @@ function WidgetControlBar({
   resetLayout,
   boxShown,
   boxFnc
-}: {
+}: Readonly<{
   editable: boolean;
   editFnc: () => void;
   resetLayout: () => void;
   boxShown: boolean;
   boxFnc: () => void;
-}) {
+}>) {
   useHotkeys([['mod+E', () => editFnc()]]);
 
   return (
-    <Group position="right">
+    <Group justify="right">
       <Menu
         shadow="md"
         width={200}
@@ -180,18 +166,18 @@ function WidgetControlBar({
             <Trans>Layout</Trans>
           </Menu.Label>
           <Menu.Item
-            icon={<IconArrowBackUpDouble size={14} />}
+            leftSection={<IconArrowBackUpDouble size={14} />}
             onClick={resetLayout}
           >
             <Trans>Reset Layout</Trans>
           </Menu.Item>
           <Menu.Item
-            icon={
+            leftSection={
               <IconLayout2 size={14} color={editable ? 'red' : undefined} />
             }
             onClick={editFnc}
             rightSection={
-              <Text size="xs" color="dimmed">
+              <Text size="xs" c="dimmed">
                 ⌘E
               </Text>
             }
@@ -205,7 +191,7 @@ function WidgetControlBar({
             <Trans>Appearance</Trans>
           </Menu.Label>
           <Menu.Item
-            icon={
+            leftSection={
               boxShown ? (
                 <IconSquareCheck size={14} />
               ) : (

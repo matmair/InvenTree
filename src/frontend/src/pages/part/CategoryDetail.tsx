@@ -1,30 +1,37 @@
 import { t } from '@lingui/macro';
-import { LoadingOverlay, Skeleton, Stack, Text } from '@mantine/core';
+import { Group, LoadingOverlay, Skeleton, Stack, Text } from '@mantine/core';
 import {
   IconCategory,
-  IconDots,
   IconInfoCircle,
   IconListDetails,
   IconSitemap
 } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import AdminButton from '../../components/buttons/AdminButton';
 import { DetailsField, DetailsTable } from '../../components/details/Details';
 import { ItemDetailsGrid } from '../../components/details/ItemDetails';
 import {
-  ActionDropdown,
-  EditItemAction
+  DeleteItemAction,
+  EditItemAction,
+  OptionsActionDropdown
 } from '../../components/items/ActionDropdown';
+import { ApiIcon } from '../../components/items/ApiIcon';
+import InstanceDetail from '../../components/nav/InstanceDetail';
+import NavigationTree from '../../components/nav/NavigationTree';
 import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
-import { PartCategoryTree } from '../../components/nav/PartCategoryTree';
+import { PanelType } from '../../components/panels/Panel';
+import { PanelGroup } from '../../components/panels/PanelGroup';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { partCategoryFields } from '../../forms/PartForms';
 import { getDetailUrl } from '../../functions/urls';
-import { useEditApiFormModal } from '../../hooks/UseForm';
+import {
+  useDeleteApiFormModal,
+  useEditApiFormModal
+} from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
 import { useUserState } from '../../states/UserState';
 import ParametricPartTable from '../../tables/part/ParametricPartTable';
@@ -36,13 +43,14 @@ import { PartListTable } from '../../tables/part/PartTable';
  *
  * Note: If no category ID is supplied, this acts as the top-level part category page
  */
-export default function CategoryDetail({}: {}) {
+export default function CategoryDetail() {
   const { id: _id } = useParams();
   const id = useMemo(
     () => (!isNaN(parseInt(_id || '')) ? _id : undefined),
     [_id]
   );
 
+  const navigate = useNavigate();
   const user = useUserState();
 
   const [treeOpen, setTreeOpen] = useState(false);
@@ -50,7 +58,8 @@ export default function CategoryDetail({}: {}) {
   const {
     instance: category,
     refreshInstance,
-    instanceQuery
+    instanceQuery,
+    requestStatus
   } = useInstance({
     endpoint: ApiEndpoints.category_list,
     hasPrimaryKey: true,
@@ -70,7 +79,13 @@ export default function CategoryDetail({}: {}) {
         type: 'text',
         name: 'name',
         label: t`Name`,
-        copy: true
+        copy: true,
+        value_formatter: () => (
+          <Group gap="xs">
+            {category.icon && <ApiIcon name={category.icon} />}
+            {category.name}
+          </Group>
+        )
       },
       {
         type: 'text',
@@ -94,6 +109,12 @@ export default function CategoryDetail({}: {}) {
         label: t`Parent Category`,
         model: ModelType.partcategory,
         hidden: !category?.parent
+      },
+      {
+        type: 'boolean',
+        name: 'starred',
+        icon: 'notification',
+        label: t`Subscribed`
       }
     ];
 
@@ -102,7 +123,8 @@ export default function CategoryDetail({}: {}) {
         type: 'text',
         name: 'part_count',
         label: t`Parts`,
-        icon: 'part'
+        icon: 'part',
+        value_formatter: () => category?.part_count || '0'
       },
       {
         type: 'text',
@@ -153,24 +175,68 @@ export default function CategoryDetail({}: {}) {
     onFormSuccess: refreshInstance
   });
 
+  const deleteOptions = useMemo(() => {
+    return [
+      {
+        value: 0,
+        display_name: `Move items to parent category`
+      },
+      {
+        value: 1,
+        display_name: t`Delete items`
+      }
+    ];
+  }, []);
+
+  const deleteCategory = useDeleteApiFormModal({
+    url: ApiEndpoints.category_list,
+    pk: id,
+    title: t`Delete Part Category`,
+    fields: {
+      delete_parts: {
+        label: t`Parts Action`,
+        description: t`Action for parts in this category`,
+        choices: deleteOptions,
+        field_type: 'choice'
+      },
+      delete_child_categories: {
+        label: t`Child Categories Action`,
+        description: t`Action for child categories in this category`,
+        choices: deleteOptions,
+        field_type: 'choice'
+      }
+    },
+    onFormSuccess: () => {
+      if (category.parent) {
+        navigate(getDetailUrl(ModelType.partcategory, category.parent));
+      } else {
+        navigate('/part/');
+      }
+    }
+  });
+
   const categoryActions = useMemo(() => {
     return [
-      <ActionDropdown
-        key="category"
+      <AdminButton model={ModelType.partcategory} pk={category.pk} />,
+      <OptionsActionDropdown
         tooltip={t`Category Actions`}
-        icon={<IconDots />}
         actions={[
           EditItemAction({
             hidden: !id || !user.hasChangeRole(UserRoles.part_category),
             tooltip: t`Edit Part Category`,
             onClick: () => editCategory.open()
+          }),
+          DeleteItemAction({
+            hidden: !id || !user.hasDeleteRole(UserRoles.part_category),
+            tooltip: t`Delete Part Category`,
+            onClick: () => deleteCategory.open()
           })
         ]}
       />
     ];
-  }, [id, user]);
+  }, [id, user, category.pk]);
 
-  const categoryPanels: PanelType[] = useMemo(
+  const panels: PanelType[] = useMemo(
     () => [
       {
         name: 'details',
@@ -213,7 +279,8 @@ export default function CategoryDetail({}: {}) {
       { name: t`Parts`, url: '/part' },
       ...(category.path ?? []).map((c: any) => ({
         name: c.name,
-        url: getDetailUrl(ModelType.partcategory, c.pk)
+        url: getDetailUrl(ModelType.partcategory, c.pk),
+        icon: c.icon ? <ApiIcon name={c.icon} /> : undefined
       }))
     ],
     [category]
@@ -222,26 +289,44 @@ export default function CategoryDetail({}: {}) {
   return (
     <>
       {editCategory.modal}
-      <Stack spacing="xs">
-        <LoadingOverlay visible={instanceQuery.isFetching} />
-        <PartCategoryTree
-          opened={treeOpen}
-          onClose={() => {
-            setTreeOpen(false);
-          }}
-          selectedCategory={category?.pk}
-        />
-        <PageDetail
-          title={t`Part Category`}
-          detail={<Text>{category.name ?? 'Top level'}</Text>}
-          breadcrumbs={breadcrumbs}
-          breadcrumbAction={() => {
-            setTreeOpen(true);
-          }}
-          actions={categoryActions}
-        />
-        <PanelGroup pageKey="partcategory" panels={categoryPanels} />
-      </Stack>
+      {deleteCategory.modal}
+      <InstanceDetail
+        status={requestStatus}
+        loading={id ? instanceQuery.isFetching : false}
+      >
+        <Stack gap="xs">
+          <LoadingOverlay visible={instanceQuery.isFetching} />
+          <NavigationTree
+            modelType={ModelType.partcategory}
+            title={t`Part Categories`}
+            endpoint={ApiEndpoints.category_tree}
+            opened={treeOpen}
+            onClose={() => {
+              setTreeOpen(false);
+            }}
+            selectedId={category?.pk}
+          />
+          <PageDetail
+            title={t`Part Category`}
+            subtitle={category?.name}
+            icon={category?.icon && <ApiIcon name={category?.icon} />}
+            breadcrumbs={breadcrumbs}
+            breadcrumbAction={() => {
+              setTreeOpen(true);
+            }}
+            actions={categoryActions}
+            editAction={editCategory.open}
+            editEnabled={user.hasChangePermission(ModelType.partcategory)}
+          />
+          <PanelGroup
+            pageKey="partcategory"
+            panels={panels}
+            model={ModelType.partcategory}
+            instance={category}
+            id={category.pk}
+          />
+        </Stack>
+      </InstanceDetail>
     </>
   );
 }

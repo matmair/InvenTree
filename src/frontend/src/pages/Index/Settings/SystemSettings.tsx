@@ -1,9 +1,8 @@
 import { Trans, t } from '@lingui/macro';
-import { Stack } from '@mantine/core';
+import { Skeleton, Stack } from '@mantine/core';
 import {
   IconBellCog,
   IconCategory,
-  IconClipboardCheck,
   IconCurrencyDollar,
   IconFileAnalytics,
   IconFingerprint,
@@ -11,7 +10,6 @@ import {
   IconQrcode,
   IconServerCog,
   IconShoppingCart,
-  IconSitemap,
   IconTag,
   IconTools,
   IconTruckDelivery,
@@ -19,11 +17,14 @@ import {
 } from '@tabler/icons-react';
 import { useMemo } from 'react';
 
-import { StylishText } from '../../../components/items/StylishText';
-import { PanelGroup, PanelType } from '../../../components/nav/PanelGroup';
+import PermissionDenied from '../../../components/errors/PermissionDenied';
+import { PlaceholderPanel } from '../../../components/items/Placeholder';
 import { SettingsHeader } from '../../../components/nav/SettingsHeader';
+import { PanelType } from '../../../components/panels/Panel';
+import { PanelGroup } from '../../../components/panels/PanelGroup';
 import { GlobalSettingList } from '../../../components/settings/SettingList';
 import { useServerApiState } from '../../../states/ApiState';
+import { useUserState } from '../../../states/UserState';
 
 /**
  * System settings page
@@ -77,7 +78,11 @@ export default function SystemSettings() {
               'LOGIN_SIGNUP_MAIL_RESTRICTION',
               'LOGIN_ENABLE_SSO',
               'LOGIN_ENABLE_SSO_REG',
-              'LOGIN_SIGNUP_SSO_AUTO'
+              'LOGIN_SIGNUP_SSO_AUTO',
+              'LOGIN_ENABLE_SSO_GROUP_SYNC',
+              'SSO_GROUP_MAP',
+              'SSO_GROUP_KEY',
+              'SSO_REMOVE_GROUPS'
             ]}
           />
         )
@@ -91,7 +96,11 @@ export default function SystemSettings() {
             keys={[
               'BARCODE_ENABLE',
               'BARCODE_INPUT_DELAY',
-              'BARCODE_WEBCAM_SUPPORT'
+              'BARCODE_WEBCAM_SUPPORT',
+              'BARCODE_SHOW_TEXT',
+              'BARCODE_GENERATION_PLUGIN',
+              'BARCODE_STORE_RESULTS',
+              'BARCODE_RESULTS_MAX_NUM'
             ]}
           />
         )
@@ -99,7 +108,8 @@ export default function SystemSettings() {
       {
         name: 'notifications',
         label: t`Notifications`,
-        icon: <IconBellCog />
+        icon: <IconBellCog />,
+        content: <PlaceholderPanel />
       },
       {
         name: 'pricing',
@@ -110,6 +120,7 @@ export default function SystemSettings() {
             <GlobalSettingList
               keys={[
                 'INVENTREE_DEFAULT_CURRENCY',
+                'CURRENCY_CODES',
                 'PART_INTERNAL_PRICE',
                 'PART_BOM_USE_INTERNAL_PRICE',
                 'PRICING_DECIMAL_PLACES_MIN',
@@ -151,17 +162,10 @@ export default function SystemSettings() {
               'REPORT_ENABLE',
               'REPORT_DEFAULT_PAGE_SIZE',
               'REPORT_DEBUG_MODE',
-              'REPORT_LOG_ERRORS',
-              'REPORT_ENABLE_TEST_REPORT',
-              'REPORT_ATTACH_TEST_REPORT'
+              'REPORT_LOG_ERRORS'
             ]}
           />
         )
-      },
-      {
-        name: 'categories',
-        label: t`Part Categories`,
-        icon: <IconSitemap />
       },
       {
         name: 'parts',
@@ -170,10 +174,12 @@ export default function SystemSettings() {
         content: (
           <GlobalSettingList
             keys={[
-              'PART_ENABLE_REVISION',
               'PART_IPN_REGEX',
               'PART_ALLOW_DUPLICATE_IPN',
               'PART_ALLOW_EDIT_IPN',
+              'PART_ALLOW_DELETE_FROM_ASSEMBLY',
+              'PART_ENABLE_REVISION',
+              'PART_REVISION_ASSEMBLY_ONLY',
               'PART_NAME_FORMAT',
               'PART_SHOW_RELATED',
               'PART_CREATE_INITIAL',
@@ -213,15 +219,12 @@ export default function SystemSettings() {
               'STOCK_LOCATION_DEFAULT_ICON',
               'STOCK_SHOW_INSTALLED_ITEMS',
               'STOCK_ENFORCE_BOM_INSTALLATION',
-              'TEST_STATION_DATA'
+              'STOCK_ALLOW_OUT_OF_STOCK_TRANSFER',
+              'TEST_STATION_DATA',
+              'TEST_UPLOAD_CREATE_TEMPLATE'
             ]}
           />
         )
-      },
-      {
-        name: 'stocktake',
-        label: t`Stocktake`,
-        icon: <IconClipboardCheck />
       },
       {
         name: 'buildorders',
@@ -232,6 +235,10 @@ export default function SystemSettings() {
             keys={[
               'BUILDORDER_REFERENCE_PATTERN',
               'BUILDORDER_REQUIRE_RESPONSIBLE',
+              'BUILDORDER_REQUIRE_ACTIVE_PART',
+              'BUILDORDER_REQUIRE_LOCKED_PART',
+              'BUILDORDER_REQUIRE_VALID_BOM',
+              'BUILDORDER_REQUIRE_CLOSED_CHILDS',
               'PREVENT_BUILD_COMPLETION_HAVING_INCOMPLETED_TESTS'
             ]}
           />
@@ -262,7 +269,8 @@ export default function SystemSettings() {
               'SALESORDER_REFERENCE_PATTERN',
               'SALESORDER_REQUIRE_RESPONSIBLE',
               'SALESORDER_DEFAULT_SHIPMENT',
-              'SALESORDER_EDIT_COMPLETED_ORDERS'
+              'SALESORDER_EDIT_COMPLETED_ORDERS',
+              'SALESORDER_SHIP_COMPLETE'
             ]}
           />
         )
@@ -284,19 +292,34 @@ export default function SystemSettings() {
       }
     ];
   }, []);
+
+  const user = useUserState();
+
   const [server] = useServerApiState((state) => [state.server]);
+
+  if (!user.isLoggedIn()) {
+    return <Skeleton />;
+  }
 
   return (
     <>
-      <Stack spacing="xs">
-        <SettingsHeader
-          title={t`System Settings`}
-          subtitle={server.instance || ''}
-          switch_link="/settings/user"
-          switch_text={<Trans>Switch to User Setting</Trans>}
-        />
-        <PanelGroup pageKey="system-settings" panels={systemSettingsPanels} />
-      </Stack>
+      {user.isStaff() ? (
+        <Stack gap="xs">
+          <SettingsHeader
+            label="system"
+            title={t`System Settings`}
+            subtitle={server.instance || ''}
+          />
+          <PanelGroup
+            pageKey="system-settings"
+            panels={systemSettingsPanels}
+            model="systemsettings"
+            id={null}
+          />
+        </Stack>
+      ) : (
+        <PermissionDenied />
+      )}
     </>
   );
 }

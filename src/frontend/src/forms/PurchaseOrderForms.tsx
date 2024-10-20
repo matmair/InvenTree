@@ -1,5 +1,13 @@
 import { t } from '@lingui/macro';
-import { Flex, FocusTrap, Modal, NumberInput, TextInput } from '@mantine/core';
+import {
+  Container,
+  Flex,
+  FocusTrap,
+  Group,
+  Modal,
+  Table,
+  TextInput
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconAddressBook,
@@ -19,11 +27,16 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { api } from '../App';
 import { ActionButton } from '../components/buttons/ActionButton';
+import RemoveRowButton from '../components/buttons/RemoveRowButton';
 import { StandaloneField } from '../components/forms/StandaloneField';
 import {
   ApiFormAdjustFilterType,
   ApiFormFieldSet
 } from '../components/forms/fields/ApiFormField';
+import {
+  TableFieldExtraRow,
+  TableFieldRowProps
+} from '../components/forms/fields/TableField';
 import { Thumbnail } from '../components/images/Thumbnail';
 import { ProgressBar } from '../components/items/ProgressBar';
 import { StylishText } from '../components/items/StylishText';
@@ -31,6 +44,10 @@ import { ApiEndpoints } from '../enums/ApiEndpoints';
 import { ModelType } from '../enums/ModelType';
 import { InvenTreeIcon } from '../functions/icons';
 import { useCreateApiFormModal } from '../hooks/UseForm';
+import {
+  useBatchCodeGenerator,
+  useSerialNumberGenerator
+} from '../hooks/UseGenerator';
 import { apiUrl } from '../states/ApiState';
 
 /*
@@ -121,14 +138,19 @@ export function usePurchaseOrderLineItemFields({
 /**
  * Construct a set of fields for creating / editing a PurchaseOrder instance
  */
-export function usePurchaseOrderFields(): ApiFormFieldSet {
+export function usePurchaseOrderFields({
+  duplicateOrderId
+}: {
+  duplicateOrderId?: number;
+}): ApiFormFieldSet {
   return useMemo(() => {
-    return {
+    let fields: ApiFormFieldSet = {
       reference: {
         icon: <IconHash />
       },
       description: {},
       supplier: {
+        disabled: duplicateOrderId !== undefined,
         filters: {
           is_supplier: true,
           active: true
@@ -164,78 +186,109 @@ export function usePurchaseOrderFields(): ApiFormFieldSet {
         }
       },
       responsible: {
+        filters: {
+          is_active: true
+        },
         icon: <IconUsers />
       }
     };
-  }, []);
+
+    // Order duplication fields
+    if (!!duplicateOrderId) {
+      fields.duplicate = {
+        children: {
+          order_id: {
+            hidden: true,
+            value: duplicateOrderId
+          },
+          copy_lines: {},
+          copy_extra_lines: {}
+        }
+      };
+    }
+
+    return fields;
+  }, [duplicateOrderId]);
 }
 
 /**
  * Render a table row for a single TableField entry
  */
 function LineItemFormRow({
-  input,
+  props,
   record,
   statuses
-}: {
-  input: any;
+}: Readonly<{
+  props: TableFieldRowProps;
   record: any;
   statuses: any;
-}) {
+}>) {
   // Barcode Modal state
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, { open, close }] = useDisclosure(false, {
+    onClose: () => props.changeFn(props.idx, 'barcode', undefined)
+  });
 
-  // Location value
-  const [location, setLocation] = useState(
-    input.item.location ??
-      record.part_detail.default_location ??
-      record.part_detail.category_default_location
-  );
-  const [locationOpen, locationHandlers] = useDisclosure(
-    location ? true : false,
-    {
-      onClose: () => input.changeFn(input.idx, 'location', null),
-      onOpen: () => input.changeFn(input.idx, 'location', location)
-    }
-  );
+  const [locationOpen, locationHandlers] = useDisclosure(false, {
+    onClose: () => props.changeFn(props.idx, 'location', undefined)
+  });
 
-  // Change form value when state is altered
-  useEffect(() => {
-    input.changeFn(input.idx, 'location', location);
-  }, [location]);
-
-  // State for serializing
-  const [batchCode, setBatchCode] = useState<string>('');
-  const [serials, setSerials] = useState<string>('');
-  const [batchOpen, batchHandlers] = useDisclosure(false, {
-    onClose: () => {
-      input.changeFn(input.idx, 'batch_code', '');
-      input.changeFn(input.idx, 'serial_numbers', '');
+  // Batch code generator
+  const batchCodeGenerator = useBatchCodeGenerator((value: any) => {
+    if (value) {
+      props.changeFn(props.idx, 'batch_code', value);
     }
   });
 
-  // Change form value when state is altered
-  useEffect(() => {
-    input.changeFn(input.idx, 'batch_code', batchCode);
-  }, [batchCode]);
+  // Serial numbebr generator
+  const serialNumberGenerator = useSerialNumberGenerator((value: any) => {
+    if (value) {
+      props.changeFn(props.idx, 'serial_numbers', value);
+    }
+  });
 
-  // Change form value when state is altered
-  useEffect(() => {
-    input.changeFn(input.idx, 'serial_numbers', serials);
-  }, [serials]);
+  const [packagingOpen, packagingHandlers] = useDisclosure(false, {
+    onClose: () => {
+      props.changeFn(props.idx, 'packaging', undefined);
+    }
+  });
+
+  const [noteOpen, noteHandlers] = useDisclosure(false, {
+    onClose: () => {
+      props.changeFn(props.idx, 'note', undefined);
+    }
+  });
+
+  const [batchOpen, batchHandlers] = useDisclosure(false, {
+    onClose: () => {
+      props.changeFn(props.idx, 'batch_code', undefined);
+      props.changeFn(props.idx, 'serial_numbers', undefined);
+    },
+    onOpen: () => {
+      // Generate a new batch code
+      batchCodeGenerator.update({
+        part: record?.supplier_part_detail?.part,
+        order: record?.order
+      });
+      // Generate new serial numbers
+      serialNumberGenerator.update({
+        part: record?.supplier_part_detail?.part,
+        quantity: props.item.quantity
+      });
+    }
+  });
 
   // Status value
   const [statusOpen, statusHandlers] = useDisclosure(false, {
-    onClose: () => input.changeFn(input.idx, 'status', 10)
+    onClose: () => props.changeFn(props.idx, 'status', undefined)
   });
 
   // Barcode value
   const [barcodeInput, setBarcodeInput] = useState<any>('');
-  const [barcode, setBarcode] = useState(null);
+  const [barcode, setBarcode] = useState<string | undefined>(undefined);
 
   // Change form value when state is altered
   useEffect(() => {
-    input.changeFn(input.idx, 'barcode', barcode);
+    props.changeFn(props.idx, 'barcode', barcode);
   }, [barcode]);
 
   // Update location field description on state change
@@ -308,8 +361,8 @@ function LineItemFormRow({
           />
         </FocusTrap>
       </Modal>
-      <tr>
-        <td>
+      <Table.Tr>
+        <Table.Td>
           <Flex gap="sm" align="center">
             <Thumbnail
               size={40}
@@ -318,48 +371,68 @@ function LineItemFormRow({
             />
             <div>{record.part_detail.name}</div>
           </Flex>
-        </td>
-        <td>{record.supplier_part_detail.SKU}</td>
-        <td>
+        </Table.Td>
+        <Table.Td>{record.supplier_part_detail.SKU}</Table.Td>
+        <Table.Td>
           <ProgressBar
             value={record.received}
             maximum={record.quantity}
             progressLabel
           />
-        </td>
-        <td style={{ width: '1%', whiteSpace: 'nowrap' }}>
-          <NumberInput
-            value={input.item.quantity}
-            style={{ width: '100px' }}
-            max={input.item.quantity}
-            min={0}
-            onChange={(value) => input.changeFn(input.idx, 'quantity', value)}
+        </Table.Td>
+        <Table.Td style={{ whiteSpace: 'nowrap' }}>
+          <StandaloneField
+            fieldName="quantity"
+            fieldDefinition={{
+              field_type: 'number',
+              value: props.item.quantity,
+              onValueChange: (value) =>
+                props.changeFn(props.idx, 'quantity', value)
+            }}
+            error={props.rowErrors?.quantity?.message}
           />
-        </td>
-        <td style={{ width: '1%', whiteSpace: 'nowrap' }}>
+        </Table.Td>
+        <Table.Td style={{ width: '1%', whiteSpace: 'nowrap' }}>
           <Flex gap="1px">
             <ActionButton
+              size="sm"
               onClick={() => locationHandlers.toggle()}
               icon={<InvenTreeIcon icon="location" />}
               tooltip={t`Set Location`}
               tooltipAlignment="top"
-              variant={locationOpen ? 'filled' : 'outline'}
+              variant={locationOpen ? 'filled' : 'transparent'}
             />
             <ActionButton
+              size="sm"
               onClick={() => batchHandlers.toggle()}
               icon={<InvenTreeIcon icon="batch_code" />}
               tooltip={t`Assign Batch Code${
                 record.trackable && ' and Serial Numbers'
               }`}
               tooltipAlignment="top"
-              variant={batchOpen ? 'filled' : 'outline'}
+              variant={batchOpen ? 'filled' : 'transparent'}
+            />
+            <ActionButton
+              size="sm"
+              icon={<InvenTreeIcon icon="packaging" />}
+              tooltip={t`Adjust Packaging`}
+              tooltipAlignment="top"
+              onClick={() => packagingHandlers.toggle()}
+              variant={packagingOpen ? 'filled' : 'transparent'}
             />
             <ActionButton
               onClick={() => statusHandlers.toggle()}
               icon={<InvenTreeIcon icon="status" />}
               tooltip={t`Change Status`}
               tooltipAlignment="top"
-              variant={statusOpen ? 'filled' : 'outline'}
+              variant={statusOpen ? 'filled' : 'transparent'}
+            />
+            <ActionButton
+              icon={<InvenTreeIcon icon="note" />}
+              tooltip={t`Add Note`}
+              tooltipAlignment="top"
+              variant={noteOpen ? 'filled' : 'transparent'}
+              onClick={() => noteHandlers.toggle()}
             />
             {barcode ? (
               <ActionButton
@@ -368,56 +441,51 @@ function LineItemFormRow({
                 tooltipAlignment="top"
                 variant="filled"
                 color="red"
-                onClick={() => setBarcode(null)}
+                onClick={() => setBarcode(undefined)}
               />
             ) : (
               <ActionButton
                 icon={<InvenTreeIcon icon="barcode" />}
                 tooltip={t`Scan Barcode`}
                 tooltipAlignment="top"
-                variant="outline"
+                variant="transparent"
                 onClick={() => open()}
               />
             )}
-            <ActionButton
-              onClick={() => input.removeFn(input.idx)}
-              icon={<InvenTreeIcon icon="square_x" />}
-              tooltip={t`Remove item from list`}
-              tooltipAlignment="top"
-              color="red"
-            />
+            <RemoveRowButton onClick={() => props.removeFn(props.idx)} />
           </Flex>
-        </td>
-      </tr>
+        </Table.Td>
+      </Table.Tr>
       {locationOpen && (
-        <tr>
-          <td colSpan={4}>
-            <Flex align="end" gap={5}>
-              <div style={{ flexGrow: '1' }}>
-                <StandaloneField
-                  fieldDefinition={{
-                    field_type: 'related field',
-                    model: ModelType.stocklocation,
-                    api_url: apiUrl(ApiEndpoints.stock_location_list),
-                    filters: {
-                      structural: false
-                    },
-                    onValueChange: (value) => {
-                      setLocation(value);
-                    },
-                    description: locationDescription,
-                    value: location,
-                    label: t`Location`,
-                    icon: <InvenTreeIcon icon="location" />
-                  }}
-                  defaultValue={
-                    record.destination ??
-                    (record.destination_detail
-                      ? record.destination_detail.pk
-                      : null)
-                  }
-                />
-              </div>
+        <Table.Tr>
+          <Table.Td colSpan={10}>
+            <Group grow preventGrowOverflow={false} justify="flex-apart" p="xs">
+              <Container flex={0} p="xs">
+                <InvenTreeIcon icon="downright" />
+              </Container>
+              <StandaloneField
+                fieldDefinition={{
+                  field_type: 'related field',
+                  model: ModelType.stocklocation,
+                  api_url: apiUrl(ApiEndpoints.stock_location_list),
+                  filters: {
+                    structural: false
+                  },
+                  onValueChange: (value) => {
+                    props.changeFn(props.idx, 'location', value);
+                  },
+                  description: locationDescription,
+                  value: location,
+                  label: t`Location`,
+                  icon: <InvenTreeIcon icon="location" />
+                }}
+                defaultValue={
+                  record.destination ??
+                  (record.destination_detail
+                    ? record.destination_detail.pk
+                    : null)
+                }
+              />
               <Flex style={{ marginBottom: '7px' }}>
                 {(record.part_detail.default_location ||
                   record.part_detail.category_default_location) && (
@@ -425,7 +493,9 @@ function LineItemFormRow({
                     icon={<InvenTreeIcon icon="default_location" />}
                     tooltip={t`Store at default location`}
                     onClick={() =>
-                      setLocation(
+                      props.changeFn(
+                        props.idx,
+                        'location',
                         record.part_detail.default_location ??
                           record.part_detail.category_default_location
                       )
@@ -437,7 +507,9 @@ function LineItemFormRow({
                   <ActionButton
                     icon={<InvenTreeIcon icon="destination" />}
                     tooltip={t`Store at line item destination `}
-                    onClick={() => setLocation(record.destination)}
+                    onClick={() =>
+                      props.changeFn(props.idx, 'location', record.destination)
+                    }
                     tooltipAlignment="top"
                   />
                 )}
@@ -447,126 +519,74 @@ function LineItemFormRow({
                     <ActionButton
                       icon={<InvenTreeIcon icon="repeat_destination" />}
                       tooltip={t`Store with already received stock`}
-                      onClick={() => setLocation(record.destination_detail.pk)}
+                      onClick={() =>
+                        props.changeFn(
+                          props.idx,
+                          'location',
+                          record.destination_detail.pk
+                        )
+                      }
                       tooltipAlignment="top"
                     />
                   )}
               </Flex>
-            </Flex>
-          </td>
-          <td>
-            <div
-              style={{
-                height: '100%',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(6, 1fr)',
-                gridTemplateRows: 'auto',
-                alignItems: 'end'
-              }}
-            >
-              <InvenTreeIcon icon="downleft" />
-            </div>
-          </td>
-        </tr>
+            </Group>
+          </Table.Td>
+        </Table.Tr>
       )}
-      {batchOpen && (
-        <>
-          <tr>
-            <td colSpan={4}>
-              <Flex align="end" gap={5}>
-                <div style={{ flexGrow: '1' }}>
-                  <StandaloneField
-                    fieldDefinition={{
-                      field_type: 'string',
-                      onValueChange: (value) => setBatchCode(value),
-                      label: 'Batch Code',
-                      value: batchCode
-                    }}
-                  />
-                </div>
-              </Flex>
-            </td>
-            <td>
-              <div
-                style={{
-                  height: '100%',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(6, 1fr)',
-                  gridTemplateRows: 'auto',
-                  alignItems: 'end'
-                }}
-              >
-                <span></span>
-                <InvenTreeIcon icon="downleft" />
-              </div>
-            </td>
-          </tr>
-          {record.trackable && (
-            <tr>
-              <td colSpan={4}>
-                <Flex align="end" gap={5}>
-                  <div style={{ flexGrow: '1' }}>
-                    <StandaloneField
-                      fieldDefinition={{
-                        field_type: 'string',
-                        onValueChange: (value) => setSerials(value),
-                        label: 'Serial numbers',
-                        value: serials
-                      }}
-                    />
-                  </div>
-                </Flex>
-              </td>
-              <td>
-                <div
-                  style={{
-                    height: '100%',
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(6, 1fr)',
-                    gridTemplateRows: 'auto',
-                    alignItems: 'end'
-                  }}
-                >
-                  <span></span>
-                  <InvenTreeIcon icon="downleft" />
-                </div>
-              </td>
-            </tr>
-          )}
-        </>
-      )}
-      {statusOpen && (
-        <tr>
-          <td colSpan={4}>
-            <StandaloneField
-              fieldDefinition={{
-                field_type: 'choice',
-                api_url: apiUrl(ApiEndpoints.stock_status),
-                choices: statuses,
-                label: 'Status',
-                onValueChange: (value) =>
-                  input.changeFn(input.idx, 'status', value)
-              }}
-              defaultValue={10}
-            />
-          </td>
-          <td>
-            <div
-              style={{
-                height: '100%',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(6, 1fr)',
-                gridTemplateRows: 'auto',
-                alignItems: 'end'
-              }}
-            >
-              <span></span>
-              <span></span>
-              <InvenTreeIcon icon="downleft" />
-            </div>
-          </td>
-        </tr>
-      )}
+      <TableFieldExtraRow
+        visible={batchOpen}
+        onValueChange={(value) => props.changeFn(props.idx, 'batch', value)}
+        fieldDefinition={{
+          field_type: 'string',
+          label: t`Batch Code`,
+          value: props.item.batch_code
+        }}
+        error={props.rowErrors?.batch_code?.message}
+      />
+      <TableFieldExtraRow
+        visible={batchOpen && record.trackable}
+        onValueChange={(value) =>
+          props.changeFn(props.idx, 'serial_numbers', value)
+        }
+        fieldDefinition={{
+          field_type: 'string',
+          label: t`Serial numbers`,
+          value: props.item.serial_numbers
+        }}
+        error={props.rowErrors?.serial_numbers?.message}
+      />
+      <TableFieldExtraRow
+        visible={packagingOpen}
+        onValueChange={(value) => props.changeFn(props.idx, 'packaging', value)}
+        fieldDefinition={{
+          field_type: 'string',
+          label: t`Packaging`
+        }}
+        defaultValue={record?.supplier_part_detail?.packaging}
+        error={props.rowErrors?.packaging?.message}
+      />
+      <TableFieldExtraRow
+        visible={statusOpen}
+        defaultValue={10}
+        onValueChange={(value) => props.changeFn(props.idx, 'status', value)}
+        fieldDefinition={{
+          field_type: 'choice',
+          api_url: apiUrl(ApiEndpoints.stock_status),
+          choices: statuses,
+          label: t`Status`
+        }}
+        error={props.rowErrors?.status?.message}
+      />
+      <TableFieldExtraRow
+        visible={noteOpen}
+        onValueChange={(value) => props.changeFn(props.idx, 'note', value)}
+        fieldDefinition={{
+          field_type: 'string',
+          label: t`Note`
+        }}
+        error={props.rowErrors?.note?.message}
+      />
     </>
   );
 }
@@ -627,19 +647,19 @@ export function useReceiveLineItems(props: LineItemsForm) {
           barcode: null
         };
       }),
-      modelRenderer: (instance) => {
-        const record = records[instance.item.line_item];
+      modelRenderer: (row: TableFieldRowProps) => {
+        const record = records[row.item.line_item];
 
         return (
           <LineItemFormRow
-            input={instance}
+            props={row}
             record={record}
             statuses={data}
             key={record.pk}
           />
         );
       },
-      headers: ['Part', 'SKU', 'Received', 'Quantity to receive', 'Actions']
+      headers: [t`Part`, t`SKU`, t`Received`, t`Quantity`, t`Actions`]
     },
     location: {
       filters: {
@@ -648,18 +668,14 @@ export function useReceiveLineItems(props: LineItemsForm) {
     }
   };
 
-  const url = apiUrl(ApiEndpoints.purchase_order_receive, null, {
-    id: props.orderPk
-  });
-
   return useCreateApiFormModal({
     ...props.formProps,
-    url: url,
-    title: t`Receive line items`,
+    url: apiUrl(ApiEndpoints.purchase_order_receive, props.orderPk),
+    title: t`Receive Line Items`,
     fields: fields,
     initialData: {
       location: null
     },
-    size: 'max(60%,800px)'
+    size: '80%'
   });
 }

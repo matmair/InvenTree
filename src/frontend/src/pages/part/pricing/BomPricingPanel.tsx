@@ -1,24 +1,15 @@
 import { t } from '@lingui/macro';
+import { BarChart, ChartTooltipProps, DonutChart } from '@mantine/charts';
 import {
+  Center,
   Group,
+  Paper,
   SegmentedControl,
   SimpleGrid,
   Stack,
   Text
 } from '@mantine/core';
 import { ReactNode, useMemo, useState } from 'react';
-import {
-  Bar,
-  BarChart,
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from 'recharts';
 
 import { CHART_COLORS } from '../../../components/charts/colors';
 import { tooltipFormatter } from '../../../components/charts/tooltipFormatter';
@@ -34,7 +25,31 @@ import { apiUrl } from '../../../states/ApiState';
 import { TableColumn } from '../../../tables/Column';
 import { DateColumn, PartColumn } from '../../../tables/ColumnRenderers';
 import { InvenTreeTable } from '../../../tables/InvenTreeTable';
-import { NoPricingData } from './PricingPanel';
+import { LoadingPricingData, NoPricingData } from './PricingPanel';
+
+/*
+ * Render a tooltip for the chart, with correct date information
+ */
+function ChartTooltip({ label, payload }: ChartTooltipProps) {
+  if (!payload) {
+    return null;
+  }
+
+  const data = payload[0] ?? {};
+
+  return (
+    <Paper px="md" py="sm" withBorder shadow="md" radius="md">
+      <Group justify="space-between" wrap="nowrap">
+        <Text key="title" c={data.payload?.color}>
+          {data.name}
+        </Text>
+        <Text key="price" fz="sm">
+          {formatCurrency(data.payload?.value)}
+        </Text>
+      </Group>
+    </Paper>
+  );
+}
 
 // Display BOM data as a pie chart
 function BomPieChart({
@@ -44,42 +59,40 @@ function BomPieChart({
   readonly data: any[];
   readonly currency: string;
 }) {
+  // Construct donut data
+  const maxPricing = useMemo(() => {
+    return (
+      data
+        ?.filter((el: any) => !!el.total_price_max)
+        .map((entry, index) => {
+          return {
+            // Note: Replace '.' in name to avoid issues with tooltip
+            name: entry?.name?.replace('.', '') ?? '',
+            value: entry?.total_price_max,
+            color: CHART_COLORS[index % CHART_COLORS.length] + '.5'
+          };
+        }) ?? []
+    );
+  }, [data]);
+
   return (
-    <ResponsiveContainer width="100%" height={500}>
-      <PieChart>
-        <Pie
-          data={data}
-          dataKey="total_price_min"
-          nameKey="name"
-          innerRadius={20}
-          outerRadius={100}
-        >
-          {data.map((_entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={CHART_COLORS[index % CHART_COLORS.length]}
-            />
-          ))}
-        </Pie>
-        <Pie
-          data={data}
-          dataKey="total_price_max"
-          nameKey="name"
-          innerRadius={120}
-          outerRadius={240}
-        >
-          {data.map((_entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={CHART_COLORS[index % CHART_COLORS.length]}
-            />
-          ))}
-        </Pie>
-        <Tooltip
-          formatter={(label, payload) => tooltipFormatter(label, currency)}
-        />
-      </PieChart>
-    </ResponsiveContainer>
+    <Center>
+      <DonutChart
+        data={maxPricing}
+        size={500}
+        thickness={80}
+        withLabels={false}
+        withLabelsLine={false}
+        tooltipDataSource="segment"
+        chartLabel={t`Total Price`}
+        valueFormatter={(value) => tooltipFormatter(value, currency)}
+        tooltipProps={{
+          content: ({ label, payload }) => (
+            <ChartTooltip label={label} payload={payload} />
+          )
+        }}
+      />
+    </Center>
   );
 }
 
@@ -92,32 +105,23 @@ function BomBarChart({
   readonly currency: string;
 }) {
   return (
-    <ResponsiveContainer width="100%" height={500}>
-      <BarChart data={data}>
-        <XAxis dataKey="name" />
-        <YAxis
-          tickFormatter={(value, index) =>
-            formatCurrency(value, {
-              currency: currency
-            })?.toString() ?? ''
-          }
-        />
-        <Tooltip
-          formatter={(label, payload) => tooltipFormatter(label, currency)}
-        />
-        <Legend />
-        <Bar
-          dataKey="total_price_min"
-          fill={CHART_COLORS[0]}
-          label={t`Minimum Total Price`}
-        />
-        <Bar
-          dataKey="total_price_max"
-          fill={CHART_COLORS[1]}
-          label={t`Maximum Total Price`}
-        />
-      </BarChart>
-    </ResponsiveContainer>
+    <BarChart
+      h={500}
+      dataKey="name"
+      data={data}
+      xAxisLabel={t`Component`}
+      yAxisLabel={t`Price Range`}
+      series={[
+        { name: 'total_price_min', label: t`Minimum Price`, color: 'yellow.6' },
+        { name: 'total_price_max', label: t`Maximum Price`, color: 'teal.6' }
+      ]}
+      valueFormatter={(value) => tooltipFormatter(value, currency)}
+      tooltipProps={{
+        content: ({ label, payload }) => (
+          <ChartTooltip label={label} payload={payload} />
+        )
+      }}
+    />
   );
 }
 
@@ -128,7 +132,7 @@ export default function BomPricingPanel({
   readonly part: any;
   readonly pricing: any;
 }): ReactNode {
-  const table = useTable('pricing-bom');
+  const table = useTable('pricingbom');
 
   const columns: TableColumn[] = useMemo(() => {
     return [
@@ -137,7 +141,7 @@ export default function BomPricingPanel({
         title: t`Component`,
         sortable: true,
         switchable: false,
-        render: (record: any) => PartColumn(record.sub_part_detail)
+        render: (record: any) => PartColumn({ part: record.sub_part_detail })
       },
       {
         accessor: 'quantity',
@@ -149,7 +153,7 @@ export default function BomPricingPanel({
           let units = record.sub_part_detail?.units;
 
           return (
-            <Group spacing="apart" grow>
+            <Group justify="space-between" grow>
               <Text>{quantity}</Text>
               {units && <Text size="xs">[{units}]</Text>}
             </Group>
@@ -209,8 +213,12 @@ export default function BomPricingPanel({
 
   const [chartType, setChartType] = useState<string>('pie');
 
+  const hasData: boolean = useMemo(() => {
+    return !table.isLoading && bomPricingData && bomPricingData.length > 0;
+  }, [table.isLoading, bomPricingData]);
+
   return (
-    <Stack spacing="xs">
+    <Stack gap="xs">
       <SimpleGrid cols={2}>
         <InvenTreeTable
           tableState={table}
@@ -227,26 +235,34 @@ export default function BomPricingPanel({
             modelField: 'sub_part'
           }}
         />
-        {bomPricingData.length > 0 ? (
-          <Stack spacing="xs">
-            {chartType == 'bar' && (
-              <BomBarChart data={bomPricingData} currency={pricing?.currency} />
-            )}
-            {chartType == 'pie' && (
-              <BomPieChart data={bomPricingData} currency={pricing?.currency} />
-            )}
-            <SegmentedControl
-              value={chartType}
-              onChange={setChartType}
-              data={[
-                { value: 'pie', label: t`Pie Chart` },
-                { value: 'bar', label: t`Bar Chart` }
-              ]}
-            />
-          </Stack>
-        ) : (
-          <NoPricingData />
-        )}
+        <Stack gap="xs">
+          {table.isLoading && <LoadingPricingData />}
+          {hasData && (
+            <Stack gap="xs">
+              {chartType == 'bar' && (
+                <BomBarChart
+                  data={bomPricingData}
+                  currency={pricing?.currency}
+                />
+              )}
+              {chartType == 'pie' && (
+                <BomPieChart
+                  data={bomPricingData}
+                  currency={pricing?.currency}
+                />
+              )}
+              <SegmentedControl
+                value={chartType}
+                onChange={setChartType}
+                data={[
+                  { value: 'pie', label: t`Pie Chart` },
+                  { value: 'bar', label: t`Bar Chart` }
+                ]}
+              />
+            </Stack>
+          )}
+          {!hasData && !table.isLoading && <NoPricingData />}
+        </Stack>
       </SimpleGrid>
     </Stack>
   );

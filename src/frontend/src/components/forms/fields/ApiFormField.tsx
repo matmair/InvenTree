@@ -1,26 +1,20 @@
 import { t } from '@lingui/macro';
-import {
-  Alert,
-  FileInput,
-  NumberInput,
-  Stack,
-  Switch,
-  TextInput
-} from '@mantine/core';
+import { Alert, FileInput, NumberInput, Stack, Switch } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { useId } from '@mantine/hooks';
-import { IconX } from '@tabler/icons-react';
-import { ReactNode, useCallback, useEffect } from 'react';
-import { useMemo } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo } from 'react';
 import { Control, FieldValues, useController } from 'react-hook-form';
 
 import { ModelType } from '../../../enums/ModelType';
 import { isTrue } from '../../../functions/conversion';
 import { ChoiceField } from './ChoiceField';
 import DateField from './DateField';
+import { DependentField } from './DependentField';
+import IconField from './IconField';
 import { NestedObjectField } from './NestedObjectField';
 import { RelatedModelField } from './RelatedModelField';
 import { TableField } from './TableField';
+import TextField from './TextField';
 
 export type ApiFormData = UseFormReturnType<Record<string, unknown>>;
 
@@ -41,17 +35,21 @@ export type ApiFormAdjustFilterType = {
  * @param icon : An icon to display next to the field
  * @param field_type : The type of field to render
  * @param api_url : The API endpoint to fetch data from (for related fields)
+ * @param pk_field : The primary key field for the related field (default = "pk")
  * @param model : The model to use for related fields
  * @param filters : Optional API filters to apply to related fields
  * @param required : Whether the field is required
  * @param hidden : Whether the field is hidden
  * @param disabled : Whether the field is disabled
+ * @param exclude : Whether to exclude the field from the submitted data
  * @param placeholder : The placeholder text to display
  * @param description : The description to display for the field
  * @param preFieldContent : Content to render before the field
  * @param postFieldContent : Content to render after the field
  * @param onValueChange : Callback function to call when the field value changes
  * @param adjustFilters : Callback function to adjust the filters for a related field before a query is made
+ * @param adjustValue : Callback function to adjust the value of the field before it is sent to the API
+ * @param onKeyDown : Callback function to get which key was pressed in the form to handle submission on enter
  */
 export type ApiFormFieldType = {
   label?: string;
@@ -63,6 +61,7 @@ export type ApiFormFieldType = {
     | 'email'
     | 'url'
     | 'string'
+    | 'icon'
     | 'boolean'
     | 'date'
     | 'datetime'
@@ -73,24 +72,30 @@ export type ApiFormFieldType = {
     | 'choice'
     | 'file upload'
     | 'nested object'
+    | 'dependent field'
     | 'table';
   api_url?: string;
+  pk_field?: string;
   model?: ModelType;
   modelRenderer?: (instance: any) => ReactNode;
   filters?: any;
+  child?: ApiFormFieldType;
   children?: { [key: string]: ApiFormFieldType };
   required?: boolean;
   choices?: any[];
   hidden?: boolean;
   disabled?: boolean;
+  exclude?: boolean;
   read_only?: boolean;
   placeholder?: string;
   description?: string;
   preFieldContent?: JSX.Element;
   postFieldContent?: JSX.Element;
-  onValueChange?: (value: any) => void;
+  adjustValue?: (value: any) => any;
+  onValueChange?: (value: any, record?: any) => void;
   adjustFilters?: (value: ApiFormAdjustFilterType) => any;
   headers?: string[];
+  depends_on?: string[];
 };
 
 /**
@@ -99,12 +104,20 @@ export type ApiFormFieldType = {
 export function ApiFormField({
   fieldName,
   definition,
-  control
-}: {
+  control,
+  hideLabels,
+  url,
+  setFields,
+  onKeyDown
+}: Readonly<{
   fieldName: string;
   definition: ApiFormFieldType;
   control: Control<FieldValues, any>;
-}) {
+  hideLabels?: boolean;
+  url?: string;
+  setFields?: React.Dispatch<React.SetStateAction<ApiFormFieldSet>>;
+  onKeyDown?: (value: any) => void;
+}>) {
   const fieldId = useId();
   const controller = useController({
     name: fieldName,
@@ -117,7 +130,11 @@ export function ApiFormField({
   const { value, ref } = field;
 
   useEffect(() => {
-    if (definition.field_type === 'nested object') return;
+    if (
+      definition.field_type === 'nested object' ||
+      definition.field_type === 'dependent field'
+    )
+      return;
 
     // hook up the value state to the input field
     if (definition.value !== undefined) {
@@ -125,21 +142,36 @@ export function ApiFormField({
     }
   }, [definition.value]);
 
+  const fieldDefinition: ApiFormFieldType = useMemo(() => {
+    return {
+      ...definition,
+      label: hideLabels ? undefined : definition.label,
+      description: hideLabels ? undefined : definition.description
+    };
+  }, [hideLabels, definition]);
+
   // pull out onValueChange as this can cause strange errors when passing the
   // definition to the input components via spread syntax
   const reducedDefinition = useMemo(() => {
     return {
-      ...definition,
+      ...fieldDefinition,
       onValueChange: undefined,
       adjustFilters: undefined,
+      adjustValue: undefined,
       read_only: undefined,
-      children: undefined
+      children: undefined,
+      exclude: undefined
     };
-  }, [definition]);
+  }, [fieldDefinition]);
 
   // Callback helper when form value changes
   const onChange = useCallback(
     (value: any) => {
+      // Allow for custom value adjustments (per field)
+      if (definition.adjustValue) {
+        value = definition.adjustValue(value);
+      }
+
       field.onChange(value);
 
       // Run custom callback for this field
@@ -170,16 +202,21 @@ export function ApiFormField({
     }
 
     return val;
+  }, [definition.field_type, value]);
+
+  // Coerce the value to a (stringified) boolean value
+  const booleanValue: boolean = useMemo(() => {
+    return isTrue(value);
   }, [value]);
 
   // Construct the individual field
-  function buildField() {
-    switch (definition.field_type) {
+  const fieldInstance = useMemo(() => {
+    switch (fieldDefinition.field_type) {
       case 'related field':
         return (
           <RelatedModelField
             controller={controller}
-            definition={definition}
+            definition={fieldDefinition}
             fieldName={fieldName}
           />
         );
@@ -187,38 +224,39 @@ export function ApiFormField({
       case 'url':
       case 'string':
         return (
-          <TextInput
-            {...reducedDefinition}
-            ref={field.ref}
-            id={fieldId}
-            type={definition.field_type}
-            value={value || ''}
-            error={error?.message}
-            radius="sm"
-            onChange={(event) => onChange(event.currentTarget.value)}
-            rightSection={
-              value && !definition.required ? (
-                <IconX size="1rem" color="red" onClick={() => onChange('')} />
-              ) : null
-            }
+          <TextField
+            definition={reducedDefinition}
+            controller={controller}
+            fieldName={fieldName}
+            onChange={onChange}
+            onKeyDown={(value) => {
+              onKeyDown?.(value);
+            }}
           />
+        );
+      case 'icon':
+        return (
+          <IconField definition={fieldDefinition} controller={controller} />
         );
       case 'boolean':
         return (
           <Switch
             {...reducedDefinition}
+            checked={booleanValue}
             ref={ref}
             id={fieldId}
+            aria-label={`boolean-field-${fieldName}`}
             radius="lg"
             size="sm"
-            checked={isTrue(value)}
             error={error?.message}
             onChange={(event) => onChange(event.currentTarget.checked)}
           />
         );
       case 'date':
       case 'datetime':
-        return <DateField controller={controller} definition={definition} />;
+        return (
+          <DateField controller={controller} definition={fieldDefinition} />
+        );
       case 'integer':
       case 'decimal':
       case 'float':
@@ -229,11 +267,11 @@ export function ApiFormField({
             radius="sm"
             ref={field.ref}
             id={fieldId}
+            aria-label={`number-field-${field.name}`}
             value={numericalValue}
             error={error?.message}
-            precision={definition.field_type == 'integer' ? 0 : 10}
-            onChange={(value: number) => onChange(value)}
-            removeTrailingZeros
+            decimalScale={definition.field_type == 'integer' ? 0 : 10}
+            onChange={(value: number | string | null) => onChange(value)}
             step={1}
           />
         );
@@ -242,7 +280,7 @@ export function ApiFormField({
           <ChoiceField
             controller={controller}
             fieldName={fieldName}
-            definition={definition}
+            definition={fieldDefinition}
           />
         );
       case 'file upload':
@@ -260,15 +298,27 @@ export function ApiFormField({
       case 'nested object':
         return (
           <NestedObjectField
-            definition={definition}
+            definition={fieldDefinition}
             fieldName={fieldName}
             control={control}
+            url={url}
+            setFields={setFields}
+          />
+        );
+      case 'dependent field':
+        return (
+          <DependentField
+            definition={fieldDefinition}
+            fieldName={fieldName}
+            control={control}
+            url={url}
+            setFields={setFields}
           />
         );
       case 'table':
         return (
           <TableField
-            definition={definition}
+            definition={fieldDefinition}
             fieldName={fieldName}
             control={controller}
           />
@@ -276,21 +326,36 @@ export function ApiFormField({
       default:
         return (
           <Alert color="red" title={t`Error`}>
-            Invalid field type for field '{fieldName}': '{definition.field_type}
-            '
+            Invalid field type for field '{fieldName}': '
+            {fieldDefinition.field_type}'
           </Alert>
         );
     }
-  }
+  }, [
+    booleanValue,
+    control,
+    controller,
+    field,
+    fieldId,
+    fieldName,
+    fieldDefinition,
+    numericalValue,
+    onChange,
+    onKeyDown,
+    reducedDefinition,
+    ref,
+    setFields,
+    value
+  ]);
 
-  if (definition.hidden) {
+  if (fieldDefinition.hidden) {
     return null;
   }
 
   return (
     <Stack>
       {definition.preFieldContent}
-      {buildField()}
+      {fieldInstance}
       {definition.postFieldContent}
     </Stack>
   );

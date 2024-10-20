@@ -21,7 +21,7 @@ from sesame.views import LoginView
 import build.api
 import common.api
 import company.api
-import label.api
+import importer.api
 import machine.api
 import order.api
 import part.api
@@ -30,6 +30,7 @@ import report.api
 import stock.api
 import users.api
 from plugin.urls import get_plugin_urls
+from stock.api import test_statistics_api_urls
 from web.urls import api_urls as web_api_urls
 from web.urls import urlpatterns as platform_urls
 
@@ -57,19 +58,36 @@ admin.site.site_header = 'InvenTree Admin'
 
 apipatterns = [
     # Global search
+    path('admin/', include(common.api.admin_api_urls)),
+    path('bom/', include(part.api.bom_api_urls)),
+    path('build/', include(build.api.build_api_urls)),
+    path('company/', include(company.api.company_api_urls)),
+    path('importer/', include(importer.api.importer_api_urls)),
+    path('label/', include(report.api.label_api_urls)),
+    path('machine/', include(machine.api.machine_api_urls)),
+    path('order/', include(order.api.order_api_urls)),
+    path('part/', include(part.api.part_api_urls)),
+    path('report/', include(report.api.report_api_urls)),
     path('search/', APISearchView.as_view(), name='api-search'),
     path('settings/', include(common.api.settings_api_urls)),
-    path('part/', include(part.api.part_api_urls)),
-    path('bom/', include(part.api.bom_api_urls)),
-    path('company/', include(company.api.company_api_urls)),
     path('stock/', include(stock.api.stock_api_urls)),
-    path('build/', include(build.api.build_api_urls)),
-    path('order/', include(order.api.order_api_urls)),
-    path('label/', include(label.api.label_api_urls)),
-    path('report/', include(report.api.report_api_urls)),
-    path('machine/', include(machine.api.machine_api_urls)),
+    path(
+        'generate/',
+        include([
+            path(
+                'batch-code/',
+                stock.api.GenerateBatchCode.as_view(),
+                name='api-generate-batch-code',
+            ),
+            path(
+                'serial-number/',
+                stock.api.GenerateSerialNumber.as_view(),
+                name='api-generate-serial-number',
+            ),
+        ]),
+    ),
+    path('test-statistics/', include(test_statistics_api_urls)),
     path('user/', include(users.api.user_urls)),
-    path('admin/', include(common.api.admin_api_urls)),
     path('web/', include(web_api_urls)),
     # Plugin endpoints
     path('', include(plugin.api.plugin_api_urls)),
@@ -165,68 +183,12 @@ backendpatterns = [
     path('api-doc/', SpectacularRedocView.as_view(url_name='schema'), name='api-doc'),
 ]
 
-if settings.ENABLE_CLASSIC_FRONTEND:
-    # "Dynamic" javascript files which are rendered using InvenTree templating.
-    backendpatterns += [
-        re_path(r'^js/dynamic/', include(dynamic_javascript_urls)),
-        re_path(r'^js/i18n/', include(translated_javascript_urls)),
-    ]
-
-classic_frontendpatterns = [
-    # Apps
-    #
-    path('build/', include(build_urls)),
-    path('common/', include(common_urls)),
-    path('company/', include(company_urls)),
-    path('order/', include(order_urls)),
-    path('manufacturer-part/', include(manufacturer_part_urls)),
-    path('part/', include(part_urls)),
-    path('stock/', include(stock_urls)),
-    path('supplier-part/', include(supplier_part_urls)),
-    path('edit-user/', EditUserView.as_view(), name='edit-user'),
-    path('set-password/', SetPasswordView.as_view(), name='set-password'),
-    path('index/', IndexView.as_view(), name='index'),
-    path('notifications/', include(notifications_urls)),
-    path('search/', SearchView.as_view(), name='search'),
-    path('settings/', include(settings_urls)),
-    path('about/', AboutView.as_view(), name='about'),
-    path('stats/', DatabaseStatsView.as_view(), name='stats'),
-    # DB user sessions
-    path(
-        'accounts/sessions/other/delete/',
-        view=CustomSessionDeleteOtherView.as_view(),
-        name='session_delete_other',
-    ),
-    re_path(
-        r'^accounts/sessions/(?P<pk>\w+)/delete/$',
-        view=CustomSessionDeleteView.as_view(),
-        name='session_delete',
-    ),
-    # Single Sign On / allauth
-    # overrides of urlpatterns
-    path('accounts/email/', CustomEmailView.as_view(), name='account_email'),
-    path(
-        'accounts/social/connections/',
-        CustomConnectionsView.as_view(),
-        name='socialaccount_connections',
-    ),
-    re_path(
-        r'^accounts/password/reset/key/(?P<uidb36>[0-9A-Za-z]+)-(?P<key>.+)/$',
-        CustomPasswordResetFromKeyView.as_view(),
-        name='account_reset_password_from_key',
-    ),
-    # Override login page
-    path('accounts/login/', CustomLoginView.as_view(), name='account_login'),
-    path('accounts/', include('allauth_2fa.urls')),  # MFA support
-    path('accounts/', include('allauth.urls')),  # included urlpatterns
-]
-
 urlpatterns = []
 
 if settings.INVENTREE_ADMIN_ENABLED:
     admin_url = settings.INVENTREE_ADMIN_URL
 
-    if settings.ADMIN_SHELL_ENABLE:  # noqa
+    if settings.ADMIN_SHELL_ENABLE:
         urlpatterns += [path(f'{admin_url}/shell/', include('django_admin_shell.urls'))]
 
     urlpatterns += [
@@ -236,21 +198,15 @@ if settings.INVENTREE_ADMIN_ENABLED:
 
 urlpatterns += backendpatterns
 
-frontendpatterns = []
-
-if settings.ENABLE_CLASSIC_FRONTEND:
-    frontendpatterns += classic_frontendpatterns
-if settings.ENABLE_PLATFORM_FRONTEND:
-    frontendpatterns += platform_urls
-    if not settings.ENABLE_CLASSIC_FRONTEND:
-        # Add a redirect for login views
-        frontendpatterns += [
-            path(
-                'accounts/login/',
-                RedirectView.as_view(url=settings.FRONTEND_URL_BASE, permanent=False),
-                name='account_login',
-            )
-        ]
+frontendpatterns = [
+    platform_urls,
+    # Add a redirect for login views
+    path(
+        'accounts/login/',
+        RedirectView.as_view(url=settings.FRONTEND_URL_BASE, permanent=False),
+        name='account_login',
+    ),
+]
 
 urlpatterns += frontendpatterns
 

@@ -1,4 +1,5 @@
 import { t } from '@lingui/macro';
+import { L } from '@lingui/react/dist/shared/react.e5f95de8';
 import {
   Badge,
   Button,
@@ -12,13 +13,16 @@ import {
   Text,
   Tooltip
 } from '@mantine/core';
-import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
+import { DateInput, DateValue } from '@mantine/dates';
+import dayjs from 'dayjs';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { StylishText } from '../components/items/StylishText';
 import { TableState } from '../hooks/UseTable';
 import {
   TableFilter,
   TableFilterChoice,
+  TableFilterType,
   getTableFilterOptions
 } from './Filter';
 
@@ -28,10 +32,10 @@ import {
 function FilterItem({
   flt,
   tableState
-}: {
+}: Readonly<{
   flt: TableFilter;
   tableState: TableState;
-}) {
+}>) {
   const removeFilter = useCallback(() => {
     let newFilters = tableState.activeFilters.filter(
       (f) => f.name !== flt.name
@@ -41,12 +45,12 @@ function FilterItem({
 
   return (
     <Paper p="sm" shadow="sm" radius="xs">
-      <Group position="apart" key={flt.name}>
-        <Stack spacing="xs">
+      <Group justify="space-between" key={flt.name} wrap="nowrap">
+        <Stack gap="xs">
           <Text size="sm">{flt.label}</Text>
           <Text size="xs">{flt.description}</Text>
         </Stack>
-        <Group position="right">
+        <Group justify="right">
           <Badge>{flt.displayValue ?? flt.value}</Badge>
           <Tooltip label={t`Remove filter`} withinPortal={true}>
             <CloseButton size="md" color="red" onClick={removeFilter} />
@@ -57,49 +61,38 @@ function FilterItem({
   );
 }
 
-interface FilterProps extends React.ComponentPropsWithoutRef<'div'> {
-  name: string;
-  label: string;
-  description?: string;
-}
-
-/*
- * Custom component for the filter select
- */
-const FilterSelectItem = forwardRef<HTMLDivElement, FilterProps>(
-  ({ label, description, ...others }, ref) => (
-    <div ref={ref} {...others}>
-      <Text size="sm">{label}</Text>
-      <Text size="xs">{description}</Text>
-    </div>
-  )
-);
-
 function FilterAddGroup({
   tableState,
   availableFilters
-}: {
+}: Readonly<{
   tableState: TableState;
   availableFilters: TableFilter[];
-}) {
-  const filterOptions = useMemo(() => {
-    let activeFilterNames =
-      tableState.activeFilters?.map((flt) => flt.name) ?? [];
+}>) {
+  const filterOptions: TableFilterChoice[] = useMemo(() => {
+    // List of filter names which are already active on this table
+    let activeFilterNames: string[] = [];
 
-    return availableFilters
-      .filter((flt) => !activeFilterNames.includes(flt.name))
-      .map((flt) => ({
-        value: flt.name,
-        label: flt.label,
-        description: flt.description
-      }));
+    if (tableState.activeFilters && tableState.activeFilters.length > 0) {
+      activeFilterNames =
+        tableState.activeFilters?.map((flt) => flt.name) ?? [];
+    }
+
+    return (
+      availableFilters
+        ?.filter((flt) => !activeFilterNames.includes(flt.name))
+        ?.map((flt) => ({
+          value: flt.name,
+          label: flt.label,
+          description: flt.description
+        })) ?? []
+    );
   }, [tableState.activeFilters, availableFilters]);
 
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
 
   const valueOptions: TableFilterChoice[] = useMemo(() => {
     // Find the matching filter
-    let filter: TableFilter | undefined = availableFilters.find(
+    let filter: TableFilter | undefined = availableFilters?.find(
       (flt) => flt.name === selectedFilter
     );
 
@@ -108,6 +101,14 @@ function FilterAddGroup({
     }
 
     return getTableFilterOptions(filter);
+  }, [selectedFilter]);
+
+  // Determine the "type" of filter (default = boolean)
+  const filterType: TableFilterType = useMemo(() => {
+    return (
+      availableFilters?.find((flt) => flt.name === selectedFilter)?.type ??
+      'boolean'
+    );
   }, [selectedFilter]);
 
   const setSelectedValue = useCallback(
@@ -137,27 +138,46 @@ function FilterAddGroup({
     [selectedFilter]
   );
 
+  const setDateValue = useCallback(
+    (value: DateValue) => {
+      if (value) {
+        let date = value.toString();
+        setSelectedValue(dayjs(date).format('YYYY-MM-DD'));
+      } else {
+        setSelectedValue('');
+      }
+    },
+    [setSelectedValue]
+  );
+
   return (
-    <Stack spacing="xs">
+    <Stack gap="xs">
       <Divider />
       <Select
         data={filterOptions}
-        itemComponent={FilterSelectItem}
         searchable={true}
         placeholder={t`Select filter`}
         label={t`Filter`}
         onChange={(value: string | null) => setSelectedFilter(value)}
         maxDropdownHeight={800}
       />
-      {selectedFilter && (
-        <Select
-          data={valueOptions}
-          label={t`Value`}
-          placeholder={t`Select filter value`}
-          onChange={(value: string | null) => setSelectedValue(value)}
-          maxDropdownHeight={800}
-        />
-      )}
+      {selectedFilter &&
+        (filterType === 'date' ? (
+          <DateInput
+            label={t`Value`}
+            placeholder={t`Select date value`}
+            onChange={setDateValue}
+          />
+        ) : (
+          <Select
+            data={valueOptions}
+            label={t`Value`}
+            searchable={true}
+            placeholder={t`Select filter value`}
+            onChange={(value: string | null) => setSelectedValue(value)}
+            maxDropdownHeight={800}
+          />
+        ))}
     </Stack>
   );
 }
@@ -167,12 +187,12 @@ export function FilterSelectDrawer({
   tableState,
   opened,
   onClose
-}: {
+}: Readonly<{
   availableFilters: TableFilter[];
   tableState: TableState;
   opened: boolean;
   onClose: () => void;
-}) {
+}>) {
   const [addFilter, setAddFilter] = useState<boolean>(false);
 
   // Hide the "add filter" selection whenever the selected filters change
@@ -193,16 +213,19 @@ export function FilterSelectDrawer({
       withCloseButton={true}
       opened={opened}
       onClose={onClose}
+      closeButtonProps={{
+        'aria-label': 'filter-drawer-close'
+      }}
       title={<StylishText size="lg">{t`Table Filters`}</StylishText>}
     >
-      <Stack spacing="xs">
+      <Stack gap="xs">
         {hasFilters &&
           tableState.activeFilters?.map((f) => (
             <FilterItem key={f.name} flt={f} tableState={tableState} />
           ))}
         {hasFilters && <Divider />}
         {addFilter && (
-          <Stack spacing="xs">
+          <Stack gap="xs">
             <FilterAddGroup
               tableState={tableState}
               availableFilters={availableFilters}

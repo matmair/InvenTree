@@ -12,13 +12,13 @@ Some common functions are provided for use in custom report and label templates.
 ```
 
 !!! tip "Use the Source, Luke"
-    To see the full range of available helper functions, refer to the source file [report.py](https://github.com/inventree/InvenTree/blob/master/src/backend/InvenTree/report/templatetags/report.py) where these functions are defined!
+    To see the full range of available helper functions, refer to the source file [report.py]({{ sourcefile("src/backend/InvenTree/report/templatetags/report.py") }}) where these functions are defined!
 
 ## Assigning Variables
 
 When making use of helper functions within a template, it can be useful to store the result of the function to a variable, rather than immediately rendering the output.
 
-For example, using the [render_currency](#rendering-currency) helper function, we can store the output to a variable which can be used at a later point in the template:
+For example, using the [render_currency](#currency-formatting) helper function, we can store the output to a variable which can be used at a later point in the template:
 
 ```html
 {% raw %}
@@ -130,8 +130,8 @@ The following keyword arguments are available to the `render_currency` function:
 | --- | --- |
 | currency | Specify the currency code to render in (will attempt conversion if different to provided currency) |
 | decimal_places | Specify the number of decimal places to render |
-| min_decimal_places | Specify the minimum number of decimal places to render (ignored if *decimal_places* is specified) |
-| max_decimal_places | Specify the maximum number of decimal places to render (ignored if *decimal_places* is specified) |
+| min_decimal_places | Specify the minimum number of decimal places to render |
+| max_decimal_places | Specify the maximum number of decimal places to render |
 | include_symbol | Include currency symbol in rendered value (default = True) |
 
 ## Maths Operations
@@ -259,6 +259,31 @@ A shortcut function is provided for rendering an image associated with a Company
 
 *Preview* and *thumbnail* image variations can be rendered for the `company_image` tag, in a similar manner to [part image variations](#image-variations)
 
+## Icons
+
+Some models (e.g. part categories and locations) allow to specify a custom icon. To render these icons in a report, there is a `{% raw %}{% icon location.icon %}{% endraw %}` template tag from the report template library available.
+
+This tag renders the required html for the icon.
+
+!!! info "Loading fonts"
+    Additionally the icon fonts need to be loaded into the template. This can be done using the `{% raw %}{% include_icon_fonts %}{% endraw %}` template tag inside of a style block
+
+!!! tip "Custom classes for styling the icon further"
+    The icon template tag accepts an optional `class` argument which can be used to apply a custom class to the rendered icon used to style the icon further e.g. positioning it, changing it's size, ... `{% raw %}{% icon location.icon class="my-class" %}{% endraw %}`.
+
+```html
+{% raw %}
+{% load report %}
+
+{% block style %}
+{% include_icon_fonts %}
+{% endblock style %}
+
+{% icon location.icon %}
+
+{% endraw %}
+```
+
 ## InvenTree Logo
 
 A template tag is provided to load the InvenTree logo image into a report. You can render the logo using the `{% raw %}{% logo_image %}{% endraw %}` tag:
@@ -272,7 +297,7 @@ A template tag is provided to load the InvenTree logo image into a report. You c
 
 ### Custom Logo
 
-If the system administrator has enabled a [custom logo](../start/config.md#customisation-options), then this logo will be used instead of the base InvenTree logo.
+If the system administrator has enabled a [custom logo](../start/config.md#customization-options) then this logo will be used instead of the base InvenTree logo.
 
 This is a useful way to get a custom company logo into your reports.
 
@@ -287,7 +312,7 @@ If you have a custom logo, but explicitly wish to load the InvenTree logo itself
 
 ## Report Assets
 
-[Report Assets](./report.md#report-assets) are files specifically uploaded by the user for inclusion in generated reports and labels.
+[Report Assets](./templates.md#report-assets) are files specifically uploaded by the user for inclusion in generated reports and labels.
 
 You can add asset images to the reports and labels by using the `{% raw %}{% asset ... %}{% endraw %}` template tag:
 

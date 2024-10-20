@@ -1,8 +1,7 @@
 import { t } from '@lingui/macro';
-import { Grid, LoadingOverlay, Skeleton, Stack } from '@mantine/core';
+import { Grid, Skeleton, Stack } from '@mantine/core';
 import {
   IconCurrencyDollar,
-  IconDots,
   IconInfoCircle,
   IconPackages,
   IconShoppingCart
@@ -10,18 +9,23 @@ import {
 import { ReactNode, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import AdminButton from '../../components/buttons/AdminButton';
 import { DetailsField, DetailsTable } from '../../components/details/Details';
 import DetailsBadge from '../../components/details/DetailsBadge';
 import { DetailsImage } from '../../components/details/DetailsImage';
 import { ItemDetailsGrid } from '../../components/details/ItemDetails';
 import {
-  ActionDropdown,
+  BarcodeActionDropdown,
   DeleteItemAction,
   DuplicateItemAction,
-  EditItemAction
+  EditItemAction,
+  OptionsActionDropdown
 } from '../../components/items/ActionDropdown';
+import InstanceDetail from '../../components/nav/InstanceDetail';
 import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
+import NotesPanel from '../../components/panels/NotesPanel';
+import { PanelType } from '../../components/panels/Panel';
+import { PanelGroup } from '../../components/panels/PanelGroup';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
@@ -29,6 +33,7 @@ import { useSupplierPartFields } from '../../forms/CompanyForms';
 import { getDetailUrl } from '../../functions/urls';
 import {
   useCreateApiFormModal,
+  useDeleteApiFormModal,
   useEditApiFormModal
 } from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
@@ -48,7 +53,8 @@ export default function SupplierPartDetail() {
   const {
     instance: supplierPart,
     instanceQuery,
-    refreshInstance
+    refreshInstance,
+    requestStatus
   } = useInstance({
     endpoint: ApiEndpoints.supplier_part_list,
     pk: id,
@@ -81,9 +87,18 @@ export default function SupplierPartDetail() {
       },
       {
         type: 'string',
-        name: 'description',
+        name: 'part_detail.IPN',
+        label: t`IPN`,
+        copy: true,
+        hidden: !data.part_detail?.IPN,
+        icon: 'serial'
+      },
+      {
+        type: 'string',
+        name: 'part_detail.description',
         label: t`Description`,
-        copy: true
+        copy: true,
+        icon: 'info'
       },
       {
         type: 'link',
@@ -189,7 +204,7 @@ export default function SupplierPartDetail() {
             />
           </Grid.Col>
           <Grid.Col span={8}>
-            <DetailsTable title={t`Supplier Part`} fields={tl} item={data} />
+            <DetailsTable title={t`Part Details`} fields={tl} item={data} />
           </Grid.Col>
         </Grid>
         <DetailsTable title={t`Supplier`} fields={tr} item={data} />
@@ -240,16 +255,25 @@ export default function SupplierPartDetail() {
         ) : (
           <Skeleton />
         )
-      }
+      },
+      NotesPanel({
+        model_type: ModelType.supplierpart,
+        model_id: supplierPart?.pk
+      })
     ];
   }, [supplierPart]);
 
   const supplierPartActions = useMemo(() => {
     return [
-      <ActionDropdown
-        key="part"
+      <AdminButton model={ModelType.supplierpart} pk={supplierPart.pk} />,
+      <BarcodeActionDropdown
+        model={ModelType.supplierpart}
+        pk={supplierPart.pk}
+        hash={supplierPart.barcode_hash}
+        perm={user.hasChangeRole(UserRoles.purchase_order)}
+      />,
+      <OptionsActionDropdown
         tooltip={t`Supplier Part Actions`}
-        icon={<IconDots />}
         actions={[
           DuplicateItemAction({
             hidden: !user.hasAddRole(UserRoles.purchase_order),
@@ -257,24 +281,34 @@ export default function SupplierPartDetail() {
           }),
           EditItemAction({
             hidden: !user.hasChangeRole(UserRoles.purchase_order),
-            onClick: () => editSuppliertPart.open()
+            onClick: () => editSupplierPart.open()
           }),
           DeleteItemAction({
-            hidden: !user.hasDeleteRole(UserRoles.purchase_order)
+            hidden: !user.hasDeleteRole(UserRoles.purchase_order),
+            onClick: () => deleteSupplierPart.open()
           })
         ]}
       />
     ];
-  }, [user]);
+  }, [user, supplierPart]);
 
   const supplierPartFields = useSupplierPartFields();
 
-  const editSuppliertPart = useEditApiFormModal({
+  const editSupplierPart = useEditApiFormModal({
     url: ApiEndpoints.supplier_part_list,
     pk: supplierPart?.pk,
     title: t`Edit Supplier Part`,
     fields: supplierPartFields,
     onFormSuccess: refreshInstance
+  });
+
+  const deleteSupplierPart = useDeleteApiFormModal({
+    url: ApiEndpoints.supplier_part_list,
+    pk: supplierPart?.pk,
+    title: t`Delete Supplier Part`,
+    onFormSuccess: () => {
+      navigate(getDetailUrl(ModelType.part, supplierPart.part));
+    }
   });
 
   const duplicateSupplierPart = useCreateApiFormModal({
@@ -284,11 +318,8 @@ export default function SupplierPartDetail() {
     initialData: {
       ...supplierPart
     },
-    onFormSuccess: (response: any) => {
-      if (response.pk) {
-        navigate(getDetailUrl(ModelType.supplierpart, response.pk));
-      }
-    }
+    follow: true,
+    modelType: ModelType.supplierpart
   });
 
   const breadcrumbs = useMemo(() => {
@@ -309,27 +340,37 @@ export default function SupplierPartDetail() {
       <DetailsBadge
         label={t`Inactive`}
         color="red"
-        visible={!supplierPart.active}
+        visible={supplierPart.active == false}
       />
     ];
   }, [supplierPart]);
 
   return (
     <>
-      {editSuppliertPart.modal}
+      {deleteSupplierPart.modal}
       {duplicateSupplierPart.modal}
-      <Stack spacing="xs">
-        <LoadingOverlay visible={instanceQuery.isFetching} />
-        <PageDetail
-          title={t`Supplier Part`}
-          subtitle={`${supplierPart.SKU} - ${supplierPart?.part_detail?.name}`}
-          breadcrumbs={breadcrumbs}
-          badges={badges}
-          actions={supplierPartActions}
-          imageUrl={supplierPart?.part_detail?.thumbnail}
-        />
-        <PanelGroup pageKey="supplierpart" panels={panels} />
-      </Stack>
+      {editSupplierPart.modal}
+      <InstanceDetail status={requestStatus} loading={instanceQuery.isFetching}>
+        <Stack gap="xs">
+          <PageDetail
+            title={t`Supplier Part`}
+            subtitle={`${supplierPart.SKU} - ${supplierPart?.part_detail?.name}`}
+            breadcrumbs={breadcrumbs}
+            badges={badges}
+            actions={supplierPartActions}
+            imageUrl={supplierPart?.part_detail?.thumbnail}
+            editAction={editSupplierPart.open}
+            editEnabled={user.hasChangePermission(ModelType.supplierpart)}
+          />
+          <PanelGroup
+            pageKey="supplierpart"
+            panels={panels}
+            instance={supplierPart}
+            model={ModelType.supplierpart}
+            id={supplierPart.pk}
+          />
+        </Stack>
+      </InstanceDetail>
     </>
   );
 }

@@ -8,11 +8,13 @@ import { UserTable } from '../../../../tables/settings/UserTable';
 
 export default function UserManagementPanel() {
   return (
-    <Stack spacing="xs">
+    <Stack gap="xs">
       <Title order={5}>
         <Trans>Users</Trans>
       </Title>
       <UserTable />
+
+      <Divider />
 
       <Title order={5}>
         <Trans>Groups</Trans>
@@ -21,7 +23,7 @@ export default function UserManagementPanel() {
 
       <Divider />
 
-      <Stack spacing={0}>
+      <Stack gap={0}>
         <Text>
           <Trans>Settings</Trans>
         </Text>
@@ -32,7 +34,7 @@ export default function UserManagementPanel() {
             </Trans>
           </Text>
           <Anchor component={Link} to={'/settings/system'}>
-            <Trans>System settings</Trans>
+            <Trans>System Settings</Trans>
           </Anchor>
         </Group>
       </Stack>

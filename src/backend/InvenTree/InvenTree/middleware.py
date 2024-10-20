@@ -12,6 +12,7 @@ from django.urls import Resolver404, include, path, resolve, reverse_lazy
 from allauth_2fa.middleware import AllauthTwoFactorMiddleware, BaseRequire2FAMiddleware
 from error_report.middleware import ExceptionProcessor
 
+from common.settings import get_global_setting
 from InvenTree.urls import frontendpatterns
 from users.models import ApiToken
 
@@ -35,7 +36,7 @@ def get_token_from_request(request):
     return None
 
 
-class AuthRequiredMiddleware(object):
+class AuthRequiredMiddleware:
     """Check for user to be authenticated."""
 
     def __init__(self, get_response):
@@ -70,7 +71,8 @@ class AuthRequiredMiddleware(object):
 
         # API requests are handled by the DRF library
         if request.path_info.startswith('/api/'):
-            return self.get_response(request)
+            response = self.get_response(request)
+            return response
 
         # Is the function exempt from auth requirements?
         path_func = resolve(request.path).func
@@ -90,21 +92,16 @@ class AuthRequiredMiddleware(object):
 
             # Allow static files to be accessed without auth
             # Important for e.g. login page
-            if request.path_info.startswith('/static/'):
-                authorized = True
-
-            # Unauthorized users can access the login page
-            elif request.path_info.startswith('/accounts/'):
-                authorized = True
-
-            elif (
-                request.path_info.startswith(f'/{settings.FRONTEND_URL_BASE}/')
-                or request.path_info.startswith('/assets/')
-                or request.path_info == f'/{settings.FRONTEND_URL_BASE}'
+            if (
+                request.path_info.startswith('/static/')
+                or request.path_info.startswith('/accounts/')
+                or (
+                    request.path_info.startswith(f'/{settings.FRONTEND_URL_BASE}/')
+                    or request.path_info.startswith('/assets/')
+                    or request.path_info == f'/{settings.FRONTEND_URL_BASE}'
+                )
+                or self.check_token(request)
             ):
-                authorized = True
-
-            elif self.check_token(request):
                 authorized = True
 
             # No authorization was found for the request
@@ -152,11 +149,9 @@ class Check2FAMiddleware(BaseRequire2FAMiddleware):
 
     def require_2fa(self, request):
         """Use setting to check if MFA should be enforced for frontend page."""
-        from common.models import InvenTreeSetting
-
         try:
             if url_matcher.resolve(request.path[1:]):
-                return InvenTreeSetting.get_setting('LOGIN_ENFORCE_MFA')
+                return get_global_setting('LOGIN_ENFORCE_MFA')
         except Resolver404:
             pass
         return False

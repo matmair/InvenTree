@@ -2,7 +2,7 @@ import { Trans } from '@lingui/macro';
 import { Anchor, Container, HoverCard, ScrollArea, Text } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react';
 
-import { InvenTreeStyle } from '../../globalStyle';
+import * as classes from '../../main.css';
 
 export interface BaseDocProps {
   text: string | JSX.Element;
@@ -21,9 +21,7 @@ export function DocTooltip({
   detail,
   link,
   docchildren
-}: DocTooltipProps) {
-  const { classes } = InvenTreeStyle();
-
+}: Readonly<DocTooltipProps>) {
   return (
     <HoverCard
       shadow="md"
@@ -52,12 +50,12 @@ function ConstBody({
   detail,
   docchildren,
   link
-}: {
+}: Readonly<{
   text: string | JSX.Element;
   detail?: string | JSX.Element;
   docchildren?: React.ReactNode;
   link?: string;
-}) {
+}>) {
   const [height, setHeight] = useState(0);
   const ref = useRef(null);
 
@@ -80,7 +78,7 @@ function ConstBody({
         <ScrollArea h={height} mah={250}>
           <div ref={ref}>
             {detail && (
-              <Text size="xs" color="dimmed">
+              <Text size="xs" c="dimmed">
                 {detail}
               </Text>
             )}

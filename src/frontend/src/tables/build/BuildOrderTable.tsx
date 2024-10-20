@@ -1,84 +1,38 @@
 import { t } from '@lingui/macro';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
-import { PartHoverCard } from '../../components/images/Thumbnail';
 import { ProgressBar } from '../../components/items/ProgressBar';
 import { RenderUser } from '../../components/render/User';
-import { renderDate } from '../../defaults/formatters';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { useBuildOrderFields } from '../../forms/BuildForms';
-import { getDetailUrl } from '../../functions/urls';
+import { useOwnerFilters, useProjectCodeFilters } from '../../hooks/UseFilter';
 import { useCreateApiFormModal } from '../../hooks/UseForm';
 import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
 import { useUserState } from '../../states/UserState';
-import { TableColumn } from '../Column';
 import {
   CreationDateColumn,
+  DateColumn,
+  PartColumn,
   ProjectCodeColumn,
   ReferenceColumn,
   ResponsibleColumn,
   StatusColumn,
   TargetDateColumn
 } from '../ColumnRenderers';
-import { StatusFilterOptions, TableFilter } from '../Filter';
+import {
+  AssignedToMeFilter,
+  HasProjectCodeFilter,
+  MaxDateFilter,
+  MinDateFilter,
+  OverdueFilter,
+  StatusFilterOptions,
+  TableFilter
+} from '../Filter';
 import { InvenTreeTable } from '../InvenTreeTable';
-
-/**
- * Construct a list of columns for the build order table
- */
-function buildOrderTableColumns(): TableColumn[] {
-  return [
-    ReferenceColumn(),
-    {
-      accessor: 'part',
-      sortable: true,
-      switchable: false,
-      render: (record: any) => <PartHoverCard part={record.part_detail} />
-    },
-    {
-      accessor: 'title',
-      sortable: false
-    },
-    {
-      accessor: 'completed',
-      sortable: true,
-      switchable: false,
-      render: (record: any) => (
-        <ProgressBar
-          progressLabel={true}
-          value={record.completed}
-          maximum={record.quantity}
-        />
-      )
-    },
-    StatusColumn(ModelType.build),
-    ProjectCodeColumn(),
-    {
-      accessor: 'priority',
-      sortable: true
-    },
-    CreationDateColumn(),
-    TargetDateColumn(),
-    {
-      accessor: 'completion_date',
-      sortable: true,
-      render: (record: any) => renderDate(record.completion_date)
-    },
-    {
-      accessor: 'issued_by',
-      sortable: true,
-      render: (record: any) => (
-        <RenderUser instance={record?.issued_by_detail} />
-      )
-    },
-    ResponsibleColumn()
-  ];
-}
 
 /*
  * Construct a table of build orders, according to the provided parameters
@@ -87,15 +41,79 @@ export function BuildOrderTable({
   partId,
   parentBuildId,
   salesOrderId
-}: {
+}: Readonly<{
   partId?: number;
   parentBuildId?: number;
   salesOrderId?: number;
-}) {
-  const tableColumns = useMemo(() => buildOrderTableColumns(), []);
+}>) {
+  const table = useTable(!!partId ? 'buildorder-part' : 'buildorder-index');
+
+  const tableColumns = useMemo(() => {
+    return [
+      ReferenceColumn({}),
+      {
+        accessor: 'part',
+        sortable: true,
+        switchable: false,
+        render: (record: any) => PartColumn({ part: record.part_detail })
+      },
+      {
+        accessor: 'part_detail.IPN',
+        sortable: true,
+        switchable: true,
+        title: t`IPN`
+      },
+      {
+        accessor: 'title',
+        sortable: false
+      },
+      {
+        accessor: 'completed',
+        sortable: true,
+        switchable: false,
+        render: (record: any) => (
+          <ProgressBar
+            progressLabel={true}
+            value={record.completed}
+            maximum={record.quantity}
+          />
+        )
+      },
+      StatusColumn({ model: ModelType.build }),
+      ProjectCodeColumn({}),
+      {
+        accessor: 'level',
+        sortable: true,
+        switchable: true,
+        hidden: !parentBuildId
+      },
+      {
+        accessor: 'priority',
+        sortable: true
+      },
+      CreationDateColumn({}),
+      TargetDateColumn({}),
+      DateColumn({
+        accessor: 'completion_date',
+        title: t`Completion Date`,
+        sortable: true
+      }),
+      {
+        accessor: 'issued_by',
+        sortable: true,
+        render: (record: any) => (
+          <RenderUser instance={record?.issued_by_detail} />
+        )
+      },
+      ResponsibleColumn({})
+    ];
+  }, [parentBuildId]);
+
+  const projectCodeFilters = useProjectCodeFilters();
+  const ownerFilters = useOwnerFilters();
 
   const tableFilters: TableFilter[] = useMemo(() => {
-    return [
+    let filters: TableFilter[] = [
       {
         name: 'active',
         type: 'boolean',
@@ -104,36 +122,49 @@ export function BuildOrderTable({
       },
       {
         name: 'status',
+        label: t`Status`,
         description: t`Filter by order status`,
         choiceFunction: StatusFilterOptions(ModelType.build)
       },
+      OverdueFilter(),
+      AssignedToMeFilter(),
+      MinDateFilter(),
+      MaxDateFilter(),
       {
-        name: 'overdue',
-        type: 'boolean',
-        description: t`Show overdue status`
+        name: 'project_code',
+        label: t`Project Code`,
+        description: t`Filter by project code`,
+        choices: projectCodeFilters.choices
+      },
+      HasProjectCodeFilter(),
+      {
+        name: 'issued_by',
+        label: t`Issued By`,
+        description: t`Filter by user who issued this order`,
+        choices: ownerFilters.choices
       },
       {
-        name: 'assigned_to_me',
-        type: 'boolean',
-        label: t`Assigned to me`,
-        description: t`Show orders assigned to me`
+        name: 'assigned_to',
+        label: t`Responsible`,
+        description: t`Filter by responsible owner`,
+        choices: ownerFilters.choices
       }
-      // TODO: 'assigned to' filter
-      // TODO: 'issued by' filter
-      // {
-      //   name: 'has_project_code',
-      //   title: t`Has Project Code`,
-      //   description: t`Show orders with project code`,
-      // }
-      // TODO: 'has project code' filter (see table_filters.js)
-      // TODO: 'project code' filter (see table_filters.js)
     ];
-  }, []);
 
-  const navigate = useNavigate();
+    // If we are filtering on a specific part, we can include the "include variants" filter
+    if (!!partId) {
+      filters.push({
+        name: 'include_variants',
+        type: 'boolean',
+        label: t`Include Variants`,
+        description: t`Include orders for part variants`
+      });
+    }
+
+    return filters;
+  }, [partId, projectCodeFilters.choices, ownerFilters.choices]);
+
   const user = useUserState();
-
-  const table = useTable('buildorder');
 
   const buildOrderFields = useBuildOrderFields({ create: true });
 
@@ -146,11 +177,8 @@ export function BuildOrderTable({
       sales_order: salesOrderId,
       parent: parentBuildId
     },
-    onFormSuccess: (data: any) => {
-      if (data.pk) {
-        navigate(getDetailUrl(ModelType.build, data.pk));
-      }
-    }
+    follow: true,
+    modelType: ModelType.build
   });
 
   const tableActions = useMemo(() => {
@@ -159,6 +187,7 @@ export function BuildOrderTable({
         hidden={!user.hasAddRole(UserRoles.build)}
         tooltip={t`Add Build Order`}
         onClick={() => newBuild.open()}
+        key="add-build-order"
       />
     ];
   }, [user]);
@@ -171,16 +200,18 @@ export function BuildOrderTable({
         tableState={table}
         columns={tableColumns}
         props={{
-          enableDownload: true,
           params: {
             part: partId,
+            ancestor: parentBuildId,
             sales_order: salesOrderId,
-            parent: parentBuildId,
             part_detail: true
           },
           tableActions: tableActions,
           tableFilters: tableFilters,
-          modelType: ModelType.build
+          modelType: ModelType.build,
+          enableSelection: true,
+          enableReports: true,
+          enableDownload: true
         }}
       />
     </>

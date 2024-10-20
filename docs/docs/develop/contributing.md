@@ -22,9 +22,9 @@ To setup a development environment using [docker](../start/docker.md), run the f
 
 ```bash
 git clone https://github.com/inventree/InvenTree.git && cd InvenTree
-docker compose run inventree-dev-server invoke install
-docker compose run inventree-dev-server invoke setup-test --dev
-docker compose up -d
+docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run --rm inventree-dev-server invoke install
+docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run --rm inventree-dev-server invoke dev.setup-test --dev
+docker compose --project-directory . -f contrib/container/dev-docker-compose.yml up -d
 ```
 
 ### Bare Metal
@@ -34,8 +34,8 @@ A "bare metal" development setup can be installed as follows:
 ```bash
 git clone https://github.com/inventree/InvenTree.git && cd InvenTree
 python3 -m venv env && source env/bin/activate
-pip install invoke && invoke
-pip install invoke && invoke setup-dev --tests
+pip install django invoke && invoke
+invoke dev.setup-dev --tests
 ```
 
 Read the [InvenTree setup documentation](../start/intro.md) for a complete installation reference guide.
@@ -45,22 +45,32 @@ Read the [InvenTree setup documentation](../start/intro.md) for a complete insta
 Run the following command to set up all toolsets for development.
 
 ```bash
-invoke setup-dev
+invoke dev.setup-dev
 ```
 
 *We recommend you run this command before starting to contribute. This will install and set up `pre-commit` to run some checks before each commit and help reduce errors.*
 
 ## Branches and Versioning
 
-InvenTree roughly follow the [GitLab flow](https://docs.gitlab.com/ee/topics/gitlab_flow.html) branching style, to allow simple management of multiple tagged releases, short-lived branches, and development on the main branch.
+InvenTree roughly follow the [GitLab flow](https://about.gitlab.com/topics/version-control/what-are-gitlab-flow-best-practices/) branching style, to allow simple management of multiple tagged releases, short-lived branches, and development on the main branch.
+
+There are nominally 5 active branches:
+- `master` - The main development branch
+- `stable` - The latest stable release
+- `l10n` - Translation branch: Source to Crowdin
+- `l10_crowdin` - Translation branch: Source from Crowdin
+- `y.y.x` - Release branch for the currently supported version (e.g. `0.5.x`)
+
+All other branches are removed periodically by maintainers or core team members. This includes old release branches.
+Do not use them as base for feature development or forks as patches from them might not be accepted without rebasing.
 
 ### Version Numbering
 
 InvenTree version numbering follows the [semantic versioning](https://semver.org/) specification.
 
-### Master Branch
+### Main Development Branch
 
-The HEAD of the "main" or "master" branch of InvenTree represents the current "latest" state of code development.
+The HEAD of the "master" branch of InvenTree represents the current "latest" state of code development.
 
 - All feature branches are merged into master
 - All bug fixes are merged into master
@@ -73,7 +83,6 @@ Feature branches should be branched *from* the *master* branch.
 
 - One major feature per branch / pull request
 - Feature pull requests are merged back *into* the master branch
-- Features *may* also be merged into a release candidate branch
 
 ### Stable Branch
 
@@ -82,21 +91,28 @@ The HEAD of the "stable" branch represents the latest stable release code.
 - Versioned releases are merged into the "stable" branch
 - Bug fix branches are made *from* the "stable" branch
 
-#### Release Candidate Branches
 
-- Release candidate branches are made from master, and merged into stable.
-- RC branches are targeted at a major/minor version e.g. "0.5"
-- When a release candidate branch is merged into *stable*, the release is tagged
-
-#### Bugfix Branches
+### Bugfix Branches
 
 - If a bug is discovered in a tagged release version of InvenTree, a "bugfix" or "hotfix" branch should be made *from* that tagged release
 - When approved, the branch is merged back *into* stable, with an incremented PATCH number (e.g. 0.4.1 -> 0.4.2)
 - The bugfix *must* also be cherry picked into the *master* branch.
+- A bugfix *might* also be backported from *master* to the *stable* branch automatically if marked with the `backport` label.
+
+### Translation Branches
+
+Crowdin is used for web-based translation management. The handling of files is fully automated, the `l10n` and `l10_crowdin` branches are used to manage the translation process and are not meant to be touched manually by anyone.
+
+The translation process is as follows:
+1. Commits to `master` trigger CI by GitHub Actions
+2. Translation source files are created and automatically pushed to the `l10n` branch - this is the source branch for Crowdin
+3. Crowdin picks up on the new source files and makes them available for translation
+4. Translations made in Crowdin are automatically pushed back to the `l10_crowdin` branch by Crowdin once they are approved
+5. The `l10_crowdin` branch is merged back into `master` by a maintainer periodically
 
 ## API versioning
 
-The [API version](https://github.com/inventree/InvenTree/blob/master/src/backend/InvenTree/InvenTree/api_version.py) needs to be bumped every time when the API is changed.
+The [API version]({{ sourcefile("src/backend/InvenTree/InvenTree/api_version.py") }}) needs to be bumped every time when the API is changed.
 
 ## Environment
 
@@ -109,7 +125,7 @@ The core software modules are targeting the following versions:
 | Python | {{ config.extra.min_python_version }} | Minimum required version |
 | Invoke | {{ config.extra.min_invoke_version }} | Minimum required version |
 | Django | {{ config.extra.django_version }} | Pinned version |
-| Node | 18 | Only needed for frontend development |
+| Node | 20 | Only needed for frontend development |
 
 Any other software dependencies are handled by the project package config.
 
@@ -154,18 +170,18 @@ The various github actions can be found in the `./github/workflows` directory
 
 To run test locally, use:
 ```
-invoke test
+invoke dev.test
 ```
 
 To run only partial tests, for example for a module use:
 ```
-invoke test --runtest order
+invoke dev.test --runtest order
 ```
 
 To see all the available options:
 
 ```
-invoke test --help
+invoke dev.test --help
 ```
 
 ## Code Style

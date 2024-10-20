@@ -21,9 +21,9 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework.authtoken.models import Token as AuthToken
 
-import common.models as common_models
 import InvenTree.helpers
 import InvenTree.models
+from common.settings import get_global_setting
 from InvenTree.ready import canAppAccessDatabase, isImportingData
 
 logger = logging.getLogger('inventree')
@@ -34,7 +34,7 @@ logger = logging.getLogger('inventree')
 # string representation of a user
 def user_model_str(self):
     """Function to override the default Django User __str__."""
-    if common_models.InvenTreeSetting.get_setting('DISPLAY_FULL_NAMES'):
+    if get_global_setting('DISPLAY_FULL_NAMES', cache=True):
         if self.first_name or self.last_name:
             return f'{self.first_name} {self.last_name}'
     return self.username
@@ -164,7 +164,7 @@ class ApiToken(AuthToken, InvenTree.models.MetadataMixin):
         """
         # If the token has not yet been saved, return the raw key
         if self.pk is None:
-            return self.key
+            return self.key  # pragma: no cover
 
         M = len(self.key) - 20
 
@@ -224,11 +224,12 @@ class RuleSet(models.Model):
                 'auth_permission',
                 'users_apitoken',
                 'users_ruleset',
+                'report_labeloutput',
+                'report_labeltemplate',
                 'report_reportasset',
+                'report_reportoutput',
                 'report_reportsnippet',
-                'report_billofmaterialsreport',
-                'report_purchaseorderreport',
-                'report_salesorderreport',
+                'report_reporttemplate',
                 'account_emailaddress',
                 'account_emailconfirmation',
                 'socialaccount_socialaccount',
@@ -240,6 +241,7 @@ class RuleSet(models.Model):
                 'plugin_pluginconfig',
                 'plugin_pluginsetting',
                 'plugin_notificationusersetting',
+                'common_barcodescanresult',
                 'common_newsfeedentry',
                 'taggit_tag',
                 'taggit_taggeditem',
@@ -257,7 +259,6 @@ class RuleSet(models.Model):
                 'part_partpricing',
                 'part_bomitem',
                 'part_bomitemsubstitute',
-                'part_partattachment',
                 'part_partsellpricebreak',
                 'part_partinternalpricebreak',
                 'part_parttesttemplate',
@@ -269,23 +270,13 @@ class RuleSet(models.Model):
                 'company_supplierpart',
                 'company_manufacturerpart',
                 'company_manufacturerpartparameter',
-                'company_manufacturerpartattachment',
-                'label_partlabel',
             ],
             'stocktake': ['part_partstocktake', 'part_partstocktakereport'],
-            'stock_location': [
-                'stock_stocklocation',
-                'stock_stocklocationtype',
-                'label_stocklocationlabel',
-                'report_stocklocationreport',
-            ],
+            'stock_location': ['stock_stocklocation', 'stock_stocklocationtype'],
             'stock': [
                 'stock_stockitem',
-                'stock_stockitemattachment',
                 'stock_stockitemtracking',
                 'stock_stockitemtestresult',
-                'report_testreport',
-                'label_stockitemlabel',
             ],
             'build': [
                 'part_part',
@@ -295,15 +286,11 @@ class RuleSet(models.Model):
                 'build_build',
                 'build_builditem',
                 'build_buildline',
-                'build_buildorderattachment',
                 'stock_stockitem',
                 'stock_stocklocation',
-                'report_buildreport',
-                'label_buildlinelabel',
             ],
             'purchase_order': [
                 'company_company',
-                'company_companyattachment',
                 'company_contact',
                 'company_address',
                 'company_manufacturerpart',
@@ -311,34 +298,26 @@ class RuleSet(models.Model):
                 'company_supplierpart',
                 'company_supplierpricebreak',
                 'order_purchaseorder',
-                'order_purchaseorderattachment',
                 'order_purchaseorderlineitem',
                 'order_purchaseorderextraline',
-                'report_purchaseorderreport',
             ],
             'sales_order': [
                 'company_company',
-                'company_companyattachment',
                 'company_contact',
                 'company_address',
                 'order_salesorder',
                 'order_salesorderallocation',
-                'order_salesorderattachment',
                 'order_salesorderlineitem',
                 'order_salesorderextraline',
                 'order_salesordershipment',
-                'report_salesorderreport',
             ],
             'return_order': [
                 'company_company',
-                'company_companyattachment',
                 'company_contact',
                 'company_address',
                 'order_returnorder',
                 'order_returnorderlineitem',
                 'order_returnorderextraline',
-                'order_returnorderattachment',
-                'report_returnorderreport',
             ],
         }
 
@@ -356,6 +335,7 @@ class RuleSet(models.Model):
             'admin_logentry',
             'contenttypes_contenttype',
             # Models which currently do not require permissions
+            'common_attachment',
             'common_customunit',
             'common_inventreesetting',
             'common_inventreeusersetting',
@@ -365,7 +345,7 @@ class RuleSet(models.Model):
             'common_projectcode',
             'common_webhookendpoint',
             'common_webhookmessage',
-            'label_labeloutput',
+            'common_inventreecustomuserstatemodel',
             'users_owner',
             # Third-party tables
             'error_report_error',
@@ -378,6 +358,10 @@ class RuleSet(models.Model):
             'django_q_task',
             'django_q_schedule',
             'django_q_success',
+            # Importing
+            'importer_dataimportsession',
+            'importer_dataimportcolumnmap',
+            'importer_dataimportrow',
         ]
 
     RULESET_CHANGE_INHERIT = [('part', 'partparameter'), ('part', 'bomitem')]
@@ -406,7 +390,7 @@ class RuleSet(models.Model):
     )
 
     can_view = models.BooleanField(
-        verbose_name=_('View'), default=True, help_text=_('Permission to view items')
+        verbose_name=_('View'), default=False, help_text=_('Permission to view items')
     )
 
     can_add = models.BooleanField(
@@ -426,7 +410,7 @@ class RuleSet(models.Model):
     )
 
     @classmethod
-    def check_table_permission(cls, user, table, permission):
+    def check_table_permission(cls, user: User, table, permission):
         """Check if the provided user has the specified permission against the table."""
         # Superuser knows no bounds
         if user.is_superuser:
@@ -506,10 +490,7 @@ def split_model(model):
     *app, model = model.split('_')
 
     # handle models that have
-    if len(app) > 1:
-        app = '_'.join(app)
-    else:
-        app = app[0]
+    app = '_'.join(app) if len(app) > 1 else app[0]
 
     return model, app
 
@@ -574,10 +555,8 @@ def update_group_roles(group, debug=False):
 
             permissions_to_add.add(permission_string)
 
-        else:
-            # A forbidden action will be ignored if we have already allowed it
-            if permission_string not in permissions_to_add:
-                permissions_to_delete.add(permission_string)
+        elif permission_string not in permissions_to_add:
+            permissions_to_delete.add(permission_string)
 
     # Pre-fetch all the RuleSet objects
     rulesets = {
@@ -625,9 +604,9 @@ def update_group_roles(group, debug=False):
                 content_type=content_type, codename=perm
             )
         except ContentType.DoesNotExist:  # pragma: no cover
-            logger.warning(
-                "Error: Could not find permission matching '%s'", permission_string
-            )
+            # logger.warning(
+            #     "Error: Could not find permission matching '%s'", permission_string
+            # )
             permission = None
 
         return permission
@@ -685,7 +664,7 @@ def update_group_roles(group, debug=False):
                         )
 
 
-def clear_user_role_cache(user):
+def clear_user_role_cache(user: User):
     """Remove user role permission information from the cache.
 
     - This function is called whenever the user / group is updated
@@ -693,32 +672,25 @@ def clear_user_role_cache(user):
     Args:
         user: The User object to be expunged from the cache
     """
-    for role in RuleSet.get_ruleset_models().keys():
+    for role in RuleSet.get_ruleset_models():
         for perm in ['add', 'change', 'view', 'delete']:
-            key = f'role_{user}_{role}_{perm}'
+            key = f'role_{user.pk}_{role}_{perm}'
             cache.delete(key)
 
 
-def get_user_roles(user):
-    """Return all roles available to a given user."""
-    roles = set()
+def check_user_permission(user: User, model, permission):
+    """Check if the user has a particular permission against a given model type.
 
-    for group in user.groups.all():
-        for rule in group.rule_sets.all():
-            name = rule.name
-            if rule.can_view:
-                roles.add(f'{name}.view')
-            if rule.can_add:
-                roles.add(f'{name}.add')
-            if rule.can_change:
-                roles.add(f'{name}.change')
-            if rule.can_delete:
-                roles.add(f'{name}.delete')
-
-    return roles
+    Arguments:
+        user: The user object to check
+        model: The model class to check (e.g. Part)
+        permission: The permission to check (e.g. 'view' / 'delete')
+    """
+    permission_name = f'{model._meta.app_label}.{permission}_{model._meta.model_name}'
+    return user.has_perm(permission_name)
 
 
-def check_user_role(user, role, permission):
+def check_user_role(user: User, role, permission):
     """Check if a user has a particular role:permission combination.
 
     If the user is a superuser, this will return True
@@ -727,11 +699,11 @@ def check_user_role(user, role, permission):
         return True
 
     # First, check the cache
-    key = f'role_{user}_{role}_{permission}'
+    key = f'role_{user.pk}_{role}_{permission}'
 
     try:
         result = cache.get(key)
-    except Exception:
+    except Exception:  # pragma: no cover
         result = None
 
     if result is not None:
@@ -762,7 +734,7 @@ def check_user_role(user, role, permission):
     # Save result to cache
     try:
         cache.set(key, result, timeout=3600)
-    except Exception:
+    except Exception:  # pragma: no cover
         pass
 
     return result
@@ -828,9 +800,8 @@ class Owner(models.Model):
 
     def __str__(self):
         """Defines the owner string representation."""
-        if (
-            self.owner_type.name == 'user'
-            and common_models.InvenTreeSetting.get_setting('DISPLAY_FULL_NAMES')
+        if self.owner_type.name == 'user' and get_global_setting(
+            'DISPLAY_FULL_NAMES', cache=True
         ):
             display_name = self.owner.get_full_name()
         else:
@@ -839,9 +810,8 @@ class Owner(models.Model):
 
     def name(self):
         """Return the 'name' of this owner."""
-        if (
-            self.owner_type.name == 'user'
-            and common_models.InvenTreeSetting.get_setting('DISPLAY_FULL_NAMES')
+        if self.owner_type.name == 'user' and get_global_setting(
+            'DISPLAY_FULL_NAMES', cache=True
         ):
             return self.owner.get_full_name() or str(self.owner)
         return str(self.owner)

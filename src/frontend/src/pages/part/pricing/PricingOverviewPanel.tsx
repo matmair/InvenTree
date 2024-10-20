@@ -1,4 +1,5 @@
 import { t } from '@lingui/macro';
+import { BarChart } from '@mantine/charts';
 import {
   Alert,
   Anchor,
@@ -8,30 +9,33 @@ import {
   Stack,
   Text
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import {
   IconBuildingWarehouse,
   IconChartDonut,
+  IconCircleCheck,
   IconExclamationCircle,
   IconList,
   IconReportAnalytics,
   IconShoppingCart,
   IconTriangleSquareCircle
 } from '@tabler/icons-react';
-import { DataTable, DataTableColumn } from 'mantine-datatable';
-import { ReactNode, useMemo } from 'react';
-import {
-  Bar,
-  BarChart,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from 'recharts';
+import { UseQueryResult } from '@tanstack/react-query';
+import { toggleUnorderedList } from 'easymde';
+import { DataTable } from 'mantine-datatable';
+import { ReactNode, useCallback, useMemo } from 'react';
 
-import { CHART_COLORS } from '../../../components/charts/colors';
+import { api } from '../../../App';
 import { tooltipFormatter } from '../../../components/charts/tooltipFormatter';
-import { formatCurrency, renderDate } from '../../../defaults/formatters';
+import {
+  EditItemAction,
+  OptionsActionDropdown
+} from '../../../components/items/ActionDropdown';
+import { formatCurrency, formatDate } from '../../../defaults/formatters';
+import { ApiEndpoints } from '../../../enums/ApiEndpoints';
+import { InvenTreeIcon } from '../../../functions/icons';
+import { useEditApiFormModal } from '../../../hooks/UseForm';
+import { apiUrl } from '../../../states/ApiState';
 import { panelOptions } from '../PartPricingPanel';
 
 interface PricingOverviewEntry {
@@ -47,13 +51,74 @@ interface PricingOverviewEntry {
 export default function PricingOverviewPanel({
   part,
   pricing,
+  pricingQuery,
   doNavigation
-}: {
+}: Readonly<{
   part: any;
   pricing: any;
+  pricingQuery: UseQueryResult;
   doNavigation: (panel: panelOptions) => void;
-}): ReactNode {
-  const columns: DataTableColumn<any>[] = useMemo(() => {
+}>): ReactNode {
+  const refreshPricing = useCallback(() => {
+    const url = apiUrl(ApiEndpoints.part_pricing, part.pk);
+
+    notifications.hide('pricing-refresh');
+
+    notifications.show({
+      message: t`Refreshing pricing data`,
+      color: 'green',
+      id: 'pricing-refresh',
+      loading: true,
+      autoClose: false
+    });
+
+    let success: boolean = false;
+
+    api
+      .patch(url, { update: true })
+      .then((response) => {
+        success = response.status === 200;
+      })
+      .catch(() => {})
+      .finally(() => {
+        notifications.hide('pricing-refresh');
+
+        if (success) {
+          notifications.show({
+            message: t`Pricing data updated`,
+            color: 'green',
+            icon: <IconCircleCheck />
+          });
+          pricingQuery.refetch();
+        } else {
+          notifications.show({
+            message: t`Failed to update pricing data`,
+            color: 'red',
+            icon: <IconExclamationCircle />
+          });
+        }
+      });
+  }, [part]);
+
+  const editPricing = useEditApiFormModal({
+    title: t`Edit Pricing`,
+    url: apiUrl(ApiEndpoints.part_pricing, part.pk),
+    fields: {
+      override_min: {},
+      override_min_currency: {},
+      override_max: {},
+      override_max_currency: {},
+      update: {
+        hidden: true,
+        value: true
+      }
+    },
+    onFormSuccess: () => {
+      pricingQuery.refetch();
+    }
+  });
+
+  const columns: any[] = useMemo(() => {
     return [
       {
         accessor: 'title',
@@ -61,14 +126,14 @@ export default function PricingOverviewPanel({
         render: (record: PricingOverviewEntry) => {
           const is_link = record.name !== panelOptions.overall;
           return (
-            <Group position="left" spacing="xs">
+            <Group justify="left" gap="xs">
               {record.icon}
               {is_link ? (
-                <Anchor weight={700} onClick={() => doNavigation(record.name)}>
+                <Anchor fw={700} onClick={() => doNavigation(record.name)}>
                   {record.title}
                 </Anchor>
               ) : (
-                <Text weight={700}>{record.title}</Text>
+                <Text fw={700}>{record.title}</Text>
               )}
             </Group>
           );
@@ -172,51 +237,70 @@ export default function PricingOverviewPanel({
     });
   }, [part, pricing]);
 
-  // TODO: Add display of "last updated"
-  // TODO: Add "update now" button
-
   return (
-    <Stack spacing="xs">
-      <SimpleGrid cols={2}>
-        <Stack spacing="xs">
-          {pricing?.updated && (
+    <>
+      {editPricing.modal}
+      <Stack gap="xs">
+        <SimpleGrid cols={2}>
+          <Stack gap="xs">
             <Paper p="xs">
-              <Alert color="blue" title={t`Last Updated`}>
-                <Text>{renderDate(pricing.updated)}</Text>
-              </Alert>
+              <Group justify="space-between" wrap="nowrap">
+                {pricing?.updated ? (
+                  <Alert color="blue" title={t`Last Updated`} flex={1}>
+                    <Text>{formatDate(pricing.updated)}</Text>
+                  </Alert>
+                ) : (
+                  <Alert color="orange" title={t`Pricing Not Set`} flex={1}>
+                    <Text>{t`Pricing data has not been calculated for this part`}</Text>
+                  </Alert>
+                )}
+                <OptionsActionDropdown
+                  tooltip={t`Pricing Actions`}
+                  actions={[
+                    {
+                      name: t`Refresh`,
+                      tooltip: t`Refresh pricing data`,
+                      icon: (
+                        <InvenTreeIcon
+                          icon="refresh"
+                          iconProps={{ color: 'green' }}
+                        />
+                      ),
+                      onClick: () => {
+                        refreshPricing();
+                      }
+                    },
+                    EditItemAction({
+                      onClick: () => {
+                        editPricing.open();
+                      },
+                      tooltip: t`Edit pricing data`
+                    })
+                  ]}
+                />
+              </Group>
             </Paper>
-          )}
-          <DataTable records={overviewData} columns={columns} />
-        </Stack>
-        <ResponsiveContainer width="100%" height={500}>
-          <BarChart data={overviewData} id="pricing-overview-chart">
-            <XAxis dataKey="title" />
-            <YAxis
-              tickFormatter={(value, index) =>
-                formatCurrency(value, {
-                  currency: pricing?.currency
-                })?.toString() ?? ''
-              }
+            <DataTable
+              idAccessor="name"
+              records={overviewData}
+              columns={columns}
             />
-            <Tooltip
-              formatter={(label, payload) =>
-                tooltipFormatter(label, pricing?.currency)
-              }
-            />
-            <Legend />
-            <Bar
-              dataKey="min_value"
-              fill={CHART_COLORS[0]}
-              label={t`Minimum Price`}
-            />
-            <Bar
-              dataKey="max_value"
-              fill={CHART_COLORS[1]}
-              label={t`Maximum Price`}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </SimpleGrid>
-    </Stack>
+          </Stack>
+          <BarChart
+            aria-label="pricing-overview-chart"
+            dataKey="title"
+            data={overviewData}
+            title={t`Pricing Overview`}
+            series={[
+              { name: 'min_value', label: t`Minimum Value`, color: 'blue.6' },
+              { name: 'max_value', label: t`Maximum Value`, color: 'teal.6' }
+            ]}
+            valueFormatter={(value) =>
+              tooltipFormatter(value, pricing?.currency)
+            }
+          />
+        </SimpleGrid>
+      </Stack>
+    </>
   );
 }

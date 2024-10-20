@@ -77,6 +77,7 @@ nav:
     - Core Concepts:
       - Terminology: concepts/terminology.md
       - Physical Units: concepts/units.md
+      - Custom States: concepts/custom_states.md
     - Development:
       - Contributing: develop/contributing.md
       - Devcontainer: develop/devcontainer.md
@@ -106,6 +107,7 @@ nav:
     - Part Views: part/views.md
     - Tracking: part/trackable.md
     - Parameters: part/parameter.md
+    - Revisions: part/revision.md
     - Templates: part/template.md
     - Tests: part/test.md
     - Pricing: part/pricing.md
@@ -135,25 +137,15 @@ nav:
     - Return Orders: order/return_order.md
     - Project Codes: order/project_codes.md
   - Report:
-    - Templates: report/report.md
+    - Templates: report/templates.md
+    - Template Rendering: report/weasyprint.md
     - Template Editor: report/template_editor.md
-    - Report Types:
-      - Test Reports: report/test.md
-      - Build Order: report/build.md
-      - Purchase Order: report/purchase_order.md
-      - Sales Order: report/sales_order.md
-      - Return Order: report/return_order.md
-      - BOM: report/bom.md
-      - Stock Location: report/stock_location.md
-    - Labels:
-      - Custom Labels: report/labels.md
-      - Part Labels: report/labels/part_labels.md
-      - Stock Labels: report/labels/stock_labels.md
-      - Location Labels: report/labels/location_labels.md
-      - Build Labels: report/labels/build_labels.md
+    - Reports: report/report.md
+    - Labels: report/labels.md
+    - Context Variables: report/context_variables.md
     - Helper Functions: report/helpers.md
     - Barcodes: report/barcodes.md
-    - Context Variables: report/context_variables.md
+    - Sample Templates: report/samples.md
   - Admin:
     - Global Settings: settings/global.md
     - User Settings: settings/user.md
@@ -212,6 +204,7 @@ nav:
       - Barcode Mixin: extend/plugins/barcode.md
       - Currency Mixin: extend/plugins/currency.md
       - Event Mixin: extend/plugins/event.md
+      - Icon Pack Mixin: extend/plugins/icon.md
       - Label Printing Mixin: extend/plugins/label.md
       - Locate Mixin: extend/plugins/locate.md
       - Navigation Mixin: extend/plugins/navigation.md
@@ -220,6 +213,7 @@ nav:
       - Schedule Mixin: extend/plugins/schedule.md
       - Settings Mixin: extend/plugins/settings.md
       - URL Mixin: extend/plugins/urls.md
+      - User Interface Mixin: extend/plugins/ui.md
       - Validation Mixin: extend/plugins/validation.md
     - Machines:
       - Overview: extend/machines/overview.md
@@ -241,6 +235,7 @@ plugins:
         on_config: "docs.docs.hooks:on_config"
   - macros:
       include_dir: docs/_includes
+      module_name: main
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -250,6 +245,8 @@ plugins:
           options:
             show_symbol_type_heading: true
             show_symbol_type_toc: true
+            show_root_heading: false
+            show_root_toc_entry: false
 
 # Extensions
 markdown_extensions:

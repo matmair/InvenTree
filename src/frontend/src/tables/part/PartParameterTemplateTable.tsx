@@ -17,7 +17,7 @@ import { TableColumn } from '../Column';
 import { BooleanColumn, DescriptionColumn } from '../ColumnRenderers';
 import { TableFilter } from '../Filter';
 import { InvenTreeTable } from '../InvenTreeTable';
-import { RowDeleteAction, RowEditAction } from '../RowActions';
+import { RowAction, RowDeleteAction, RowEditAction } from '../RowActions';
 
 export default function PartParameterTemplateTable() {
   const table = useTable('part-parameter-templates');
@@ -83,8 +83,11 @@ export default function PartParameterTemplateTable() {
   const newTemplate = useCreateApiFormModal({
     url: ApiEndpoints.part_parameter_template_list,
     title: t`Add Parameter Template`,
-    fields: partParameterTemplateFields,
-    onFormSuccess: table.refreshTable
+    table: table,
+    fields: useMemo(
+      () => ({ ...partParameterTemplateFields }),
+      [partParameterTemplateFields]
+    )
   });
 
   const [selectedTemplate, setSelectedTemplate] = useState<number | undefined>(
@@ -95,20 +98,23 @@ export default function PartParameterTemplateTable() {
     url: ApiEndpoints.part_parameter_template_list,
     pk: selectedTemplate,
     title: t`Edit Parameter Template`,
-    fields: partParameterTemplateFields,
-    onFormSuccess: (record: any) => table.updateRecord(record)
+    table: table,
+    fields: useMemo(
+      () => ({ ...partParameterTemplateFields }),
+      [partParameterTemplateFields]
+    )
   });
 
   const deleteTemplate = useDeleteApiFormModal({
     url: ApiEndpoints.part_parameter_template_list,
     pk: selectedTemplate,
     title: t`Delete Parameter Template`,
-    onFormSuccess: table.refreshTable
+    table: table
   });
 
   // Callback for row actions
   const rowActions = useCallback(
-    (record: any) => {
+    (record: any): RowAction[] => {
       return [
         RowEditAction({
           hidden: !user.hasChangeRole(UserRoles.part),
@@ -132,7 +138,7 @@ export default function PartParameterTemplateTable() {
   const tableActions = useMemo(() => {
     return [
       <AddItemButton
-        tooltip={t`Add parameter template`}
+        tooltip={t`Add Parameter Template`}
         onClick={() => newTemplate.open()}
         hidden={!user.hasAddRole(UserRoles.part)}
       />
@@ -151,7 +157,8 @@ export default function PartParameterTemplateTable() {
         props={{
           rowActions: rowActions,
           tableFilters: tableFilters,
-          tableActions: tableActions
+          tableActions: tableActions,
+          enableDownload: true
         }}
       />
     </>

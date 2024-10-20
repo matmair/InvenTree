@@ -1,20 +1,30 @@
 import { IconUser, IconUsersGroup } from '@tabler/icons-react';
 import { ReactNode } from 'react';
 
-import { RenderInlineModel } from './Instance';
+import { InstanceRenderInterface, RenderInlineModel } from './Instance';
 
-export function RenderOwner({ instance }: { instance: any }): ReactNode {
+export function RenderOwner({
+  instance
+}: Readonly<InstanceRenderInterface>): ReactNode {
   return (
     instance && (
       <RenderInlineModel
         primary={instance.name}
-        suffix={instance.label == 'group' ? <IconUsersGroup /> : <IconUser />}
+        suffix={
+          instance.label == 'group' ? (
+            <IconUsersGroup size={16} />
+          ) : (
+            <IconUser size={16} />
+          )
+        }
       />
     )
   );
 }
 
-export function RenderUser({ instance }: { instance: any }): ReactNode {
+export function RenderUser({
+  instance
+}: Readonly<InstanceRenderInterface>): ReactNode {
   return (
     instance && (
       <RenderInlineModel
@@ -23,4 +33,10 @@ export function RenderUser({ instance }: { instance: any }): ReactNode {
       />
     )
   );
+}
+
+export function RenderGroup({
+  instance
+}: Readonly<InstanceRenderInterface>): ReactNode {
+  return instance && <RenderInlineModel primary={instance.name} />;
 }

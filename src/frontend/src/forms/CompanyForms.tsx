@@ -8,7 +8,7 @@ import {
   IconPackage,
   IconPhone
 } from '@tabler/icons-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import {
   ApiFormAdjustFilterType,
@@ -41,7 +41,8 @@ export function useSupplierPartFields() {
       },
       supplier: {
         filters: {
-          active: true
+          active: true,
+          is_supplier: true
         }
       },
       SKU: {
@@ -69,7 +70,12 @@ export function useManufacturerPartFields() {
   return useMemo(() => {
     const fields: ApiFormFieldSet = {
       part: {},
-      manufacturer: {},
+      manufacturer: {
+        filters: {
+          active: true,
+          is_manufacturer: true
+        }
+      },
       MPN: {},
       description: {},
       link: {}
@@ -82,6 +88,9 @@ export function useManufacturerPartFields() {
 export function useManufacturerPartParameterFields() {
   return useMemo(() => {
     const fields: ApiFormFieldSet = {
+      manufacturer_part: {
+        disabled: true
+      },
       name: {},
       value: {},
       units: {}

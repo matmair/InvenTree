@@ -8,6 +8,7 @@ import {
   Divider,
   Drawer,
   Group,
+  Loader,
   Menu,
   Paper,
   Space,
@@ -15,7 +16,6 @@ import {
   Text,
   TextInput
 } from '@mantine/core';
-import { Loader } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import {
   IconAlertCircle,
@@ -33,11 +33,13 @@ import { api } from '../../App';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
+import { navigateToLink } from '../../functions/navigation';
 import { apiUrl } from '../../states/ApiState';
 import { useUserSettingsState } from '../../states/SettingsState';
 import { useUserState } from '../../states/UserState';
+import { Boundary } from '../Boundary';
 import { RenderInstance } from '../render/Instance';
-import { ModelInformationDict } from '../render/ModelType';
+import { ModelInformationDict, getModelInfo } from '../render/ModelType';
 
 // Define type for handling individual search queries
 type SearchQuery = {
@@ -54,24 +56,30 @@ function QueryResultGroup({
   query,
   onRemove,
   onResultClick
-}: {
+}: Readonly<{
   query: SearchQuery;
   onRemove: (query: ModelType) => void;
-  onResultClick: (query: ModelType, pk: number) => void;
-}) {
+  onResultClick: (query: ModelType, pk: number, event: any) => void;
+}>) {
   if (query.results.count == 0) {
     return null;
   }
 
-  const model = ModelInformationDict[query.model];
+  const model = getModelInfo(query.model);
 
   return (
-    <Paper shadow="sm" radius="xs" p="md" key={`paper-${query.model}`}>
+    <Paper
+      shadow="sm"
+      radius="xs"
+      p="md"
+      key={`paper-${query.model}`}
+      aria-label={`search-group-${query.model}`}
+    >
       <Stack key={`stack-${query.model}`}>
-        <Group position="apart" noWrap={true}>
-          <Group position="left" spacing={5} noWrap={true}>
+        <Group justify="space-between" wrap="nowrap">
+          <Group justify="left" gap={5} wrap="nowrap">
             <Text size="lg">{model.label_multiple}</Text>
-            <Text size="sm" italic>
+            <Text size="sm" style={{ fontStyle: 'italic' }}>
               {' '}
               - {query.results.count} <Trans>results</Trans>
             </Text>
@@ -82,16 +90,19 @@ function QueryResultGroup({
             color="red"
             variant="transparent"
             radius="xs"
+            aria-label={`remove-search-group-${query.model}`}
             onClick={() => onRemove(query.model)}
           >
             <IconX />
           </ActionIcon>
         </Group>
         <Divider />
-        <Stack>
+        <Stack aria-label={`search-group-results-${query.model}`}>
           {query.results.results.map((result: any) => (
             <Anchor
-              onClick={() => onResultClick(query.model, result.pk)}
+              onClick={(event: any) =>
+                onResultClick(query.model, result.pk, event)
+              }
               key={result.pk}
             >
               <RenderInstance instance={result} model={query.model} />
@@ -111,10 +122,10 @@ function QueryResultGroup({
 export function SearchDrawer({
   opened,
   onClose
-}: {
+}: Readonly<{
   opened: boolean;
   onClose: () => void;
-}) {
+}>) {
   const [value, setValue] = useState<string>('');
   const [searchText] = useDebouncedValue(value, 500);
 
@@ -129,7 +140,11 @@ export function SearchDrawer({
     return [
       {
         model: ModelType.part,
-        parameters: {},
+        parameters: {
+          active: userSettings.isSet('SEARCH_HIDE_INACTIVE_PARTS')
+            ? true
+            : undefined
+        },
         enabled:
           user.hasViewRole(UserRoles.part) &&
           userSettings.isSet('SEARCH_PREVIEW_SHOW_PARTS')
@@ -169,7 +184,10 @@ export function SearchDrawer({
         model: ModelType.stockitem,
         parameters: {
           part_detail: true,
-          location_detail: true
+          location_detail: true,
+          in_stock: userSettings.isSet('SEARCH_PREVIEW_HIDE_UNAVAILABLE_STOCK')
+            ? true
+            : undefined
         },
         enabled:
           user.hasViewRole(UserRoles.stock) &&
@@ -202,7 +220,12 @@ export function SearchDrawer({
       {
         model: ModelType.purchaseorder,
         parameters: {
-          supplier_detail: true
+          supplier_detail: true,
+          outstanding: userSettings.isSet(
+            'SEARCH_PREVIEW_EXCLUDE_INACTIVE_PURCHASE_ORDERS'
+          )
+            ? true
+            : undefined
         },
         enabled:
           user.hasViewRole(UserRoles.purchase_order) &&
@@ -211,7 +234,12 @@ export function SearchDrawer({
       {
         model: ModelType.salesorder,
         parameters: {
-          customer_detail: true
+          customer_detail: true,
+          outstanding: userSettings.isSet(
+            'SEARCH_PREVIEW_EXCLUDE_INACTIVE_SALES_ORDERS'
+          )
+            ? true
+            : undefined
         },
         enabled:
           user.hasViewRole(UserRoles.sales_order) &&
@@ -220,7 +248,12 @@ export function SearchDrawer({
       {
         model: ModelType.returnorder,
         parameters: {
-          customer_detail: true
+          customer_detail: true,
+          outstanding: userSettings.isSet(
+            'SEARCH_PREVIEW_EXCLUDE_INACTIVE_RETURN_ORDERS'
+          )
+            ? true
+            : undefined
         },
         enabled:
           user.hasViewRole(UserRoles.return_order) &&
@@ -246,7 +279,7 @@ export function SearchDrawer({
 
     let params: any = {
       offset: 0,
-      limit: 10, // TODO: Make this configurable (based on settings)
+      limit: userSettings.getSetting('SEARCH_PREVIEW_RESULTS', '10'),
       search: searchText,
       search_regex: searchRegex,
       search_whole: searchWhole
@@ -271,8 +304,7 @@ export function SearchDrawer({
   // Search query manager
   const searchQuery = useQuery({
     queryKey: ['search', searchText, searchRegex, searchWhole],
-    queryFn: performSearch,
-    refetchOnWindowFocus: false
+    queryFn: performSearch
   });
 
   // A list of queries which return valid results
@@ -315,11 +347,20 @@ export function SearchDrawer({
   const navigate = useNavigate();
 
   // Callback when one of the search results is clicked
-  function onResultClick(query: ModelType, pk: number) {
-    closeDrawer();
+  function onResultClick(query: ModelType, pk: number, event: any) {
     const targetModel = ModelInformationDict[query];
-    if (targetModel.url_detail == undefined) return;
-    navigate(targetModel.url_detail.replace(':pk', pk.toString()));
+    if (targetModel.url_detail == undefined) {
+      return;
+    }
+
+    if (event?.ctrlKey || event?.shiftKey) {
+      // Keep the drawer open in this condition
+    } else {
+      closeDrawer();
+    }
+
+    let url = targetModel.url_detail.replace(':pk', pk.toString());
+    navigateToLink(url, navigate, event);
   }
 
   return (
@@ -331,13 +372,14 @@ export function SearchDrawer({
       withCloseButton={false}
       styles={{ header: { width: '100%' }, title: { width: '100%' } }}
       title={
-        <Group position="apart" spacing={1} noWrap={true}>
+        <Group justify="space-between" gap={1} wrap="nowrap">
           <TextInput
+            aria-label="global-search-input"
             placeholder={t`Enter search text`}
             radius="xs"
             value={value}
             onChange={(event) => setValue(event.currentTarget.value)}
-            icon={<IconSearch size="0.8rem" />}
+            leftSection={<IconSearch size="0.8rem" />}
             rightSection={
               value && (
                 <IconBackspace color="red" onClick={() => setValue('')} />
@@ -386,48 +428,52 @@ export function SearchDrawer({
         </Group>
       }
     >
-      {searchQuery.isFetching && (
-        <Center>
-          <Loader />
-        </Center>
-      )}
-      {!searchQuery.isFetching && !searchQuery.isError && (
-        <Stack spacing="md">
-          {queryResults.map((query, idx) => (
-            <QueryResultGroup
-              key={idx}
-              query={query}
-              onRemove={(query) => removeResults(query)}
-              onResultClick={(query, pk) => onResultClick(query, pk)}
-            />
-          ))}
-        </Stack>
-      )}
-      {searchQuery.isError && (
-        <Alert
-          color="red"
-          radius="sm"
-          variant="light"
-          title={t`Error`}
-          icon={<IconAlertCircle size="1rem" />}
-        >
-          <Trans>An error occurred during search query</Trans>
-        </Alert>
-      )}
-      {searchText &&
-        !searchQuery.isFetching &&
-        !searchQuery.isError &&
-        queryResults.length == 0 && (
+      <Boundary label="SearchDrawer">
+        {searchQuery.isFetching && (
+          <Center>
+            <Loader />
+          </Center>
+        )}
+        {!searchQuery.isFetching && !searchQuery.isError && (
+          <Stack gap="md">
+            {queryResults.map((query, idx) => (
+              <QueryResultGroup
+                key={idx}
+                query={query}
+                onRemove={(query) => removeResults(query)}
+                onResultClick={(query, pk, event) =>
+                  onResultClick(query, pk, event)
+                }
+              />
+            ))}
+          </Stack>
+        )}
+        {searchQuery.isError && (
           <Alert
-            color="blue"
+            color="red"
             radius="sm"
             variant="light"
-            title={t`No results`}
-            icon={<IconSearch size="1rem" />}
+            title={t`Error`}
+            icon={<IconAlertCircle size="1rem" />}
           >
-            <Trans>No results available for search query</Trans>
+            <Trans>An error occurred during search query</Trans>
           </Alert>
         )}
+        {searchText &&
+          !searchQuery.isFetching &&
+          !searchQuery.isError &&
+          queryResults.length == 0 && (
+            <Alert
+              color="blue"
+              radius="sm"
+              variant="light"
+              title={t`No Results`}
+              icon={<IconSearch size="1rem" />}
+            >
+              <Trans>No results available for search query</Trans>
+            </Alert>
+          )}
+      </Boundary>
     </Drawer>
   );
 }

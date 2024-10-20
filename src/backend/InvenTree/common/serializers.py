@@ -9,13 +9,21 @@ import django_q.models
 from error_report.models import Error
 from flags.state import flag_state
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
+from taggit.serializers import TagListSerializerField
 
 import common.models as common_models
+import common.validators
+import generic.states.custom
+from importer.mixins import DataImportExportSerializerMixin
+from importer.registry import register_importer
 from InvenTree.helpers import get_objectreference
 from InvenTree.helpers_model import construct_absolute_url
 from InvenTree.serializers import (
+    InvenTreeAttachmentSerializerField,
     InvenTreeImageSerializerField,
     InvenTreeModelSerializer,
+    UserSerializer,
 )
 from plugin import registry as plugin_registry
 from users.serializers import OwnerSerializer
@@ -123,6 +131,17 @@ class UserSettingsSerializer(SettingsSerializer):
         ]
 
     user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+
+class CurrencyExchangeSerializer(serializers.Serializer):
+    """Serializer for a Currency Exchange request.
+
+    It's only purpose is describing the results correctly in the API schema right now.
+    """
+
+    base_currency = serializers.CharField(read_only=True)
+    exchange_rates = serializers.DictField(child=serializers.FloatField())
+    updated = serializers.DateTimeField(read_only=True)
 
 
 class GenericReferencedSettingSerializer(SettingsSerializer):
@@ -270,14 +289,15 @@ class NotesImageSerializer(InvenTreeModelSerializer):
         """Meta options for NotesImageSerializer."""
 
         model = common_models.NotesImage
-        fields = ['pk', 'image', 'user', 'date']
+        fields = ['pk', 'image', 'user', 'date', 'model_type', 'model_id']
 
         read_only_fields = ['date', 'user']
 
     image = InvenTreeImageSerializerField(required=True)
 
 
-class ProjectCodeSerializer(InvenTreeModelSerializer):
+@register_importer()
+class ProjectCodeSerializer(DataImportExportSerializerMixin, InvenTreeModelSerializer):
     """Serializer for the ProjectCode model."""
 
     class Meta:
@@ -287,6 +307,32 @@ class ProjectCodeSerializer(InvenTreeModelSerializer):
         fields = ['pk', 'code', 'description', 'responsible', 'responsible_detail']
 
     responsible_detail = OwnerSerializer(source='responsible', read_only=True)
+
+
+@register_importer()
+class CustomStateSerializer(DataImportExportSerializerMixin, InvenTreeModelSerializer):
+    """Serializer for the custom state model."""
+
+    class Meta:
+        """Meta options for CustomStateSerializer."""
+
+        model = common_models.InvenTreeCustomUserStateModel
+        fields = [
+            'pk',
+            'key',
+            'name',
+            'label',
+            'color',
+            'logical_key',
+            'model',
+            'model_name',
+            'reference_status',
+        ]
+
+    model_name = serializers.CharField(read_only=True, source='model.name')
+    reference_status = serializers.ChoiceField(
+        choices=generic.states.custom.state_reference_mappings()
+    )
 
 
 class FlagSerializer(serializers.Serializer):
@@ -325,7 +371,8 @@ class ContentTypeSerializer(serializers.Serializer):
         return obj.app_label in plugin_registry.installed_apps
 
 
-class CustomUnitSerializer(InvenTreeModelSerializer):
+@register_importer()
+class CustomUnitSerializer(DataImportExportSerializerMixin, InvenTreeModelSerializer):
     """DRF serializer for CustomUnit model."""
 
     class Meta:
@@ -333,6 +380,22 @@ class CustomUnitSerializer(InvenTreeModelSerializer):
 
         model = common_models.CustomUnit
         fields = ['pk', 'name', 'symbol', 'definition']
+
+
+class AllUnitListResponseSerializer(serializers.Serializer):
+    """Serializer for the AllUnitList."""
+
+    class Unit(serializers.Serializer):
+        """Serializer for the AllUnitListResponseSerializer."""
+
+        name = serializers.CharField()
+        is_alias = serializers.BooleanField()
+        compatible_units = serializers.ListField(child=serializers.CharField())
+        isdimensionless = serializers.BooleanField()
+
+    default_system = serializers.CharField()
+    available_systems = serializers.ListField(child=serializers.CharField())
+    available_units = Unit(many=True)
 
 
 class ErrorMessageSerializer(InvenTreeModelSerializer):
@@ -463,3 +526,110 @@ class FailedTaskSerializer(InvenTreeModelSerializer):
     pk = serializers.CharField(source='id', read_only=True)
 
     result = serializers.CharField()
+
+
+class AttachmentSerializer(InvenTreeModelSerializer):
+    """Serializer class for the Attachment model."""
+
+    class Meta:
+        """Serializer metaclass."""
+
+        model = common_models.Attachment
+        fields = [
+            'pk',
+            'attachment',
+            'filename',
+            'link',
+            'comment',
+            'upload_date',
+            'upload_user',
+            'user_detail',
+            'file_size',
+            'model_type',
+            'model_id',
+            'tags',
+        ]
+
+        read_only_fields = ['pk', 'file_size', 'upload_date', 'upload_user', 'filename']
+
+    def __init__(self, *args, **kwargs):
+        """Override the model_type field to provide dynamic choices."""
+        super().__init__(*args, **kwargs)
+
+        if len(self.fields['model_type'].choices) == 0:
+            self.fields[
+                'model_type'
+            ].choices = common.validators.attachment_model_options()
+
+    tags = TagListSerializerField(required=False)
+
+    user_detail = UserSerializer(source='upload_user', read_only=True, many=False)
+
+    attachment = InvenTreeAttachmentSerializerField(required=False, allow_null=True)
+
+    # The 'filename' field must be present in the serializer
+    filename = serializers.CharField(
+        label=_('Filename'), required=False, source='basename', allow_blank=False
+    )
+
+    upload_date = serializers.DateField(read_only=True)
+
+    # Note: The choices are overridden at run-time on class initialization
+    model_type = serializers.ChoiceField(
+        label=_('Model Type'),
+        choices=common.validators.attachment_model_options(),
+        required=True,
+        allow_blank=False,
+        allow_null=False,
+    )
+
+    def save(self, **kwargs):
+        """Override the save method to handle the model_type field."""
+        from InvenTree.models import InvenTreeAttachmentMixin
+        from users.models import check_user_permission
+
+        model_type = self.validated_data.get('model_type', None)
+
+        if model_type is None and self.instance:
+            model_type = self.instance.model_type
+
+        # Ensure that the user has permission to attach files to the specified model
+        user = self.context.get('request').user
+
+        target_model_class = common.validators.attachment_model_class_from_label(
+            model_type
+        )
+
+        if not issubclass(target_model_class, InvenTreeAttachmentMixin):
+            raise PermissionDenied(_('Invalid model type specified for attachment'))
+
+        permission_error_msg = _(
+            'User does not have permission to create or edit attachments for this model'
+        )
+
+        if not check_user_permission(user, target_model_class, 'change'):
+            raise PermissionDenied(permission_error_msg)
+
+        # Check that the user has the required permissions to attach files to the target model
+        if not target_model_class.check_attachment_permission('change', user):
+            raise PermissionDenied(_(permission_error_msg))
+
+        return super().save(**kwargs)
+
+
+class IconSerializer(serializers.Serializer):
+    """Serializer for an icon."""
+
+    name = serializers.CharField()
+    category = serializers.CharField()
+    tags = serializers.ListField(child=serializers.CharField())
+    variants = serializers.DictField(child=serializers.CharField())
+
+
+class IconPackageSerializer(serializers.Serializer):
+    """Serializer for a list of icons."""
+
+    name = serializers.CharField()
+    prefix = serializers.CharField()
+    fonts = serializers.DictField(child=serializers.CharField())
+    icons = serializers.DictField(child=IconSerializer())

@@ -8,7 +8,7 @@ import {
   Paper,
   Text,
   rem,
-  useMantineTheme
+  useMantineColorScheme
 } from '@mantine/core';
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { useHover } from '@mantine/hooks';
@@ -19,8 +19,11 @@ import { api } from '../../App';
 import { UserRoles } from '../../enums/Roles';
 import { cancelEvent } from '../../functions/events';
 import { InvenTreeIcon } from '../../functions/icons';
+import { useEditApiFormModal } from '../../hooks/UseForm';
+import { useGlobalSettingsState } from '../../states/SettingsState';
 import { useUserState } from '../../states/UserState';
 import { PartThumbTable } from '../../tables/part/PartThumbTable';
+import { vars } from '../../theme';
 import { ActionButton } from '../buttons/ActionButton';
 import { ApiImage } from '../images/ApiImage';
 import { StylishText } from '../items/StylishText';
@@ -41,11 +44,13 @@ export type DetailImageProps = {
  * Actions for Detail Images.
  * If true, the button type will be visible
  * @param {boolean} selectExisting - PART ONLY. Allows selecting existing images as part image
+ * @param {boolean} downloadImage - Allows downloading image from a remote URL
  * @param {boolean} uploadFile - Allows uploading a new image
  * @param {boolean} deleteFile - Allows deleting the current image
  */
 export type DetailImageButtonProps = {
   selectExisting?: boolean;
+  downloadImage?: boolean;
   uploadFile?: boolean;
   deleteFile?: boolean;
 };
@@ -80,14 +85,12 @@ const removeModal = (apiPath: string, setImage: (image: string) => void) =>
 function UploadModal({
   apiPath,
   setImage
-}: {
+}: Readonly<{
   apiPath: string;
   setImage: (image: string) => void;
-}) {
-  const [file1, setFile] = useState<FileWithPath | null>(null);
+}>) {
+  const [currentFile, setCurrentFile] = useState<FileWithPath | null>(null);
   let uploading = false;
-
-  const theme = useMantineTheme();
 
   // Components to show in the Dropzone when no file is selected
   const noFileIdle = (
@@ -97,7 +100,7 @@ function UploadModal({
         <Text size="xl" inline>
           <Trans>Drag and drop to upload</Trans>
         </Text>
-        <Text size="sm" color="dimmed" inline mt={7}>
+        <Text size="sm" c="dimmed" inline mt={7}>
           <Trans>Click to select file(s)</Trans>
         </Text>
       </div>
@@ -122,7 +125,7 @@ function UploadModal({
       >
         <Image
           src={imageUrl}
-          imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
+          onLoad={() => URL.revokeObjectURL(imageUrl)}
           radius="sm"
           height={75}
           fit="contain"
@@ -132,7 +135,7 @@ function UploadModal({
           <Text size="xl" inline style={{ wordBreak: 'break-all' }}>
             {file.name}
           </Text>
-          <Text size="sm" color="dimmed" inline mt={7}>
+          <Text size="sm" c="dimmed" inline mt={7}>
             {size.toFixed(2)} MB
           </Text>
         </div>
@@ -160,21 +163,23 @@ function UploadModal({
     }
   };
 
+  const { colorScheme } = useMantineColorScheme();
+
   const primaryColor =
-    theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6];
-  const redColor = theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6];
+    vars.colors.primaryColors[colorScheme === 'dark' ? 4 : 6];
+  const redColor = vars.colors.red[colorScheme === 'dark' ? 4 : 6];
 
   return (
-    <Paper sx={{ height: '220px' }}>
+    <Paper style={{ height: '220px' }}>
       <Dropzone
-        onDrop={(files) => setFile(files[0])}
+        onDrop={(files) => setCurrentFile(files[0])}
         maxFiles={1}
         accept={IMAGE_MIME_TYPE}
         loading={uploading}
       >
         <Group
-          position="center"
-          spacing="xl"
+          justify="center"
+          gap="xl"
           style={{ minHeight: rem(140), pointerEvents: 'none' }}
         >
           <Dropzone.Accept>
@@ -197,7 +202,9 @@ function UploadModal({
               }}
             />
           </Dropzone.Reject>
-          <Dropzone.Idle>{file1 ? fileInfo(file1) : noFileIdle}</Dropzone.Idle>
+          <Dropzone.Idle>
+            {currentFile ? fileInfo(currentFile) : noFileIdle}
+          </Dropzone.Idle>
         </Group>
       </Dropzone>
       <Paper
@@ -217,12 +224,15 @@ function UploadModal({
       >
         <Button
           variant="outline"
-          disabled={!file1}
-          onClick={() => setFile(null)}
+          disabled={!currentFile}
+          onClick={() => setCurrentFile(null)}
         >
           <Trans>Clear</Trans>
         </Button>
-        <Button disabled={!file1} onClick={() => uploadImage(file1)}>
+        <Button
+          disabled={!currentFile}
+          onClick={() => uploadImage(currentFile)}
+        >
           <Trans>Submit</Trans>
         </Button>
       </Paper>
@@ -239,20 +249,24 @@ function ImageActionButtons({
   apiPath,
   hasImage,
   pk,
-  setImage
-}: {
+  setImage,
+  downloadImage
+}: Readonly<{
   actions?: DetailImageButtonProps;
   visible: boolean;
   apiPath: string;
   hasImage: boolean;
   pk: string;
   setImage: (image: string) => void;
-}) {
+  downloadImage: () => void;
+}>) {
+  const globalSettings = useGlobalSettingsState();
+
   return (
     <>
       {visible && (
         <Group
-          spacing="xs"
+          gap="xs"
           style={{ zIndex: 2, position: 'absolute', top: '10px', left: '10px' }}
         >
           {actions.selectExisting && (
@@ -278,6 +292,25 @@ function ImageActionButtons({
               }}
             />
           )}
+          {actions.downloadImage &&
+            globalSettings.isSet('INVENTREE_DOWNLOAD_FROM_URL') && (
+              <ActionButton
+                icon={
+                  <InvenTreeIcon
+                    icon="download"
+                    iconProps={{ color: 'white' }}
+                  />
+                }
+                tooltip={t`Download remote image`}
+                variant="outline"
+                size="lg"
+                tooltipAlignment="top"
+                onClick={(event: any) => {
+                  cancelEvent(event);
+                  downloadImage();
+                }}
+              />
+            )}
           {actions.uploadFile && (
             <ActionButton
               icon={
@@ -322,7 +355,7 @@ function ImageActionButtons({
 /**
  * Renders an image with action buttons for display on Details panels
  */
-export function DetailsImage(props: DetailImageProps) {
+export function DetailsImage(props: Readonly<DetailImageProps>) {
   // Displays a group of ActionButtons on hover
   const { hovered, ref } = useHover();
   const [img, setImg] = useState<string>(props.src ?? backup_image);
@@ -334,6 +367,21 @@ export function DetailsImage(props: DetailImageProps) {
   };
 
   const permissions = useUserState();
+
+  const downloadImage = useEditApiFormModal({
+    url: props.apiPath,
+    title: t`Download Image`,
+    fields: {
+      remote_image: {}
+    },
+    timeout: 10000,
+    successMessage: t`Image downloaded successfully`,
+    onFormSuccess: (response: any) => {
+      if (response.image) {
+        setAndRefresh(response.image);
+      }
+    }
+  });
 
   const hasOverlay: boolean = useMemo(() => {
     return (
@@ -354,12 +402,13 @@ export function DetailsImage(props: DetailImageProps) {
 
   return (
     <>
-      <AspectRatio ref={ref} maw={IMAGE_DIMENSION} ratio={1}>
+      {downloadImage.modal}
+      <AspectRatio ref={ref} maw={IMAGE_DIMENSION} ratio={1} pos="relative">
         <>
           <ApiImage
             src={img}
-            height={IMAGE_DIMENSION}
-            width={IMAGE_DIMENSION}
+            mah={IMAGE_DIMENSION}
+            maw={IMAGE_DIMENSION}
             onClick={expandImage}
           />
           {permissions.hasChangeRole(props.appRole) &&
@@ -373,6 +422,7 @@ export function DetailsImage(props: DetailImageProps) {
                   hasImage={props.src ? true : false}
                   pk={props.pk}
                   setImage={setAndRefresh}
+                  downloadImage={downloadImage.open}
                 />
               </Overlay>
             )}

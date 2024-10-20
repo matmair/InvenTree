@@ -11,10 +11,10 @@ dayjs.extend(customParseFormat);
 export default function DateField({
   controller,
   definition
-}: {
+}: Readonly<{
   controller: UseControllerReturn<FieldValues, any>;
   definition: ApiFormFieldType;
-}) {
+}>) {
   const fieldId = useId();
 
   const {
@@ -30,7 +30,6 @@ export default function DateField({
       // Convert the returned date object to a string
       if (value) {
         value = value.toString();
-        let date = new Date(value);
         value = dayjs(value).format(valueFormat);
       }
 
@@ -51,6 +50,7 @@ export default function DateField({
   return (
     <DateInput
       id={fieldId}
+      aria-label={`date-field-${field.name}`}
       radius="sm"
       ref={field.ref}
       type={undefined}
@@ -62,7 +62,7 @@ export default function DateField({
       label={definition.label}
       description={definition.description}
       placeholder={definition.placeholder}
-      icon={definition.icon}
+      leftSection={definition.icon}
     />
   );
 }

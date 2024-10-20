@@ -9,7 +9,8 @@ from django.conf import settings as djangosettings
 import common.models
 import InvenTree.helpers
 import InvenTree.helpers_model
-from InvenTree import version
+from common.settings import get_global_setting
+from InvenTree import settings, version
 from plugin import registry
 
 register = template.Library()
@@ -114,7 +115,7 @@ def to_list(*args):
 @register.simple_tag()
 def inventree_show_about(user, *args, **kwargs):
     """Return True if the about modal should be shown."""
-    if common.models.InvenTreeSetting.get_setting('INVENTREE_RESTRICT_ABOUT'):
+    if get_global_setting('INVENTREE_RESTRICT_ABOUT'):
         # Return False if the user is not a superuser, or no user information is provided
         if not user or not user.is_superuser:
             return False
@@ -201,7 +202,7 @@ def settings_value(key, *args, **kwargs):
             return common.models.InvenTreeUserSetting.get_setting(key)
         return common.models.InvenTreeUserSetting.get_setting(key, user=kwargs['user'])
 
-    return common.models.InvenTreeSetting.get_setting(key)
+    return get_global_setting(key)
 
 
 @register.simple_tag()
@@ -237,10 +238,7 @@ def progress_bar(val, max_val, *args, **kwargs):
     else:
         style = ''
 
-    if max_val != 0:
-        percent = float(val / max_val) * 100
-    else:
-        percent = 0
+    percent = float(val / max_val) * 100 if max_val != 0 else 0
 
     if percent > 100:
         percent = 100
@@ -249,7 +247,7 @@ def progress_bar(val, max_val, *args, **kwargs):
 
     style_tags = []
 
-    max_width = kwargs.get('max_width', None)
+    max_width = kwargs.get('max_width')
 
     if max_width:
         style_tags.append(f'max-width: {max_width};')
@@ -265,9 +263,9 @@ def progress_bar(val, max_val, *args, **kwargs):
 
 
 @register.simple_tag()
-def get_color_theme_css(username):
+def get_color_theme_css(user):
     """Return the custom theme .css file for the selected user."""
-    user_theme_name = get_user_color_theme(username)
+    user_theme_name = get_user_color_theme(user)
     # Build path to CSS sheet
     inventree_css_sheet = os.path.join('css', 'color-themes', user_theme_name + '.css')
 
@@ -278,12 +276,18 @@ def get_color_theme_css(username):
 
 
 @register.simple_tag()
-def get_user_color_theme(username):
+def get_user_color_theme(user):
     """Get current user color theme."""
     from common.models import ColorTheme
 
     try:
-        user_theme = ColorTheme.objects.filter(user=username).get()
+        if not user.is_authenticated:
+            return 'default'
+    except Exception:
+        return 'default'
+
+    try:
+        user_theme = ColorTheme.objects.filter(user_obj=user).get()
         user_theme_name = user_theme.name
         if not user_theme_name or not ColorTheme.is_valid_choice(user_theme):
             user_theme_name = 'default'
@@ -319,7 +323,7 @@ def primitive_to_javascript(primitive):
     elif type(primitive) in [int, float]:
         return primitive
     # Wrap with quotes
-    return format_html("'{}'", primitive)  # noqa: P103
+    return format_html("'{}'", primitive)
 
 
 @register.simple_tag()

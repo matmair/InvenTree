@@ -14,6 +14,7 @@ from rest_framework.fields import URLField as RestURLField
 from rest_framework.fields import empty
 
 import InvenTree.helpers
+from common.settings import get_global_setting
 
 from .validators import AllowedURLValidator, allowable_url_schemes
 
@@ -32,11 +33,7 @@ class InvenTreeRestURLField(RestURLField):
 
     def run_validation(self, data=empty):
         """Override default validation behaviour for this field type."""
-        import common.models
-
-        strict_urls = common.models.InvenTreeSetting.get_setting(
-            'INVENTREE_STRICT_URLS', True, cache=False
-        )
+        strict_urls = get_global_setting('INVENTREE_STRICT_URLS', cache=False)
 
         if not strict_urls and data is not empty and '://' not in data:
             # Validate as if there were a schema provided
@@ -59,7 +56,7 @@ class InvenTreeURLField(models.URLField):
 
 def money_kwargs(**kwargs):
     """Returns the database settings for MoneyFields."""
-    from common.settings import currency_code_default, currency_code_mappings
+    from common.currency import currency_code_default, currency_code_mappings
 
     # Default values (if not specified)
     if 'max_digits' not in kwargs:
@@ -96,9 +93,8 @@ class InvenTreeModelMoneyField(ModelMoneyField):
         allow_negative = kwargs.pop('allow_negative', False)
 
         # If no validators are provided, add some "standard" ones
-        if len(validators) == 0:
-            if not allow_negative:
-                validators.append(MinMoneyValidator(0))
+        if len(validators) == 0 and not allow_negative:
+            validators.append(MinMoneyValidator(0))
 
         kwargs['validators'] = validators
 
@@ -137,9 +133,9 @@ class DatePickerFormField(forms.DateField):
     def __init__(self, **kwargs):
         """Set up custom values."""
         help_text = kwargs.get('help_text', _('Enter date'))
-        label = kwargs.get('label', None)
+        label = kwargs.get('label')
         required = kwargs.get('required', False)
-        initial = kwargs.get('initial', None)
+        initial = kwargs.get('initial')
 
         widget = forms.DateInput(attrs={'type': 'date'})
 

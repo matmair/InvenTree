@@ -18,10 +18,10 @@ class TemplateTagTest(InvenTreeTestCase):
 
     def assertSettings(self, settings_data):
         """Helper to test if needed args are in the settings."""
-        self.assertTrue('debug' in settings_data)
-        self.assertTrue('server_list' in settings_data)
-        self.assertTrue('show_server_selector' in settings_data)
-        self.assertTrue('environment' in settings_data)
+        self.assertIn('debug', settings_data)
+        self.assertIn('server_list', settings_data)
+        self.assertIn('show_server_selector', settings_data)
+        self.assertIn('environment', settings_data)
 
     def test_spa_bundle(self):
         """Test the 'spa_bundle' template tag."""
@@ -32,17 +32,27 @@ class TemplateTagTest(InvenTreeTestCase):
             return  # pragma: no cover
 
         shipped_js = resp.split('<script type="module" src="')[1:]
-        self.assertTrue(len(shipped_js) > 0)
-        self.assertTrue(len(shipped_js) == 3)
+        self.assertGreater(len(shipped_js), 0)
+        self.assertEqual(len(shipped_js), 3)
 
         manifest_file = Path(__file__).parent.joinpath('static/web/.vite/manifest.json')
         # Try with removed manifest file
-        manifest_file.rename(manifest_file.with_suffix('.json.bak'))  # Rename
-        resp = resp = spa_helper.spa_bundle()
+        new_name = manifest_file.rename(
+            manifest_file.with_suffix('.json.bak')
+        )  # Rename
+        resp = spa_helper.spa_bundle()
         self.assertIsNone(resp)
-        manifest_file.with_suffix('.json.bak').rename(
-            manifest_file.with_suffix('.json')
-        )  # Name back
+
+        # Try with differing name
+        resp = spa_helper.spa_bundle(new_name)
+        self.assertIsNotNone(resp)
+
+        # Broken manifest file
+        manifest_file.write_text('broken')
+        resp = spa_helper.spa_bundle(manifest_file)
+        self.assertIsNone(resp)
+
+        new_name.rename(manifest_file.with_suffix('.json'))  # Name back
 
     def test_spa_settings(self):
         """Test the 'spa_settings' template tag."""
@@ -75,8 +85,13 @@ class TemplateTagTest(InvenTreeTestCase):
         envs = {'INVENTREE_PUI_SETTINGS': json.dumps({'server_list': ['aa', 'bb']})}
         with mock.patch.dict(os.environ, envs):
             rsp = get_frontend_settings(False)
-            self.assertFalse('show_server_selector' in rsp)
+            self.assertNotIn('show_server_selector', rsp)
             self.assertEqual(rsp['server_list'], ['aa', 'bb'])
+
+    def test_redirects(self):
+        """Test the redirect helper."""
+        response = self.client.get('/assets/testpath')
+        self.assertEqual(response.url, '/static/web/assets/testpath')
 
 
 class TestWebHelpers(InvenTreeAPITestCase):

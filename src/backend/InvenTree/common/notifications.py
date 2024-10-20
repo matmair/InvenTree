@@ -143,11 +143,7 @@ class NotificationMethod:
 
         # Check if method globally enabled
         plg_instance = registry.get_plugin(plg_cls.NAME.lower())
-        if plg_instance and not plg_instance.get_setting(self.GLOBAL_SETTING):
-            return True
-
-        # Lets go!
-        return False
+        return plg_instance and not plg_instance.get_setting(self.GLOBAL_SETTING)
 
     def usersetting(self, target):
         """Returns setting for this method for a given user."""
@@ -343,13 +339,13 @@ class InvenTreeNotificationBodies:
 
 def trigger_notification(obj, category=None, obj_ref='pk', **kwargs):
     """Send out a notification."""
-    targets = kwargs.get('targets', None)
-    target_fnc = kwargs.get('target_fnc', None)
+    targets = kwargs.get('targets')
+    target_fnc = kwargs.get('target_fnc')
     target_args = kwargs.get('target_args', [])
     target_kwargs = kwargs.get('target_kwargs', {})
-    target_exclude = kwargs.get('target_exclude', None)
+    target_exclude = kwargs.get('target_exclude')
     context = kwargs.get('context', {})
-    delivery_methods = kwargs.get('delivery_methods', None)
+    delivery_methods = kwargs.get('delivery_methods')
 
     # Check if data is importing currently
     if isImportingData():
@@ -365,7 +361,7 @@ def trigger_notification(obj, category=None, obj_ref='pk', **kwargs):
         obj_ref_value = getattr(obj, 'id', None)
     if not obj_ref_value:
         raise KeyError(
-            f"Could not resolve an object reference for '{str(obj)}' with {obj_ref}, pk, id"
+            f"Could not resolve an object reference for '{obj!s}' with {obj_ref}, pk, id"
         )
 
     # Check if we have notified recently...
@@ -432,9 +428,9 @@ def trigger_notification(obj, category=None, obj_ref='pk', **kwargs):
                 deliver_notification(method, obj, category, target_users, context)
             except NotImplementedError as error:
                 # Allow any single notification method to fail, without failing the others
-                logger.error(error)  # noqa: LOG005
+                logger.error(error)
             except Exception as error:
-                logger.error(error)  # noqa: LOG005
+                logger.error(error)
 
         # Set delivery flag
         common.models.NotificationEntry.notify(category, obj_ref_value)

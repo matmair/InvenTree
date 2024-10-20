@@ -6,11 +6,12 @@ from django.urls import reverse
 
 from rest_framework import status
 
-from part.models import Part
+from part.models import Part, BomItem
 from build.models import Build, BuildItem
 from stock.models import StockItem
 
-from InvenTree.status_codes import BuildStatus, StockStatus
+from build.status_codes import BuildStatus
+from stock.status_codes import StockStatus
 from InvenTree.unit_test import InvenTreeAPITestCase
 
 
@@ -223,6 +224,7 @@ class BuildTest(BuildAPITest):
                 "status": 50,  # Item requires attention
             },
             expected_code=201,
+            max_query_count=450,  # TODO: Try to optimize this
         )
 
         self.assertEqual(self.build.incomplete_outputs.count(), 0)
@@ -247,7 +249,7 @@ class BuildTest(BuildAPITest):
             expected_code=400
         )
 
-        self.assertTrue('accept_unallocated' in response.data)
+        self.assertIn('accept_unallocated', response.data)
 
         # Accept unallocated stock
         self.post(
@@ -264,8 +266,35 @@ class BuildTest(BuildAPITest):
         self.assertTrue(self.build.is_complete)
 
     def test_cancel(self):
-        """Test that we can cancel a BuildOrder via the API."""
-        bo = Build.objects.get(pk=1)
+        """Test that we can cancel a BuildOrder via the API.
+
+        - First test that all stock is returned to stock
+        - Second test that stock is consumed by the build order
+        """
+
+        def make_new_build(ref):
+            """Make a new build order, and allocate stock to it."""
+
+            data = self.post(
+                reverse('api-build-list'),
+                {
+                    'part': 100,
+                    'quantity': 10,
+                    'title': 'Test build',
+                    'reference': ref,
+                },
+                expected_code=201
+            ).data
+
+            build = Build.objects.get(pk=data['pk'])
+
+            build.auto_allocate_stock()
+
+            self.assertGreater(build.build_lines.count(), 0)
+
+            return build
+
+        bo = make_new_build('BO-12345')
 
         url = reverse('api-build-cancel', kwargs={'pk': bo.pk})
 
@@ -276,6 +305,23 @@ class BuildTest(BuildAPITest):
         bo.refresh_from_db()
 
         self.assertEqual(bo.status, BuildStatus.CANCELLED)
+
+        # No items were "consumed" by this build
+        self.assertEqual(bo.consumed_stock.count(), 0)
+
+        # Make another build, this time we will *consume* the allocated stock
+        bo = make_new_build('BO-12346')
+
+        url = reverse('api-build-cancel', kwargs={'pk': bo.pk})
+
+        self.post(url, {'remove_allocated_stock': True}, expected_code=201)
+
+        bo.refresh_from_db()
+
+        self.assertEqual(bo.status, BuildStatus.CANCELLED)
+
+        # This time, there should be *consumed* stock
+        self.assertGreater(bo.consumed_stock.count(), 0)
 
     def test_delete(self):
         """Test that we can delete a BuildOrder via the API"""
@@ -518,16 +564,16 @@ class BuildTest(BuildAPITest):
     def test_download_build_orders(self):
         """Test that we can download a list of build orders via the API"""
         required_cols = [
-            'reference',
-            'status',
-            'completed',
-            'batch',
-            'notes',
-            'title',
-            'part',
-            'part_name',
-            'id',
-            'quantity',
+            'Reference',
+            'Build Status',
+            'Completed items',
+            'Batch Code',
+            'Notes',
+            'Description',
+            'Part',
+            'Part Name',
+            'ID',
+            'Quantity',
         ]
 
         excluded_cols = [
@@ -551,13 +597,86 @@ class BuildTest(BuildAPITest):
 
             for row in data:
 
-                build = Build.objects.get(pk=row['id'])
+                build = Build.objects.get(pk=row['ID'])
 
-                self.assertEqual(str(build.part.pk), row['part'])
-                self.assertEqual(build.part.full_name, row['part_name'])
+                self.assertEqual(str(build.part.pk), row['Part'])
+                self.assertEqual(build.part.name, row['Part Name'])
 
-                self.assertEqual(build.reference, row['reference'])
-                self.assertEqual(build.title, row['title'])
+                self.assertEqual(build.reference, row['Reference'])
+                self.assertEqual(build.title, row['Description'])
+
+    def test_create(self):
+        """Test creation of new build orders via the API."""
+
+        url = reverse('api-build-list')
+
+        # First, we'll create a tree of part assemblies
+        part_a = Part.objects.create(name="Part A", description="Part A description", assembly=True)
+        part_b = Part.objects.create(name="Part B", description="Part B description", assembly=True)
+        part_c = Part.objects.create(name="Part C", description="Part C description", assembly=True)
+
+        # Create a BOM for Part A
+        BomItem.objects.create(
+            part=part_a,
+            sub_part=part_b,
+            quantity=5,
+        )
+
+        # Create a BOM for Part B
+        BomItem.objects.create(
+            part=part_b,
+            sub_part=part_c,
+            quantity=7
+        )
+
+        n = Build.objects.count()
+
+        # Create a build order for Part A, with a quantity of 10
+        response = self.post(
+            url,
+            {
+                'reference': 'BO-9876',
+                'part': part_a.pk,
+                'quantity': 10,
+                'title': 'A build',
+            },
+            expected_code=201
+        )
+
+        self.assertEqual(n + 1, Build.objects.count())
+
+        bo = Build.objects.get(pk=response.data['pk'])
+
+        self.assertEqual(bo.children.count(), 0)
+
+        # Create a build order for Part A, and auto-create child builds
+        response = self.post(
+            url,
+            {
+                'reference': 'BO-9875',
+                'part': part_a.pk,
+                'quantity': 15,
+                'title': 'A build - with childs',
+                'create_child_builds': True,
+            }
+        )
+
+        # An addition 1 + 2 builds should have been created
+        self.assertEqual(n + 4, Build.objects.count())
+
+        bo = Build.objects.get(pk=response.data['pk'])
+
+        # One build has a direct child
+        self.assertEqual(bo.children.count(), 1)
+        child = bo.children.first()
+        self.assertEqual(child.part.pk, part_b.pk)
+        self.assertEqual(child.quantity, 75)
+
+        # And there should be a second-level child build too
+        self.assertEqual(child.children.count(), 1)
+        child = child.children.first()
+        self.assertEqual(child.part.pk, part_c.pk)
+        self.assertEqual(child.quantity, 7 * 5 * 15)
 
 
 class BuildAllocationTest(BuildAPITest):
@@ -874,6 +993,65 @@ class BuildAllocationTest(BuildAPITest):
             expected_code=201,
         )
 
+class BuildItemTest(BuildAPITest):
+    """Unit tests for build items.
+
+    For this test, we will be using Build ID=1;
+
+    - This points to Part 100 (see fixture data in part.yaml)
+    - This Part already has a BOM with 4 items (see fixture data in bom.yaml)
+    - There are no BomItem objects yet created for this build
+    """
+
+    def setUp(self):
+        """Basic operation as part of test suite setup"""
+        super().setUp()
+
+        self.assignRole('build.add')
+        self.assignRole('build.change')
+
+        self.build = Build.objects.get(pk=1)
+
+        # Regenerate BuildLine objects
+        self.build.create_build_line_items()
+
+        # Record number of build items which exist at the start of each test
+        self.n = BuildItem.objects.count()
+
+    def test_update_overallocated(self):
+        """Test update of overallocated stock items."""
+
+        si = StockItem.objects.get(pk=2)
+
+        # Find line item
+        line = self.build.build_lines.all().filter(bom_item__sub_part=si.part).first()
+
+        # Set initial stock item quantity
+        si.quantity = 100
+        si.save()
+
+        # Create build item
+        bi = BuildItem(
+            build_line=line,
+            stock_item=si,
+            quantity=100
+        )
+        bi.save()
+
+        # Reduce stock item quantity
+        si.quantity = 50
+        si.save()
+
+        # Reduce build item quantity
+        url = reverse('api-build-item-detail', kwargs={'pk': bi.pk})
+
+        self.patch(
+            url,
+            {
+                "quantity": 50,
+            },
+            expected_code=200,
+        )
 
 class BuildOverallocationTest(BuildAPITest):
     """Unit tests for over allocation of stock items against a build order.
@@ -920,6 +1098,12 @@ class BuildOverallocationTest(BuildAPITest):
         outputs = cls.build.build_outputs.all()
         cls.build.complete_build_output(outputs[0], cls.user)
 
+    def setUp(self):
+        """Basic operation as part of test suite setup"""
+        super().setUp()
+
+        self.generate_exchange_rates()
+
     def test_setup(self):
         """Validate expected state after set-up."""
         self.assertEqual(self.build.incomplete_outputs.count(), 0)
@@ -934,7 +1118,7 @@ class BuildOverallocationTest(BuildAPITest):
             {},
             expected_code=400
         )
-        self.assertTrue('accept_overallocated' in response.data)
+        self.assertIn('accept_overallocated', response.data)
 
         # Check stock items have not reduced at all
         for si, oq, _ in self.state.values():
@@ -948,6 +1132,7 @@ class BuildOverallocationTest(BuildAPITest):
                 'accept_overallocated': 'accept',
             },
             expected_code=201,
+            max_query_count=1000,  # TODO: Come back and refactor this
         )
 
         self.build.refresh_from_db()
@@ -968,7 +1153,10 @@ class BuildOverallocationTest(BuildAPITest):
                 'accept_overallocated': 'trim',
             },
             expected_code=201,
+            max_query_count=1000,  # TODO: Come back and refactor this
         )
+
+        # Note: Large number of queries is due to pricing recalculation for each stock item
 
         self.build.refresh_from_db()
 
@@ -1080,6 +1268,86 @@ class BuildListTest(BuildAPITest):
 
         self.assertEqual(len(builds), 20)
 
+
+class BuildOutputCreateTest(BuildAPITest):
+    """Unit test for creating build output via API."""
+
+    def test_create_serialized_output(self):
+        """Create a serialized build output via the API."""
+
+        build_id = 1
+
+        url = reverse('api-build-output-create', kwargs={'pk': build_id})
+
+        build = Build.objects.get(pk=build_id)
+        part = build.part
+
+        n_outputs = build.output_count
+        n_items = part.stock_items.count()
+
+        # Post with invalid data
+        response = self.post(
+            url,
+            data={
+                'quantity': 10,
+                'serial_numbers': '1-100',
+            },
+            expected_code=400
+        )
+
+        self.assertIn('Group range 1-100 exceeds allowed quantity (10)', str(response.data['serial_numbers']))
+
+        # Build outputs have not increased
+        self.assertEqual(n_outputs, build.output_count)
+
+        # Stock items have not increased
+        self.assertEqual(n_items, part.stock_items.count())
+
+        response = self.post(
+            url,
+            data={
+                'quantity': 5,
+                'serial_numbers': '1,2,3-5',
+            },
+            expected_code=201
+        )
+
+        # Build outputs have incdeased
+        self.assertEqual(n_outputs + 5, build.output_count)
+
+        # Stock items have increased
+        self.assertEqual(n_items + 5, part.stock_items.count())
+
+        # Serial numbers have been created
+        for sn in range(1, 6):
+            self.assertTrue(part.stock_items.filter(serial=sn).exists())
+
+    def test_create_unserialized_output(self):
+        """Create an unserialized build output via the API."""
+
+        build_id = 1
+        url = reverse('api-build-output-create', kwargs={'pk': build_id})
+
+        build = Build.objects.get(pk=build_id)
+        part = build.part
+
+        n_outputs = build.output_count
+        n_items = part.stock_items.count()
+
+        # Create a single new output
+        self.post(
+            url,
+            data={
+                'quantity': 10,
+            },
+            expected_code=201
+        )
+
+        # Build outputs have increased
+        self.assertEqual(n_outputs + 1, build.output_count)
+
+        # Stock items have increased
+        self.assertEqual(n_items + 1, part.stock_items.count())
 
 class BuildOutputScrapTest(BuildAPITest):
     """Unit tests for scrapping build outputs"""

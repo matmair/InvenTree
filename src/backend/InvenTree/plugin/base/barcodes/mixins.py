@@ -10,6 +10,7 @@ from django.db.models import F, Q
 from django.utils.translation import gettext_lazy as _
 
 from company.models import Company, SupplierPart
+from InvenTree.models import InvenTreeBarcodeMixin
 from order.models import PurchaseOrder, PurchaseOrderStatus
 from plugin.base.integration.SettingsMixin import SettingsMixin
 from stock.models import StockLocation
@@ -52,6 +53,30 @@ class BarcodeMixin:
         Default return value is None
         """
         return None
+
+    @property
+    def has_barcode_generation(self):
+        """Does this plugin support barcode generation."""
+        try:
+            # Attempt to call the generate method
+            self.generate(None)  # type: ignore
+        except NotImplementedError:
+            # If a NotImplementedError is raised, then barcode generation is not supported
+            return False
+        except:
+            pass
+
+        return True
+
+    def generate(self, model_instance: InvenTreeBarcodeMixin):
+        """Generate barcode data for the given model instance.
+
+        Arguments:
+            model_instance: The model instance to generate barcode data for. It is extending the InvenTreeBarcodeMixin.
+
+        Returns: The generated barcode data.
+        """
+        raise NotImplementedError('Generate must be implemented by a plugin')
 
 
 class SupplierBarcodeMixin(BarcodeMixin):
@@ -359,7 +384,9 @@ class SupplierBarcodeMixin(BarcodeMixin):
             return orders_intersection if orders_intersection else orders_union
 
     @staticmethod
-    def get_supplier_parts(sku: str = None, supplier: Company = None, mpn: str = None):
+    def get_supplier_parts(
+        sku: str | None = None, supplier: Company = None, mpn: str | None = None
+    ):
         """Get a supplier part from SKU or by supplier and MPN."""
         if not (sku or supplier or mpn):
             return SupplierPart.objects.none()
@@ -395,10 +422,10 @@ class SupplierBarcodeMixin(BarcodeMixin):
     def receive_purchase_order_item(
         supplier_part: SupplierPart,
         user: User,
-        quantity: Decimal | str = None,
+        quantity: Decimal | str | None = None,
         purchase_order: PurchaseOrder = None,
         location: StockLocation = None,
-        barcode: str = None,
+        barcode: str | None = None,
     ) -> dict:
         """Try to receive a purchase order item.
 
@@ -446,9 +473,9 @@ class SupplierBarcodeMixin(BarcodeMixin):
             # 2. check if it's defined on the part
             # 3. check if there's 1 or 0 stock locations defined in InvenTree
             #    -> assume all stock is going into that location (or no location)
-            if location := line_item.destination:
-                pass
-            elif location := supplier_part.part.get_default_location():
+            if (location := line_item.destination) or (
+                location := supplier_part.part.get_default_location()
+            ):
                 pass
             elif StockLocation.objects.count() <= 1:
                 if not (location := StockLocation.objects.first()):

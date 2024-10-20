@@ -5,9 +5,9 @@ from django.test import tag
 from django.urls import reverse
 
 from common.models import InvenTreeSetting
-from InvenTree.status_codes import StockStatus
 from InvenTree.unit_test import InvenTreeTestCase
 from stock.models import StockItem, StockLocation
+from stock.status_codes import StockStatus
 from users.models import Owner
 
 
@@ -78,6 +78,11 @@ class StockDetailTest(StockViewTestCase):
 
         for act in actions:
             self.assertIn(act, html)
+
+        # Check with a wrong pk
+        response = self.client.get(reverse('stock-item-detail', kwargs={'pk': 99}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('stock-index'))
 
 
 class StockOwnershipTest(StockViewTestCase):

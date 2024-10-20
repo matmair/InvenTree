@@ -14,7 +14,7 @@ import { useCallback, useMemo } from 'react';
 import { api } from '../App';
 import { ActionButton } from '../components/buttons/ActionButton';
 import { PageDetail } from '../components/nav/PageDetail';
-import { PanelGroup } from '../components/nav/PanelGroup';
+import { PanelGroup } from '../components/panels/PanelGroup';
 import { ApiEndpoints } from '../enums/ApiEndpoints';
 import { useTable } from '../hooks/UseTable';
 import { apiUrl } from '../states/ApiState';
@@ -147,11 +147,9 @@ export default function NotificationsPage() {
   }, [unreadTable, readTable]);
 
   return (
-    <>
-      <Stack>
-        <PageDetail title={t`Notifications`} />
-        <PanelGroup pageKey="notifications" panels={notificationPanels} />
-      </Stack>
-    </>
+    <Stack>
+      <PageDetail title={t`Notifications`} />
+      <PanelGroup pageKey="notifications" panels={notificationPanels} />
+    </Stack>
   );
 }

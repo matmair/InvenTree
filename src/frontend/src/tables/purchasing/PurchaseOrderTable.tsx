@@ -1,6 +1,5 @@
 import { t } from '@lingui/macro';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
 import { Thumbnail } from '../../components/images/Thumbnail';
@@ -9,7 +8,7 @@ import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { usePurchaseOrderFields } from '../../forms/PurchaseOrderForms';
-import { getDetailUrl } from '../../functions/urls';
+import { useOwnerFilters, useProjectCodeFilters } from '../../hooks/UseFilter';
 import { useCreateApiFormModal } from '../../hooks/UseForm';
 import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
@@ -26,6 +25,9 @@ import {
 } from '../ColumnRenderers';
 import {
   AssignedToMeFilter,
+  HasProjectCodeFilter,
+  MaxDateFilter,
+  MinDateFilter,
   OutstandingFilter,
   OverdueFilter,
   StatusFilterOptions,
@@ -39,14 +41,15 @@ import { InvenTreeTable } from '../InvenTreeTable';
 export function PurchaseOrderTable({
   supplierId,
   supplierPartId
-}: {
+}: Readonly<{
   supplierId?: number;
   supplierPartId?: number;
-}) {
-  const navigate = useNavigate();
-
+}>) {
   const table = useTable('purchase-order');
   const user = useUserState();
+
+  const projectCodeFilters = useProjectCodeFilters();
+  const responsibleFilters = useOwnerFilters();
 
   const tableFilters: TableFilter[] = useMemo(() => {
     return [
@@ -58,15 +61,28 @@ export function PurchaseOrderTable({
       },
       OutstandingFilter(),
       OverdueFilter(),
-      AssignedToMeFilter()
-      // TODO: has_project_code
-      // TODO: project_code
+      AssignedToMeFilter(),
+      MinDateFilter(),
+      MaxDateFilter(),
+      {
+        name: 'project_code',
+        label: t`Project Code`,
+        description: t`Filter by project code`,
+        choices: projectCodeFilters.choices
+      },
+      HasProjectCodeFilter(),
+      {
+        name: 'assigned_to',
+        label: t`Responsible`,
+        description: t`Filter by responsible owner`,
+        choices: responsibleFilters.choices
+      }
     ];
-  }, []);
+  }, [projectCodeFilters.choices, responsibleFilters.choices]);
 
   const tableColumns = useMemo(() => {
     return [
-      ReferenceColumn(),
+      ReferenceColumn({}),
       DescriptionColumn({}),
       {
         accessor: 'supplier__name',
@@ -88,10 +104,10 @@ export function PurchaseOrderTable({
         accessor: 'supplier_reference'
       },
       LineItemsProgressColumn(),
-      StatusColumn(ModelType.purchaseorder),
-      ProjectCodeColumn(),
-      CreationDateColumn(),
-      TargetDateColumn(),
+      StatusColumn({ model: ModelType.purchaseorder }),
+      ProjectCodeColumn({}),
+      CreationDateColumn({}),
+      TargetDateColumn({}),
       {
         accessor: 'total_price',
         title: t`Total Price`,
@@ -102,11 +118,11 @@ export function PurchaseOrderTable({
           });
         }
       },
-      ResponsibleColumn()
+      ResponsibleColumn({})
     ];
   }, []);
 
-  const purchaseOrderFields = usePurchaseOrderFields();
+  const purchaseOrderFields = usePurchaseOrderFields({});
 
   const newPurchaseOrder = useCreateApiFormModal({
     url: ApiEndpoints.purchase_order_list,
@@ -115,18 +131,14 @@ export function PurchaseOrderTable({
     initialData: {
       supplier: supplierId
     },
-    onFormSuccess: (response) => {
-      if (response.pk) {
-        navigate(getDetailUrl(ModelType.purchaseorder, response.pk));
-      } else {
-        table.refreshTable();
-      }
-    }
+    follow: true,
+    modelType: ModelType.purchaseorder
   });
 
   const tableActions = useMemo(() => {
     return [
       <AddItemButton
+        key="add-purchase-order"
         tooltip={t`Add Purchase Order`}
         onClick={() => newPurchaseOrder.open()}
         hidden={!user.hasAddRole(UserRoles.purchase_order)}
@@ -149,7 +161,10 @@ export function PurchaseOrderTable({
           },
           tableFilters: tableFilters,
           tableActions: tableActions,
-          modelType: ModelType.purchaseorder
+          modelType: ModelType.purchaseorder,
+          enableSelection: true,
+          enableDownload: true,
+          enableReports: true
         }}
       />
     </>

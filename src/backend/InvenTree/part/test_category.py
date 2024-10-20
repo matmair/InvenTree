@@ -4,6 +4,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from common.models import InvenTreeSetting
+
 from .models import Part, PartCategory, PartParameter, PartParameterTemplate
 
 
@@ -117,7 +119,7 @@ class CategoryTest(TestCase):
             child.pathstring,
             'Cat/AAAAAAAAAA/BBBBBBBBBB/CCCCCCCCCC/DDDDDDDDDD/EEEEEEEEEE/FFFFFFFFFF/GGGGGGGGGG/HHHHHHHHHH/IIIIIIIIII/JJJJJJJJJJ/KKKKKKKKK...OO/PPPPPPPPPP/QQQQQQQQQQ/RRRRRRRRRR/SSSSSSSSSS/TTTTTTTTTT/UUUUUUUUUU/VVVVVVVVVV/WWWWWWWWWW/XXXXXXXXXX/YYYYYYYYYY/ZZZZZZZZZZ',
         )
-        self.assertTrue(len(child.pathstring) <= 250)
+        self.assertLessEqual(len(child.pathstring), 250)
 
         # Attempt an invalid move
         with self.assertRaises(ValidationError):
@@ -325,7 +327,7 @@ class CategoryTest(TestCase):
         self.assertEqual(descendants.count(), 3)
 
         for loc in [C11, C12, C13]:
-            self.assertTrue(loc in descendants)
+            self.assertIn(loc, descendants)
 
         # Check category C1x, should be B1 -> C1x
         for loc in [C11, C12, C13]:
@@ -412,3 +414,29 @@ class CategoryTest(TestCase):
         # should log an exception
         with self.assertRaises(ValidationError):
             B3.delete()
+
+    def test_icon(self):
+        """Test the category icon."""
+        # No default icon set
+        cat = PartCategory.objects.create(name='Test Category')
+        self.assertEqual(cat.icon, '')
+
+        # Set a default icon
+        InvenTreeSetting.set_setting('PART_CATEGORY_DEFAULT_ICON', 'ti:package:outline')
+        self.assertEqual(cat.icon, 'ti:package:outline')
+
+        # Set custom icon to default icon and assert that it does not get written to the database
+        cat.icon = 'ti:package:outline'
+        cat.save()
+        self.assertEqual(cat._icon, '')
+
+        # Set a different custom icon and assert that it takes precedence
+        cat.icon = 'ti:tag:outline'
+        cat.save()
+        self.assertEqual(cat.icon, 'ti:tag:outline')
+        InvenTreeSetting.set_setting('PART_CATEGORY_DEFAULT_ICON', '')
+
+        # Test that the icon can be set to None again
+        cat.icon = ''
+        cat.save()
+        self.assertEqual(cat.icon, '')

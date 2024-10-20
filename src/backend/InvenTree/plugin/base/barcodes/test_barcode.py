@@ -4,6 +4,8 @@ from django.urls import reverse
 
 import company.models
 import order.models
+from common.models import BarcodeScanResult
+from common.settings import set_global_setting
 from InvenTree.unit_test import InvenTreeAPITestCase
 from part.models import Part
 from stock.models import StockItem
@@ -21,31 +23,34 @@ class BarcodeAPITest(InvenTreeAPITestCase):
         super().setUp()
 
         self.scan_url = reverse('api-barcode-scan')
+        self.generate_url = reverse('api-barcode-generate')
         self.assign_url = reverse('api-barcode-link')
         self.unassign_url = reverse('api-barcode-unlink')
 
     def postBarcode(self, url, barcode, expected_code=None):
         """Post barcode and return results."""
         return self.post(
-            url,
-            format='json',
-            data={'barcode': str(barcode)},
+            url, data={'barcode': str(barcode)}, expected_code=expected_code
+        )
+
+    def generateBarcode(self, model: str, pk: int, expected_code: int):
+        """Post barcode generation and return barcode contents."""
+        return self.post(
+            self.generate_url,
+            data={'model': model, 'pk': pk},
             expected_code=expected_code,
         )
 
     def test_invalid(self):
         """Test that invalid requests fail."""
         # test scan url
-        self.post(self.scan_url, format='json', data={}, expected_code=400)
+        self.post(self.scan_url, data={}, expected_code=400)
 
         # test wrong assign urls
-        self.post(self.assign_url, format='json', data={}, expected_code=400)
-        self.post(
-            self.assign_url, format='json', data={'barcode': '123'}, expected_code=400
-        )
+        self.post(self.assign_url, data={}, expected_code=400)
+        self.post(self.assign_url, data={'barcode': '123'}, expected_code=400)
         self.post(
             self.assign_url,
-            format='json',
             data={'barcode': '123', 'stockitem': '123'},
             expected_code=400,
         )
@@ -86,6 +91,11 @@ class BarcodeAPITest(InvenTreeAPITestCase):
         """Test that we can lookup a stock item based on ID."""
         item = StockItem.objects.first()
 
+        # Save barcode scan results to database
+        set_global_setting('BARCODE_STORE_RESULTS', True)
+
+        n = BarcodeScanResult.objects.count()
+
         response = self.post(
             self.scan_url, {'barcode': item.format_barcode()}, expected_code=200
         )
@@ -93,6 +103,20 @@ class BarcodeAPITest(InvenTreeAPITestCase):
         self.assertIn('stockitem', response.data)
         self.assertIn('barcode_data', response.data)
         self.assertEqual(response.data['stockitem']['pk'], item.pk)
+
+        self.assertEqual(BarcodeScanResult.objects.count(), n + 1)
+
+        result = BarcodeScanResult.objects.last()
+
+        self.assertTrue(result.result)
+        self.assertEqual(result.data, item.format_barcode())
+
+        response = result.response
+
+        self.assertEqual(response['plugin'], 'InvenTreeBarcode')
+
+        for k in ['barcode_data', 'stockitem', 'success']:
+            self.assertIn(k, response)
 
     def test_invalid_item(self):
         """Test response for invalid stock item."""
@@ -136,7 +160,7 @@ class BarcodeAPITest(InvenTreeAPITestCase):
         data = response.data
         self.assertIn('error', data)
 
-    def test_barcode_generation(self):
+    def test_barcode_scan(self):
         """Test that a barcode is generated with a scan."""
         item = StockItem.objects.get(pk=522)
 
@@ -151,6 +175,18 @@ class BarcodeAPITest(InvenTreeAPITestCase):
 
         self.assertEqual(pk, item.pk)
 
+    def test_barcode_generation(self):
+        """Test that a barcode can be generated for a StockItem."""
+        item = StockItem.objects.get(pk=522)
+
+        data = self.generateBarcode('stockitem', item.pk, expected_code=200).data
+        self.assertEqual(data['barcode'], '{"stockitem": 522}')
+
+    def test_barcode_generation_invalid(self):
+        """Test barcode generation for invalid model/pk."""
+        self.generateBarcode('invalidmodel', 1, expected_code=400)
+        self.generateBarcode('stockitem', 99999999, expected_code=400)
+
     def test_association(self):
         """Test that a barcode can be associated with a StockItem."""
         item = StockItem.objects.get(pk=522)
@@ -163,7 +199,6 @@ class BarcodeAPITest(InvenTreeAPITestCase):
 
         response = self.post(
             self.assign_url,
-            format='json',
             data={'barcode': barcode_data, 'stockitem': item.pk},
             expected_code=200,
         )
@@ -183,7 +218,6 @@ class BarcodeAPITest(InvenTreeAPITestCase):
         # Ensure that the same barcode hash cannot be assigned to a different stock item!
         response = self.post(
             self.assign_url,
-            format='json',
             data={'barcode': barcode_data, 'stockitem': 521},
             expected_code=400,
         )
@@ -296,7 +330,7 @@ class SOAllocateTest(InvenTreeAPITestCase):
             '123456789', sales_order=self.sales_order.pk, expected_code=400
         )
 
-        self.assertIn('No match found for barcode', str(result['error']))
+        self.assertIn('No matching plugin found for barcode data', str(result['error']))
 
         # Test with a barcode that matches a *different* stock item
         item = StockItem.objects.exclude(pk=self.stock_item.pk).first()

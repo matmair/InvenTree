@@ -7,11 +7,13 @@ import { StylishText } from '../../components/items/StylishText';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { useTable } from '../../hooks/UseTable';
 import { apiUrl } from '../../states/ApiState';
+import { useUserState } from '../../states/UserState';
 import { TableColumn } from '../Column';
 import { InvenTreeTable } from '../InvenTreeTable';
 
 export default function FailedTasksTable() {
   const table = useTable('tasks-failed');
+  const user = useUserState();
 
   const [error, setError] = useState<string>('');
 
@@ -57,8 +59,12 @@ export default function FailedTasksTable() {
         title={<StylishText>{t`Error Details`}</StylishText>}
         onClose={close}
       >
-        {error.split('\n').map((line: string) => {
-          return <Text size="sm">{line}</Text>;
+        {error.split('\n').map((line: string, index: number) => {
+          return (
+            <Text key={`error-${index}`} size="sm">
+              {line}
+            </Text>
+          );
         })}
       </Drawer>
       <InvenTreeTable
@@ -66,7 +72,7 @@ export default function FailedTasksTable() {
         tableState={table}
         columns={columns}
         props={{
-          enableBulkDelete: true,
+          enableBulkDelete: user.isStaff(),
           enableSelection: true,
           onRowClick: (row: any) => {
             setError(row.result);

@@ -13,21 +13,21 @@ from djmoney.money import Money
 from icalendar import Calendar
 from rest_framework import status
 
+from common.currency import currency_codes
 from common.models import InvenTreeSetting
-from common.settings import currency_codes
 from company.models import Company, SupplierPart, SupplierPriceBreak
-from InvenTree.status_codes import (
+from InvenTree.unit_test import InvenTreeAPITestCase
+from order import models
+from order.status_codes import (
     PurchaseOrderStatus,
     ReturnOrderLineStatus,
     ReturnOrderStatus,
     SalesOrderStatus,
     SalesOrderStatusGroups,
-    StockStatus,
 )
-from InvenTree.unit_test import InvenTreeAPITestCase
-from order import models
 from part.models import Part
 from stock.models import StockItem
+from stock.status_codes import StockStatus
 from users.models import Owner
 
 
@@ -258,9 +258,9 @@ class PurchaseOrderTest(OrderTest):
 
     def test_po_attachments(self):
         """Test the list endpoint for the PurchaseOrderAttachment model."""
-        url = reverse('api-po-attachment-list')
+        url = reverse('api-attachment-list')
 
-        response = self.get(url)
+        response = self.get(url, {'model_type': 'purchaseorder'})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -418,7 +418,7 @@ class PurchaseOrderTest(OrderTest):
 
         po = models.PurchaseOrder.objects.get(pk=1)
 
-        self.assertTrue(po.lines.count() > 0)
+        self.assertGreater(po.lines.count(), 0)
 
         lines = []
 
@@ -439,18 +439,22 @@ class PurchaseOrderTest(OrderTest):
         del data['reference']
 
         # Duplicate with non-existent PK to provoke error
-        data['duplicate_order'] = 10000001
-        data['duplicate_line_items'] = True
-        data['duplicate_extra_lines'] = False
+        data['duplicate'] = {
+            'order_id': 10000001,
+            'copy_lines': True,
+            'copy_extra_lines': False,
+        }
 
         data['reference'] = 'PO-9999'
 
         # Duplicate via the API
         response = self.post(reverse('api-po-list'), data, expected_code=400)
 
-        data['duplicate_order'] = 1
-        data['duplicate_line_items'] = True
-        data['duplicate_extra_lines'] = False
+        data['duplicate'] = {
+            'order_id': 1,
+            'copy_lines': True,
+            'copy_extra_lines': False,
+        }
 
         data['reference'] = 'PO-9999'
 
@@ -466,8 +470,12 @@ class PurchaseOrderTest(OrderTest):
         self.assertEqual(po_dup.lines.count(), po.lines.count())
 
         data['reference'] = 'PO-9998'
-        data['duplicate_line_items'] = False
-        data['duplicate_extra_lines'] = True
+
+        data['duplicate'] = {
+            'order_id': 1,
+            'copy_lines': False,
+            'copy_extra_lines': True,
+        }
 
         response = self.post(reverse('api-po-list'), data, expected_code=201)
 
@@ -483,6 +491,9 @@ class PurchaseOrderTest(OrderTest):
         self.assertEqual(po.status, PurchaseOrderStatus.PENDING)
 
         url = reverse('api-po-cancel', kwargs={'pk': po.pk})
+
+        # Get an OPTIONS request from the endpoint
+        self.options(url, data={'context': True}, expected_code=200)
 
         # Try to cancel the PO, but without required permissions
         self.post(url, {}, expected_code=403)
@@ -510,6 +521,11 @@ class PurchaseOrderTest(OrderTest):
         self.post(url, {}, expected_code=403)
 
         self.assignRole('purchase_order.add')
+
+        # Add a line item
+        sp = SupplierPart.objects.filter(supplier=po.supplier).first()
+
+        models.PurchaseOrderLineItem.objects.create(part=sp, order=po, quantity=100)
 
         # Should fail due to incomplete lines
         response = self.post(url, {}, expected_code=400)
@@ -790,14 +806,14 @@ class PurchaseOrderDownloadTest(OrderTest):
     """Unit tests for downloading PurchaseOrder data via the API endpoint."""
 
     required_cols = [
-        'id',
-        'line_items',
-        'description',
-        'issue_date',
-        'notes',
-        'reference',
-        'status',
-        'supplier_reference',
+        'ID',
+        'Line Items',
+        'Description',
+        'Issue Date',
+        'Order Currency',
+        'Reference',
+        'Order Status',
+        'Supplier Reference',
     ]
 
     excluded_cols = ['metadata']
@@ -815,7 +831,7 @@ class PurchaseOrderDownloadTest(OrderTest):
             reverse('api-po-list'),
             {'export': 'csv'},
             expected_code=200,
-            expected_fn='InvenTree_PurchaseOrders.csv',
+            expected_fn=r'InvenTree_PurchaseOrder_.+\.csv',
         ) as file:
             data = self.process_csv(
                 file,
@@ -825,10 +841,10 @@ class PurchaseOrderDownloadTest(OrderTest):
             )
 
             for row in data:
-                order = models.PurchaseOrder.objects.get(pk=row['id'])
+                order = models.PurchaseOrder.objects.get(pk=row['ID'])
 
-                self.assertEqual(order.description, row['description'])
-                self.assertEqual(order.reference, row['reference'])
+                self.assertEqual(order.description, row['Description'])
+                self.assertEqual(order.reference, row['Reference'])
 
     def test_download_line_items(self):
         """Test that the PurchaseOrderLineItems can be downloaded to a file."""
@@ -837,9 +853,9 @@ class PurchaseOrderDownloadTest(OrderTest):
             {'export': 'xlsx'},
             decode=False,
             expected_code=200,
-            expected_fn='InvenTree_PurchaseOrderItems.xlsx',
+            expected_fn=r'InvenTree_PurchaseOrderLineItem.+\.xlsx',
         ) as file:
-            self.assertTrue(isinstance(file, io.BytesIO))
+            self.assertIsInstance(file, io.BytesIO)
 
 
 class PurchaseOrderReceiveTest(OrderTest):
@@ -1108,7 +1124,7 @@ class PurchaseOrderReceiveTest(OrderTest):
 
         n = StockItem.objects.count()
 
-        self.post(self.url, data, expected_code=201)
+        self.post(self.url, data, expected_code=201, max_query_count=400)
 
         # Check that the expected number of stock items has been created
         self.assertEqual(n + 11, StockItem.objects.count())
@@ -1133,6 +1149,56 @@ class PurchaseOrderReceiveTest(OrderTest):
 
         self.assertEqual(item.quantity, 10)
         self.assertEqual(item.batch, 'B-xyz-789')
+
+    def test_packaging(self):
+        """Test that we can supply a 'packaging' value when receiving items."""
+        line_1 = models.PurchaseOrderLineItem.objects.get(pk=1)
+        line_2 = models.PurchaseOrderLineItem.objects.get(pk=2)
+
+        line_1.part.packaging = 'Reel'
+        line_1.part.save()
+
+        line_2.part.packaging = 'Tube'
+        line_2.part.save()
+
+        # Receive items without packaging data
+        data = {
+            'items': [
+                {'line_item': line_1.pk, 'quantity': 1},
+                {'line_item': line_2.pk, 'quantity': 1},
+            ],
+            'location': 1,
+        }
+
+        n = StockItem.objects.count()
+
+        self.post(self.url, data, expected_code=201)
+
+        item_1 = StockItem.objects.filter(supplier_part=line_1.part).first()
+        self.assertEqual(item_1.packaging, 'Reel')
+
+        item_2 = StockItem.objects.filter(supplier_part=line_2.part).first()
+        self.assertEqual(item_2.packaging, 'Tube')
+
+        # Receive items and override packaging data
+        data = {
+            'items': [
+                {'line_item': line_1.pk, 'quantity': 1, 'packaging': 'Bag'},
+                {'line_item': line_2.pk, 'quantity': 1, 'packaging': 'Box'},
+            ],
+            'location': 1,
+        }
+
+        self.post(self.url, data, expected_code=201)
+
+        item_1 = StockItem.objects.filter(supplier_part=line_1.part).last()
+        self.assertEqual(item_1.packaging, 'Bag')
+
+        item_2 = StockItem.objects.filter(supplier_part=line_2.part).last()
+        self.assertEqual(item_2.packaging, 'Box')
+
+        # Check that the expected number of stock items has been created
+        self.assertEqual(n + 4, StockItem.objects.count())
 
 
 class SalesOrderTest(OrderTest):
@@ -1260,9 +1326,12 @@ class SalesOrderTest(OrderTest):
 
     def test_so_attachments(self):
         """Test the list endpoint for the SalesOrderAttachment model."""
-        url = reverse('api-so-attachment-list')
+        url = reverse('api-attachment-list')
 
-        self.get(url)
+        # Filter by 'salesorder'
+        self.get(
+            url, data={'model_type': 'salesorder', 'model_id': 1}, expected_code=200
+        )
 
     def test_so_operations(self):
         """Test that we can create / edit and delete a SalesOrder via the API."""
@@ -1467,14 +1536,85 @@ class SalesOrderTest(OrderTest):
             order.save()
 
         # Download file, check we get a 200 response
-        for fmt in ['csv', 'xls', 'xlsx']:
+        for fmt in ['csv', 'xlsx', 'tsv']:
             self.download_file(
                 reverse('api-so-list'),
                 {'export': fmt},
-                decode=True if fmt == 'csv' else False,
+                decode=fmt == 'csv',
                 expected_code=200,
-                expected_fn=f'InvenTree_SalesOrders.{fmt}',
+                expected_fn=r'InvenTree_SalesOrder_.+',
             )
+
+    def test_sales_order_complete(self):
+        """Tests for marking a SalesOrder as complete."""
+        self.assignRole('sales_order.add')
+
+        # Let's create a SalesOrder
+        customer = Company.objects.filter(is_customer=True).first()
+        so = models.SalesOrder.objects.create(
+            customer=customer, reference='SO-12345', description='Test SO'
+        )
+
+        self.assertEqual(so.status, SalesOrderStatus.PENDING.value)
+
+        # Create a line item
+        part = Part.objects.filter(salable=True).first()
+
+        line = models.SalesOrderLineItem.objects.create(
+            order=so, part=part, quantity=10, sale_price=Money(10, 'USD')
+        )
+
+        shipment = so.shipments.first()
+
+        if shipment is None:
+            shipment = models.SalesOrderShipment.objects.create(
+                order=so, reference='SHIP-12345'
+            )
+
+        # Allocate some stock
+        item = StockItem.objects.create(part=part, quantity=100, location=None)
+        models.SalesOrderAllocation.objects.create(
+            quantity=10, line=line, item=item, shipment=shipment
+        )
+
+        # Ship the shipment
+        shipment.complete_shipment(self.user)
+
+        # Ok, now we should be able to "complete" the shipment via the API
+        # The 'SALESORDER_SHIP_COMPLETE' setting determines if the outcome is "SHIPPED" or "COMPLETE"
+        InvenTreeSetting.set_setting('SALESORDER_SHIP_COMPLETE', False)
+
+        url = reverse('api-so-complete', kwargs={'pk': so.pk})
+        self.post(url, {}, expected_code=201)
+
+        so.refresh_from_db()
+        self.assertEqual(so.status, SalesOrderStatus.SHIPPED.value)
+
+        # Now, let's try to "complete" the shipment again
+        # This time it should get marked as "COMPLETE"
+        self.post(url, {}, expected_code=201)
+
+        so.refresh_from_db()
+        self.assertEqual(so.status, SalesOrderStatus.COMPLETE.value)
+
+        # Now, let's try *again* (it should fail as the order is already complete)
+        response = self.post(url, {}, expected_code=400)
+
+        self.assertIn('Order is already complete', str(response.data))
+
+        # Next, we'll change the setting so that the order status jumps straight to "complete"
+        so.status = SalesOrderStatus.PENDING.value
+        so.save()
+        so.refresh_from_db()
+        self.assertEqual(so.status, SalesOrderStatus.PENDING.value)
+
+        InvenTreeSetting.set_setting('SALESORDER_SHIP_COMPLETE', True)
+
+        self.post(url, {}, expected_code=201)
+
+        # The orders status should now be "complete" (not "shipped")
+        so.refresh_from_db()
+        self.assertEqual(so.status, SalesOrderStatus.COMPLETE.value)
 
 
 class SalesOrderLineItemTest(OrderTest):
@@ -1558,44 +1698,37 @@ class SalesOrderDownloadTest(OrderTest):
         with self.assertRaises(ValueError):
             self.download_file(url, {}, expected_code=200)
 
-    def test_download_xls(self):
-        """Test xls file download."""
+    def test_download_xlsx(self):
+        """Test xlsx file download."""
         url = reverse('api-so-list')
 
         # Download .xls file
         with self.download_file(
-            url,
-            {'export': 'xls'},
-            expected_code=200,
-            expected_fn='InvenTree_SalesOrders.xls',
-            decode=False,
+            url, {'export': 'xlsx'}, expected_code=200, decode=False
         ) as file:
-            self.assertTrue(isinstance(file, io.BytesIO))
+            self.assertIsInstance(file, io.BytesIO)
 
     def test_download_csv(self):
         """Test that the list of sales orders can be downloaded as a .csv file."""
         url = reverse('api-so-list')
 
         required_cols = [
-            'line_items',
-            'id',
-            'reference',
-            'customer',
-            'status',
-            'shipment_date',
-            'notes',
-            'description',
+            'Line Items',
+            'ID',
+            'Reference',
+            'Customer',
+            'Order Status',
+            'Shipment Date',
+            'Description',
+            'Project Code',
+            'Responsible',
         ]
 
         excluded_cols = ['metadata']
 
         # Download .xls file
         with self.download_file(
-            url,
-            {'export': 'csv'},
-            expected_code=200,
-            expected_fn='InvenTree_SalesOrders.csv',
-            decode=True,
+            url, {'export': 'csv'}, expected_code=200, decode=True
         ) as file:
             data = self.process_csv(
                 file,
@@ -1605,18 +1738,14 @@ class SalesOrderDownloadTest(OrderTest):
             )
 
             for line in data:
-                order = models.SalesOrder.objects.get(pk=line['id'])
+                order = models.SalesOrder.objects.get(pk=line['ID'])
 
-                self.assertEqual(line['description'], order.description)
-                self.assertEqual(line['status'], str(order.status))
+                self.assertEqual(line['Description'], order.description)
+                self.assertEqual(line['Order Status'], str(order.status))
 
         # Download only outstanding sales orders
         with self.download_file(
-            url,
-            {'export': 'tsv', 'outstanding': True},
-            expected_code=200,
-            expected_fn='InvenTree_SalesOrders.tsv',
-            decode=True,
+            url, {'export': 'tsv', 'outstanding': True}, expected_code=200, decode=True
         ) as file:
             self.process_csv(
                 file,
@@ -1772,7 +1901,7 @@ class SalesOrderAllocateTest(OrderTest):
         # At least one item should be allocated, and all should be variants
         self.assertGreater(self.order.stock_allocations.count(), 0)
         for allocation in self.order.stock_allocations.all():
-            self.assertNotEquals(allocation.item.part.pk, allocation.line.part.pk)
+            self.assertNotEqual(allocation.item.part.pk, allocation.line.part.pk)
 
     def test_shipment_complete(self):
         """Test that we can complete a shipment via the API."""
@@ -1894,6 +2023,7 @@ class ReturnOrderTests(InvenTreeAPITestCase):
         'supplier_part',
         'stock',
     ]
+    roles = ['return_order.view']
 
     def test_options(self):
         """Test the OPTIONS endpoint."""
@@ -1911,6 +2041,18 @@ class ReturnOrderTests(InvenTreeAPITestCase):
         self.assertEqual(reference['help_text'], 'Return Order reference')
         self.assertEqual(reference['required'], True)
         self.assertEqual(reference['type'], 'string')
+
+    def test_project_code(self):
+        """Test the 'project_code' serializer field."""
+        self.assignRole('return_order.add')
+        response = self.options(reverse('api-return-order-list'), expected_code=200)
+        project_code = response.data['actions']['POST']['project_code']
+
+        self.assertFalse(project_code['required'])
+        self.assertFalse(project_code['read_only'])
+        self.assertEqual(project_code['type'], 'related field')
+        self.assertEqual(project_code['label'], 'Project Code')
+        self.assertEqual(project_code['model'], 'projectcode')
 
     def test_list(self):
         """Tests for the list endpoint."""

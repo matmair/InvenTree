@@ -1,41 +1,46 @@
 import { t } from '@lingui/macro';
-import { Grid, Group, LoadingOverlay, Skeleton, Stack } from '@mantine/core';
-import {
-  IconDots,
-  IconInfoCircle,
-  IconList,
-  IconNotes,
-  IconPackages,
-  IconPaperclip
-} from '@tabler/icons-react';
+import { Accordion, Grid, Skeleton, Stack } from '@mantine/core';
+import { IconInfoCircle, IconList, IconPackages } from '@tabler/icons-react';
 import { ReactNode, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
+import AdminButton from '../../components/buttons/AdminButton';
+import PrimaryActionButton from '../../components/buttons/PrimaryActionButton';
+import { PrintingActions } from '../../components/buttons/PrintingActions';
 import { DetailsField, DetailsTable } from '../../components/details/Details';
 import { DetailsImage } from '../../components/details/DetailsImage';
 import { ItemDetailsGrid } from '../../components/details/ItemDetails';
 import {
-  ActionDropdown,
   BarcodeActionDropdown,
-  DeleteItemAction,
+  CancelItemAction,
+  DuplicateItemAction,
   EditItemAction,
-  LinkBarcodeAction,
-  UnlinkBarcodeAction,
-  ViewBarcodeAction
+  HoldItemAction,
+  OptionsActionDropdown
 } from '../../components/items/ActionDropdown';
+import { StylishText } from '../../components/items/StylishText';
+import InstanceDetail from '../../components/nav/InstanceDetail';
 import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup, PanelType } from '../../components/nav/PanelGroup';
+import AttachmentPanel from '../../components/panels/AttachmentPanel';
+import NotesPanel from '../../components/panels/NotesPanel';
+import { PanelType } from '../../components/panels/Panel';
+import { PanelGroup } from '../../components/panels/PanelGroup';
 import { StatusRenderer } from '../../components/render/StatusRenderer';
-import { NotesEditor } from '../../components/widgets/MarkdownEditor';
+import { formatCurrency } from '../../defaults/formatters';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { usePurchaseOrderFields } from '../../forms/PurchaseOrderForms';
-import { useEditApiFormModal } from '../../hooks/UseForm';
+import {
+  useCreateApiFormModal,
+  useEditApiFormModal
+} from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
+import useStatusCodes from '../../hooks/UseStatusCodes';
 import { apiUrl } from '../../states/ApiState';
+import { useGlobalSettingsState } from '../../states/SettingsState';
 import { useUserState } from '../../states/UserState';
-import { AttachmentTable } from '../../tables/general/AttachmentTable';
+import ExtraLineItemTable from '../../tables/general/ExtraLineItemTable';
 import { PurchaseOrderLineItemTable } from '../../tables/purchasing/PurchaseOrderLineItemTable';
 import { StockItemTable } from '../../tables/stock/StockItemTable';
 
@@ -46,11 +51,13 @@ export default function PurchaseOrderDetail() {
   const { id } = useParams();
 
   const user = useUserState();
+  const globalSettings = useGlobalSettingsState();
 
   const {
     instance: order,
     instanceQuery,
-    refreshInstance
+    refreshInstance,
+    requestStatus
   } = useInstance({
     endpoint: ApiEndpoints.purchase_order_list,
     pk: id,
@@ -60,7 +67,19 @@ export default function PurchaseOrderDetail() {
     refetchOnMount: true
   });
 
-  const purchaseOrderFields = usePurchaseOrderFields();
+  const orderCurrency = useMemo(() => {
+    return (
+      order.order_currency ||
+      order.supplier_detail?.currency ||
+      globalSettings.getSetting('INVENTREE_DEFAULT_CURRENCY')
+    );
+  }, [order, globalSettings]);
+
+  const purchaseOrderFields = usePurchaseOrderFields({});
+
+  const duplicatePurchaseOrderFields = usePurchaseOrderFields({
+    duplicateOrderId: order.pk
+  });
 
   const editPurchaseOrder = useEditApiFormModal({
     url: ApiEndpoints.purchase_order_list,
@@ -70,6 +89,18 @@ export default function PurchaseOrderDetail() {
     onFormSuccess: () => {
       refreshInstance();
     }
+  });
+
+  const duplicatePurchaseOrder = useCreateApiFormModal({
+    url: ApiEndpoints.purchase_order_list,
+    title: t`Add Purchase Order`,
+    fields: duplicatePurchaseOrderFields,
+    initialData: {
+      ...order,
+      reference: undefined
+    },
+    follow: true,
+    modelType: ModelType.purchaseorder
   });
 
   const detailsPanel = useMemo(() => {
@@ -115,12 +146,6 @@ export default function PurchaseOrderDetail() {
 
     let tr: DetailsField[] = [
       {
-        type: 'text',
-        name: 'line_items',
-        label: t`Line Items`,
-        icon: 'list'
-      },
-      {
         type: 'progressbar',
         name: 'completed',
         icon: 'progress',
@@ -129,24 +154,21 @@ export default function PurchaseOrderDetail() {
         progress: order.completed_lines
       },
       {
-        type: 'progressbar',
-        name: 'shipments',
-        icon: 'shipment',
-        label: t`Completed Shipments`,
-        total: order.shipments,
-        progress: order.completed_shipments
-        // TODO: Fix this progress bar
-      },
-      {
         type: 'text',
         name: 'currency',
-        label: t`Order Currency,`
+        label: t`Order Currency`,
+        value_formatter: () =>
+          order?.order_currency ?? order?.supplier_detail?.currency
       },
       {
         type: 'text',
-        name: 'total_cost',
-        label: t`Total Cost`
-        // TODO: Implement this!
+        name: 'total_price',
+        label: t`Total Cost`,
+        value_formatter: () => {
+          return formatCurrency(order?.total_price, {
+            currency: order?.order_currency ?? order?.supplier_detail?.currency
+          });
+        }
       }
     ];
 
@@ -174,17 +196,33 @@ export default function PurchaseOrderDetail() {
 
     let br: DetailsField[] = [
       {
-        type: 'text',
+        type: 'date',
         name: 'creation_date',
-        label: t`Created On`,
+        label: t`Creation Date`,
         icon: 'calendar'
       },
       {
-        type: 'text',
+        type: 'date',
+        name: 'issue_date',
+        label: t`Issue Date`,
+        icon: 'calendar',
+        copy: true,
+        hidden: !order.issue_date
+      },
+      {
+        type: 'date',
         name: 'target_date',
         label: t`Target Date`,
         icon: 'calendar',
         hidden: !order.target_date
+      },
+      {
+        type: 'date',
+        name: 'complete_date',
+        icon: 'calendar_check',
+        label: t`Completion Date`,
+        copy: true,
+        hidden: !order.complete_date
       },
       {
         type: 'text',
@@ -230,10 +268,37 @@ export default function PurchaseOrderDetail() {
         label: t`Line Items`,
         icon: <IconList />,
         content: (
-          <PurchaseOrderLineItemTable
-            orderId={Number(id)}
-            supplierId={Number(order.supplier)}
-          />
+          <Accordion
+            multiple={true}
+            defaultValue={['line-items', 'extra-items']}
+          >
+            <Accordion.Item value="line-items" key="lineitems">
+              <Accordion.Control>
+                <StylishText size="lg">{t`Line Items`}</StylishText>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <PurchaseOrderLineItemTable
+                  order={order}
+                  currency={orderCurrency}
+                  orderId={Number(id)}
+                  supplierId={Number(order.supplier)}
+                />
+              </Accordion.Panel>
+            </Accordion.Item>
+            <Accordion.Item value="extra-items" key="extraitems">
+              <Accordion.Control>
+                <StylishText size="lg">{t`Extra Line Items`}</StylishText>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <ExtraLineItemTable
+                  endpoint={ApiEndpoints.purchase_order_extra_line_list}
+                  orderId={order.pk}
+                  currency={orderCurrency}
+                  role={UserRoles.purchase_order}
+                />
+              </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
         )
       },
       {
@@ -242,77 +307,142 @@ export default function PurchaseOrderDetail() {
         icon: <IconPackages />,
         content: (
           <StockItemTable
+            tableName="received-stock"
             params={{
               purchase_order: id
             }}
           />
         )
       },
-      {
-        name: 'attachments',
-        label: t`Attachments`,
-        icon: <IconPaperclip />,
-        content: (
-          <AttachmentTable
-            endpoint={ApiEndpoints.purchase_order_attachment_list}
-            model="order"
-            pk={Number(id)}
-          />
-        )
-      },
-      {
-        name: 'notes',
-        label: t`Notes`,
-        icon: <IconNotes />,
-        content: (
-          <NotesEditor
-            url={apiUrl(ApiEndpoints.purchase_order_list, id)}
-            data={order.notes ?? ''}
-            allowEdit={true}
-          />
-        )
-      }
+      AttachmentPanel({
+        model_type: ModelType.purchaseorder,
+        model_id: order.pk
+      }),
+      NotesPanel({
+        model_type: ModelType.purchaseorder,
+        model_id: order.pk
+      })
     ];
-  }, [order, id]);
+  }, [order, id, user]);
+
+  const poStatus = useStatusCodes({ modelType: ModelType.purchaseorder });
+
+  const issueOrder = useCreateApiFormModal({
+    url: apiUrl(ApiEndpoints.purchase_order_issue, order.pk),
+    title: t`Issue Purchase Order`,
+    onFormSuccess: refreshInstance,
+    preFormWarning: t`Issue this order`,
+    successMessage: t`Order issued`
+  });
+
+  const cancelOrder = useCreateApiFormModal({
+    url: apiUrl(ApiEndpoints.purchase_order_cancel, order.pk),
+    title: t`Cancel Purchase Order`,
+    onFormSuccess: refreshInstance,
+    preFormWarning: t`Cancel this order`,
+    successMessage: t`Order cancelled`
+  });
+
+  const holdOrder = useCreateApiFormModal({
+    url: apiUrl(ApiEndpoints.purchase_order_hold, order.pk),
+    title: t`Hold Purchase Order`,
+    onFormSuccess: refreshInstance,
+    preFormWarning: t`Place this order on hold`,
+    successMessage: t`Order placed on hold`
+  });
+
+  const completeOrder = useCreateApiFormModal({
+    url: apiUrl(ApiEndpoints.purchase_order_complete, order.pk),
+    title: t`Complete Purchase Order`,
+    successMessage: t`Order completed`,
+    timeout: 10000,
+    fields: {
+      accept_incomplete: {}
+    },
+    onFormSuccess: refreshInstance,
+    preFormWarning: t`Mark this order as complete`
+  });
 
   const poActions = useMemo(() => {
+    const canEdit: boolean = user.hasChangeRole(UserRoles.purchase_order);
+
+    const canIssue: boolean =
+      canEdit &&
+      (order.status == poStatus.PENDING || order.status == poStatus.ON_HOLD);
+
+    const canHold: boolean =
+      canEdit &&
+      (order.status == poStatus.PENDING || order.status == poStatus.PLACED);
+
+    const canComplete: boolean = canEdit && order.status == poStatus.PLACED;
+
+    const canCancel: boolean =
+      canEdit &&
+      order.status != poStatus.CANCELLED &&
+      order.status != poStatus.COMPLETE;
+
     return [
-      <BarcodeActionDropdown
-        actions={[
-          ViewBarcodeAction({}),
-          LinkBarcodeAction({
-            hidden: order?.barcode_hash
-          }),
-          UnlinkBarcodeAction({
-            hidden: !order?.barcode_hash
-          })
-        ]}
+      <PrimaryActionButton
+        title={t`Issue Order`}
+        icon="issue"
+        hidden={!canIssue}
+        color="blue"
+        onClick={issueOrder.open}
       />,
-      <ActionDropdown
-        key="order-actions"
+      <PrimaryActionButton
+        title={t`Complete Order`}
+        icon="complete"
+        hidden={!canComplete}
+        color="green"
+        onClick={completeOrder.open}
+      />,
+      <AdminButton model={ModelType.purchaseorder} pk={order.pk} />,
+      <BarcodeActionDropdown
+        model={ModelType.purchaseorder}
+        pk={order.pk}
+        hash={order?.barcode_hash}
+      />,
+      <PrintingActions
+        modelType={ModelType.purchaseorder}
+        items={[order.pk]}
+        enableReports
+      />,
+      <OptionsActionDropdown
         tooltip={t`Order Actions`}
-        icon={<IconDots />}
         actions={[
           EditItemAction({
-            hidden: !user.hasChangeRole(UserRoles.purchase_order),
+            hidden: !canEdit,
+            tooltip: t`Edit order`,
             onClick: () => {
               editPurchaseOrder.open();
             }
           }),
-          DeleteItemAction({
-            hidden: !user.hasDeleteRole(UserRoles.purchase_order)
+          DuplicateItemAction({
+            hidden: !user.hasAddRole(UserRoles.purchase_order),
+            onClick: () => duplicatePurchaseOrder.open(),
+            tooltip: t`Duplicate order`
+          }),
+          HoldItemAction({
+            tooltip: t`Hold order`,
+            hidden: !canHold,
+            onClick: holdOrder.open
+          }),
+          CancelItemAction({
+            tooltip: t`Cancel order`,
+            hidden: !canCancel,
+            onClick: cancelOrder.open
           })
         ]}
       />
     ];
-  }, [id, order, user]);
+  }, [id, order, user, poStatus]);
 
   const orderBadges: ReactNode[] = useMemo(() => {
     return instanceQuery.isLoading
       ? []
       : [
           <StatusRenderer
-            status={order.status}
+            status={order.status_custom_key}
             type={ModelType.purchaseorder}
             options={{ size: 'lg' }}
           />
@@ -321,19 +451,33 @@ export default function PurchaseOrderDetail() {
 
   return (
     <>
+      {issueOrder.modal}
+      {holdOrder.modal}
+      {cancelOrder.modal}
+      {completeOrder.modal}
       {editPurchaseOrder.modal}
-      <Stack spacing="xs">
-        <LoadingOverlay visible={instanceQuery.isFetching} />
-        <PageDetail
-          title={t`Purchase Order` + `: ${order.reference}`}
-          subtitle={order.description}
-          imageUrl={order.supplier_detail?.image}
-          breadcrumbs={[{ name: t`Purchasing`, url: '/purchasing/' }]}
-          actions={poActions}
-          badges={orderBadges}
-        />
-        <PanelGroup pageKey="purchaseorder" panels={orderPanels} />
-      </Stack>
+      {duplicatePurchaseOrder.modal}
+      <InstanceDetail status={requestStatus} loading={instanceQuery.isFetching}>
+        <Stack gap="xs">
+          <PageDetail
+            title={t`Purchase Order` + `: ${order.reference}`}
+            subtitle={order.description}
+            imageUrl={order.supplier_detail?.image}
+            breadcrumbs={[{ name: t`Purchasing`, url: '/purchasing/' }]}
+            actions={poActions}
+            badges={orderBadges}
+            editAction={editPurchaseOrder.open}
+            editEnabled={user.hasChangePermission(ModelType.purchaseorder)}
+          />
+          <PanelGroup
+            pageKey="purchaseorder"
+            panels={orderPanels}
+            model={ModelType.purchaseorder}
+            instance={order}
+            id={order.pk}
+          />
+        </Stack>
+      </InstanceDetail>
     </>
   );
 }

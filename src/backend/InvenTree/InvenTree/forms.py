@@ -15,13 +15,15 @@ from allauth.account.forms import LoginForm, SignupForm, set_form_field_order
 from allauth.core.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth_2fa.adapter import OTPAdapter
+from allauth_2fa.forms import TOTPDeviceForm
 from allauth_2fa.utils import user_has_valid_totp_device
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
 import InvenTree.helpers_model
 import InvenTree.social_auth_urls
-from common.models import InvenTreeSetting
+import InvenTree.sso
+from common.settings import get_global_setting
 from InvenTree.exceptions import log_error
 
 logger = logging.getLogger('inventree')
@@ -50,12 +52,12 @@ class CustomSignupForm(SignupForm):
 
     def __init__(self, *args, **kwargs):
         """Check settings to influence which fields are needed."""
-        kwargs['email_required'] = InvenTreeSetting.get_setting('LOGIN_MAIL_REQUIRED')
+        kwargs['email_required'] = get_global_setting('LOGIN_MAIL_REQUIRED')
 
         super().__init__(*args, **kwargs)
 
         # check for two mail fields
-        if InvenTreeSetting.get_setting('LOGIN_SIGNUP_MAIL_TWICE'):
+        if get_global_setting('LOGIN_SIGNUP_MAIL_TWICE'):
             self.fields['email2'] = forms.EmailField(
                 label=_('Email (again)'),
                 widget=forms.TextInput(
@@ -67,8 +69,8 @@ class CustomSignupForm(SignupForm):
             )
 
         # check for two password fields
-        if not InvenTreeSetting.get_setting('LOGIN_SIGNUP_PWD_TWICE'):
-            self.fields.pop('password2')
+        if not get_global_setting('LOGIN_SIGNUP_PWD_TWICE'):
+            self.fields.pop('password2', None)
 
         # reorder fields
         set_form_field_order(
@@ -80,7 +82,7 @@ class CustomSignupForm(SignupForm):
         cleaned_data = super().clean()
 
         # check for two mail fields
-        if InvenTreeSetting.get_setting('LOGIN_SIGNUP_MAIL_TWICE'):
+        if get_global_setting('LOGIN_SIGNUP_MAIL_TWICE'):
             email = cleaned_data.get('email')
             email2 = cleaned_data.get('email2')
             if (email and email2) and email != email2:
@@ -89,12 +91,19 @@ class CustomSignupForm(SignupForm):
         return cleaned_data
 
 
+class CustomTOTPDeviceForm(TOTPDeviceForm):
+    """Ensure that db registration is enabled."""
+
+    def __init__(self, user, metadata=None, **kwargs):
+        """Override to check if registration is open."""
+        if not settings.MFA_ENABLED:
+            raise forms.ValidationError(_('MFA Registration is disabled.'))
+        super().__init__(user, metadata, **kwargs)
+
+
 def registration_enabled():
     """Determine whether user registration is enabled."""
-    if (
-        InvenTreeSetting.get_setting('LOGIN_ENABLE_REG')
-        or InvenTree.social_auth_urls.registration_enabled()
-    ):
+    if get_global_setting('LOGIN_ENABLE_REG') or InvenTree.sso.registration_enabled():
         if settings.EMAIL_HOST:
             return True
         else:
@@ -118,9 +127,7 @@ class CustomUrlRegistratonMixin:
 
     def clean_email(self, email):
         """Check if the mail is valid to the pattern in LOGIN_SIGNUP_MAIL_RESTRICTION (if enabled in settings)."""
-        mail_restriction = InvenTreeSetting.get_setting(
-            'LOGIN_SIGNUP_MAIL_RESTRICTION', None
-        )
+        mail_restriction = get_global_setting('LOGIN_SIGNUP_MAIL_RESTRICTION', None)
         if not mail_restriction:
             return super().clean_email(email)
 
@@ -138,9 +145,8 @@ class CustomUrlRegistratonMixin:
                 raise forms.ValidationError(
                     _('The provided primary email address is not valid.')
                 )
-            else:
-                if split_email[1] == option[1:]:
-                    return super().clean_email(email)
+            elif split_email[1] == option[1:]:
+                return super().clean_email(email)
 
         logger.info('The provided email domain for %s is not approved', email)
         raise forms.ValidationError(_('The provided email domain is not approved.'))
@@ -151,8 +157,10 @@ class CustomUrlRegistratonMixin:
         user = super().save_user(request, user, form)
 
         # Check if a default group is set in settings
-        start_group = InvenTreeSetting.get_setting('SIGNUP_GROUP')
-        if start_group:
+        start_group = get_global_setting('SIGNUP_GROUP')
+        if (
+            start_group and user.groups.count() == 0
+        ):  # check that no group has been added through SSO group sync
             try:
                 group = Group.objects.get(id=start_group)
                 user.groups.add(group)
@@ -201,7 +209,7 @@ class CustomSocialAccountAdapter(
 
     def is_auto_signup_allowed(self, request, sociallogin):
         """Check if auto signup is enabled in settings."""
-        if InvenTreeSetting.get_setting('LOGIN_SIGNUP_SSO_AUTO', True):
+        if get_global_setting('LOGIN_SIGNUP_SSO_AUTO', True):
             return super().is_auto_signup_allowed(request, sociallogin)
         return False
 
@@ -253,7 +261,7 @@ class CustomRegisterSerializer(RegisterSerializer):
 
     def __init__(self, instance=None, data=..., **kwargs):
         """Check settings to influence which fields are needed."""
-        kwargs['email_required'] = InvenTreeSetting.get_setting('LOGIN_MAIL_REQUIRED')
+        kwargs['email_required'] = get_global_setting('LOGIN_MAIL_REQUIRED')
         super().__init__(instance, data, **kwargs)
 
     def save(self, request):

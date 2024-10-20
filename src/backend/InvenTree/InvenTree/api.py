@@ -20,15 +20,13 @@ from rest_framework.views import APIView
 
 import InvenTree.version
 import users.models
-from InvenTree.filters import SEARCH_ORDER_FILTER
 from InvenTree.mixins import ListCreateAPI
-from InvenTree.permissions import RolePermission
 from InvenTree.templatetags.inventree_extras import plugins_info
 from part.models import Part
 from plugin.serializers import MetadataSerializer
 from users.models import ApiToken
 
-from .email import is_email_configured
+from .helpers_email import is_email_configured
 from .mixins import ListAPI, RetrieveUpdateAPI
 from .status import check_system_health, is_worker_running
 from .version import inventreeApiText
@@ -73,8 +71,24 @@ class LicenseView(APIView):
             logger.exception("Exception while reading license file '%s': %s", path, e)
             return []
 
-        # Ensure consistent string between backend and frontend licenses
-        return [{key.lower(): value for key, value in entry.items()} for entry in data]
+        output = []
+        names = set()
+
+        # Ensure we do not have any duplicate 'name' values in the list
+        for entry in data:
+            name = None
+            for key in entry:
+                if key.lower() == 'name':
+                    name = entry[key]
+                    break
+
+            if name is None or name in names:
+                continue
+
+            names.add(name)
+            output.append({key.lower(): value for key, value in entry.items()})
+
+        return output
 
     @extend_schema(responses={200: OpenApiResponse(response=LicenseViewSerializer)})
     def get(self, request, *args, **kwargs):
@@ -294,8 +308,25 @@ class BulkDeleteMixin:
     - Speed (single API call and DB query)
     """
 
+    def validate_delete(self, queryset, request) -> None:
+        """Perform validation right before deletion.
+
+        Arguments:
+            queryset: The queryset to be deleted
+            request: The request object
+
+        Returns:
+            None
+
+        Raises:
+            ValidationError: If the deletion should not proceed
+        """
+
     def filter_delete_queryset(self, queryset, request):
-        """Provide custom filtering for the queryset *before* it is deleted."""
+        """Provide custom filtering for the queryset *before* it is deleted.
+
+        The default implementation does nothing, just returns the queryset.
+        """
         return queryset
 
     def delete(self, request, *args, **kwargs):
@@ -348,11 +379,29 @@ class BulkDeleteMixin:
 
             # Filter by provided item ID values
             if items:
-                queryset = queryset.filter(id__in=items)
+                try:
+                    queryset = queryset.filter(id__in=items)
+                except Exception:
+                    raise ValidationError({
+                        'non_field_errors': _('Invalid items list provided')
+                    })
 
             # Filter by provided filters
             if filters:
-                queryset = queryset.filter(**filters)
+                try:
+                    queryset = queryset.filter(**filters)
+                except Exception:
+                    raise ValidationError({
+                        'non_field_errors': _('Invalid filters provided')
+                    })
+
+            if queryset.count() == 0:
+                raise ValidationError({
+                    'non_field_errors': _('No items found to delete')
+                })
+
+            # Run a final validation step (should raise an error if the deletion should not proceed)
+            self.validate_delete(queryset, request)
 
             n_deleted = queryset.count()
             queryset.delete()
@@ -362,60 +411,6 @@ class BulkDeleteMixin:
 
 class ListCreateDestroyAPIView(BulkDeleteMixin, ListCreateAPI):
     """Custom API endpoint which provides BulkDelete functionality in addition to List and Create."""
-
-    ...
-
-
-class APIDownloadMixin:
-    """Mixin for enabling a LIST endpoint to be downloaded a file.
-
-    To download the data, add the ?export=<fmt> to the query string.
-
-    The implementing class must provided a download_queryset method,
-    e.g.
-
-    def download_queryset(self, queryset, export_format):
-        dataset = StockItemResource().export(queryset=queryset)
-
-        filedata = dataset.export(export_format)
-
-        filename = 'InvenTree_Stocktake_{date}.{fmt}'.format(
-            date=datetime.now().strftime("%d-%b-%Y"),
-            fmt=export_format
-        )
-
-        return DownloadFile(filedata, filename)
-    """
-
-    def get(self, request, *args, **kwargs):
-        """Generic handler for a download request."""
-        export_format = request.query_params.get('export', None)
-
-        if export_format and export_format in ['csv', 'tsv', 'xls', 'xlsx']:
-            queryset = self.filter_queryset(self.get_queryset())
-            return self.download_queryset(queryset, export_format)
-        # Default to the parent class implementation
-        return super().get(request, *args, **kwargs)
-
-    def download_queryset(self, queryset, export_format):
-        """This function must be implemented to provide a downloadFile request."""
-        raise NotImplementedError('download_queryset method not implemented!')
-
-
-class AttachmentMixin:
-    """Mixin for creating attachment objects, and ensuring the user information is saved correctly."""
-
-    permission_classes = [permissions.IsAuthenticated, RolePermission]
-
-    filter_backends = SEARCH_ORDER_FILTER
-
-    search_fields = ['attachment', 'comment', 'link']
-
-    def perform_create(self, serializer):
-        """Save the user information when a file is uploaded."""
-        attachment = serializer.save()
-        attachment.user = self.request.user
-        attachment.save()
 
 
 class APISearchViewSerializer(serializers.Serializer):
@@ -533,6 +528,10 @@ class MetadataView(RetrieveUpdateAPI):
     def get_model_type(self):
         """Return the model type associated with this API instance."""
         model = self.kwargs.get(self.MODEL_REF, None)
+
+        if 'lookup_field' in self.kwargs:
+            # Set custom lookup field (instead of default 'pk' value) if supplied
+            self.lookup_field = self.kwargs.pop('lookup_field')
 
         if model is None:
             raise ValidationError(

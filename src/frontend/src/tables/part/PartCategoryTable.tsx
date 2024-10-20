@@ -1,14 +1,15 @@
 import { t } from '@lingui/macro';
+import { Group, Tooltip } from '@mantine/core';
+import { IconBell } from '@tabler/icons-react';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '../../components/buttons/AddItemButton';
 import { YesNoButton } from '../../components/buttons/YesNoButton';
+import { ApiIcon } from '../../components/items/ApiIcon';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
 import { ModelType } from '../../enums/ModelType';
 import { UserRoles } from '../../enums/Roles';
 import { partCategoryFields } from '../../forms/PartForms';
-import { getDetailUrl } from '../../functions/urls';
 import {
   useCreateApiFormModal,
   useEditApiFormModal
@@ -20,14 +21,12 @@ import { TableColumn } from '../Column';
 import { DescriptionColumn } from '../ColumnRenderers';
 import { TableFilter } from '../Filter';
 import { InvenTreeTable } from '../InvenTreeTable';
-import { RowEditAction } from '../RowActions';
+import { RowAction, RowEditAction } from '../RowActions';
 
 /**
  * PartCategoryTable - Displays a table of part categories
  */
-export function PartCategoryTable({ parentId }: { parentId?: any }) {
-  const navigate = useNavigate();
-
+export function PartCategoryTable({ parentId }: Readonly<{ parentId?: any }>) {
   const table = useTable('partcategory');
   const user = useUserState();
 
@@ -36,7 +35,24 @@ export function PartCategoryTable({ parentId }: { parentId?: any }) {
       {
         accessor: 'name',
         sortable: true,
-        switchable: false
+        switchable: false,
+        render: (record: any) => (
+          <Group gap="xs" wrap="nowrap" justify="space-between">
+            <Group gap="xs" wrap="nowrap">
+              {record.icon && <ApiIcon name={record.icon} />}
+              {record.name}
+            </Group>
+            <Group gap="xs" justify="flex-end" wrap="nowrap">
+              {record.starred && (
+                <Tooltip
+                  label={t`You are subscribed to notifications for this category`}
+                >
+                  <IconBell color="green" size={16} />
+                </Tooltip>
+              )}
+            </Group>
+          </Group>
+        )
       },
       DescriptionColumn({}),
       {
@@ -68,33 +84,39 @@ export function PartCategoryTable({ parentId }: { parentId?: any }) {
         name: 'structural',
         label: t`Structural`,
         description: t`Show structural categories`
+      },
+      {
+        name: 'starred',
+        label: t`Subscribed`,
+        description: t`Show categories to which the user is subscribed`
       }
     ];
   }, []);
 
+  const newCategoryFields = partCategoryFields({ create: true });
+
   const newCategory = useCreateApiFormModal({
     url: ApiEndpoints.category_list,
     title: t`New Part Category`,
-    fields: partCategoryFields({}),
+    fields: newCategoryFields,
+    focus: 'name',
     initialData: {
       parent: parentId
     },
-    onFormSuccess(data: any) {
-      if (data.pk) {
-        navigate(getDetailUrl(ModelType.partcategory, data.pk));
-      } else {
-        table.refreshTable();
-      }
-    }
+    follow: true,
+    modelType: ModelType.partcategory,
+    table: table
   });
 
   const [selectedCategory, setSelectedCategory] = useState<number>(-1);
+
+  const editCategoryFields = partCategoryFields({ create: false });
 
   const editCategory = useEditApiFormModal({
     url: ApiEndpoints.category_list,
     pk: selectedCategory,
     title: t`Edit Part Category`,
-    fields: partCategoryFields({}),
+    fields: editCategoryFields,
     onFormSuccess: (record: any) => table.updateRecord(record)
   });
 
@@ -103,6 +125,7 @@ export function PartCategoryTable({ parentId }: { parentId?: any }) {
 
     return [
       <AddItemButton
+        key="add-part-category"
         tooltip={t`Add Part Category`}
         onClick={() => newCategory.open()}
         hidden={!can_add}
@@ -111,7 +134,7 @@ export function PartCategoryTable({ parentId }: { parentId?: any }) {
   }, [user]);
 
   const rowActions = useCallback(
-    (record: any) => {
+    (record: any): RowAction[] => {
       let can_edit = user.hasChangeRole(UserRoles.part_category);
 
       return [
@@ -138,7 +161,8 @@ export function PartCategoryTable({ parentId }: { parentId?: any }) {
         props={{
           enableDownload: true,
           params: {
-            parent: parentId
+            parent: parentId,
+            top_level: parentId === undefined ? true : undefined
           },
           tableFilters: tableFilters,
           tableActions: tableActions,

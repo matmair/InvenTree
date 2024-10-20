@@ -17,9 +17,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { api } from '../../App';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
-import { doBasicLogin, doSimpleLogin, isLoggedIn } from '../../functions/auth';
+import {
+  doBasicLogin,
+  doSimpleLogin,
+  followRedirect
+} from '../../functions/auth';
 import { showLoginNotification } from '../../functions/notifications';
 import { apiUrl, useServerApiState } from '../../states/ApiState';
+import { useUserState } from '../../states/UserState';
 import { SsoButton } from '../buttons/SSOButton';
 
 export function AuthenticationForm() {
@@ -31,6 +36,7 @@ export function AuthenticationForm() {
   const [auth_settings] = useServerApiState((state) => [state.auth_settings]);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isLoggedIn } = useUserState();
 
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
@@ -49,8 +55,7 @@ export function AuthenticationForm() {
             title: t`Login successful`,
             message: t`Logged in successfully`
           });
-
-          navigate(location?.state?.redirectFrom ?? '/home');
+          followRedirect(navigate, location?.state);
         } else {
           showLoginNotification({
             title: t`Login failed`,
@@ -98,7 +103,7 @@ export function AuthenticationForm() {
       ) : null}
       <form onSubmit={classicForm.onSubmit(() => {})}>
         {classicLoginMode ? (
-          <Stack spacing={0}>
+          <Stack gap={0}>
             <TextInput
               required
               label={t`Username`}
@@ -112,11 +117,11 @@ export function AuthenticationForm() {
               {...classicForm.getInputProps('password')}
             />
             {auth_settings?.password_forgotten_enabled === true && (
-              <Group position="apart" mt="0">
+              <Group justify="space-between" mt="0">
                 <Anchor
                   component="button"
                   type="button"
-                  color="dimmed"
+                  c="dimmed"
                   size="xs"
                   onClick={() => navigate('/reset-password')}
                 >
@@ -137,11 +142,11 @@ export function AuthenticationForm() {
           </Stack>
         )}
 
-        <Group position="apart" mt="xl">
+        <Group justify="space-between" mt="xl">
           <Anchor
             component="button"
             type="button"
-            color="dimmed"
+            c="dimmed"
             size="xs"
             onClick={() => setMode.toggle()}
           >
@@ -219,7 +224,7 @@ export function RegistrationForm() {
     <>
       {auth_settings?.registration_enabled && (
         <form onSubmit={registrationForm.onSubmit(() => {})}>
-          <Stack spacing={0}>
+          <Stack gap={0}>
             <TextInput
               required
               label={t`Username`}
@@ -247,7 +252,7 @@ export function RegistrationForm() {
             />
           </Stack>
 
-          <Group position="apart" mt="xl">
+          <Group justify="space-between" mt="xl">
             <Button
               type="submit"
               disabled={isRegistering}
@@ -276,10 +281,10 @@ export function RegistrationForm() {
 export function ModeSelector({
   loginMode,
   setMode
-}: {
+}: Readonly<{
   loginMode: boolean;
   setMode: any;
-}) {
+}>) {
   const [auth_settings] = useServerApiState((state) => [state.auth_settings]);
   const registration_enabled =
     auth_settings?.registration_enabled ||
@@ -295,7 +300,7 @@ export function ModeSelector({
           <Anchor
             component="button"
             type="button"
-            color="dimmed"
+            c="dimmed"
             size="xs"
             onClick={() => setMode.close()}
           >
@@ -306,7 +311,7 @@ export function ModeSelector({
         <Anchor
           component="button"
           type="button"
-          color="dimmed"
+          c="dimmed"
           size="xs"
           onClick={() => setMode.open()}
         >

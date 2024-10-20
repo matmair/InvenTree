@@ -66,7 +66,7 @@ InvenTree is designed to be **extensible**, and provides multiple options for **
     <li><a href="https://www.djangoproject.com/">Django</a></li>
     <li><a href="https://www.django-rest-framework.org/">DRF</a></li>
     <li><a href="https://django-q.readthedocs.io/">Django Q</a></li>
-    <li><a href="https://django-allauth.readthedocs.io/">Django-Allauth</a></li>
+    <li><a href="https://docs.allauth.org/">Django-Allauth</a></li>
   </ul>
 </details>
 
@@ -81,11 +81,25 @@ InvenTree is designed to be **extensible**, and provides multiple options for **
 </details>
 
 <details>
-  <summary>Client</summary>
+  <summary>Client - CUI</summary>
   <ul>
     <li><a href="https://getbootstrap.com/">Bootstrap</a></li>
     <li><a href="https://jquery.com/">jQuery</a></li>
     <li><a href="https://bootstrap-table.com/">Bootstrap-Table</a></li>
+  </ul>
+</details>
+
+<details>
+  <summary>Client - PUI</summary>
+  <ul>
+    <li><a href="https://react.dev/">React</a></li>
+    <li><a href="https://lingui.dev/">Lingui</a></li>
+    <li><a href="https://reactrouter.com/">React Router</a></li>
+    <li><a href="https://tanstack.com/query/">TanStack Query</a></li>
+    <li><a href="https://github.com/pmndrs/zustand">Zustand</a></li>
+    <li><a href="https://mantine.dev/">Mantine</a></li>
+    <li><a href="https://icflorescu.github.io/mantine-datatable/">Mantine Data Table</a></li>
+    <li><a href="https://codemirror.net/">CodeMirror</a></li>
   </ul>
 </details>
 
@@ -95,7 +109,7 @@ InvenTree is designed to be **extensible**, and provides multiple options for **
     <li><a href="https://hub.docker.com/r/inventree/inventree">Docker</a></li>
     <li><a href="https://crowdin.com/project/inventree">Crowdin</a></li>
     <li><a href="https://app.codecov.io/gh/inventree/InvenTree">Codecov</a></li>
-    <li><a href="https://app.deepsource.com/gh/inventree/InvenTree">DeepSource</a></li>
+    <li><a href="https://sonarcloud.io/project/overview?id=inventree_InvenTree">SonarCloud</a></li>
     <li><a href="https://packager.io/gh/inventree/InvenTree">Packager.io</a></li>
   </ul>
 </details>
@@ -123,7 +137,7 @@ Refer to the [getting started guide](https://docs.inventree.org/en/latest/start/
 <!-- Mobile App -->
 ## 	:iphone: Mobile App
 
-InvenTree is supported by a [companion mobile app](https://docs.inventree.org/en/latest/app/app/) which allows users access to stock control information and functionality.
+InvenTree is supported by a [companion mobile app](https://docs.inventree.org/app/) which allows users access to stock control information and functionality.
 
 <div align="center"><h4>
     <a href="https://play.google.com/store/apps/details?id=inventree.inventree_app">Android Play Store</a>

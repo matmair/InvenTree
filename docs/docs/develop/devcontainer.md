@@ -18,12 +18,13 @@ You need to make sure that you have the following tools installed before continu
 
 #### Docker Containers
 
-The InvenTree devcontainer setup will install two docker containers:
+The InvenTree devcontainer setup will install the following docker containers:
 
 | Container | Description |
 | --- | --- |
+| inventree | InvenTree host server |
 | db | InvenTree database (postgresql) |
-| inventree | InvenTree server |
+| redis | Redis server for caching |
 
 #### Setup/Installation
 
@@ -51,7 +52,7 @@ Tasks can help you executing scripts. You can run them by open the command panel
 
 #### Setup demo dataset
 
-If you need some demo test-data, run the `setup-test` task. This will import an `admin` user with the password `inventree`. For more info on what this dataset contains see [inventree/demo-dataset](https://github.com/inventree/demo-dataset).
+If you need some demo test-data, run the `setup-test` task. This will import an `admin` user with the password `inventree`. For more info on what this dataset contains see [inventree/demo-dataset](../demo.md).
 
 #### Setup a superuser
 
@@ -66,7 +67,7 @@ If you need to process your queue with background workers, run the `worker` task
 You can either only run InvenTree or use the integrated debugger for debugging. Goto the `Run and debug` side panel make sure `InvenTree Server` is selected. Click on the play button on the left.
 
 !!! tip "Debug with 3rd party"
-    Sometimes you need to debug also some 3rd party packages. Just select `InvenTree Servre - 3rd party`
+    Sometimes you need to debug also some 3rd party packages. Just select `InvenTree Server - 3rd party`
 
 You can now set breakpoints and vscode will automatically pause execution if that point is hit. You can see all variables available in that context and evaluate some code with the debugger console at the bottom. Use the play or step buttons to continue execution.
 
@@ -119,3 +120,9 @@ If you are running a devcontainer in Windows, you may experience some performanc
 For a significant improvement in performance, the source code should be installed into the **WSL 2** filesystem (not on your "Windows" filesystem). This will greatly improve file access performance, and also make the devcontainer much more responsive to file system changes.
 
 You can also refer to the [Improve disk performance guide](https://code.visualstudio.com/remote/advancedcontainers/improve-performance) for more information.
+
+### Redis Caching
+
+The devcontainer setup provides a [redis](https://redis.io/) container which can be used for managing global cache. By default this is disabled, but it can be easily enabled for testing or developing with the [redis cache](../start/config.md#caching) enabled.
+
+To enable the cache, locate the InvenTree configuration file (`./dev/config.yaml`) and set the `cache.enabled` setting to `True`.

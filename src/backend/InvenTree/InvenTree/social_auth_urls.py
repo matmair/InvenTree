@@ -3,6 +3,7 @@
 import logging
 from importlib import import_module
 
+from django.conf import settings
 from django.urls import NoReverseMatch, include, path, reverse
 
 from allauth.account.models import EmailAddress
@@ -14,7 +15,9 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+import InvenTree.sso
 from common.models import InvenTreeSetting
+from common.settings import get_global_setting
 from InvenTree.helpers import str2bool
 from InvenTree.mixins import CreateAPI, ListAPI, ListCreateAPI
 from InvenTree.serializers import EmptySerializer, InvenTreeModelSerializer
@@ -93,20 +96,19 @@ for name, provider in providers.registry.provider_map.items():
     urls = []
     if len(adapters) == 1:
         urls = handle_oauth2(adapter=adapters[0])
+    elif provider.id in legacy:
+        logger.warning(
+            '`%s` is not supported on platform UI. Use `%s` instead.',
+            provider.id,
+            legacy[provider.id],
+        )
+        continue
     else:
-        if provider.id in legacy:
-            logger.warning(
-                '`%s` is not supported on platform UI. Use `%s` instead.',
-                provider.id,
-                legacy[provider.id],
-            )
-            continue
-        else:
-            logger.error(
-                'Found handler that is not yet ready for platform UI: `%s`. Open an feature request on GitHub if you need it implemented.',
-                provider.id,
-            )
-            continue
+        logger.error(
+            'Found handler that is not yet ready for platform UI: `%s`. Open an feature request on GitHub if you need it implemented.',
+            provider.id,
+        )
+        continue
     provider_urlpatterns += [path(f'{provider.id}/', include(urls))]
 
 
@@ -236,12 +238,12 @@ class SocialProviderListView(ListAPI):
         data = {
             'sso_enabled': str2bool(InvenTreeSetting.get_setting('LOGIN_ENABLE_SSO')),
             'sso_registration': InvenTree.sso.registration_enabled(),
-            'mfa_required': InvenTreeSetting.get_setting('LOGIN_ENFORCE_MFA'),
+            'mfa_required': settings.MFA_ENABLED
+            and get_global_setting('LOGIN_ENFORCE_MFA'),
+            'mfa_enabled': settings.MFA_ENABLED,
             'providers': provider_list,
-            'registration_enabled': InvenTreeSetting.get_setting('LOGIN_ENABLE_REG'),
-            'password_forgotten_enabled': InvenTreeSetting.get_setting(
-                'LOGIN_ENABLE_PWD_FORGOT'
-            ),
+            'registration_enabled': get_global_setting('LOGIN_ENABLE_REG'),
+            'password_forgotten_enabled': get_global_setting('LOGIN_ENABLE_PWD_FORGOT'),
         }
         return Response(data)
 

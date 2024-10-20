@@ -1,16 +1,16 @@
-import { Select, SelectItem } from '@mantine/core';
+import { Select } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 import { getSupportedLanguages } from '../../contexts/LanguageContext';
 import { useLocalState } from '../../states/LocalState';
 
-export function LanguageSelect({ width = 80 }: { width?: number }) {
+export function LanguageSelect({ width = 80 }: Readonly<{ width?: number }>) {
   const [value, setValue] = useState<string | null>(null);
   const [locale, setLanguage] = useLocalState((state) => [
     state.language,
     state.setLanguage
   ]);
-  const [langOptions, setLangOptions] = useState<SelectItem[]>([]);
+  const [langOptions, setLangOptions] = useState<any[]>([]);
 
   // change global language on change
   useEffect(() => {

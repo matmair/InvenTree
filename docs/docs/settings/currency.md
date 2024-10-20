@@ -6,13 +6,13 @@ title: Currency Support
 
 InvenTree provides support for multiple currencies, allowing pricing information to be stored with base currency rates.
 
-### Configuration
+### Supported Currencies
 
-To specify which currencies are supported, refer to the [currency configuration](../start/config.md#supported-currencies) section
+InvenTree uses the [django-money](https://github.com/django-money/django-money) library, which in turn uses the [py-moneyed library](https://py-moneyed.readthedocs.io/en/latest/index.html). `py-moneyed` supports any currency which is defined in the [ISO 3166 standard](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) standard.
 
 ### Currency Conversion
 
-Currency conversion is provided via the [django-money](https://github.com/django-money/django-money) library. Pricing data can be converted seamlessly between the available currencies.
+Currency conversion is provided via the `django-money` library. Pricing data can be converted seamlessly between the available currencies.
 
 ### Currency Rate Updates
 
@@ -24,8 +24,8 @@ If a different currency exchange backend is needed, or a custom implementation i
 
 ### Currency Settings
 
-In the [settings screen](./global.md), under the *Pricing* section, the following currency settings are available:
+Refer to the [global settings](./global.md#pricing-and-currency) documentation for more information on available currency settings.
 
-{% with id="currency-settings", url="settings/currency.png", description="Currency Exchange Settings" %}
-{% include 'img.html' %}
-{% endwith %}
+#### Supported Currencies
+
+While InvenTree can support any of the currencies defined in the ISO 3166 standard, the list of supported currencies can be limited to only those which are relevant to the user. The supported currencies are used to populate the currency selection dropdowns throughout the InvenTree interface.

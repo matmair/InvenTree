@@ -1,20 +1,50 @@
 import { t } from '@lingui/macro';
+import { Badge } from '@mantine/core';
 import { ReactNode } from 'react';
 
-import { RenderInlineModel } from './Instance';
+import { ModelType } from '../../enums/ModelType';
+import { getDetailUrl } from '../../functions/urls';
+import { ApiIcon } from '../items/ApiIcon';
+import { InstanceRenderInterface, RenderInlineModel } from './Instance';
 
 /**
  * Inline rendering of a single Part instance
  */
-export function RenderPart({ instance }: { instance: any }): ReactNode {
-  const stock = t`Stock` + `: ${instance.in_stock}`;
+export function RenderPart(
+  props: Readonly<InstanceRenderInterface>
+): ReactNode {
+  const { instance } = props;
+
+  let badgeText = '';
+  let badgeColor = '';
+
+  let stock = instance.total_in_stock;
+
+  if (instance.active == false) {
+    badgeColor = 'red';
+    badgeText = t`Inactive`;
+  } else if (stock <= 0) {
+    badgeColor = 'orange';
+    badgeText = t`No stock`;
+  } else {
+    badgeText = t`Stock` + `: ${stock}`;
+    badgeColor = instance.minimum_stock > stock ? 'yellow' : 'green';
+  }
+
+  const badge = (
+    <Badge size="xs" color={badgeColor}>
+      {badgeText}
+    </Badge>
+  );
 
   return (
     <RenderInlineModel
-      primary={instance.name}
+      {...props}
+      primary={instance.full_name ?? instance.name}
       secondary={instance.description}
-      suffix={stock}
+      suffix={badge}
       image={instance.thumnbnail || instance.image}
+      url={props.link ? getDetailUrl(ModelType.part, instance.pk) : undefined}
     />
   );
 }
@@ -22,15 +52,28 @@ export function RenderPart({ instance }: { instance: any }): ReactNode {
 /**
  * Inline rendering of a PartCategory instance
  */
-export function RenderPartCategory({ instance }: { instance: any }): ReactNode {
-  // TODO: Handle URL
-
-  let lvl = '-'.repeat(instance.level || 0);
+export function RenderPartCategory(
+  props: Readonly<InstanceRenderInterface>
+): ReactNode {
+  const { instance } = props;
 
   return (
     <RenderInlineModel
-      primary={`${lvl} ${instance.name}`}
+      {...props}
+      tooltip={instance.pathstring}
+      prefix={
+        <>
+          <div style={{ width: 10 * (instance.level || 0) }}></div>
+          {instance.icon && <ApiIcon name={instance.icon} />}
+        </>
+      }
+      primary={instance.name}
       secondary={instance.description}
+      url={
+        props.link
+          ? getDetailUrl(ModelType.partcategory, instance.pk)
+          : undefined
+      }
     />
   );
 }
@@ -40,9 +83,9 @@ export function RenderPartCategory({ instance }: { instance: any }): ReactNode {
  */
 export function RenderPartParameterTemplate({
   instance
-}: {
+}: Readonly<{
   instance: any;
-}): ReactNode {
+}>): ReactNode {
   return (
     <RenderInlineModel
       primary={instance.name}
@@ -54,9 +97,9 @@ export function RenderPartParameterTemplate({
 
 export function RenderPartTestTemplate({
   instance
-}: {
+}: Readonly<{
   instance: any;
-}): ReactNode {
+}>): ReactNode {
   return (
     <RenderInlineModel
       primary={instance.test_name}
