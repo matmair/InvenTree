@@ -11,22 +11,12 @@ from stock.status_codes import StockStatus
 from users.models import Owner
 
 
-class StockOwnershipTest(InvenTreeTestCase):
-    """Tests for stock ownership views."""
+class StockViewTestCase(InvenTreeTestCase):
+    """Mixin for Stockview tests."""
 
     fixtures = ['category', 'part', 'company', 'location', 'supplier_part', 'stock']
 
     roles = 'all'
-
-
-@tag('cui')
-class StockListTest(StockViewTestCase):
-    """Tests for Stock list views."""
-
-    def test_stock_index(self):
-        """Test stock index page."""
-        response = self.client.get(reverse('stock-index'))
-        self.assertEqual(response.status_code, 200)
 
 
 class StockDetailTest(StockViewTestCase):
