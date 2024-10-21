@@ -199,7 +199,7 @@ if settings.INVENTREE_ADMIN_ENABLED:
 urlpatterns += backendpatterns
 
 frontendpatterns = [
-    platform_urls,
+    *platform_urls,
     # Add a redirect for login views
     path(
         'accounts/login/',
