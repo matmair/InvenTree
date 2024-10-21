@@ -165,8 +165,6 @@ class PartCategory(InvenTree.models.InvenTreeTree):
 
     def get_absolute_url(self):
         """Return the web URL associated with the detail view for this PartCategory instance."""
-        if settings.ENABLE_CLASSIC_FRONTEND:
-            return reverse('category-detail', kwargs={'pk': self.id})
         return helpers.pui_url(f'/part/category/{self.id}')
 
     def clean(self):
@@ -934,8 +932,6 @@ class Part(
 
     def get_absolute_url(self):
         """Return the web URL for viewing this part."""
-        if settings.ENABLE_CLASSIC_FRONTEND:
-            return reverse('part-detail', kwargs={'pk': self.id})
         return helpers.pui_url(f'/part/{self.id}')
 
     def get_image_url(self):
@@ -3413,11 +3409,9 @@ class PartStocktakeReport(models.Model):
 
     def get_absolute_url(self):
         """Return the URL for the associaed report file for download."""
-        if settings.ENABLE_CLASSIC_FRONTEND:
-            if self.report:
-                return self.report.url
-            return None
-        return 'TOBEREFACTORED'
+        if self.report:
+            return self.report.url
+        return None
 
     date = models.DateField(verbose_name=_('Date'), auto_now_add=True)
 

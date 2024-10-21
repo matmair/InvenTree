@@ -234,12 +234,7 @@ urlpatterns.append(
 urlpatterns += [
     re_path(
         r'^.*$',
-        RedirectView.as_view(
-            url='/index/'
-            if settings.ENABLE_CLASSIC_FRONTEND
-            else settings.FRONTEND_URL_BASE,
-            permanent=False,
-        ),
+        RedirectView.as_view(url=settings.FRONTEND_URL_BASE, permanent=False),
         name='index',
     )
 ]
