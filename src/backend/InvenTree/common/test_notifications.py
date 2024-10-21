@@ -6,7 +6,6 @@ from common.notifications import (
     SingleNotificationMethod,
 )
 from part.test_part import BaseNotificationIntegrationTest
-from plugin.models import NotificationUserSetting
 
 
 class BaseNotificationTests(BaseNotificationIntegrationTest):
