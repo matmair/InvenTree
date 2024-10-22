@@ -16,7 +16,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 import InvenTree.sso
+from common.models import InvenTreeSetting
 from common.settings import get_global_setting
+from InvenTree.helpers import str2bool
 from InvenTree.mixins import CreateAPI, ListAPI, ListCreateAPI
 from InvenTree.serializers import EmptySerializer, InvenTreeModelSerializer
 
@@ -134,6 +136,65 @@ class SocialProviderListResponseSerializer(serializers.Serializer):
     password_forgotten_enabled = serializers.BooleanField()
 
 
+def registration_enabled() -> bool:
+    """Return True if SSO registration is enabled."""
+    return str2bool(InvenTreeSetting.get_setting('LOGIN_ENABLE_SSO_REG'))
+
+
+def get_provider_app(provider):
+    """Return the SocialApp object for the given provider."""
+    from allauth.socialaccount.models import SocialApp
+
+    try:
+        apps = SocialApp.objects.filter(provider__iexact=provider.id)
+    except SocialApp.DoesNotExist:
+        logger.warning("SSO SocialApp not found for provider '%s'", provider.id)
+        return None
+
+    if apps.count() > 1:
+        logger.warning("Multiple SocialApps found for provider '%s'", provider.id)
+
+    if apps.count() == 0:
+        logger.warning("SSO SocialApp not found for provider '%s'", provider.id)
+
+    return apps.first()
+
+
+def check_provider(provider):
+    """Check if the given provider is correctly configured.
+
+    To be correctly configured, the following must be true:
+
+    - Provider must either have a registered SocialApp
+    - Must have at least one site enabled
+    """
+    import allauth.app_settings
+
+    # First, check that the provider is enabled
+    app = get_provider_app(provider)
+
+    if not app:
+        return False
+
+    if allauth.app_settings.SITES_ENABLED:
+        # At least one matching site must be specified
+        if not app.sites.exists():
+            logger.error('SocialApp %s has no sites configured', app)
+            return False
+
+    # At this point, we assume that the provider is correctly configured
+    return True
+
+
+def provider_display_name(provider):
+    """Return the 'display name' for the given provider."""
+    if app := get_provider_app(provider):
+        return app.name
+
+    # Fallback value if app not found
+    return provider.name
+
+
 class SocialProviderListView(ListAPI):
     """List of available social providers."""
 
@@ -175,7 +236,7 @@ class SocialProviderListView(ListAPI):
             provider_list.append(provider_data)
 
         data = {
-            'sso_enabled': InvenTree.sso.login_enabled(),
+            'sso_enabled': str2bool(InvenTreeSetting.get_setting('LOGIN_ENABLE_SSO')),
             'sso_registration': InvenTree.sso.registration_enabled(),
             'mfa_required': settings.MFA_ENABLED
             and get_global_setting('LOGIN_ENFORCE_MFA'),

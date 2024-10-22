@@ -4291,11 +4291,7 @@ msgstr "Virheellinen verkkotunnus: {domain}"
 msgid "Upload File"
 msgstr "Lataa tiedosto"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr ""
 
@@ -6858,6 +6854,10 @@ msgstr ""
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
 msgstr ""
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
+msgstr "SKU"
 
 #: part/forms.py:49
 msgid "Input quantity for price calculation"
@@ -9801,6 +9801,10 @@ msgstr ""
 msgid "Stock Item ID"
 msgstr ""
 
+#: stock/admin.py:163
+msgid "Batch"
+msgstr ""
+
 #: stock/admin.py:168
 msgid "Status Code"
 msgstr ""
@@ -10988,8 +10992,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr ""
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr ""
 
@@ -15551,3 +15554,377 @@ msgstr "Oikeus muokata kohteita"
 msgid "Permission to delete items"
 msgstr "Oikeus poistaa kohteita"
 
+#~ msgid "Enter password"
+#~ msgstr "Anna salasana"
+
+#~ msgid "Enter new password"
+#~ msgstr "Anna uusi salasana"
+
+#~ msgid "Confirm password"
+#~ msgstr "Vahvista salasana"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Vahvista uusi salasana"
+
+#~ msgid "Old password"
+#~ msgstr "Vanha salasana"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Muokkaa käyttäjätietoja"
+
+#~ msgid "Set Password"
+#~ msgstr "Aseta salasana"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Salasanat eivät täsmää"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Virheellinen salasana"
+
+#~ msgid "System Information"
+#~ msgstr "Järjestelmän tiedot"
+
+#~ msgid "About InvenTree"
+#~ msgstr "Tietoja InvenTree:stä"
+
+#~ msgid "Unlink Barcode"
+#~ msgstr "Poista viivakoodin linkitys"
+
+#~ msgid "Link Barcode"
+#~ msgstr "Linkitä viivakoodi"
+
+#~ msgid "Overdue"
+#~ msgstr "Myöhässä"
+
+#~ msgid "Priority"
+#~ msgstr "Prioriteetti"
+
+#~ msgid "Completed"
+#~ msgstr "Valmis"
+
+#~ msgid "Attachments"
+#~ msgstr "Liitteet"
+
+#~ msgid "Edit company information"
+#~ msgstr "Muokkaa yrityksen tietoja"
+
+#~ msgid "Edit Company"
+#~ msgstr "Muokkaa yritystä"
+
+#~ msgid "Delete company"
+#~ msgstr "Poista yritys"
+
+#~ msgid "Delete Company"
+#~ msgstr "Poista yritys"
+
+#~ msgid "Uses default currency"
+#~ msgstr "Käyttää oletusvaluuttaa"
+
+#~ msgid "Phone"
+#~ msgstr "Puhelin"
+
+#~ msgid "Remove"
+#~ msgstr "Poista"
+
+#~ msgid "New Supplier"
+#~ msgstr "Uusi toimittaja"
+
+#~ msgid "New Manufacturer"
+#~ msgstr "Uusi valmistaja"
+
+#~ msgid "Customers"
+#~ msgstr "Asiakkaat"
+
+#~ msgid "New Customer"
+#~ msgstr "Uusi asiakas"
+
+#~ msgid "Companies"
+#~ msgstr "Yritykset"
+
+#~ msgid "New Company"
+#~ msgstr "Uusi yritys"
+
+#~ msgid "Edit order"
+#~ msgstr "Muokkaa tilausta"
+
+#~ msgid "Cancel order"
+#~ msgstr "Peru tilaus"
+
+#~ msgid "Duplicate order"
+#~ msgstr "Kopioi tilaus"
+
+#~ msgid "Total cost"
+#~ msgstr "Kokonaiskustannukset"
+
+#~ msgid "Total cost could not be calculated"
+#~ msgstr "Kokonaiskustannuksia ei voitu laskea"
+
+#~ msgid "Remove column"
+#~ msgstr "Poista sarake"
+
+#~ msgid "Remove row"
+#~ msgstr "Poista rivi"
+
+#~ msgid "Row"
+#~ msgstr "Rivi"
+
+#~ msgid "Actions"
+#~ msgstr "Toiminnot"
+
+#~ msgid "Price not found"
+#~ msgstr "Hintaa ei löytynyt"
+
+#~ msgid "Edit category"
+#~ msgstr "Muokkaa kategoriaa"
+
+#~ msgid "Edit Category"
+#~ msgstr "Muokkaa kategoriaa"
+
+#~ msgid "Delete Category"
+#~ msgstr "Poista kategoria"
+
+#~ msgid "Create new part"
+#~ msgstr "Luo uusi osa"
+
+#~ msgid "New Part"
+#~ msgstr "Uusi osa"
+
+#~ msgid "Duplicate part"
+#~ msgstr "Monista osa"
+
+#~ msgid "Edit part"
+#~ msgstr "Muokkaa osaa"
+
+#~ msgid "Delete part"
+#~ msgstr "Poista osa"
+
+#~ msgid "Edit"
+#~ msgstr "Muokkaa"
+
+#~ msgid "previous page"
+#~ msgstr "edellinen sivu"
+
+#~ msgid "Navigate to previous serial number"
+#~ msgstr "Siirry edeltävään sarjanumeroon"
+
+#~ msgid "next page"
+#~ msgstr "seuraava sivu"
+
+#~ msgid "Navigate to next serial number"
+#~ msgstr "Siirry seuraavaan sarjanumeroon"
+
+#~ msgid "Warning"
+#~ msgstr "Varoitus"
+
+#~ msgid "Edit location"
+#~ msgstr "Muokkaa sijaintia"
+
+#~ msgid "Loading..."
+#~ msgstr "Ladataan..."
+
+#~ msgid "History"
+#~ msgstr "Historia"
+
+#~ msgid "Settings"
+#~ msgstr "Asetukset"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Open in new tab"
+#~ msgstr "Avaa uudessa välilehdessä"
+
+#~ msgid "Notification Settings"
+#~ msgstr "Ilmoitusasetukset"
+
+#~ msgid "Account"
+#~ msgstr "Tili"
+
+#~ msgid "Server"
+#~ msgstr "Palvelin"
+
+#~ msgid "Username"
+#~ msgstr "Käyttäjätunnus"
+
+#~ msgid "First Name"
+#~ msgstr "Etunimi"
+
+#~ msgid "Last Name"
+#~ msgstr "Sukunimi"
+
+#~ msgid "Verified"
+#~ msgstr "Vahvistettu"
+
+#~ msgid "Unverified"
+#~ msgstr "Vahvistamaton"
+
+#~ msgid "Primary"
+#~ msgstr "Ensisijainen"
+
+#~ msgid "Make Primary"
+#~ msgstr "Aseta ensisijaiseksi"
+
+#~ msgid "Warning:"
+#~ msgstr "Varoitus:"
+
+#~ msgid "Add Email Address"
+#~ msgstr "Lisää sähköpostiosoite"
+
+#~ msgid "Add Email"
+#~ msgstr "Lisää sähköposti"
+
+#~ msgid "TOTP"
+#~ msgstr "TOTP"
+
+#~ msgid "Static"
+#~ msgstr "Staattinen"
+
+#~ msgid "Active Sessions"
+#~ msgstr "Aktiiviset istunnot"
+
+#~ msgid "Log out active sessions (except this one)"
+#~ msgstr "Kirjaa ulos aktiiviset istunnot (paitsi tämä)"
+
+#~ msgid "Log Out Active Sessions"
+#~ msgstr "Kirjaa ulos aktiiviset istunnot"
+
+#~ msgid "IP Address"
+#~ msgstr "IP-osoite"
+
+#~ msgid "Device"
+#~ msgstr "Laite"
+
+#~ msgid "Select theme"
+#~ msgstr "Valitse teema"
+
+#~ msgid "Set Theme"
+#~ msgstr "Aseta teema"
+
+#~ msgid "Language Settings"
+#~ msgstr "Kieliasetukset"
+
+#~ msgid "Select language"
+#~ msgstr "Valitse kieli"
+
+#~ msgid "Set Language"
+#~ msgstr "Aseta kieli"
+
+#~ msgid "Some languages are not complete"
+#~ msgstr "Jotkin kielet eivät ole valmiita"
+
+#~ msgid "Development Version"
+#~ msgstr "Kehitysversio"
+
+#~ msgid "Up to Date"
+#~ msgstr "Ajantasalla"
+
+#~ msgid "Update Available"
+#~ msgstr "Päivitys saatavilla"
+
+#~ msgid "InvenTree Documentation"
+#~ msgstr "InvenTree dokumentaatio"
+
+#~ msgid "API Version"
+#~ msgstr "API-versio"
+
+#~ msgid "Python Version"
+#~ msgstr "Python-versio"
+
+#~ msgid "Django Version"
+#~ msgstr "Django-versio"
+
+#~ msgid "Mobile App"
+#~ msgstr "Mobiilisovellus"
+
+#~ msgid "copy to clipboard"
+#~ msgstr "kopioi leikepöydälle"
+
+#~ msgid "copy version information"
+#~ msgstr "kopioi versiotiedot"
+
+#~ msgid "Confirm Email Address"
+#~ msgstr "Vahvista sähköpostiosoite"
+
+#~ msgid "Confirm"
+#~ msgstr "Vahvista"
+
+#~ msgid "Sign In"
+#~ msgstr "Kirjaudu sisään"
+
+#~ msgid "Forgot Password?"
+#~ msgstr "Unohtuiko salasana?"
+
+#~ msgid "Sign Out"
+#~ msgstr "Kirjaudu ulos"
+
+#~ msgid "Change password"
+#~ msgstr "Vaihda salasana"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Oletko varma?"
+
+#~ msgid "Step 1"
+#~ msgstr "Vaihe 1"
+
+#~ msgid "Step 2"
+#~ msgstr "Vaihe 2"
+
+#~ msgid "Add Link"
+#~ msgstr "Lisää linkki"
+
+#~ msgid "Add Attachment"
+#~ msgstr "Lisää liite"
+
+#~ msgid "Scan Barcode"
+#~ msgstr "Skannaa viivakoodi"
+
+#~ msgid "Close"
+#~ msgstr "Sulje"
+
+#~ msgid "Submit"
+#~ msgstr "Lähetä"
+
+#~ msgid "Buy"
+#~ msgstr "Osta"
+
+#~ msgid "Sell"
+#~ msgstr "Myy"
+
+#~ msgid "Show Notifications"
+#~ msgstr "Näytä ilmoitukset"
+
+#~ msgid "New Notifications"
+#~ msgstr "Uudet ilmoitukset"
+
+#~ msgid "Logout"
+#~ msgstr "Kirjaudu ulos"
+
+#~ msgid "Save"
+#~ msgstr "Tallenna"
+
+#~ msgid "Continue"
+#~ msgstr "Jatka"
+
+#~ msgid "Invalid SSO Provider"
+#~ msgstr "Virheellinen SSO tarjoaja"
+
+#~ msgid "Database"
+#~ msgstr "Tietokanta"
+
+#~ msgid "Docker Mode"
+#~ msgstr "Docker-tila"
+
+#~ msgid "Server status"
+#~ msgstr "Palvelimen tila"
+
+#~ msgid "Healthy"
+#~ msgstr "Terve"
+
+#~ msgid "Email Settings"
+#~ msgstr "Sähköpostiasetukset"
+
+#~ msgid "Yes"
+#~ msgstr "Kyllä"
+
+#~ msgid "No"
+#~ msgstr "Ei"

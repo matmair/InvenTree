@@ -4291,11 +4291,7 @@ msgstr "Nom de domaine invalide : {domain}"
 msgid "Upload File"
 msgstr "Transférer un fichier"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "Champs Correspondants"
 
@@ -6858,6 +6854,10 @@ msgstr "Emplacement par défaut"
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
 msgstr "Stock total"
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
+msgstr "SKU"
 
 #: part/forms.py:49
 msgid "Input quantity for price calculation"
@@ -9686,6 +9686,10 @@ msgstr ""
 msgid "QR code"
 msgstr ""
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr ""
@@ -9800,6 +9804,10 @@ msgstr ""
 #: stock/admin.py:149
 msgid "Stock Item ID"
 msgstr ""
+
+#: stock/admin.py:163
+msgid "Batch"
+msgstr "Lot"
 
 #: stock/admin.py:168
 msgid "Status Code"
@@ -10988,8 +10996,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr "Vous avez été déconnecté•e d'InvenTree."
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr "Se connecter"
 
@@ -15551,3 +15558,808 @@ msgstr "Droit de modifier des élément"
 msgid "Permission to delete items"
 msgstr "Droit de supprimer des éléments"
 
+#~ msgid "Enter password"
+#~ msgstr "Entrer le mot de passe"
+
+#~ msgid "Enter new password"
+#~ msgstr "Entrer le nouveau mot de passe"
+
+#~ msgid "Confirm password"
+#~ msgstr "Confirmez le mot de passe"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Confirmer le nouveau mot de passe"
+
+#~ msgid "Old password"
+#~ msgstr "Ancien mot de passe"
+
+#~ msgid "Unknown database"
+#~ msgstr "Base de données inconnue"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Modifier les informations utilisateur"
+
+#~ msgid "Set Password"
+#~ msgstr "Définir le mot de passe"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Les mots de passe doivent correspondre"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Mot de passe incorrect"
+
+#~ msgid "System Information"
+#~ msgstr "Informations système"
+
+#~ msgid "About InvenTree"
+#~ msgstr "À propos d'InvenTree"
+
+#~ msgid "Part thumbnail"
+#~ msgstr "Image miniature de l'article"
+
+#~ msgid "Barcode actions"
+#~ msgstr "Actions de code-barres"
+
+#~ msgid "Show QR Code"
+#~ msgstr "Afficher le QR Code"
+
+#~ msgid "Unlink Barcode"
+#~ msgstr "Délier le code-barre"
+
+#~ msgid "Link Barcode"
+#~ msgstr "Lier le code-barre"
+
+#~ msgid "Print actions"
+#~ msgstr "Actions d'impression"
+
+#~ msgid "Print build order report"
+#~ msgstr "Imprimer le rapport d'ordre de construction"
+
+#~ msgid "Build actions"
+#~ msgstr "Modifier construction/ordre de construction"
+
+#~ msgid "Edit Build"
+#~ msgstr "Modifier l'assemblage"
+
+#~ msgid "Cancel Build"
+#~ msgstr "Annuler l'assemblage"
+
+#~ msgid "Duplicate Build"
+#~ msgstr "Dupliquer la construction"
+
+#~ msgid "Delete Build"
+#~ msgstr "Supprimer l'assemblage"
+
+#~ msgid "Complete Build"
+#~ msgstr "Compléter l'assemblage"
+
+#~ msgid "Build Description"
+#~ msgstr "Description de la construction"
+
+#~ msgid "No build outputs have been created for this build order"
+#~ msgstr "Aucune sortie de construction n'a été créée pour cet ordre de construction"
+
+#~ msgid "Build Order is ready to mark as completed"
+#~ msgstr "L'ordre de construction est prêt à être marqué comme terminé"
+
+#~ msgid "Build Order cannot be completed as outstanding outputs remain"
+#~ msgstr "L'ordre de construction ne peut pas être achevé car il reste des outputs en suspens"
+
+#~ msgid "Required build quantity has not yet been completed"
+#~ msgstr "Le nombre de constructions requis n'a pas encore été atteint"
+
+#~ msgid "Stock has not been fully allocated to this Build Order"
+#~ msgstr "Le stock n'a pas été entièrement alloué à cet ordre de construction"
+
+#, python-format
+#~ msgid "This build was due on %(target)s"
+#~ msgstr "Cette construction était due le %(target)s"
+
+#~ msgid "Overdue"
+#~ msgstr "En retard"
+
+#~ msgid "Completed Outputs"
+#~ msgstr "Sorties de Construction terminées"
+
+#~ msgid "Priority"
+#~ msgstr "Priorité"
+
+#~ msgid "Build Details"
+#~ msgstr "Détails de la construction"
+
+#~ msgid "Stock Source"
+#~ msgstr "Stock d'origine"
+
+#~ msgid "Stock can be taken from any available location."
+#~ msgstr "Le stock peut être pris à partir de n'importe quel endroit disponible."
+
+#~ msgid "Destination location not specified"
+#~ msgstr "Stockage de destination non défini"
+
+#~ msgid "Allocated Parts"
+#~ msgstr "Pièces allouées"
+
+#~ msgid "Created"
+#~ msgstr "Créé le"
+
+#~ msgid "No target date set"
+#~ msgstr "Pas de date cible définie"
+
+#~ msgid "Completed"
+#~ msgstr "Terminé"
+
+#~ msgid "Build not complete"
+#~ msgstr "Compilation incomplète"
+
+#~ msgid "Child Build Orders"
+#~ msgstr "Commandes de constructions filles"
+
+#~ msgid "Allocate Stock to Build"
+#~ msgstr "Allouer le stock à la construction"
+
+#~ msgid "Deallocate stock"
+#~ msgstr "Désallouer le stock"
+
+#~ msgid "Deallocate Stock"
+#~ msgstr "Désallouer le Stock"
+
+#~ msgid "Automatically allocate stock to build"
+#~ msgstr "Affecter automatiquement le stock à construire"
+
+#~ msgid "Auto Allocate"
+#~ msgstr "Allouer automatiquement"
+
+#~ msgid "Manually allocate stock to build"
+#~ msgstr "Allouer manuellement le stock à construire"
+
+#~ msgid "Allocate Stock"
+#~ msgstr "Allouer le stock"
+
+#~ msgid "Order required parts"
+#~ msgstr "Commander les pièces requises"
+
+#~ msgid "Order Parts"
+#~ msgstr "Commander des pièces"
+
+#~ msgid "Incomplete Build Outputs"
+#~ msgstr "Sorties de construction incomplètes"
+
+#~ msgid "Create new build output"
+#~ msgstr "Créer une nouvelle sortie de construction"
+
+#~ msgid "New Build Output"
+#~ msgstr "Nouvelle sortie de construction"
+
+#~ msgid "Consumed Stock"
+#~ msgstr "Stock Consommé"
+
+#~ msgid "Completed Build Outputs"
+#~ msgstr "Sorties de Construction terminées"
+
+#~ msgid "Attachments"
+#~ msgstr "Pieces jointes"
+
+#~ msgid "Build Notes"
+#~ msgstr "Notes de construction"
+
+#~ msgid "New Build Order"
+#~ msgstr "Nouvel ordre de construction"
+
+#~ msgid "Build Order Details"
+#~ msgstr "Détails de la commande de construction"
+
+#~ msgid "Incomplete Outputs"
+#~ msgstr "Sorties incomplètes"
+
+#~ msgid "Create Purchase Order"
+#~ msgstr "Créer une commande d'achat"
+
+#~ msgid "Company actions"
+#~ msgstr "Actions de l'entreprise"
+
+#~ msgid "Edit company information"
+#~ msgstr "Éditer les informations sur la société"
+
+#~ msgid "Edit Company"
+#~ msgstr "Editer la société"
+
+#~ msgid "Delete company"
+#~ msgstr "Supprimer la société"
+
+#~ msgid "Delete Company"
+#~ msgstr "Supprimer la société"
+
+#~ msgid "Upload new image"
+#~ msgstr "Ajouter une nouvelle image"
+
+#~ msgid "Download image from URL"
+#~ msgstr "Télécharger l'image depuis l'URL"
+
+#~ msgid "Delete image"
+#~ msgstr "Supprimer image"
+
+#~ msgid "Uses default currency"
+#~ msgstr "Utiliser la devise par défaut"
+
+#~ msgid "Phone"
+#~ msgstr "Téléphone"
+
+#~ msgid "Remove"
+#~ msgstr "Supprimer"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "Pièce fournisseur"
+
+#~ msgid "Create new supplier part"
+#~ msgstr "Créer une nouvelle pièce fournisseur"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "Nouvelle pièce fournisseur"
+
+#~ msgid "Manufacturer Parts"
+#~ msgstr "Pièces du fabricant"
+
+#~ msgid "Create new manufacturer part"
+#~ msgstr "Créer une nouvelle pièce de fabricant"
+
+#~ msgid "New Manufacturer Part"
+#~ msgstr "Nouvelle pièce de fabricant"
+
+#~ msgid "Supplier Stock"
+#~ msgstr "Stock fournisseur"
+
+#~ msgid "Create new purchase order"
+#~ msgstr "Créer une commande d'achat"
+
+#~ msgid "New Purchase Order"
+#~ msgstr "Nouvelle commande achat"
+
+#~ msgid "Create new sales order"
+#~ msgstr "Créer un nouvel ordre de vente"
+
+#~ msgid "New Sales Order"
+#~ msgstr "Nouvelle commande de vente"
+
+#~ msgid "Assigned Stock"
+#~ msgstr "Stock affecté"
+
+#~ msgid "Company Notes"
+#~ msgstr "Notes de l'entreprise"
+
+#~ msgid "Add Contact"
+#~ msgstr "Ajouter un contact"
+
+#~ msgid "Company addresses"
+#~ msgstr "Carnet d'adresses de l'entreprise"
+
+#~ msgid "Add Address"
+#~ msgstr "Ajouter une adresse"
+
+#~ msgid "Manufacturers"
+#~ msgstr "Fabricants"
+
+#~ msgid "Order part"
+#~ msgstr "Article de la commande"
+
+#~ msgid "Edit manufacturer part"
+#~ msgstr "Modifier la pièce du fabricant"
+
+#~ msgid "Delete manufacturer part"
+#~ msgstr "Supprimer la pièce de fabricant"
+
+#~ msgid "Internal Part"
+#~ msgstr "Pièces Internes"
+
+#~ msgid "No manufacturer information available"
+#~ msgstr "Aucune information sur le fabricant disponible"
+
+#~ msgid "Parameters"
+#~ msgstr "Paramètres"
+
+#~ msgid "New Parameter"
+#~ msgstr "Nouveau paramètre"
+
+#~ msgid "Manufactured Parts"
+#~ msgstr "Pièces du fabricant"
+
+#~ msgid "Supplied Parts"
+#~ msgstr "Pièce fournisseur"
+
+#~ msgid "Supplied Stock Items"
+#~ msgstr "Articles en stock fournis"
+
+#~ msgid "Assigned Stock Items"
+#~ msgstr "Articles en stock assignés"
+
+#~ msgid "Contacts"
+#~ msgstr "Contacts"
+
+#~ msgid "Addresses"
+#~ msgstr "Adresses"
+
+#~ msgid "Order Part"
+#~ msgstr "Commander un composant"
+
+#~ msgid "Update Availability"
+#~ msgstr "Disponibilité de la mise à jour"
+
+#~ msgid "Edit Supplier Part"
+#~ msgstr "Modifier la pièce du fournisseur"
+
+#~ msgid "Duplicate Supplier Part"
+#~ msgstr "Dupliquer la pièce du fournisseur"
+
+#~ msgid "Delete Supplier Part"
+#~ msgstr "Supprimer la pièce du fournisseur"
+
+#~ msgid "Delete Supplier  Part"
+#~ msgstr "Supprimer la pièce du fournisseur"
+
+#~ msgid "No supplier information available"
+#~ msgstr "Aucune information de fournisseur disponible"
+
+#~ msgid "Supplier Part Stock"
+#~ msgstr "Stock de pièces du fournisseur"
+
+#~ msgid "Create new stock item"
+#~ msgstr "Créer un nouvel article de stock"
+
+#~ msgid "New Stock Item"
+#~ msgstr "Nouvel article de stock"
+
+#~ msgid "Supplier Part Orders"
+#~ msgstr "Commandes de pièces du fournisseur"
+
+#~ msgid "Pricing Information"
+#~ msgstr "Information sur les prix"
+
+#~ msgid "Add Price Break"
+#~ msgstr "Ajouter un prix de rupture"
+
+#~ msgid "Supplier Part Pricing"
+#~ msgstr "Prix de la pièce du fournisseur"
+
+#~ msgid "New Supplier"
+#~ msgstr "Nouveau Fournisseur"
+
+#~ msgid "New Manufacturer"
+#~ msgstr "Nouveau Fabricant"
+
+#~ msgid "Customers"
+#~ msgstr "Clients"
+
+#~ msgid "New Customer"
+#~ msgstr "Nouveaux Clients"
+
+#~ msgid "Companies"
+#~ msgstr "Entreprises"
+
+#~ msgid "New Company"
+#~ msgstr "Nouvelle Entreprise"
+
+#~ msgid "Edit order"
+#~ msgstr "Modifier la commande"
+
+#~ msgid "Cancel order"
+#~ msgstr "Annuler la commande"
+
+#~ msgid "Mark order as complete"
+#~ msgstr "Marquer la commande comme complète"
+
+#~ msgid "Complete Order"
+#~ msgstr "Finaliser la commande"
+
+#~ msgid "Order Reference"
+#~ msgstr "Référence de commande"
+
+#~ msgid "Order Description"
+#~ msgstr "Description de la commande"
+
+#~ msgid "Order Status"
+#~ msgstr "Statut de la commande"
+
+#~ msgid "Incomplete"
+#~ msgstr "Incomplet"
+
+#~ msgid "Remove column"
+#~ msgstr "Supprimer la colonne"
+
+#~ msgid "Duplicate selection"
+#~ msgstr "Dupliquer la sélection"
+
+#~ msgid "Remove row"
+#~ msgstr "Supprimer la ligne"
+
+#~ msgid "Row"
+#~ msgstr "Ligne"
+
+#~ msgid "Order is already processed. Files cannot be uploaded."
+#~ msgstr "Commande déjà traitée. Les fichiers ne peuvent pas être chargés."
+
+#~ msgid "Purchase Order Items"
+#~ msgstr "Articles de la commande d'achat"
+
+#~ msgid "Order Notes"
+#~ msgstr "Notes de commande"
+
+#~ msgid "Order Details"
+#~ msgstr "Détails de la Commande"
+
+#~ msgid "Pending Shipments"
+#~ msgstr "Expéditions en attente"
+
+#~ msgid "New Shipment"
+#~ msgstr "Nouvelle Expédition"
+
+#~ msgid "Price not found"
+#~ msgstr "Prix introuvable"
+
+#~ msgid "Edit category"
+#~ msgstr "Modifier la catégorie"
+
+#~ msgid "Edit Category"
+#~ msgstr "Modifier la catégorie"
+
+#~ msgid "Delete Category"
+#~ msgstr "Supprimer la catégorie"
+
+#~ msgid "Parts (Including subcategories)"
+#~ msgstr "Pièces (incluant les sous-catégories)"
+
+#~ msgid "New Category"
+#~ msgstr "Nouvelle catégorie"
+
+#~ msgid "Possible Matching Parts"
+#~ msgstr "Pièces pouvant correspondre"
+
+#~ msgid "Refresh"
+#~ msgstr "Actualiser"
+
+#~ msgid "Part Manufacturers"
+#~ msgstr "Fabricants de composants"
+
+#~ msgid "Select file format"
+#~ msgstr "Sélectionner un format de fichier"
+
+#~ msgid "Part List"
+#~ msgstr "Liste des composants"
+
+#~ msgid "Print Label"
+#~ msgstr "Impression étiquette"
+
+#~ msgid "Edit part"
+#~ msgstr "Modifier la pièce"
+
+#~ msgid "Part stock is tracked by serial number"
+#~ msgstr "La pièce en stock est tracée par un numéro de série"
+
+#~ msgid "Latest Serial Number"
+#~ msgstr "Dernier numéro de série"
+
+#~ msgid "Search for serial number"
+#~ msgstr "Rechercher un numéro de série"
+
+#~ msgid "Unit Purchase Price"
+#~ msgstr "Prix d’achat unitaire"
+
+#~ msgid "Stock"
+#~ msgstr "Stock"
+
+#~ msgid "Edit"
+#~ msgstr "Modifier"
+
+#~ msgid "Jump to overview"
+#~ msgstr "Aller à la vue d'ensemble"
+
+#~ msgid "Build"
+#~ msgstr "Assemblage"
+
+#~ msgid "previous page"
+#~ msgstr "page précédente"
+
+#~ msgid "Navigate to previous serial number"
+#~ msgstr "Accéder au numéro de série précédent"
+
+#~ msgid "Navigate to next serial number"
+#~ msgstr "Accéder au numéro de série suivant"
+
+#~ msgid "Select quantity to serialize, and unique serial numbers."
+#~ msgstr "Sélectionner la quantité à sérialiser et les numéros de série uniques."
+
+#~ msgid "Delete Notifications"
+#~ msgstr "Supprimer les notifications"
+
+#~ msgid "Pending Notifications"
+#~ msgstr "Notifications en attente"
+
+#~ msgid "Barcode Settings"
+#~ msgstr "Paramètres des Code-barres"
+
+#~ msgid "Category Settings"
+#~ msgstr "Paramètres de Catégorie"
+
+#~ msgid "Server Settings"
+#~ msgstr "Paramètres du Serveur"
+
+#~ msgid "Label Settings"
+#~ msgstr "Paramètres des Étiquettes"
+
+#~ msgid "Login Settings"
+#~ msgstr "Paramètres de Connexion"
+
+#~ msgid "Settings"
+#~ msgstr "Paramètres"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Notification Settings"
+#~ msgstr "Paramètres de notification"
+
+#~ msgid "Plugin Settings"
+#~ msgstr "Paramètres des Extensions"
+
+#~ msgid "Plugins"
+#~ msgstr "Extensions"
+
+#~ msgid "External plugins are not enabled for this InvenTree installation"
+#~ msgstr "Les extensions tierces ne sont pas activées pour cette installation d'InvenTree"
+
+#~ msgid "Plugin information"
+#~ msgstr "Informations sur le plugin"
+
+#~ msgid "no version information supplied"
+#~ msgstr "aucune information de version fournie"
+
+#~ msgid "The code information is pulled from the latest git commit for this plugin. It might not reflect official version numbers or information but the actual code running."
+#~ msgstr "Les informations de code sont tirées de la dernière version de git pour ce plugin. Elles peuvent ne pas refléter les informations ou numéros de version officiels, mais elles se rapportent au code réellement en cours d'exécution."
+
+#~ msgid "Package information"
+#~ msgstr "Informations du paquet"
+
+#~ msgid "Installation method"
+#~ msgstr "Méthode d'installation"
+
+#~ msgid "This plugin was installed as a package"
+#~ msgstr "Ce plugin a été installé en tant que paquet"
+
+#~ msgid "Installation path"
+#~ msgstr "Chemin d'installation"
+
+#~ msgid "Commit Author"
+#~ msgstr "Auteur du commit"
+
+#~ msgid "Commit Date"
+#~ msgstr "Date du commit"
+
+#~ msgid "Commit Hash"
+#~ msgstr "Hash du commit"
+
+#~ msgid "Commit Message"
+#~ msgstr "Message du commit"
+
+#~ msgid "Report Settings"
+#~ msgstr "Paramètres des Rapports"
+
+#~ msgid "No value set"
+#~ msgstr "Aucune valeur définie"
+
+#~ msgid "User Settings"
+#~ msgstr "Paramètres Utilisateur"
+
+#~ msgid "Search"
+#~ msgstr "Rechercher"
+
+#~ msgid "Reporting"
+#~ msgstr "Rapports"
+
+#~ msgid "Global Settings"
+#~ msgstr "Paramètres Globaux"
+
+#~ msgid "Server"
+#~ msgstr "Serveur"
+
+#~ msgid "Categories"
+#~ msgstr "Catégories"
+
+#~ msgid "Account Settings"
+#~ msgstr "Paramètres du Compte"
+
+#~ msgid "Change Password"
+#~ msgstr "Changer le mot de passe"
+
+#~ msgid "Username"
+#~ msgstr "Nom d'utilisateur"
+
+#~ msgid "First Name"
+#~ msgstr "Prénom"
+
+#~ msgid "Last Name"
+#~ msgstr "Nom"
+
+#~ msgid "The following email addresses are associated with your account:"
+#~ msgstr "Les adresses de messagerie suivantes sont associées à votre compte :"
+
+#~ msgid "Verified"
+#~ msgstr "Vérifiée"
+
+#~ msgid "Unverified"
+#~ msgstr "Non vérifiée"
+
+#~ msgid "Primary"
+#~ msgstr "Principale"
+
+#~ msgid "Multifactor"
+#~ msgstr "Authentification Multifacteurs"
+
+#~ msgid "You have these factors available:"
+#~ msgstr "Facteurs d'authentification disponibles :"
+
+#~ msgid "Multifactor authentication is not configured for your account"
+#~ msgstr "L'authentification multifacteurs n'est pas configurée pour votre compte"
+
+#~ msgid "Change factors"
+#~ msgstr "Modifier les facteurs d'authentification"
+
+#~ msgid "Setup multifactor"
+#~ msgstr "Configurer l'authentification multifacteurs"
+
+#~ msgid "Remove multifactor"
+#~ msgstr "Supprimer un facteur d'authentification"
+
+#~ msgid "Active Sessions"
+#~ msgstr "Sessions actives"
+
+#~ msgid "Log out active sessions (except this one)"
+#~ msgstr "Se déconnecter des sessions actives (sauf celle-ci)"
+
+#~ msgid "Log Out Active Sessions"
+#~ msgstr "Se déconnecter des sessions actives"
+
+#~ msgid "IP Address"
+#~ msgstr "Adresse IP"
+
+#~ msgid "Device"
+#~ msgstr "Appareil"
+
+#~ msgid "Last Activity"
+#~ msgstr "Dernière activité"
+
+#, python-format
+#~ msgid "%(time)s ago (this session)"
+#~ msgstr "Il y a %(time)s (session actuelle)"
+
+#~ msgid "Display Settings"
+#~ msgstr "Paramètres d'Affichage"
+
+#~ msgid "Theme Settings"
+#~ msgstr "Paramètres de Thème"
+
+#~ msgid "Select theme"
+#~ msgstr "Sélectionner un thème"
+
+#~ msgid "Language Settings"
+#~ msgstr "Paramètres de Langue"
+
+#~ msgid "InvenTree Translation Project"
+#~ msgstr "Projet collaboratif de Traduction d'InvenTree"
+
+#~ msgid "Home Page Settings"
+#~ msgstr "Paramètres de la Page d'Accueil"
+
+#~ msgid "Search Settings"
+#~ msgstr "Paramètres de Recherche"
+
+#~ msgid "There are no social network accounts connected to this account."
+#~ msgstr "Aucun compte de réseau social n'est connecté à ce compte."
+
+#~ msgid "InvenTree Version"
+#~ msgstr "Version d'InvenTree"
+
+#~ msgid "InvenTree Documentation"
+#~ msgstr "Documentation d'InvenTree"
+
+#~ msgid "Confirm"
+#~ msgstr "Confirmer"
+
+#~ msgid "Two-Factor Authentication"
+#~ msgstr "Authentification à deux facteurs"
+
+#~ msgid "Two-Factor Authentication Backup Tokens"
+#~ msgstr "Jetons de secours pour l'authentification à deux facteurs"
+
+#~ msgid "Disable Two-Factor Authentication"
+#~ msgstr "Désactiver l'authentification à deux facteurs"
+
+#~ msgid "Setup Two-Factor Authentication"
+#~ msgstr "Configurer l'authentification à deux facteurs"
+
+#~ msgid "Step 1"
+#~ msgstr "Étape 1"
+
+#~ msgid "Scan the QR code below with a token generator of your choice (for instance Google Authenticator)."
+#~ msgstr "Scanner le QR code ci-dessous avec un générateur de token de votre choix (par exemple Google Authenticator)."
+
+#~ msgid "Step 2"
+#~ msgstr "Étape 2"
+
+#~ msgid "Input a token generated by the app:"
+#~ msgstr "Entrer un token généré par l'application :"
+
+#~ msgid "Verify"
+#~ msgstr "Vérifier"
+
+#~ msgid "Add Link"
+#~ msgstr "Ajouter un lien"
+
+#~ msgid "Add Attachment"
+#~ msgstr "Ajouter une pièce jointe"
+
+#~ msgid "Barcode Identifier"
+#~ msgstr "Identifiant du code-barres"
+
+#~ msgid "Scan Barcode"
+#~ msgstr "Scanner le code-barres"
+
+#~ msgid "Buy"
+#~ msgstr "Acheter"
+
+#~ msgid "Sell"
+#~ msgstr "Ventes"
+
+#~ msgid "Logout"
+#~ msgstr "Se déconnecter"
+
+#~ msgid "QR data not provided"
+#~ msgstr "Données QR non fournies"
+
+#~ msgid "You were logged out successfully."
+#~ msgstr "Vous avez été déconnecté avec succès."
+
+#~ msgid "Log in again"
+#~ msgstr "Se reconnecter"
+
+#~ msgid "Social Network Login Failure"
+#~ msgstr "Échec de connexion au réseau social"
+
+#~ msgid "An error occurred while attempting to login via your social network account."
+#~ msgstr "Une erreur s’est produite en essayant de vous connecter via votre compte de réseau social."
+
+#~ msgid "Database"
+#~ msgstr "Base de données"
+
+#~ msgid "Server is running in debug mode"
+#~ msgstr "Le serveur fonctionne en mode débogage"
+
+#~ msgid "Docker Mode"
+#~ msgstr "Mode Docker"
+
+#~ msgid "Server is deployed using docker"
+#~ msgstr "Le serveur est déployé en utilisant docker"
+
+#~ msgid "Plugin Support"
+#~ msgstr "Support des plugins"
+
+#~ msgid "Plugin support enabled"
+#~ msgstr "Prise en charge des plugins activée"
+
+#~ msgid "Plugin support disabled"
+#~ msgstr "Prise en charge des plugins désactivée"
+
+#~ msgid "Server status"
+#~ msgstr "Statut serveur"
+
+#~ msgid "Healthy"
+#~ msgstr "Bon"
+
+#~ msgid "Issues detected"
+#~ msgstr "Problèmes détectés"
+
+#~ msgid "Email Settings"
+#~ msgstr "Paramètres de Messagerie"
+
+#~ msgid "Yes"
+#~ msgstr "Oui"
+
+#~ msgid "No"
+#~ msgstr "Non"

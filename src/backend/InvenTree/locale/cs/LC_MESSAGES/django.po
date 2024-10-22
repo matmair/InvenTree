@@ -4291,11 +4291,7 @@ msgstr "Neplatný název domény: {domain}"
 msgid "Upload File"
 msgstr "Nahrát soubor"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "Přiřadit pole"
 
@@ -6857,6 +6853,10 @@ msgstr ""
 #: part/bom.py:184 part/serializers.py:957
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
+msgstr ""
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
 msgstr ""
 
 #: part/forms.py:49
@@ -9686,6 +9686,10 @@ msgstr ""
 msgid "QR code"
 msgstr ""
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr ""
@@ -9799,6 +9803,10 @@ msgstr ""
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
+msgstr ""
+
+#: stock/admin.py:163
+msgid "Batch"
 msgstr ""
 
 #: stock/admin.py:168
@@ -10988,8 +10996,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr ""
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr ""
 
@@ -15551,3 +15558,137 @@ msgstr "Oprávnění k úpravě položek"
 msgid "Permission to delete items"
 msgstr "Oprávnění k odstranění položek"
 
+#~ msgid "Enter password"
+#~ msgstr "Zadejte heslo"
+
+#~ msgid "Enter new password"
+#~ msgstr "Zadejte nové heslo"
+
+#~ msgid "Confirm password"
+#~ msgstr "Potvrďte heslo"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Potvrďte nové heslo"
+
+#~ msgid "Old password"
+#~ msgstr "Původní heslo"
+
+#~ msgid "Unknown database"
+#~ msgstr "Neznámá databáze"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Upravit informace o uživateli"
+
+#~ msgid "Set Password"
+#~ msgstr "Nastavit heslo"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Hesla se musí shodovat"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Zadáno špatné heslo"
+
+#~ msgid "System Information"
+#~ msgstr "Informace o systému"
+
+#~ msgid "About InvenTree"
+#~ msgstr "O InvenTree"
+
+#~ msgid "Show QR Code"
+#~ msgstr "Zobrazit QR kód"
+
+#~ msgid "Unlink Barcode"
+#~ msgstr "Odstranit čárový kód"
+
+#~ msgid "Link Barcode"
+#~ msgstr "Přiřadit čárový kód"
+
+#~ msgid "Priority"
+#~ msgstr "Priorita"
+
+#~ msgid "Created"
+#~ msgstr "Vytvořeno"
+
+#~ msgid "No target date set"
+#~ msgstr "Nenastaveno cílené datum"
+
+#~ msgid "Completed"
+#~ msgstr "Dokončeno"
+
+#~ msgid "Edit company information"
+#~ msgstr "Upravit údaje o společnosti"
+
+#~ msgid "Edit Company"
+#~ msgstr "Upravit společnost"
+
+#~ msgid "Delete company"
+#~ msgstr "Odstranit společnost"
+
+#~ msgid "Delete Company"
+#~ msgstr "Odstranit společnost"
+
+#~ msgid "Upload new image"
+#~ msgstr "Nahrát nový obrázek"
+
+#~ msgid "Download image from URL"
+#~ msgstr "Stáhnout obrázek z URL"
+
+#~ msgid "Delete image"
+#~ msgstr "Smazat obrázek"
+
+#~ msgid "Phone"
+#~ msgstr "Telefon"
+
+#~ msgid "Remove"
+#~ msgstr "Odstranit"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "Dodavatel dílů"
+
+#~ msgid "Create new supplier part"
+#~ msgstr "Vytvořit nového dodavatele dílu"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "Nová díl dodavatele"
+
+#~ msgid "Manufacturer Parts"
+#~ msgstr "Výrobce dílů"
+
+#~ msgid "Create new manufacturer part"
+#~ msgstr "Vytvořit nového výrobce dílu"
+
+#~ msgid "New Manufacturer Part"
+#~ msgstr "Nový výrobce dílu"
+
+#~ msgid "Supplier Stock"
+#~ msgstr "Dodavatelský sklad"
+
+#~ msgid "Company Notes"
+#~ msgstr "Poznámky ke společnosti"
+
+#~ msgid "Build"
+#~ msgstr "Sestavení"
+
+#~ msgid "Notifications"
+#~ msgstr "Oznámení"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Account"
+#~ msgstr "Účet"
+
+#~ msgid "Display"
+#~ msgstr "Zobrazení"
+
+#~ msgid "Home Page"
+#~ msgstr "Domovská stránka"
+
+#~ msgid "Confirm"
+#~ msgstr "Potvrdit"
+
+#~ msgid "Yes"
+#~ msgstr "Ano"
+
+#~ msgid "No"
+#~ msgstr "Ne"

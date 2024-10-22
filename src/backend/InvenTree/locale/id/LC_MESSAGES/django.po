@@ -4291,11 +4291,7 @@ msgstr ""
 msgid "Upload File"
 msgstr ""
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr ""
 
@@ -6857,6 +6853,10 @@ msgstr ""
 #: part/bom.py:184 part/serializers.py:957
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
+msgstr ""
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
 msgstr ""
 
 #: part/forms.py:49
@@ -9686,6 +9686,10 @@ msgstr ""
 msgid "QR code"
 msgstr ""
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr ""
@@ -9799,6 +9803,10 @@ msgstr ""
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
+msgstr ""
+
+#: stock/admin.py:163
+msgid "Batch"
 msgstr ""
 
 #: stock/admin.py:168
@@ -10988,8 +10996,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr ""
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr ""
 
@@ -15551,3 +15558,135 @@ msgstr ""
 msgid "Permission to delete items"
 msgstr ""
 
+#~ msgid "Enter password"
+#~ msgstr "Masukkan sandi"
+
+#~ msgid "Enter new password"
+#~ msgstr "Masukkan kata sandi baru"
+
+#~ msgid "Confirm password"
+#~ msgstr "Konfirmasikan kata sandi"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Konfirmasi sandi baru"
+
+#~ msgid "Old password"
+#~ msgstr "Kata sandi lama"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Ubah Informasi User"
+
+#~ msgid "Set Password"
+#~ msgstr "Atur Kata Sandi"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Bidang kata sandi tidak cocok"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Kata sandi yang salah"
+
+#~ msgid "System Information"
+#~ msgstr "Informasi Sistem"
+
+#~ msgid "About InvenTree"
+#~ msgstr "Tentang InvenTree"
+
+#~ msgid "Show QR Code"
+#~ msgstr "Tampilkan kode QR"
+
+#~ msgid "Print actions"
+#~ msgstr "Cetak aksi"
+
+#~ msgid "Print build order report"
+#~ msgstr "Cetak laporan order produksi"
+
+#~ msgid "Build actions"
+#~ msgstr "Aksi produksi"
+
+#~ msgid "Edit Build"
+#~ msgstr "Ubah Produksi"
+
+#~ msgid "Cancel Build"
+#~ msgstr "Batalkan Produksi"
+
+#~ msgid "Delete Build"
+#~ msgstr "Hapus Produksi"
+
+#~ msgid "Complete Build"
+#~ msgstr "Selesaikan Produksi"
+
+#~ msgid "Build Description"
+#~ msgstr "Deskripsi Produksi"
+
+#~ msgid "No build outputs have been created for this build order"
+#~ msgstr "Tidak ada hasil pesanan yang dibuat oleh pesanan ini"
+
+#~ msgid "Build"
+#~ msgstr "Produksi"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "The following email addresses are associated with your account:"
+#~ msgstr "Alamat surel berikut dikaitkan dengan akun Anda:"
+
+#~ msgid "Verified"
+#~ msgstr "Terverifikasi"
+
+#~ msgid "Unverified"
+#~ msgstr "Tidak terverifikasi"
+
+#~ msgid "Add Email Address"
+#~ msgstr "Tambah Alamat Surel"
+
+#~ msgid "Add Email"
+#~ msgstr "Tambah Surel"
+
+#~ msgid "Multifactor"
+#~ msgstr "Multifaktor"
+
+#~ msgid "TOTP"
+#~ msgstr "TOTP"
+
+#~ msgid "IP Address"
+#~ msgstr "Alamat IP"
+
+#~ msgid "Device"
+#~ msgstr "Perangkat"
+
+#~ msgid "Last Activity"
+#~ msgstr "Aktivitas Terakhir"
+
+#~ msgid "Language Settings"
+#~ msgstr "Pengaturan Bahasa"
+
+#~ msgid "Search Settings"
+#~ msgstr "Pengaturan Pencarian"
+
+#~ msgid "Confirm Email Address"
+#~ msgstr "Konfirmasi alamat surel"
+
+#, python-format
+#~ msgid "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an email address for user %(user_display)s."
+#~ msgstr "Harap konfirmasikan bahwa <a href=\"mailto:%(email)s\">%(email)s</a> adalah alamat surel untuk pengguna %(user_display)s."
+
+#~ msgid "Confirm"
+#~ msgstr "Konfirmasi"
+
+#~ msgid "Forgotten your password? Enter your email address below, and we'll send you an email allowing you to reset it."
+#~ msgstr "Lupa kata sandi? Masukkan alamat surel Anda di bawah ini, dan kami akan mengirimkan surel yang memungkinkan Anda untuk mengatur ulangnya."
+
+#~ msgid "Two-Factor Authentication"
+#~ msgstr "Autentikasi Dua-Faktor"
+
+#~ msgid "Two-Factor Authentication Backup Tokens"
+#~ msgstr "Token Cadangan untuk Autentikasi Dua-Faktor"
+
+#~ msgid "Save"
+#~ msgstr "Simpan"
+
+#~ msgid "Invalid SSO Provider"
+#~ msgstr "Penyedia SSO tidak valid"
+
+#~ msgid "Email Settings"
+#~ msgstr "Pengaturan Surel"

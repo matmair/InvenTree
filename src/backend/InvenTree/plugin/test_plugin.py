@@ -10,61 +10,8 @@ from unittest import mock
 
 from django.test import TestCase, override_settings
 
-import plugin.templatetags.plugin_extras as plugin_tags
 from plugin import InvenTreePlugin, registry
-from plugin.samples.integration.another_sample import (
-    NoIntegrationPlugin,
-    WrongIntegrationPlugin,
-)
 from plugin.samples.integration.sample import SampleIntegrationPlugin
-
-
-class PluginTagTests(TestCase):
-    """Tests for the plugin extras."""
-
-    def setUp(self):
-        """Setup for all tests."""
-        self.sample = SampleIntegrationPlugin()
-        self.plugin_no = NoIntegrationPlugin()
-        self.plugin_wrong = WrongIntegrationPlugin()
-
-    def test_tag_plugin_list(self):
-        """Test that all plugins are listed."""
-        self.assertEqual(plugin_tags.plugin_list(), registry.plugins)
-
-    def test_tag_inactive_plugin_list(self):
-        """Test that all inactive plugins are listed."""
-        self.assertEqual(plugin_tags.inactive_plugin_list(), registry.plugins_inactive)
-
-    def test_tag_plugin_settings(self):
-        """Check all plugins are listed."""
-        self.assertEqual(
-            plugin_tags.plugin_settings(self.sample),
-            registry.mixins_settings.get(self.sample),
-        )
-
-    def test_tag_mixin_enabled(self):
-        """Check that mixin enabled functions work."""
-        key = 'urls'
-        # mixin enabled
-        self.assertEqual(plugin_tags.mixin_enabled(self.sample, key), True)
-        # mixin not enabled
-        self.assertEqual(plugin_tags.mixin_enabled(self.plugin_wrong, key), False)
-        # mixin not existing
-        self.assertEqual(plugin_tags.mixin_enabled(self.plugin_no, key), False)
-
-    def test_tag_safe_url(self):
-        """Test that the safe url tag works expected."""
-        # right url
-        self.assertEqual(
-            plugin_tags.safe_url('api-plugin-install'), '/api/plugins/install/'
-        )
-        # wrong url
-        self.assertEqual(plugin_tags.safe_url('indexas'), None)
-
-    def test_tag_plugin_errors(self):
-        """Test that all errors are listed."""
-        self.assertEqual(plugin_tags.plugin_errors(), registry.errors)
 
 
 class InvenTreePluginTests(TestCase):

@@ -4291,11 +4291,7 @@ msgstr ""
 msgid "Upload File"
 msgstr ""
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr ""
 
@@ -6857,6 +6853,10 @@ msgstr ""
 #: part/bom.py:184 part/serializers.py:957
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
+msgstr ""
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
 msgstr ""
 
 #: part/forms.py:49
@@ -9686,6 +9686,10 @@ msgstr ""
 msgid "QR code"
 msgstr ""
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr ""
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr ""
@@ -9799,6 +9803,10 @@ msgstr ""
 
 #: stock/admin.py:149
 msgid "Stock Item ID"
+msgstr ""
+
+#: stock/admin.py:163
+msgid "Batch"
 msgstr ""
 
 #: stock/admin.py:168
@@ -10988,8 +10996,7 @@ msgstr ""
 msgid "You have been logged out from InvenTree."
 msgstr ""
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr ""
 
@@ -15551,3 +15558,35 @@ msgstr ""
 msgid "Permission to delete items"
 msgstr ""
 
+#~ msgid "Enter password"
+#~ msgstr "ป้อนรหัสผ่าน"
+
+#~ msgid "Enter new password"
+#~ msgstr "ป้อนรหัสผ่านใหม่"
+
+#~ msgid "Confirm password"
+#~ msgstr "ยืนยันรหัสผ่าน"
+
+#~ msgid "Confirm new password"
+#~ msgstr "ยืนยันรหัสผ่านใหม่"
+
+#~ msgid "Old password"
+#~ msgstr "รหัสผ่านเดิม"
+
+#~ msgid "Edit User Information"
+#~ msgstr "แก้ไขข้อมูลสมาชิก"
+
+#~ msgid "Set Password"
+#~ msgstr "ตั้งรหัสผ่าน"
+
+#~ msgid "Password fields must match"
+#~ msgstr "รหัสผ่านต้องตรงกัน"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "ป้อนรหัสผ่านไม่ถูกต้อง"
+
+#~ msgid "System Information"
+#~ msgstr "ข้อมูลระบบ"
+
+#~ msgid "About InvenTree"
+#~ msgstr "เกี่ยวกับ Inventree"

@@ -4291,11 +4291,7 @@ msgstr "Tên miền không hợp lệ: {domain}"
 msgid "Upload File"
 msgstr "Tải lên tệp tin"
 
-#: common/views.py:84 order/templates/order/order_wizard/match_fields.html:52
-#: order/views.py:119
-#: part/templates/part/import_wizard/ajax_match_fields.html:45
-#: part/templates/part/import_wizard/match_fields.html:52 part/views.py:110
-#: templates/patterns/wizard/match_fields.html:51
+#: common/views.py:84
 msgid "Match Fields"
 msgstr "Khớp trường"
 
@@ -6858,6 +6854,10 @@ msgstr "Điểm bán mặc định"
 #: templates/email/low_stock_notification.html:16
 msgid "Total Stock"
 msgstr "Tổng số lượng"
+
+#: part/bom.py:279 part/bom.py:311 part/serializers.py:484
+msgid "SKU"
+msgstr "SKU"
 
 #: part/forms.py:49
 msgid "Input quantity for price calculation"
@@ -9686,6 +9686,10 @@ msgstr "Mã QR"
 msgid "QR code"
 msgstr "Mã QR"
 
+#: report/templates/report/inventree_bill_of_materials_report.html:100
+msgid "Bill of Materials"
+msgstr "Hóa đơn nguyên vật liệu"
+
 #: report/templates/report/inventree_bill_of_materials_report.html:133
 msgid "Materials needed"
 msgstr "Vật liệu cần có"
@@ -9800,6 +9804,10 @@ msgstr "Đường dẫn địa điểm"
 #: stock/admin.py:149
 msgid "Stock Item ID"
 msgstr "ID mặt hàng"
+
+#: stock/admin.py:163
+msgid "Batch"
+msgstr "Hàng loạt"
 
 #: stock/admin.py:168
 msgid "Status Code"
@@ -10988,8 +10996,7 @@ msgstr "Lỗi xác thực"
 msgid "You have been logged out from InvenTree."
 msgstr "Bạn đã đăng xuất từ InvenTree."
 
-#: templates/403_csrf.html:19 templates/InvenTree/settings/sidebar.html:29
-#: templates/navbar.html:150
+#: templates/403_csrf.html:19
 msgid "Login"
 msgstr "Đăng nhập"
 
@@ -15551,3 +15558,2039 @@ msgstr "Quyển để sửa mục"
 msgid "Permission to delete items"
 msgstr "Quyền để xóa mục"
 
+#~ msgid "Enter password"
+#~ msgstr "Nhập mật khẩu"
+
+#~ msgid "Enter new password"
+#~ msgstr "Nhập mật khẩu mới"
+
+#~ msgid "Confirm password"
+#~ msgstr "Xác nhận mật khẩu"
+
+#~ msgid "Confirm new password"
+#~ msgstr "Xác nhận mật khẩu mới"
+
+#~ msgid "Old password"
+#~ msgstr "Mật khẩu cũ"
+
+#~ msgid "Unknown database"
+#~ msgstr "Không rõ cơ sở dữ liệu"
+
+#~ msgid "Edit User Information"
+#~ msgstr "Sửa thông tin người dùng"
+
+#~ msgid "Set Password"
+#~ msgstr "Đặt Mật khẩu"
+
+#~ msgid "Password fields must match"
+#~ msgstr "Mật khẩu phải trùng khớp"
+
+#~ msgid "Wrong password provided"
+#~ msgstr "Nhập sai mật khẩu"
+
+#~ msgid "System Information"
+#~ msgstr "Thông tin hệ thống"
+
+#~ msgid "About InvenTree"
+#~ msgstr "Giới thiệu"
+
+#~ msgid "Part thumbnail"
+#~ msgstr "Ảnh thu nhỏ sản phẩm"
+
+#~ msgid "Barcode actions"
+#~ msgstr "Chức năng mã vạch"
+
+#~ msgid "Show QR Code"
+#~ msgstr "Hiển thị mã QR"
+
+#~ msgid "Unlink Barcode"
+#~ msgstr "Gỡ mã vạch"
+
+#~ msgid "Link Barcode"
+#~ msgstr "Liên kết mã vạch"
+
+#~ msgid "Print actions"
+#~ msgstr "Chức năng in ấn"
+
+#~ msgid "Print build order report"
+#~ msgstr "Báo cáo in đơn đặt bản dựng"
+
+#~ msgid "Build actions"
+#~ msgstr "Chức năng bản dựng"
+
+#~ msgid "Edit Build"
+#~ msgstr "Sửa bản dựng"
+
+#~ msgid "Cancel Build"
+#~ msgstr "Hủy bản dựng"
+
+#~ msgid "Duplicate Build"
+#~ msgstr "Nhân bản bản dựng"
+
+#~ msgid "Delete Build"
+#~ msgstr "Xóa bản dựng"
+
+#~ msgid "Complete Build"
+#~ msgstr "Bản dựng hoàn thiện"
+
+#~ msgid "Build Description"
+#~ msgstr "Mô tả bản dựng"
+
+#~ msgid "No build outputs have been created for this build order"
+#~ msgstr "Không có đầu ra bản dựng đã được tạo cho đơn đặt bản dựng này"
+
+#~ msgid "Build Order is ready to mark as completed"
+#~ msgstr "Đơn đặt bản dựng đã được đánh dấu hoàn thành"
+
+#~ msgid "Build Order cannot be completed as outstanding outputs remain"
+#~ msgstr "Đơn đặt bản dựng không thể hoàn thiện bởi vì những đầu ra nổi bật còn tồn tại"
+
+#~ msgid "Required build quantity has not yet been completed"
+#~ msgstr "Số lượng bản dựng được yêu cầu chưa được hoàn thành"
+
+#~ msgid "Stock has not been fully allocated to this Build Order"
+#~ msgstr "Kho không được phân bổ đầy đủ với yêu cầu bản dựng này"
+
+#, python-format
+#~ msgid "This build was due on %(target)s"
+#~ msgstr "Bản dựng đã đến hạn vào %(target)s"
+
+#~ msgid "Overdue"
+#~ msgstr "Quá hạn"
+
+#~ msgid "Completed Outputs"
+#~ msgstr "Đầu ra hoàn thiện"
+
+#~ msgid "Priority"
+#~ msgstr "Độ ưu tiên"
+
+#~ msgid "Build Details"
+#~ msgstr "Chi tiết bản dựng"
+
+#~ msgid "Stock Source"
+#~ msgstr "Nguồn kho"
+
+#~ msgid "Stock can be taken from any available location."
+#~ msgstr "Kho có thể được lấy từ bất kỳ địa điểm nào."
+
+#~ msgid "Destination location not specified"
+#~ msgstr "Địa điểm đích chưa được xác định"
+
+#~ msgid "Allocated Parts"
+#~ msgstr "Sản phẩm đã phân bổ"
+
+#~ msgid "Created"
+#~ msgstr "Đã tạo"
+
+#~ msgid "No target date set"
+#~ msgstr "Chưa đặt ngày mục tiêu"
+
+#~ msgid "Completed"
+#~ msgstr "Đã hoàn thành"
+
+#~ msgid "Build not complete"
+#~ msgstr "Xây dựng chưa hoàn thiện"
+
+#~ msgid "Child Build Orders"
+#~ msgstr "Đơn đặt bản dựng con"
+
+#~ msgid "Allocate Stock to Build"
+#~ msgstr "Phân bổ kho đến bản dựng"
+
+#~ msgid "Deallocate stock"
+#~ msgstr "Phân kho"
+
+#~ msgid "Deallocate Stock"
+#~ msgstr "Phân kho"
+
+#~ msgid "Automatically allocate stock to build"
+#~ msgstr "Tự động chỉ định kho đến bản dựng"
+
+#~ msgid "Auto Allocate"
+#~ msgstr "Tự động phân bổ"
+
+#~ msgid "Manually allocate stock to build"
+#~ msgstr "Chỉ định kho thủ công đến bản dựng"
+
+#~ msgid "Allocate Stock"
+#~ msgstr "Chỉ định kho"
+
+#~ msgid "Order required parts"
+#~ msgstr "Đơn đặt yêu cầu sản phẩm"
+
+#~ msgid "Order Parts"
+#~ msgstr "Đặt hàng sản phẩm"
+
+#~ msgid "Incomplete Build Outputs"
+#~ msgstr "Đầu ra bản dựng chưa hoàn thành"
+
+#~ msgid "Create new build output"
+#~ msgstr "Tạo đầu ra bản dựng mới"
+
+#~ msgid "New Build Output"
+#~ msgstr "Đầu ra bản dựng mới"
+
+#~ msgid "Consumed Stock"
+#~ msgstr "Kho tiêu thụ"
+
+#~ msgid "Completed Build Outputs"
+#~ msgstr "Đầu ra bản dựng hoàn thiện"
+
+#~ msgid "Attachments"
+#~ msgstr "Tập tin đính kèm"
+
+#~ msgid "Build Notes"
+#~ msgstr "Ghi chép bản dựng"
+
+#~ msgid "New Build Order"
+#~ msgstr "Tạo đơn đặt bản dựng"
+
+#~ msgid "Build Order Details"
+#~ msgstr "Chi tiết đơn đặt bản dựng"
+
+#~ msgid "Incomplete Outputs"
+#~ msgstr "Đầu ra chưa hoàn thiện"
+
+#~ msgid "Create Purchase Order"
+#~ msgstr "Tạo đơn mua hàng"
+
+#~ msgid "Company actions"
+#~ msgstr "Chức năng doanh nghiệp"
+
+#~ msgid "Edit company information"
+#~ msgstr "Sửa thông tin doanh nghiệp"
+
+#~ msgid "Edit Company"
+#~ msgstr "Sửa doanh nghiệp"
+
+#~ msgid "Delete company"
+#~ msgstr "Xóa doanh nghiệp"
+
+#~ msgid "Delete Company"
+#~ msgstr "Xóa doanh nghiệp"
+
+#~ msgid "Upload new image"
+#~ msgstr "Tải hình mới lên"
+
+#~ msgid "Download image from URL"
+#~ msgstr "Tải hình ảnh từ URL"
+
+#~ msgid "Delete image"
+#~ msgstr "Xóa ảnh"
+
+#~ msgid "Uses default currency"
+#~ msgstr "Dùng tiền mặc định"
+
+#~ msgid "Phone"
+#~ msgstr "Điện thoại"
+
+#~ msgid "Remove Image"
+#~ msgstr "Xoá hình ảnh"
+
+#~ msgid "Remove associated image from this company"
+#~ msgstr "Xóa hình ảnh gắn với công ty này"
+
+#~ msgid "Remove"
+#~ msgstr "Xóa"
+
+#~ msgid "Upload Image"
+#~ msgstr "Tải hình lên"
+
+#~ msgid "Download Image"
+#~ msgstr "Tải ảnh xuống"
+
+#~ msgid "Supplier Parts"
+#~ msgstr "Sản phẩm nhà cung cấp"
+
+#~ msgid "Create new supplier part"
+#~ msgstr "Thêm mới sản phẩm nhà cung cấp"
+
+#~ msgid "New Supplier Part"
+#~ msgstr "Sản phẩm nhà cung cấp mới"
+
+#~ msgid "Manufacturer Parts"
+#~ msgstr "Sản phẩm nhà sản xuất"
+
+#~ msgid "Create new manufacturer part"
+#~ msgstr "Tạo sản phẩm nhà sản xuất mới"
+
+#~ msgid "New Manufacturer Part"
+#~ msgstr "Sản phẩm nhà sản xuất mới"
+
+#~ msgid "Supplier Stock"
+#~ msgstr "Kho nhà cung cấp"
+
+#~ msgid "Create new purchase order"
+#~ msgstr "Đơn đặt hàng"
+
+#~ msgid "New Purchase Order"
+#~ msgstr "Đơn đặt hàng mới"
+
+#~ msgid "Create new sales order"
+#~ msgstr "Tạo đơn hàng bán mới"
+
+#~ msgid "New Sales Order"
+#~ msgstr "Đơn đặt bán mới"
+
+#~ msgid "Assigned Stock"
+#~ msgstr "Kho đã được giao"
+
+#~ msgid "Create new return order"
+#~ msgstr "Tạo đơn hàng trả lại mới"
+
+#~ msgid "New Return Order"
+#~ msgstr "Đơn hàng trả lại mới"
+
+#~ msgid "Company Notes"
+#~ msgstr "Ghi chú doanh nghiệp"
+
+#~ msgid "Company Contacts"
+#~ msgstr "Liên lạc của doanh nghiệp"
+
+#~ msgid "Add Contact"
+#~ msgstr "Thêm liên lạc"
+
+#~ msgid "Company addresses"
+#~ msgstr "Địa chỉ doanh nghiệp"
+
+#~ msgid "Add Address"
+#~ msgstr "Thêm địa chỉ"
+
+#~ msgid "Manufacturers"
+#~ msgstr "Nhà sản xuất"
+
+#~ msgid "Order part"
+#~ msgstr "Đặt mua sản phẩm"
+
+#~ msgid "Edit manufacturer part"
+#~ msgstr "Sửa sản phẩm của nhà sản xuất"
+
+#~ msgid "Delete manufacturer part"
+#~ msgstr "Xóa sản phẩm của nhà sản xuất"
+
+#~ msgid "Internal Part"
+#~ msgstr "Sản phẩm nội bộ"
+
+#~ msgid "No manufacturer information available"
+#~ msgstr "Chưa có thông tin nhà sản xuất"
+
+#~ msgid "Parameters"
+#~ msgstr "Thông số"
+
+#~ msgid "New Parameter"
+#~ msgstr "Tham số mới"
+
+#~ msgid "Add Parameter"
+#~ msgstr "Thêm thông số"
+
+#~ msgid "Manufactured Parts"
+#~ msgstr "Sản phẩm nhà sản xuất"
+
+#~ msgid "Supplied Parts"
+#~ msgstr "Sản phẩm đã được cung cấp"
+
+#~ msgid "Supplied Stock Items"
+#~ msgstr "Hàng trong kho đã cung cấp"
+
+#~ msgid "Assigned Stock Items"
+#~ msgstr "Hàng trong kho đã được phân bổ"
+
+#~ msgid "Contacts"
+#~ msgstr "Danh bạ"
+
+#~ msgid "Addresses"
+#~ msgstr "Địa chỉ"
+
+#~ msgid "Order Part"
+#~ msgstr "Đặt hàng sản phẩm"
+
+#~ msgid "Update Availability"
+#~ msgstr "Cập nhật tính sẵn sàng"
+
+#~ msgid "Edit Supplier Part"
+#~ msgstr "Sửa sản phẩm nhà cung cấp"
+
+#~ msgid "Duplicate Supplier Part"
+#~ msgstr "Nhân bản sản phẩm nhà cung cấp"
+
+#~ msgid "Delete Supplier Part"
+#~ msgstr "Xóa sản phẩm nhà cung cấp"
+
+#~ msgid "Delete Supplier  Part"
+#~ msgstr "Xóa sản phẩm nhà cung cấp"
+
+#~ msgid "No supplier information available"
+#~ msgstr "Chưa có thông tin nhà cung cấp"
+
+#~ msgid "Supplier Part Stock"
+#~ msgstr "Kho sản phẩm nhà cung cấp"
+
+#~ msgid "Create new stock item"
+#~ msgstr "Thêm mới hàng trong kho"
+
+#~ msgid "New Stock Item"
+#~ msgstr "Hàng trong kho mới"
+
+#~ msgid "Supplier Part Orders"
+#~ msgstr "Đơn đặt hàng nhà cung cấp"
+
+#~ msgid "Pricing Information"
+#~ msgstr "Thông tin giá cả"
+
+#~ msgid "Add Price Break"
+#~ msgstr "Thêm giá phá vỡ"
+
+#~ msgid "Supplier Part QR Code"
+#~ msgstr "Mã QR sản phẩm nhà cung cấp"
+
+#~ msgid "Link Barcode to Supplier Part"
+#~ msgstr "Liên kết mã vạch đến hàng hóa nhà cung cấp"
+
+#~ msgid "Update Part Availability"
+#~ msgstr "Cập nhật độ sẵn sàng sản phẩm"
+
+#~ msgid "Supplier Part Pricing"
+#~ msgstr "Giá sản phẩm nhà cung cấp"
+
+#~ msgid "New Supplier"
+#~ msgstr "Nhà cung cấp mới"
+
+#~ msgid "New Manufacturer"
+#~ msgstr "Nhà sản xuất mới"
+
+#~ msgid "Customers"
+#~ msgstr "Khách hàng"
+
+#~ msgid "New Customer"
+#~ msgstr "Khách hàng mới"
+
+#~ msgid "Companies"
+#~ msgstr "Doanh nghiệp"
+
+#~ msgid "New Company"
+#~ msgstr "Doanh nghiệp mới"
+
+#~ msgid "Print purchase order report"
+#~ msgstr "In báo cáo đơn đặt mua"
+
+#~ msgid "Export order to file"
+#~ msgstr "Xuất đơn đặt sang tệp tin"
+
+#~ msgid "Order actions"
+#~ msgstr "Chức năng đơn đặt"
+
+#~ msgid "Edit order"
+#~ msgstr "Chỉnh sửa đơn đặt"
+
+#~ msgid "Cancel order"
+#~ msgstr "Hủy đơn đặt"
+
+#~ msgid "Duplicate order"
+#~ msgstr "Đơn đặt trùng"
+
+#~ msgid "Issue Order"
+#~ msgstr "Vấn đề đơn hàng"
+
+#~ msgid "Mark order as complete"
+#~ msgstr "Đánh dấu đơn đặt đã hoàn thành"
+
+#~ msgid "Complete Order"
+#~ msgstr "Đơn đặt hoàn thành"
+
+#~ msgid "Supplier part thumbnail"
+#~ msgstr "Ảnh thu nhỏ sản phẩm nhà cung cấp"
+
+#~ msgid "Order Reference"
+#~ msgstr "Tham chiếu đơn đặt"
+
+#~ msgid "Order Description"
+#~ msgstr "Mô tả đơn đặt"
+
+#~ msgid "Order Status"
+#~ msgstr "Trạng thái đặt hàng"
+
+#~ msgid "No suppplier information available"
+#~ msgstr "Chưa có thông tin nhà cung cấp"
+
+#~ msgid "Completed Line Items"
+#~ msgstr "Mục dòng hoàn thành"
+
+#~ msgid "Incomplete"
+#~ msgstr "Chưa hoàn thành"
+
+#~ msgid "Total cost"
+#~ msgstr "Tổng chi phí"
+
+#~ msgid "Total cost could not be calculated"
+#~ msgstr "Không thể tính tổng chi phí"
+
+#~ msgid "Purchase Order QR Code"
+#~ msgstr "Mã QR đơn đặt mua"
+
+#~ msgid "Link Barcode to Purchase Order"
+#~ msgstr "Liên kết mã vạch đến đơn đặt mua"
+
+#~ msgid "Missing selections for the following required columns"
+#~ msgstr "Chọn thiếu cột bắt buộc dưới đây"
+
+#~ msgid "Duplicate selections found, see below. Fix them then retry submitting."
+#~ msgstr "Phát hiện lựa chọn trùng lắp, xem bên dưới. Sửa chúng trước khi thử gửi lại."
+
+#~ msgid "Submit Selections"
+#~ msgstr "Gửi phần chọn"
+
+#~ msgid "File Fields"
+#~ msgstr "Các trường tập tin"
+
+#~ msgid "Remove column"
+#~ msgstr "Xóa cột"
+
+#~ msgid "Duplicate selection"
+#~ msgstr "Lựa chọn trùng lặp"
+
+#~ msgid "Remove row"
+#~ msgstr "Xóa hàng"
+
+#~ msgid "Errors exist in the submitted data"
+#~ msgstr "Lỗi xảy ra khi gửi thông tin"
+
+#~ msgid "Row"
+#~ msgstr "Dòng"
+
+#~ msgid "Select Supplier Part"
+#~ msgstr "Chọn sản phẩm nhà cung cấp"
+
+#~ msgid "Return to Orders"
+#~ msgstr "Trở lại đơn đặt"
+
+#~ msgid "Upload File for Purchase Order"
+#~ msgstr "Tải tệp tin lên đơn đặt mua"
+
+#~ msgid "Order is already processed. Files cannot be uploaded."
+#~ msgstr "Đơn đặt đã được xử lý. Không thể tải lên tệp tin."
+
+#, python-format
+#~ msgid "Step %(step)s of %(count)s"
+#~ msgstr "Bước %(step)s của %(count)s"
+
+#~ msgid "Received Stock"
+#~ msgstr "Kho đã nhận hàng"
+
+#~ msgid "Purchase Order Items"
+#~ msgstr "Hàng hóa đặt mua"
+
+#~ msgid "Add Line Item"
+#~ msgstr "Thêm mục dòng"
+
+#~ msgid "Receive Line Items"
+#~ msgstr "Nhận mục dòng"
+
+#~ msgid "Extra Lines"
+#~ msgstr "Dòng khác"
+
+#~ msgid "Add Extra Line"
+#~ msgstr "Thêm dòng khác"
+
+#~ msgid "Received Items"
+#~ msgstr "Mục đã nhận"
+
+#~ msgid "Order Notes"
+#~ msgstr "Ghi chú đơn đặt"
+
+#~ msgid "Customer logo thumbnail"
+#~ msgstr "Ảnh thu nhỏ logo khách hàng"
+
+#~ msgid "Print return order report"
+#~ msgstr "In báo cáo đơn hàng trả lại"
+
+#~ msgid "Print packing list"
+#~ msgstr "In danh sách đóng gói"
+
+#~ msgid "Customer Reference"
+#~ msgstr "Mã khách hàng"
+
+#~ msgid "Total Cost"
+#~ msgstr "Tổng chi phí"
+
+#~ msgid "Return Order QR Code"
+#~ msgstr "Mã QR đơn hàng trả lại"
+
+#~ msgid "Order Details"
+#~ msgstr "Chi tiết đơn đặt"
+
+#~ msgid "Print sales order report"
+#~ msgstr "In báo cáo đơn hàng bán"
+
+#~ msgid "Ship Items"
+#~ msgstr "Mục vận chuyển"
+
+#~ msgid "Complete Sales Order"
+#~ msgstr "Hoàn thành đơn bán hàng"
+
+#~ msgid "This Sales Order has not been fully allocated"
+#~ msgstr "Chưa phân bổ đầy đủ đơn bán hàng"
+
+#~ msgid "Completed Shipments"
+#~ msgstr "Vận đơn đã hoàn thành"
+
+#~ msgid "Sales Order Items"
+#~ msgstr "Hàng hóa đơn hàng bán"
+
+#~ msgid "Pending Shipments"
+#~ msgstr "Vận chuyển đang chờ xử lý"
+
+#~ msgid "Actions"
+#~ msgstr "Chức năng"
+
+#~ msgid "New Shipment"
+#~ msgstr "Lô hàng mới"
+
+#~ msgid "Match Supplier Parts"
+#~ msgstr "Khớp sản phẩm nhà cung cấp"
+
+#~ msgid "Sales order not found"
+#~ msgstr "Đơn hàng bán không thấy"
+
+#~ msgid "Price not found"
+#~ msgstr "Không tìm thấy giá"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price}"
+#~ msgstr "Cập nhật {part} giá đơn vị đến {price}"
+
+#, python-brace-format
+#~ msgid "Updated {part} unit-price to {price} and quantity to {qty}"
+#~ msgstr "Cập nhật {part} giá đơn vị đến {price} và số lượng đến {qty}"
+
+#~ msgid "You do not have permission to edit the BOM."
+#~ msgstr "Bạn không có quyền chỉnh sửa định mức vật liệu."
+
+#~ msgid "The BOM this part has been changed, and must be validated"
+#~ msgstr "BOM sản phẩm này đã được thay đổi và phải được xác minh"
+
+#~ msgid "Perform stocktake for this part category"
+#~ msgstr "Thực hiện kiểm kê cho danh mục hàng hóa này"
+
+#~ msgid "You are subscribed to notifications for this category"
+#~ msgstr "Bạn đã được đăng ký nhận thông báo cho danh mục này"
+
+#~ msgid "Subscribe to notifications for this category"
+#~ msgstr "Đăng ký nhận thông báo cho danh mục này"
+
+#~ msgid "Category Actions"
+#~ msgstr "Chức năng danh mục"
+
+#~ msgid "Edit category"
+#~ msgstr "Sửa danh mục"
+
+#~ msgid "Edit Category"
+#~ msgstr "Sửa danh mục"
+
+#~ msgid "Delete Category"
+#~ msgstr "Xóa danh mục"
+
+#~ msgid "Top level part category"
+#~ msgstr "Danh mục sản phẩm cấp đầu"
+
+#~ msgid "Subcategories"
+#~ msgstr "Phụ mục"
+
+#~ msgid "Parts (Including subcategories)"
+#~ msgstr "Sản phẩm (bao gồm các phụ mục)"
+
+#~ msgid "Create new part"
+#~ msgstr "Tạo sản phẩm mới"
+
+#~ msgid "New Part"
+#~ msgstr "Sản phẩm mới"
+
+#~ msgid "Part Parameters"
+#~ msgstr "Thông số phụ tùng"
+
+#~ msgid "New Category"
+#~ msgstr "Danh mục mới"
+
+#~ msgid "Import Parts"
+#~ msgstr "Nhập sản phẩm"
+
+#, python-format
+#~ msgid "Make a copy of part '%(full_name)s'."
+#~ msgstr "Tạo bản sao của sản phẩm '%(full_name)s'."
+
+#~ msgid "Possible Matching Parts"
+#~ msgstr "Các sản phẩm có thể khớp"
+
+#~ msgid "The new part may be a duplicate of these existing parts"
+#~ msgstr "Sản phẩm mới có thể trùng với sản phẩm đã tồn tại"
+
+#, python-format
+#~ msgid "%(full_name)s - <em>%(desc)s</em> (%(match_per)s%% match)"
+#~ msgstr "%(full_name)s - <em>%(desc)s</em> (%(match_per)s%% phù hợp)"
+
+#~ msgid "Part Stock"
+#~ msgstr "Kho hàng"
+
+#~ msgid "Refresh scheduling data"
+#~ msgstr "Làm mới dữ liệu đã lên lịch"
+
+#~ msgid "Refresh"
+#~ msgstr "Làm mới"
+
+#~ msgid "Add stocktake information"
+#~ msgstr "Thêm thông tin kiểm kê"
+
+#~ msgid "Part Test Templates"
+#~ msgstr "Mẫu kiểm thử sản phẩm"
+
+#~ msgid "Add Test Template"
+#~ msgstr "Thêm mẫu kiểm thử"
+
+#~ msgid "Sales Order Allocations"
+#~ msgstr "Phân bổ đơn hàng bán"
+
+#~ msgid "Part Notes"
+#~ msgstr "Ghi chú sản phẩm"
+
+#~ msgid "Part Variants"
+#~ msgstr "Biến thể sản phẩm"
+
+#~ msgid "Create new variant"
+#~ msgstr "Tạo biến thể mới"
+
+#~ msgid "New Variant"
+#~ msgstr "Biến thể mới"
+
+#~ msgid "Add new parameter"
+#~ msgstr "Thêm tham số mới"
+
+#~ msgid "Related Parts"
+#~ msgstr "Sản phẩm liên quan"
+
+#~ msgid "Add Related"
+#~ msgstr "Thêm liên quan"
+
+#~ msgid "Export actions"
+#~ msgstr "Chức năng xuất dữ liệu"
+
+#~ msgid "Export BOM"
+#~ msgstr "Xuất BOM"
+
+#~ msgid "Print BOM Report"
+#~ msgstr "Báo cáo in BOM"
+
+#~ msgid "BOM actions"
+#~ msgstr "Chức năng BOM"
+
+#~ msgid "Upload BOM"
+#~ msgstr "Tải lên BOM"
+
+#~ msgid "Validate BOM"
+#~ msgstr "Xác minh BOM"
+
+#~ msgid "Add BOM Item"
+#~ msgstr "Thêm mục BOM"
+
+#~ msgid "Assemblies"
+#~ msgstr "Lắp ráp"
+
+#~ msgid "Part Builds"
+#~ msgstr "Bản dựng sản phẩm"
+
+#~ msgid "Build Order Allocations"
+#~ msgstr "Phân bổ đơn hàng bản dựng"
+
+#~ msgid "Part Suppliers"
+#~ msgstr "Nhà cung cấp sản phẩm"
+
+#~ msgid "Part Manufacturers"
+#~ msgstr "Nhà sản xuất sản phẩm"
+
+#~ msgid "Insufficient privileges."
+#~ msgstr "Không đủ quyền truy cập."
+
+#~ msgid "Return to Parts"
+#~ msgstr "Quay lại sản phẩm"
+
+#~ msgid "Import Parts from File"
+#~ msgstr "Nhập sản phẩm từ tệp tin"
+
+#~ msgid "Requirements for part import"
+#~ msgstr "Yêu cầu cho nhập liệu sản phẩm"
+
+#~ msgid "The part import file must contain the required named columns as provided in the "
+#~ msgstr "Tệp nhập liệu sản phẩm phải chứa tên cột được cung cấp trong "
+
+#~ msgid "Part Import Template"
+#~ msgstr "Mẫu nhập liệu sản phẩm"
+
+#~ msgid "Download Part Import Template"
+#~ msgstr "Tải về mẫu nhập liệu sản phẩm"
+
+#~ msgid "Format"
+#~ msgstr "Định dạng"
+
+#~ msgid "Select file format"
+#~ msgstr "Chọn định dạng tệp"
+
+#~ msgid "Part List"
+#~ msgstr "Danh sách sản phẩm"
+
+#~ msgid "You are subscribed to notifications for this part"
+#~ msgstr "Bạn đã đăng ký nhận thông báo về sản phẩm này"
+
+#~ msgid "Subscribe to notifications for this part"
+#~ msgstr "Đăng ký nhận thông báo về sản phẩm này"
+
+#~ msgid "Print Label"
+#~ msgstr "In tem nhãn"
+
+#~ msgid "Show pricing information"
+#~ msgstr "Hiện thông tin giá cả"
+
+#~ msgid "Stock actions"
+#~ msgstr "Chức năng kho"
+
+#~ msgid "Count part stock"
+#~ msgstr "Đếm kho sản phẩm"
+
+#~ msgid "Transfer part stock"
+#~ msgstr "Chuyển kho sản phẩm"
+
+#~ msgid "Part actions"
+#~ msgstr "Chức năng sản phẩm"
+
+#~ msgid "Duplicate part"
+#~ msgstr "Nhân bản sản phẩm"
+
+#~ msgid "Edit part"
+#~ msgstr "Sửa sản phẩm"
+
+#~ msgid "Delete part"
+#~ msgstr "Xóa sản phẩm"
+
+#~ msgid "Part is a template part (variants can be made from this part)"
+#~ msgstr "Sản phẩm là một mẫu (biến thể có thể được làm từ sản phẩm này)"
+
+#~ msgid "Part can be assembled from other parts"
+#~ msgstr "Sản phẩm có thể được lắp ráp từ sản phẩm khác"
+
+#~ msgid "Part can be used in assemblies"
+#~ msgstr "Sản phẩm được dùng để lắp ráp"
+
+#~ msgid "Part stock is tracked by serial number"
+#~ msgstr "Kho sản phẩm được theo dõi bởi số sê ri"
+
+#~ msgid "Part can be purchased from external suppliers"
+#~ msgstr "Có thể mua sản phẩm từ nhà cung cấp bên ngoài"
+
+#~ msgid "Part can be sold to customers"
+#~ msgstr "Có thể bán sản phẩm cho khách hàng"
+
+#~ msgid "Part is not active"
+#~ msgstr "Sản phẩm bị tắt"
+
+#~ msgid "Inactive"
+#~ msgstr "Không hoạt động"
+
+#~ msgid "Part is virtual (not a physical part)"
+#~ msgstr "Sản phẩm là ảo (không phải sản phẩm vật lý)"
+
+#~ msgid "Show Part Details"
+#~ msgstr "Chi tiết giá sản phẩm"
+
+#~ msgid "Allocated to Build Orders"
+#~ msgstr "Phân bổ đến đơn đặt bản dựng"
+
+#~ msgid "Allocated to Sales Orders"
+#~ msgstr "Phân bổ đến đơn bán hàng"
+
+#~ msgid "Can Build"
+#~ msgstr "Có thể dựng"
+
+#~ msgid "Minimum stock level"
+#~ msgstr "Cấp kho tối thiểu"
+
+#~ msgid "Price Range"
+#~ msgstr "Khoảng giá"
+
+#~ msgid "Latest Serial Number"
+#~ msgstr "Số seri mới nhất"
+
+#~ msgid "Search for serial number"
+#~ msgstr "Tìm kiếm cho số sê ri"
+
+#~ msgid "Part QR Code"
+#~ msgstr "Mã QR sản phẩm"
+
+#~ msgid "Link Barcode to Part"
+#~ msgstr "Liên kết mã vạch đến sản phẩm"
+
+#~ msgid "Calculate"
+#~ msgstr "Tính toán"
+
+#~ msgid "Remove associated image from this part"
+#~ msgstr "Xóa ảnh gắn kết với sản phẩm này"
+
+#~ msgid "No matching images found"
+#~ msgstr "Không tìm thấy hình ảnh phù hợp"
+
+#~ msgid "Hide Part Details"
+#~ msgstr "Ẩn chi tiết sản phẩm"
+
+#~ msgid "Supplier Pricing"
+#~ msgstr "Giá bán nhà cung cấp"
+
+#~ msgid "Unit Cost"
+#~ msgstr "Chi phí đơn vị"
+
+#~ msgid "No supplier pricing available"
+#~ msgstr "Chưa có sẵn giá cả nhà cung cấp"
+
+#~ msgid "BOM Pricing"
+#~ msgstr "Giá cả BOM"
+
+#~ msgid "Unit Purchase Price"
+#~ msgstr "Giá mua hàng"
+
+#~ msgid "Total Purchase Price"
+#~ msgstr "Tổng giá mua vào"
+
+#~ msgid "No BOM pricing available"
+#~ msgstr "Chưa có giá cả BOM"
+
+#~ msgid "Internal Price"
+#~ msgstr "Giá nội bộ"
+
+#~ msgid "No pricing information is available for this part."
+#~ msgstr "Chưa có thông tin giá cho sản phẩm này."
+
+#~ msgid "Scheduled Quantity"
+#~ msgstr "Số lượng theo lịch"
+
+#~ msgid "Variants"
+#~ msgstr "Biến thể"
+
+#~ msgid "Stock"
+#~ msgstr "Kiện hàng"
+
+#~ msgid "Pricing"
+#~ msgstr "Định giá"
+
+#~ msgid "Scheduling"
+#~ msgstr "Lập lịch"
+
+#~ msgid "Test Templates"
+#~ msgstr "Mẫu thử nghiệm"
+
+#~ msgid "Select from existing images"
+#~ msgstr "Chọn hình ảnh có sẵn"
+
+#~ msgid "Pricing Overview"
+#~ msgstr "Tóm lược định giá"
+
+#~ msgid "Refresh Part Pricing"
+#~ msgstr "Làm mới giá sản phẩm"
+
+#~ msgid "Override Part Pricing"
+#~ msgstr "Ghi đè định giá sản phẩm"
+
+#~ msgid "Edit"
+#~ msgstr "Sửa"
+
+#~ msgid "Price Category"
+#~ msgstr "Danh mục giá"
+
+#~ msgid "Minimum"
+#~ msgstr "Tối thiểu"
+
+#~ msgid "Maximum"
+#~ msgstr "Tối đa"
+
+#~ msgid "Internal Pricing"
+#~ msgstr "Định giá nội bộ"
+
+#~ msgid "Purchase History"
+#~ msgstr "Lịch sử mua hàng"
+
+#~ msgid "Variant Pricing"
+#~ msgstr "Định giá biến thể"
+
+#~ msgid "Pricing Overrides"
+#~ msgstr "Ghi đè định giá"
+
+#~ msgid "Overall Pricing"
+#~ msgstr "Định giá tổng thể"
+
+#~ msgid "Sale History"
+#~ msgstr "Lịch Sử Giao Dịch"
+
+#~ msgid "Sale price data is not available for this part"
+#~ msgstr "Chưa có dữ liệu giá giao dịch cho sản phẩm này"
+
+#~ msgid "Price range data is not available for this part."
+#~ msgstr "Dữ liệu khoảng giá không có sẵn cho sản phẩm này."
+
+#~ msgid "Jump to overview"
+#~ msgstr "Chuyển tới tổng quan"
+
+#~ msgid "Add Internal Price Break"
+#~ msgstr "Thêm phá giá nội bộ"
+
+#~ msgid "Sale Pricing"
+#~ msgstr "Định giá bán hàng"
+
+#~ msgid "Add Sell Price Break"
+#~ msgstr "Thêm định giá bán hàng"
+
+#~ msgid "Update Pricing"
+#~ msgstr "Cập nhập giá bán"
+
+#~ msgid "No Stock"
+#~ msgstr "Hết hàng"
+
+#~ msgid "Low Stock"
+#~ msgstr "Hàng còn ít"
+
+#~ msgid "Return to BOM"
+#~ msgstr "Quay lại BOM"
+
+#~ msgid "Upload Bill of Materials"
+#~ msgstr "Tải lên hóa đơn bán hàng"
+
+#~ msgid "BOM upload requirements"
+#~ msgstr "Yêu cầu tải lên BOM"
+
+#~ msgid "Upload BOM File"
+#~ msgstr "Tải lên tập tin BOM"
+
+#~ msgid "Submit BOM Data"
+#~ msgstr "Gửi dữ liệu BOM"
+
+#~ msgid "Requirements for BOM upload"
+#~ msgstr "Yêu cầu tải lên BOM"
+
+#~ msgid "The BOM file must contain the required named columns as provided in the "
+#~ msgstr "Tệp tin BOM phải chứa cột được đặt tên theo quy định trong "
+
+#~ msgid "BOM Upload Template"
+#~ msgstr "Mẫu tải lên BOM"
+
+#~ msgid "Each part must already exist in the database"
+#~ msgstr "Mỗi sản phẩm phải tồn tại trong cơ sở dữ liệu"
+
+#~ msgid "Create new part variant"
+#~ msgstr "Tạo biến thể sản phẩm mới"
+
+#~ msgid "Create a new variant part from this template"
+#~ msgstr "Tạo sản phẩm biến thể mới từ mẫu này"
+
+#~ msgid "Match References"
+#~ msgstr "Tham chiếu phù hợp"
+
+#, python-brace-format
+#~ msgid "Can't import part {new_part.name} because there is no category assigned"
+#~ msgstr "Không thể nhập sản phẩm {new_part.name} bởi vì không có nhóm nào được gán"
+
+#~ msgid "Select Part Image"
+#~ msgstr "Chọn ảnh sản phẩm"
+
+#~ msgid "Updated part image"
+#~ msgstr "Cập nhật ảnh sản phẩm"
+
+#~ msgid "Part image not found"
+#~ msgstr "Không tìm thấy ảnh sản phẩm"
+
+#~ msgid "Test name"
+#~ msgstr "Tên kiểm thử"
+
+#~ msgid "Stock Tracking Information"
+#~ msgstr "Thông tin theo dõi kho"
+
+#~ msgid "Child Stock Items"
+#~ msgstr "Hàng trong kho con"
+
+#~ msgid "This stock item does not have any child items"
+#~ msgstr "Hàng trong kho này không có bất kỳ hàng hóa con nào"
+
+#~ msgid "Test Data"
+#~ msgstr "Thông tin kiểm thử"
+
+#~ msgid "Test Report"
+#~ msgstr "Báo cáo kiểm thử"
+
+#~ msgid "Delete Test Data"
+#~ msgstr "Xóa dữ liệu báo cáo kiểm thử"
+
+#~ msgid "Add Test Data"
+#~ msgstr "Thêm dữ liệu kiểm thử"
+
+#~ msgid "Stock Item Notes"
+#~ msgstr "Ghi chú tại kho hàng"
+
+#~ msgid "Installed Stock Items"
+#~ msgstr "Hàng hóa đã lắp đặt"
+
+#~ msgid "Install Stock Item"
+#~ msgstr "Lắp đặt hàng hóa trong kho"
+
+#~ msgid "Delete all test results for this stock item"
+#~ msgstr "Xóa toàn bộ kết quả kiểm thử cho kho hàng này"
+
+#~ msgid "Locate stock item"
+#~ msgstr "Xác định vị trí hàng tồn kho"
+
+#~ msgid "Printing actions"
+#~ msgstr "Chức năng in"
+
+#~ msgid "Stock adjustment actions"
+#~ msgstr "Chức năng điều chỉnh kho"
+
+#~ msgid "Count stock"
+#~ msgstr "Đếm hàng"
+
+#~ msgid "Add stock"
+#~ msgstr "Thêm hàng"
+
+#~ msgid "Remove stock"
+#~ msgstr "Xóa hàng hóa"
+
+#~ msgid "Serialize stock"
+#~ msgstr "Sắp xếp hàng hóa"
+
+#~ msgid "Transfer stock"
+#~ msgstr "Chuyển giao hàng"
+
+#~ msgid "Assign to customer"
+#~ msgstr "Chỉ định cho khách hàng"
+
+#~ msgid "Return to stock"
+#~ msgstr "Trả lại kho"
+
+#~ msgid "Uninstall stock item"
+#~ msgstr "Gỡ cài đặt hàng trong kho"
+
+#~ msgid "Uninstall"
+#~ msgstr "Gỡ cài đặt"
+
+#~ msgid "Install stock item"
+#~ msgstr "Lắp đặt hàng hóa trong kho"
+
+#~ msgid "Install"
+#~ msgstr "Cài đặt"
+
+#~ msgid "Convert to variant"
+#~ msgstr "Chuyển đổi thành biến thể"
+
+#~ msgid "Duplicate stock item"
+#~ msgstr "Mặt hàng trùng lặp"
+
+#~ msgid "Edit stock item"
+#~ msgstr "Sửa mặt hàng"
+
+#~ msgid "Delete stock item"
+#~ msgstr "Xóa mặt hàng"
+
+#~ msgid "Build"
+#~ msgstr "Dựng"
+
+#~ msgid "Parent Item"
+#~ msgstr "Mục cha"
+
+#~ msgid "No manufacturer set"
+#~ msgstr "Chưa đặt nhà sản xuất"
+
+#~ msgid "You are not in the list of owners of this item. This stock item cannot be edited."
+#~ msgstr "Bạn không thuộc danh sách chủ sở hữu hàng hóa này. Mặt hàng này không thể sửa đổi."
+
+#~ msgid "Read only"
+#~ msgstr "Chỉ đọc"
+
+#~ msgid "This stock item is unavailable"
+#~ msgstr "Mặt hàng này không khả dụng"
+
+#~ msgid "This stock item is in production and cannot be edited."
+#~ msgstr "Mặt hàng này đang được sản xuất và không thể sửa được."
+
+#~ msgid "Edit the stock item from the build view."
+#~ msgstr "Sửa mặt hàng này từ khung nhìn bản dựng."
+
+#~ msgid "This stock item is allocated to Sales Order"
+#~ msgstr "Mặt hàng này đã được phân bổ về đơn hàng bán"
+
+#~ msgid "This stock item is allocated to Build Order"
+#~ msgstr "Mặt hàng này đã được phân bổ về đơn đặt bản dựng"
+
+#~ msgid "This stock item is serialized. It has a unique serial number and the quantity cannot be adjusted"
+#~ msgstr "Mặt hàng này là tuần tự. Nó có một số sêri duy nhất và số lượng không thể điều chỉnh được"
+
+#~ msgid "previous page"
+#~ msgstr "trang trước"
+
+#~ msgid "Navigate to previous serial number"
+#~ msgstr "Điều hướng đến số sêri trước"
+
+#~ msgid "next page"
+#~ msgstr "trang tiếp theo"
+
+#~ msgid "Navigate to next serial number"
+#~ msgstr "Điều hướng đến số sêri tiếp"
+
+#~ msgid "Available Quantity"
+#~ msgstr "Số lượng sẵn có"
+
+#~ msgid "No location set"
+#~ msgstr "Không có vị trí nào được đặt"
+
+#~ msgid "Tests"
+#~ msgstr "Thử nghiệm"
+
+#, python-format
+#~ msgid "This StockItem expired on %(item.expiry_date)s"
+#~ msgstr "Mặt hàng này hết hạn vào %(item.expiry_date)s"
+
+#, python-format
+#~ msgid "This StockItem expires on %(item.expiry_date)s"
+#~ msgstr "Mặt hàng này hết hạn vào %(item.expiry_date)s"
+
+#~ msgid "No stocktake performed"
+#~ msgstr "Chưa thực hiện kiểm kê"
+
+#~ msgid "Select one of the part variants listed below."
+#~ msgstr "Chọn một trong những biến thể sản phẩm được liệt kê bên dưới."
+
+#~ msgid "Warning"
+#~ msgstr "Cánh báo"
+
+#~ msgid "This action cannot be easily undone"
+#~ msgstr "Thao tác này không thể khôi phục lại một cách dễ dàng"
+
+#~ msgid "Create serialized items from this stock item."
+#~ msgstr "Tạo hàng hóa tuần tự từ mặt hàng này."
+
+#~ msgid "Select quantity to serialize, and unique serial numbers."
+#~ msgstr "Chọn số lượng cần tuần tự hóa và số sêri duy nhất."
+
+#~ msgid "Perform stocktake for this stock location"
+#~ msgstr "Thực hiện kiểm kê cho vị trí kho này"
+
+#~ msgid "Locate stock location"
+#~ msgstr "Xác định vị trí kho"
+
+#~ msgid "Scan stock items into this location"
+#~ msgstr "Quét các mặt hàng vào vị trí kho này"
+
+#~ msgid "Scan In Stock Items"
+#~ msgstr "Quét vào trong mặt hàng"
+
+#~ msgid "Scan stock container into this location"
+#~ msgstr "Quét kho chứa vào trong vị trí kho này"
+
+#~ msgid "Scan In Container"
+#~ msgstr "Quét vào trong bộ chứa"
+
+#~ msgid "Location actions"
+#~ msgstr "Chức năng vị trí"
+
+#~ msgid "Edit location"
+#~ msgstr "Sửa vị trí"
+
+#~ msgid "Delete location"
+#~ msgstr "Xóa vị trí"
+
+#~ msgid "Top level stock location"
+#~ msgstr "Vị trí kho cấp đầu"
+
+#~ msgid "Location Owner"
+#~ msgstr "Chủ sở hữu vị trí"
+
+#~ msgid "You are not in the list of owners of this location. This stock location cannot be edited."
+#~ msgstr "Bạn không thuộc danh sách chủ sở hữu của vị trí này. Vị trí kho này không thể sửa được."
+
+#~ msgid "Sublocations"
+#~ msgstr "Kho phụ"
+
+#~ msgid "Create new stock location"
+#~ msgstr "Tạo mới vị trí kho"
+
+#~ msgid "New Location"
+#~ msgstr "Vị trí mới"
+
+#~ msgid "Loading..."
+#~ msgstr "Đang tải..."
+
+#~ msgid "Stock Tracking"
+#~ msgstr "Theo dõi tồn kho"
+
+#~ msgid "Allocations"
+#~ msgstr "Phân bổ"
+
+#~ msgid "Child Items"
+#~ msgstr "Mục con"
+
+#~ msgid "Index"
+#~ msgstr "Chỉ số"
+
+#~ msgid "Notification History"
+#~ msgstr "Nhật ký thông báo"
+
+#~ msgid "Delete Notifications"
+#~ msgstr "Xóa thông báo"
+
+#~ msgid "Pending Notifications"
+#~ msgstr "Thông báo đang chờ"
+
+#~ msgid "Mark all as read"
+#~ msgstr "Đánh dấu đã đọc tất cả"
+
+#~ msgid "Notifications"
+#~ msgstr "Thông báo"
+
+#~ msgid "Delete all read notifications"
+#~ msgstr "Xóa toàn bộ thông báo đã đọc"
+
+#~ msgid "Inbox"
+#~ msgstr "Hộp thư"
+
+#~ msgid "History"
+#~ msgstr "Lịch sử"
+
+#~ msgid "Search Results"
+#~ msgstr "Kết quả tìm kiếm"
+
+#~ msgid "Barcode Settings"
+#~ msgstr "Thiết lập mã vạch"
+
+#~ msgid "Build Order Settings"
+#~ msgstr "Thiết lập đơn đặt bản dựng"
+
+#~ msgid "Category Settings"
+#~ msgstr "Cài đặt Danh mục"
+
+#~ msgid "Server Settings"
+#~ msgstr "Cài đặt máy chủ"
+
+#~ msgid "Label Settings"
+#~ msgstr "Cài đặt nhãn"
+
+#~ msgid "Login Settings"
+#~ msgstr "Cài đặt đăng nhập"
+
+#~ msgid "Outgoing email has not been configured. Some login and sign-up features may not work correctly!"
+#~ msgstr "Chưa cấu hình email gửi đi. Một số tính năng đăng nhập và đăng ký sẽ không hoạt động được!"
+
+#~ msgid "Signup"
+#~ msgstr "Đăng ký"
+
+#~ msgid "Single Sign On"
+#~ msgstr "Đăng nhập một lần"
+
+#~ msgid "Settings"
+#~ msgstr "Cài đặt"
+
+#~ msgid "URLs"
+#~ msgstr "URL"
+
+#, python-format
+#~ msgid "The Base-URL for this plugin is <a href=\"/%(base)s\" target=\"_blank\"><strong>%(base)s</strong></a>."
+#~ msgstr "Base-URL cho phần bổ sung này là <a href=\"/%(base)s\" target=\"_blank\"><strong>%(base)s</strong></a>."
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Open in new tab"
+#~ msgstr "Mở trong tab mới"
+
+#~ msgid "Notification Settings"
+#~ msgstr "Cài đặt thông báo"
+
+#~ msgid "Slug"
+#~ msgstr "Slug"
+
+#~ msgid "Part Settings"
+#~ msgstr "Cài đặt sản phẩm"
+
+#~ msgid "Part Import"
+#~ msgstr "Nhập hàng hóa"
+
+#~ msgid "Import Part"
+#~ msgstr "Nhập sản phẩm"
+
+#~ msgid "Part Parameter Templates"
+#~ msgstr "Mẫu tham số sản phẩm"
+
+#~ msgid "Stocktake Settings"
+#~ msgstr "Thiết lập kiểm kê"
+
+#~ msgid "Stocktake Reports"
+#~ msgstr "Báo cáo kiểm kê"
+
+#~ msgid "Physical Units"
+#~ msgstr "Đơn vị vật lí"
+
+#~ msgid "Add Unit"
+#~ msgstr "Thêm đơn vị"
+
+#~ msgid "Plugin Settings"
+#~ msgstr "Thiết lập phần bổ sung"
+
+#~ msgid "Changing the settings below require you to immediately restart the server. Do not change this while under active usage."
+#~ msgstr "Đổi thiết lập bên dưới yêu cầu bạn cần khởi động máy chủ ngay lập tức. Đừng thay đổi điều này trong khi đang sử dụng phần mềm."
+
+#~ msgid "Plugins"
+#~ msgstr "Phần bổ sung"
+
+#~ msgid "Install Plugin"
+#~ msgstr "Cài đặt phần bổ sung"
+
+#~ msgid "Reload Plugins"
+#~ msgstr "Tải lại plugin"
+
+#~ msgid "External plugins are not enabled for this InvenTree installation"
+#~ msgstr "Phần bổ sung bên ngoài chưa được bật cho cài đặt InvenTree này"
+
+#~ msgid "Plugin Error Stack"
+#~ msgstr "Ngăn Xếp Lỗi Phần Bổ Sung"
+
+#~ msgid "Stage"
+#~ msgstr "Giai đoạn"
+
+#~ msgid "Message"
+#~ msgstr "Tin nhắn"
+
+#~ msgid "Plugin information"
+#~ msgstr "Thông tin phần bổ sung"
+
+#~ msgid "no version information supplied"
+#~ msgstr "chưa cung cấp thông tin phiên bản"
+
+#~ msgid "License"
+#~ msgstr "Giấy phép"
+
+#~ msgid "The code information is pulled from the latest git commit for this plugin. It might not reflect official version numbers or information but the actual code running."
+#~ msgstr "Thông tin mã được kéo về từ cập nhật git mới nhất cho phần bổ sung này. Nó có thể không phải là phiên bản hay thông tin chính thức nhưng mã thực sự hoạt động."
+
+#~ msgid "Package information"
+#~ msgstr "Thông tin gói"
+
+#~ msgid "Installation method"
+#~ msgstr "Phương thức cài đặt"
+
+#~ msgid "This plugin was installed as a package"
+#~ msgstr "Phần bổ sung này đã được cài đặt dạng gói"
+
+#~ msgid "This plugin was found in a local server path"
+#~ msgstr "Phần bổ sung này đã tồn tại trên đường dẫn máy chủ của bạn"
+
+#~ msgid "Installation path"
+#~ msgstr "Đường dẫn cài đặt"
+
+#~ msgid "Builtin"
+#~ msgstr "Gắn liền"
+
+#~ msgid "This is a builtin plugin which cannot be disabled"
+#~ msgstr "Đây là phần bổ sung có sẵn nên không thể tắt được"
+
+#~ msgid "Sample"
+#~ msgstr "Mẫu"
+
+#~ msgid "This is a sample plugin"
+#~ msgstr "Đây là phần bổ sung mẫu"
+
+#~ msgid "Commit Author"
+#~ msgstr "Người commit"
+
+#~ msgid "Commit Date"
+#~ msgstr "Ngày commit"
+
+#~ msgid "Commit Hash"
+#~ msgstr "Commit Hash"
+
+#~ msgid "Commit Message"
+#~ msgstr "Thông điệp commit"
+
+#~ msgid "Purchase Order Settings"
+#~ msgstr "Cài đặt đơn đặt mua"
+
+#~ msgid "Pricing Settings"
+#~ msgstr "Cài đặt định giá"
+
+#~ msgid "Exchange Rates"
+#~ msgstr "Tỷ giá hối đoái"
+
+#~ msgid "Update Now"
+#~ msgstr "Cập nhật ngay"
+
+#~ msgid "Last Update"
+#~ msgstr "Lần cập nhật gần nhất"
+
+#~ msgid "Never"
+#~ msgstr "Chưa bao giờ"
+
+#~ msgid "Project Code Settings"
+#~ msgstr "Cài đặt mã dự án"
+
+#~ msgid "Project Codes"
+#~ msgstr "Mã dự án"
+
+#~ msgid "New Project Code"
+#~ msgstr "Mã dự án mới"
+
+#~ msgid "Report Settings"
+#~ msgstr "Cài đặt báo cáo"
+
+#~ msgid "Return Order Settings"
+#~ msgstr "Cài đặt đơn trả hàng"
+
+#~ msgid "No value set"
+#~ msgstr "Chưa cài đặt giá trị"
+
+#~ msgid "Edit setting"
+#~ msgstr "Sửa cài đặt"
+
+#~ msgid "New Location Type"
+#~ msgstr "Loại vị trí mới"
+
+#~ msgid "User Settings"
+#~ msgstr "Cài đặt người dùng"
+
+#~ msgid "Account"
+#~ msgstr "Tài khoản"
+
+#~ msgid "Display"
+#~ msgstr "Hiển thị"
+
+#~ msgid "Home Page"
+#~ msgstr "Trang chủ"
+
+#~ msgid "Search"
+#~ msgstr "Tìm kiếm"
+
+#~ msgid "Reporting"
+#~ msgstr "Báo cáo"
+
+#~ msgid "Global Settings"
+#~ msgstr "Cài đặt toàn cục"
+
+#~ msgid "Server"
+#~ msgstr "Máy chủ"
+
+#~ msgid "Labels"
+#~ msgstr "Nhãn"
+
+#~ msgid "Categories"
+#~ msgstr "Danh mục"
+
+#~ msgid "Sales Order Settings"
+#~ msgstr "Thiết lập đơn hàng bán"
+
+#~ msgid "Stock Settings"
+#~ msgstr "Cài đặt kho hàng"
+
+#~ msgid "Stock Location Types"
+#~ msgstr "Loại ví trí kho"
+
+#~ msgid "Account Settings"
+#~ msgstr "Cài đặt tài khoản"
+
+#~ msgid "Change Password"
+#~ msgstr "Đổi mật khẩu"
+
+#~ msgid "Username"
+#~ msgstr "Tên người dùng"
+
+#~ msgid "First Name"
+#~ msgstr "Tên"
+
+#~ msgid "Last Name"
+#~ msgstr "Họ"
+
+#~ msgid "The following email addresses are associated with your account:"
+#~ msgstr "Địa chỉ email sau đã được liên kết với tài khoản của bạn:"
+
+#~ msgid "Verified"
+#~ msgstr "Đã xác minh"
+
+#~ msgid "Unverified"
+#~ msgstr "Chưa xác minh"
+
+#~ msgid "Primary"
+#~ msgstr "Chính"
+
+#~ msgid "Make Primary"
+#~ msgstr "Tạo chính yếu"
+
+#~ msgid "Re-send Verification"
+#~ msgstr "Gửi lại xác minh"
+
+#~ msgid "Warning:"
+#~ msgstr "Cảnh báo:"
+
+#~ msgid "You currently do not have any email address set up. You should really add an email address so you can receive notifications, reset your password, etc."
+#~ msgstr "Bạn chưa có bất kỳ địa chỉ email nào được cài đặt. Bạn nên thêm một địa chỉ email tồn tại thật để bạn có thể nhận thông báo, đặt lại mật khẩu,..."
+
+#~ msgid "Add Email Address"
+#~ msgstr "Thêm địa chỉ email"
+
+#~ msgid "Add Email"
+#~ msgstr "Thêm email"
+
+#~ msgid "Multifactor"
+#~ msgstr "Đa nhân tố"
+
+#~ msgid "You have these factors available:"
+#~ msgstr "Bạn có các nhân tố sẵn này:"
+
+#~ msgid "TOTP"
+#~ msgstr "TOTP"
+
+#~ msgid "Static"
+#~ msgstr "Tĩnh"
+
+#~ msgid "Multifactor authentication is not configured for your account"
+#~ msgstr "Chưa cấu hình xác thực đa nhân tố cho tài khoản của bạn"
+
+#~ msgid "Change factors"
+#~ msgstr "Đổi nhân tố"
+
+#~ msgid "Setup multifactor"
+#~ msgstr "Cài đặt đa nhân tố"
+
+#~ msgid "Remove multifactor"
+#~ msgstr "Xóa đa nhân tố"
+
+#~ msgid "Active Sessions"
+#~ msgstr "Các phiên hoạt động"
+
+#~ msgid "Log out active sessions (except this one)"
+#~ msgstr "Đăng xuất phiên đang hoạt động (trừ phiên này)"
+
+#~ msgid "Log Out Active Sessions"
+#~ msgstr "Đăng xuất phiên đang hoạt động"
+
+#~ msgid "<em>unknown on unknown</em>"
+#~ msgstr "<em>không rõ trên không rõ</em>"
+
+#~ msgid "<em>unknown</em>"
+#~ msgstr "<em>không rõ</em>"
+
+#~ msgid "IP Address"
+#~ msgstr "Địa chỉ IP"
+
+#~ msgid "Device"
+#~ msgstr "Thiết bị"
+
+#~ msgid "Last Activity"
+#~ msgstr "Hoạt động gần đây"
+
+#, python-format
+#~ msgid "%(time)s ago (this session)"
+#~ msgstr "%(time)s trước (phiên này)"
+
+#, python-format
+#~ msgid "%(time)s ago"
+#~ msgstr "%(time)s trước"
+
+#~ msgid "Display Settings"
+#~ msgstr "Thiết đặt hiển thị"
+
+#~ msgid "Theme Settings"
+#~ msgstr "Thiết lập giao diện"
+
+#~ msgid "Select theme"
+#~ msgstr "Chọn giao diện"
+
+#~ msgid "Set Theme"
+#~ msgstr "Đặt giao diện"
+
+#~ msgid "Language Settings"
+#~ msgstr "Thiết lập ngôn ngữ"
+
+#~ msgid "Select language"
+#~ msgstr "Chọn ngôn ngữ"
+
+#, python-format
+#~ msgid "%(lang_translated)s%% translated"
+#~ msgstr "%(lang_translated)s%% đã dịch"
+
+#~ msgid "No translations available"
+#~ msgstr "Chưa có bản dịch"
+
+#~ msgid "Set Language"
+#~ msgstr "Đặt ngôn ngữ"
+
+#~ msgid "Some languages are not complete"
+#~ msgstr "Một số ngôn ngữ chưa hoàn thiện"
+
+#~ msgid "Show only sufficient"
+#~ msgstr "Chỉ hiện phần thiếu"
+
+#~ msgid "and hidden."
+#~ msgstr "và bị ẩn."
+
+#~ msgid "Show them too"
+#~ msgstr "Cũng hiện chúng"
+
+#~ msgid "Help the translation efforts!"
+#~ msgstr "Giúp đỡ nguồn lực dịch thuật!"
+
+#~ msgid "Native language translation of the web application is community contributed via crowdin. Contributions are welcomed and encouraged."
+#~ msgstr "Dịch ngôn ngữ bạn địa của ứng dụng web được cộng đồng đóng góp qua crowdin. Mọi đóng góp đều được chào đón và khuyến khích."
+
+#~ msgid "InvenTree Translation Project"
+#~ msgstr "Dự án dịch InvenTree"
+
+#~ msgid "Home Page Settings"
+#~ msgstr "Thiết lập trang chủ"
+
+#~ msgid "Search Settings"
+#~ msgstr "Cài đặt tìm kiếm"
+
+#~ msgid "Single Sign On Accounts"
+#~ msgstr "Tài khoản đăng nhập một lần"
+
+#~ msgid "You can sign in to your account using any of the following third party accounts:"
+#~ msgstr "Bạn có thể đăng nhập vào tài khoản của bạn bằng cách sử dụng bất kỳ tài khoản bên thứ ba:"
+
+#~ msgid "There are no social network accounts connected to this account."
+#~ msgstr "Không có tài khoản mạng xã hội nào được kết nối đến tài khoản này."
+
+#~ msgid "Add SSO Account"
+#~ msgstr "Thêm tài khoản SSO"
+
+#~ msgid "Single Sign On is not enabled for this server"
+#~ msgstr "Máy chủ này chưa bật chức năng đăng nhập một lần"
+
+#~ msgid "InvenTree Version"
+#~ msgstr "Phiên bản InvenTree"
+
+#~ msgid "Development Version"
+#~ msgstr "Phiên bản phát triển"
+
+#~ msgid "Up to Date"
+#~ msgstr "Mới nhất"
+
+#~ msgid "Update Available"
+#~ msgstr "Có bản cập nhật mới"
+
+#~ msgid "Commit Branch"
+#~ msgstr "Commit Branch"
+
+#~ msgid "InvenTree Documentation"
+#~ msgstr "Tài liệu InvenTree"
+
+#~ msgid "API Version"
+#~ msgstr "Phiên bản API"
+
+#~ msgid "Python Version"
+#~ msgstr "Phiên bản Python"
+
+#~ msgid "Django Version"
+#~ msgstr "Phiên bản Django"
+
+#~ msgid "View Code on GitHub"
+#~ msgstr "Xem mã trên Github"
+
+#~ msgid "Credits"
+#~ msgstr "Đóng góp"
+
+#~ msgid "Mobile App"
+#~ msgstr "Ứng dụng di động"
+
+#~ msgid "Submit Bug Report"
+#~ msgstr "Gửi báo cáo lỗi"
+
+#~ msgid "copy to clipboard"
+#~ msgstr "sao chép đến bảng tạm"
+
+#~ msgid "copy version information"
+#~ msgstr "sao chép thông tin phiên bản"
+
+#~ msgid "InvenTree logo"
+#~ msgstr "Logo InvenTree"
+
+#~ msgid "Confirm Email Address"
+#~ msgstr "Xác nhận địa chỉ email"
+
+#, python-format
+#~ msgid "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an email address for user %(user_display)s."
+#~ msgstr "Xin hãy xác nhận rằng <a href=\"mailto:%(email)s\">%(email)s</a> là địa chỉ email cho người dùng %(user_display)s."
+
+#~ msgid "Confirm"
+#~ msgstr "Xác nhận"
+
+#, python-format
+#~ msgid "This email confirmation link expired or is invalid. Please <a href=\"%(email_url)s\">issue a new email confirmation request</a>."
+#~ msgstr "Liên kết xác nhận email đã hết hạn hoặc không hợp lệ. Xin hãy <a href=\"%(email_url)s\">tạo yêu cầu xác nhận email mới</a>."
+
+#~ msgid "Sign In"
+#~ msgstr "Đăng nhập"
+
+#~ msgid "Not a member?"
+#~ msgstr "Chưa có tài khoản?"
+
+#~ msgid "Sign Up"
+#~ msgstr "Đăng ký"
+
+#~ msgid "Forgot Password?"
+#~ msgstr "Quân mật khẩu?"
+
+#~ msgid "or log in with"
+#~ msgstr "hoặc đăng nhập bằng"
+
+#~ msgid "Sign Out"
+#~ msgstr "Đăng xuất"
+
+#~ msgid "Are you sure you want to sign out?"
+#~ msgstr "Bạn có chắc bạn muốn đăng xuất không?"
+
+#~ msgid "Return to Site"
+#~ msgstr "Quay lại site"
+
+#~ msgid "Password Reset"
+#~ msgstr "Khôi phục mật khẩu"
+
+#~ msgid "Forgotten your password? Enter your email address below, and we'll send you an email allowing you to reset it."
+#~ msgstr "Quên mật khẩu của bạn? Nhập địa chỉ email của bạn bên dưới, và chúng tôi sẽ gửi cho bạn một email cho phép bạn khởi tại lại nó."
+
+#~ msgid "Reset My Password"
+#~ msgstr "Đặt lại mật khẩu của tôi"
+
+#~ msgid "This function is currently disabled. Please contact an administrator."
+#~ msgstr "Chức năng này đã bị cấm. Xin hãy liên hệ với một người quản trị."
+
+#~ msgid "Bad Token"
+#~ msgstr "Sai mã thông báo"
+
+#, python-format
+#~ msgid "The password reset link was invalid, possibly because it has already been used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</a>."
+#~ msgstr "Liên kết tạo lại mật khẩu không hợp lệ, có thể nó đã được sử dụng rồi. Xin hãy gửi yêu cầu <a href=\"%(passwd_reset_url)s\">tạo lại mật khẩu mới</a>."
+
+#~ msgid "Change password"
+#~ msgstr "Đổi mật khẩu"
+
+#~ msgid "Your password is now changed."
+#~ msgstr "Mật khẩu của bạn đã được thay đổi."
+
+#, python-format
+#~ msgid "Already have an account? Then please <a href=\"%(login_url)s\">sign in</a>."
+#~ msgstr "Bạn đã có một tài khoản? Xin hãy <a href=\"%(login_url)s\">đăng nhập</a>."
+
+#~ msgid "Use a SSO-provider for signup"
+#~ msgstr "Sử dụng một nhà cung cấp SSO để đăng ký"
+
+#~ msgid "Sign Up Closed"
+#~ msgstr "Đã đóng đăng ký"
+
+#~ msgid "Sign up is currently closed."
+#~ msgstr "Hiện đang đóng chức năng đăng ký."
+
+#~ msgid "Return to login page"
+#~ msgstr "Quay lại trang đăng nhập"
+
+#~ msgid "View in administration panel"
+#~ msgstr "Xem trong bảng quản trị"
+
+#~ msgid "Two-Factor Authentication"
+#~ msgstr "Xác thực hai yếu tố"
+
+#~ msgid "Authenticate"
+#~ msgstr "Xác thực"
+
+#~ msgid "Two-Factor Authentication Backup Tokens"
+#~ msgstr "Mã thông báo (token) dự phòng của xác thực hai yếu tố"
+
+#~ msgid "Backup tokens have been generated, but are not revealed here for security reasons. Press the button below to generate new ones."
+#~ msgstr "Mã thông báo (token) dự phòng đã được tạo nhưng không được hiển thị vì lý do bảo mật. Ấn nút bên dưới để tạo những cái mới."
+
+#~ msgid "No backup tokens are available. Press the button below to generate some."
+#~ msgstr "Mã thông báo (token) dự phòng chưa có sẵn. Ấn nút bên dưới để tạo một vài mã."
+
+#~ msgid "Generate Tokens"
+#~ msgstr "Tạo mã thông báo"
+
+#~ msgid "Disable Two-Factor Authentication"
+#~ msgstr "Vô hiệu hóa xác thực 2 yếu tố"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Bạn chắc chứ?"
+
+#~ msgid "Disable 2FA"
+#~ msgstr "Vô hiệu 2FA"
+
+#~ msgid "Setup Two-Factor Authentication"
+#~ msgstr "Cài đặt xác thực hai bước"
+
+#~ msgid "Step 1"
+#~ msgstr "Bước 1"
+
+#~ msgid "Scan the QR code below with a token generator of your choice (for instance Google Authenticator)."
+#~ msgstr "Quét mã QR bên dưới với bộ sinh mã thông báo mà bạn chọn (cho thực thể Google Authentication)."
+
+#~ msgid "Step 2"
+#~ msgstr "Bước 2"
+
+#~ msgid "Input a token generated by the app:"
+#~ msgstr "Điền một mã thông báo đã sinh bởi ứng dụng:"
+
+#~ msgid "Verify"
+#~ msgstr "Xác minh"
+
+#~ msgid "Add Link"
+#~ msgstr "Thêm liên kết"
+
+#~ msgid "Add Attachment"
+#~ msgstr "Thêm đính kèm"
+
+#~ msgid "Barcode Identifier"
+#~ msgstr "Nhận dạng mã vạch"
+
+#~ msgid "Scan Barcode"
+#~ msgstr "Quét mã vạch"
+
+#~ msgid "Close"
+#~ msgstr "Đóng"
+
+#~ msgid "Form errors exist"
+#~ msgstr "Lỗi biểu mẫu tồn tại"
+
+#~ msgid "Submit"
+#~ msgstr "Gửi"
+
+#~ msgid "Notifications will load here"
+#~ msgstr "Sẽ tải thông báo ở đây"
+
+#~ msgid "Enter search query"
+#~ msgstr "Nhập truy vấn tìm kiếm"
+
+#~ msgid "Buy"
+#~ msgstr "Mua"
+
+#~ msgid "Sell"
+#~ msgstr "Bán"
+
+#~ msgid "Show Notifications"
+#~ msgstr "Hiển thị thông báo"
+
+#~ msgid "New Notifications"
+#~ msgstr "Thông báo mới"
+
+#~ msgid "Logout"
+#~ msgstr "Đăng xuất"
+
+#~ msgid "Save"
+#~ msgstr "Lưu lại"
+
+#~ msgid "Show all notifications and history"
+#~ msgstr "Hiện toàn bộ thông báo và lịch sử"
+
+#~ msgid "QR data not provided"
+#~ msgstr "Chưa cung cấp dữ liệu QR"
+
+#~ msgid "You were logged out successfully."
+#~ msgstr "Bạn đã đăng xuất thành công."
+
+#~ msgid "Log in again"
+#~ msgstr "Đăng nhập lại"
+
+#~ msgid "Show full search results"
+#~ msgstr "Hiện kết quả tìm đầy đủ"
+
+#~ msgid "Clear search"
+#~ msgstr "Xóa tìm kiếm"
+
+#~ msgid "Close search menu"
+#~ msgstr "Đóng trình đơn tìm kiếm"
+
+#~ msgid "Social Network Login Failure"
+#~ msgstr "Đăng nhập mạng xã hội thất bại"
+
+#~ msgid "Account Login Failure"
+#~ msgstr "Đăng nhập tài khoản thất bại"
+
+#~ msgid "An error occurred while attempting to login via your social network account."
+#~ msgstr "Có lỗi trong khi cố gắng đăng nhập thông qua tài khoản mạng xã hội của bạn."
+
+#~ msgid "Contact your system administrator for further information."
+#~ msgstr "Liên lạc với quản trị hệ thống của bạn để biết thêm thông tin."
+
+#, python-format
+#~ msgid "Connect %(provider)s"
+#~ msgstr "Kết nối %(provider)s"
+
+#, python-format
+#~ msgid "You are about to connect a new third party account from %(provider)s."
+#~ msgstr "Bạn chuẩn bị kết nối đến tài khoản của bên thứ ba từ %(provider)s."
+
+#, python-format
+#~ msgid "Sign In Via %(provider)s"
+#~ msgstr "Đăng nhập qua%(provider)s"
+
+#, python-format
+#~ msgid "You are about to sign in using a third party account from %(provider)s."
+#~ msgstr "Bạn chuẩn bị đăng nhập qua tài khoản của bên thứ ba từ %(provider)s."
+
+#~ msgid "Continue"
+#~ msgstr "Tiếp tục"
+
+#~ msgid "Invalid SSO Provider"
+#~ msgstr "Nhà cung cấp SSO không hợp lệ"
+
+#~ msgid "The selected SSO provider is invalid, or has not been correctly configured"
+#~ msgstr "Nhà cung cấp SSO đã chọn không hợp lệ hoặc đã không được cấu hình chính xác"
+
+#~ msgid "Provider has not been configured"
+#~ msgstr "Nhà cung cấp chưa được cấu hình"
+
+#~ msgid "No SSO providers have been configured"
+#~ msgstr "Chưa cấu hình nhà cung cấp SSO"
+
+#~ msgid "Instance Name"
+#~ msgstr "Tên thực thể"
+
+#~ msgid "Database"
+#~ msgstr "Cơ sở dữ liệu"
+
+#~ msgid "Server is running in debug mode"
+#~ msgstr "Máy chủ đang hoạt động dưới chế độ gỡ lỗi"
+
+#~ msgid "Docker Mode"
+#~ msgstr "Chế độ Docker"
+
+#~ msgid "Server is deployed using docker"
+#~ msgstr "Máy chủ được triển khai bởi docker"
+
+#~ msgid "Plugin Support"
+#~ msgstr "Hỗ trợ phần bổ sung"
+
+#~ msgid "Plugin support enabled"
+#~ msgstr "Hỗ trợ phần bổ sung đã bật"
+
+#~ msgid "Plugin support disabled"
+#~ msgstr "Hỗ trợ phần bổ sung đã tắt"
+
+#~ msgid "Server status"
+#~ msgstr "Tình trạng máy chủ"
+
+#~ msgid "Healthy"
+#~ msgstr "Sức khỏe"
+
+#~ msgid "Issues detected"
+#~ msgstr "Đã phát hiện vấn đề"
+
+#~ msgid "Background Worker"
+#~ msgstr "Nhân công chạy ngầm"
+
+#~ msgid "Background worker not running"
+#~ msgstr "Nhân công chạy ngầm không hoạt động"
+
+#~ msgid "Email Settings"
+#~ msgstr "Thiết lập email"
+
+#~ msgid "Email settings not configured"
+#~ msgstr "Chưa cấu hình thiết lập email"
+
+#~ msgid "Yes"
+#~ msgstr "Có"
+
+#~ msgid "No"
+#~ msgstr "Không"
