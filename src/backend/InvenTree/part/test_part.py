@@ -101,6 +101,7 @@ class TemplateTagTest(InvenTreeTestCase):
             # In such a case, skip this check
             pass
         else:
+            assert d
             self.assertEqual(len(d.split('-')), 3)
 
     def test_github(self):
@@ -293,6 +294,7 @@ class PartTest(TestCase):
         """Unit tests for the metadata field."""
         for model in [Part]:
             p = model.objects.first()
+            assert p
 
             self.assertIsNone(p.get_metadata('test'))
             self.assertEqual(p.get_metadata('test', backup_value=123), 123)
@@ -362,6 +364,7 @@ class PartTest(TestCase):
         """Test for adding stocktake data."""
         # Grab a part
         p = Part.objects.all().first()
+        assert p
 
         self.assertIsNone(p.last_stocktake)
 
@@ -493,6 +496,8 @@ class TestTemplateTest(TestCase):
         self.assertEqual(variant.getTestTemplates(enabled=False).count(), 0)
 
         template = variant.getTestTemplates().first()
+        assert template
+
         template.enabled = False
         template.save()
 

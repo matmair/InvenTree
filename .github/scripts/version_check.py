@@ -48,6 +48,9 @@ def get_existing_release_tags(include_prerelease=True):
         tag = release['tag_name'].strip()
         match = re.match(r'^.*(\d+)\.(\d+)\.(\d+).*$', tag)
 
+        if not match:
+            continue
+
         if len(match.groups()) != 3:
             print(f"Version '{tag}' did not match expected pattern")
             continue

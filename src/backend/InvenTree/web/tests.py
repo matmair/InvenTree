@@ -26,6 +26,8 @@ class TemplateTagTest(InvenTreeTestCase):
     def test_spa_bundle(self):
         """Test the 'spa_bundle' template tag."""
         resp = spa_helper.spa_bundle()
+        assert resp
+
         if not resp:
             # No Vite, no test
             # TODO: Add a test for the non-Vite case (docker)

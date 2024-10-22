@@ -62,14 +62,14 @@ class BarcodeAPITest(InvenTreeAPITestCase):
         """
         response = self.postBarcode(self.scan_url, '', expected_code=400)
 
-        data = response.data
-        self.assertIn('barcode', data)
+        self.assertIn('barcode', response.data)
 
         self.assertIn('This field may not be blank', str(response.data['barcode']))
 
     def test_find_part(self):
         """Test that we can lookup a part based on ID."""
         part = Part.objects.first()
+        assert part
 
         response = self.post(
             self.scan_url, {'barcode': f'{{"part": {part.pk}}}'}, expected_code=200
@@ -90,6 +90,7 @@ class BarcodeAPITest(InvenTreeAPITestCase):
     def test_find_stock_item(self):
         """Test that we can lookup a stock item based on ID."""
         item = StockItem.objects.first()
+        assert item
 
         # Save barcode scan results to database
         set_global_setting('BARCODE_STORE_RESULTS', True)
@@ -150,15 +151,13 @@ class BarcodeAPITest(InvenTreeAPITestCase):
         """Test scan of an integer barcode."""
         response = self.postBarcode(self.scan_url, '123456789', expected_code=400)
 
-        data = response.data
-        self.assertIn('error', data)
+        self.assertIn('error', response.data)
 
     def test_array_barcode(self):
         """Test scan of barcode with string encoded array."""
         response = self.postBarcode(self.scan_url, "['foo', 'bar']", expected_code=400)
 
-        data = response.data
-        self.assertIn('error', data)
+        self.assertIn('error', response.data)
 
     def test_barcode_scan(self):
         """Test that a barcode is generated with a scan."""
@@ -334,6 +333,7 @@ class SOAllocateTest(InvenTreeAPITestCase):
 
         # Test with a barcode that matches a *different* stock item
         item = StockItem.objects.exclude(pk=self.stock_item.pk).first()
+        assert item
         item.assign_barcode(barcode_data='123456789')
 
         result = self.postBarcode(

@@ -1,5 +1,7 @@
 """Base Class for InvenTree plugins."""
 
+from __future__ import annotations
+
 import inspect
 import logging
 import warnings
@@ -7,7 +9,6 @@ from datetime import datetime
 from distutils.sysconfig import get_python_lib
 from importlib.metadata import PackageNotFoundError, metadata
 from pathlib import Path
-from typing import Optional
 
 from django.conf import settings
 from django.urls.base import reverse
@@ -24,11 +25,11 @@ class MetaBase:
     """Base class for a plugins metadata."""
 
     # Override the plugin name for each concrete plugin instance
-    NAME = ''
-    SLUG = None
-    TITLE = None
+    NAME: str = ''
+    SLUG: str | None = None
+    TITLE: str | None = None
 
-    def get_meta_value(self, key: str, old_key: Optional[str] = None, __default=None):
+    def get_meta_value(self, key: str, old_key: str | None = None, __default=None):
         """Reference a meta item with a key.
 
         Args:
@@ -213,12 +214,12 @@ class InvenTreePlugin(VersionMixin, MixinBase, MetaBase):
     DO NOT USE THIS DIRECTLY, USE plugin.InvenTreePlugin
     """
 
-    AUTHOR = None
-    DESCRIPTION = None
-    PUBLISH_DATE = None
-    VERSION = None
-    WEBSITE = None
-    LICENSE = None
+    AUTHOR: str | None = None
+    DESCRIPTION: str | None = None
+    PUBLISH_DATE: str | None = None
+    VERSION: str | None = None
+    WEBSITE: str | None = None
+    LICENSE: str | None = None
 
     # Optional path to a JavaScript file which will be loaded in the admin panel
     # This file must provide a function called renderPluginSettings

@@ -1097,6 +1097,7 @@ class PurchaseOrderReceiveTest(OrderTest):
 
         item_1 = StockItem.objects.filter(supplier_part=line_1.part).first()
         item_2 = StockItem.objects.filter(supplier_part=line_2.part).first()
+        assert item_1 is not None and item_2
 
         self.assertEqual(item_1.batch, 'B-abc-123')
         self.assertEqual(item_2.batch, 'B-xyz-789')
@@ -1146,6 +1147,7 @@ class PurchaseOrderReceiveTest(OrderTest):
         self.assertEqual(items.count(), 1)
 
         item = items.first()
+        assert item
 
         self.assertEqual(item.quantity, 10)
         self.assertEqual(item.batch, 'B-xyz-789')
@@ -1974,6 +1976,7 @@ class SalesOrderAllocateTest(OrderTest):
             for part in parts:
                 stock_item = part.stock_items.last()
                 break
+            assert stock_item
 
             # Fully-allocate each line
             data['items'].append({

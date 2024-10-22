@@ -10,3 +10,4 @@ pip-tools                               # Compile pip requirements
 pre-commit                              # Git pre-commit
 setuptools                              # Standard dependency
 pdfminer.six                            # PDF validation
+pyright                                 # Static type checking
