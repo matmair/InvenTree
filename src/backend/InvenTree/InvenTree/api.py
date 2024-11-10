@@ -8,8 +8,7 @@ from pathlib import Path
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.template.loader import render_to_string
+from django.http import HttpResponse, JsonResponse
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
@@ -29,7 +28,6 @@ from part.models import Part
 from plugin.serializers import MetadataSerializer
 from users.models import ApiToken
 
-from .helpers import is_ajax
 from .helpers_email import is_email_configured
 from .mixins import ListAPI, RetrieveUpdateAPI
 from .status import check_system_health, is_worker_running
@@ -46,93 +44,6 @@ def auth_request(request):
     if request.user.is_authenticated:
         return HttpResponse(status=200)
     return HttpResponse(status=403)
-
-
-class AjaxView(PermissionRequiredMixin, View):
-    """An 'AJAXified' View for displaying an object.
-
-    TODO: Rewrite this to use DRF.
-    """
-
-    ajax_template_name = 'modal_form.html'
-    ajax_form_title = ''
-
-    def get_form_title(self):
-        """Default implementation - return the ajax_form_title variable."""
-        return self.ajax_form_title
-
-    def get_data(self):
-        """Get extra context data (default implementation is empty dict).
-
-        Returns:
-            dict object (empty)
-        """
-        return {}
-
-    def renderJsonResponse(self, request, form=None, data=None, context=None):
-        """Render a JSON response based on specific class context.
-
-        Args:
-            request: HTTP request object (e.g. GET / POST)
-            form: Django form object (may be None)
-            data: Extra JSON data to pass to client
-            context: Extra context data to pass to template rendering
-
-        Returns:
-            JSON response object
-        """
-        # a empty dict as default can be dangerous - set it here if empty
-        if not data:
-            data = {}
-
-        if not is_ajax(request):
-            return HttpResponseRedirect('/')
-
-        if context is None:
-            try:
-                context = self.get_context_data()
-            except AttributeError:
-                context = {}
-
-        # If no 'form' argument is supplied, look at the underlying class
-        if form is None:
-            try:
-                form = self.get_form()
-            except AttributeError:
-                pass
-
-        if form:
-            context['form'] = form
-        else:
-            context['form'] = None
-
-        data['title'] = self.get_form_title()
-
-        data['html_form'] = render_to_string(
-            self.ajax_template_name, context, request=request
-        )
-
-        # Custom feedback`data
-        fb = self.get_data()
-
-        for key in fb:
-            data[key] = fb[key]
-
-        return JsonResponse(data, safe=False)
-
-    def post(self, request, *args, **kwargs):
-        """Return a json formatted response.
-
-        This renderJsonResponse function must be supplied by your function.
-        """
-        return self.renderJsonResponse(request)
-
-    def get(self, request, *args, **kwargs):
-        """Return a json formatted response.
-
-        This renderJsonResponse function must be supplied by your function.
-        """
-        return self.renderJsonResponse(request)
 
 
 class LicenseViewSerializer(serializers.Serializer):
@@ -296,7 +207,7 @@ class VersionTextView(ListAPI):
         return JsonResponse(inventreeApiText())
 
 
-class InfoView(AjaxView):
+class InfoView(PermissionRequiredMixin, View):
     """Simple JSON endpoint for InvenTree information.
 
     Use to confirm that the server is running, etc.
@@ -361,7 +272,7 @@ class InfoView(AjaxView):
         return False
 
 
-class NotFoundView(AjaxView):
+class NotFoundView(PermissionRequiredMixin, View):
     """Simple JSON view when accessing an invalid API view."""
 
     permission_classes = [permissions.AllowAny]
