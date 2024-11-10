@@ -41,6 +41,7 @@ from .api import (
     NotFoundView,
     VersionTextView,
     VersionView,
+    auth_request,
 )
 from .magic_login import GetSimpleLoginView
 from .social_auth_urls import (
@@ -51,7 +52,6 @@ from .social_auth_urls import (
     SocialProviderListView,
     social_auth_urlpatterns,
 )
-from .views import auth_request
 
 admin.site.site_header = 'InvenTree Admin'
 

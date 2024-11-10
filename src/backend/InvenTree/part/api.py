@@ -46,7 +46,6 @@ from order.status_codes import PurchaseOrderStatusGroups, SalesOrderStatusGroups
 from stock.models import StockLocation
 
 from . import serializers as part_serializers
-from . import views
 from .models import (
     BomItem,
     BomItemSubstitute,
@@ -2212,12 +2211,6 @@ part_api_urls = [
             ),
         ]),
     ),
-    # BOM template
-    path(
-        'bom_template/',
-        views.BomUploadTemplate.as_view(),
-        name='api-bom-upload-template',
-    ),
     path(
         '<int:pk>/',
         include([
@@ -2249,8 +2242,6 @@ part_api_urls = [
             ),
             # Part pricing
             path('pricing/', PartPricingDetail.as_view(), name='api-part-pricing'),
-            # BOM download
-            path('bom-download/', views.BomDownload.as_view(), name='api-bom-download'),
             # Part detail endpoint
             path('', PartDetail.as_view(), name='api-part-detail'),
         ]),
