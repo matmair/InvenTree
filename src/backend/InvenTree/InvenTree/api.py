@@ -6,11 +6,9 @@ import sys
 from pathlib import Path
 
 from django.conf import settings
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.utils.translation import gettext_lazy as _
-from django.views import View
 
 from django_q.models import OrmQ
 from drf_spectacular.utils import OpenApiResponse, extend_schema
@@ -207,7 +205,7 @@ class VersionTextView(ListAPI):
         return JsonResponse(inventreeApiText())
 
 
-class InfoView(PermissionRequiredMixin, View):
+class InfoView(APIView):
     """Simple JSON endpoint for InvenTree information.
 
     Use to confirm that the server is running, etc.
@@ -272,7 +270,7 @@ class InfoView(PermissionRequiredMixin, View):
         return False
 
 
-class NotFoundView(PermissionRequiredMixin, View):
+class NotFoundView(APIView):
     """Simple JSON view when accessing an invalid API view."""
 
     permission_classes = [permissions.AllowAny]
