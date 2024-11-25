@@ -23,7 +23,6 @@ from django.utils.translation import gettext_lazy as _
 
 import bleach
 import pytz
-import regex
 from bleach import clean
 from djmoney.money import Money
 from PIL import Image
@@ -807,19 +806,19 @@ def remove_non_printable_characters(
     if remove_ascii:
         # Remove ASCII control characters
         # Note that we do not sub out 0x0A (\n) here, it is done separately below
-        cleaned = regex.sub('[\x00-\x09]+', '', cleaned)
-        cleaned = regex.sub('[\x0b-\x1f\x7f]+', '', cleaned)
+        cleaned = re.sub('[\x00-\x09]+', '', cleaned)
+        cleaned = re.sub('[\x0b-\x1f\x7f]+', '', cleaned)
 
     if remove_newline:
-        cleaned = regex.sub('[\x0a]+', '', cleaned)
+        cleaned = re.sub('[\x0a]+', '', cleaned)
 
     if remove_unicode:
         # Remove Unicode control characters
         if remove_newline:
-            cleaned = regex.sub(r'[^\P{C}]+', '', cleaned)
+            cleaned = re.sub(r'[^\P{C}]+', '', cleaned)
         else:
             # Use 'negative-lookahead' to exclude newline character
-            cleaned = regex.sub('(?![\x0a])[^\\P{C}]+', '', cleaned)
+            cleaned = re.sub('(?![\x0a])[^\\P{C}]+', '', cleaned)
 
     return cleaned
 
