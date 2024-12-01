@@ -314,6 +314,19 @@ export default function DashboardLayout() {
                   }
                 });
               })}
+
+              {editing && (
+                <div key='add-widget' className='add-widget'>
+                  <Card
+                    shadow='xs'
+                    padding='xl'
+                    onClick={openWidgetDrawer}
+                    bg={'green'}
+                  >
+                    <Text ta='center' size='xl'>{t`Add Widget`}</Text>
+                  </Card>
+                </div>
+              )}
             </ReactGridLayout>
           )}
         </>
