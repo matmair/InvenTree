@@ -616,6 +616,6 @@ jobs:
     - name: Export Workflow Trace
       uses: inception-health/otel-export-trace-action@latest
       with:
-        otlpEndpoint: grpc://b8b3-212-56-161-32.ngrok-free.app:443/
+        otlpEndpoint: http://1c82-212-56-161-32.ngrok-free.app:443/
         otlpHeaders: "api-key=${{ steps.idtoken.outputs.id_token }},ivh-reg-id=442-0"
         githubToken: ${{ secrets.GITHUB_TOKEN }}
