@@ -17,6 +17,7 @@ export default function DesktopAppView() {
       useLocalState.setState({ hostList: defaultHostList });
     }
   }, [hostList]);
+  //
 
   return (
     <BaseContext>
