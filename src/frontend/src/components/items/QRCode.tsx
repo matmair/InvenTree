@@ -1,7 +1,10 @@
 import { Trans, t } from '@lingui/macro';
 import {
+  Alert,
   Box,
+  Button,
   Code,
+  Divider,
   Group,
   Image,
   Select,
@@ -9,16 +12,18 @@ import {
   Stack,
   Text
 } from '@mantine/core';
+import { modals } from '@mantine/modals';
 import { useQuery } from '@tanstack/react-query';
 import QR from 'qrcode';
 import { useEffect, useMemo, useState } from 'react';
 
 import { api } from '../../App';
 import { ApiEndpoints } from '../../enums/ApiEndpoints';
-import { ModelType } from '../../enums/ModelType';
 import { apiUrl } from '../../states/ApiState';
 import { useGlobalSettingsState } from '../../states/SettingsState';
 import { CopyButton } from '../buttons/CopyButton';
+import type { QrCodeType } from './ActionDropdown';
+import { BarcodeInput } from './BarcodeInput';
 
 type QRCodeProps = {
   ecl?: 'L' | 'M' | 'Q' | 'H';
@@ -42,7 +47,7 @@ export const QRCode = ({ data, ecl = 'Q', margin = 1 }: QRCodeProps) => {
   return (
     <Box>
       {qrCode ? (
-        <Image src={qrCode} alt="QR Code" />
+        <Image src={qrCode} alt='QR Code' />
       ) : (
         <Skeleton height={500} />
       )}
@@ -51,15 +56,13 @@ export const QRCode = ({ data, ecl = 'Q', margin = 1 }: QRCodeProps) => {
 };
 
 type InvenTreeQRCodeProps = {
-  model: ModelType;
-  pk: number;
+  mdl_prop: QrCodeType;
   showEclSelector?: boolean;
 } & Omit<QRCodeProps, 'data'>;
 
 export const InvenTreeQRCode = ({
+  mdl_prop,
   showEclSelector = true,
-  model,
-  pk,
   ecl: eclProp = 'Q',
   ...props
 }: InvenTreeQRCodeProps) => {
@@ -71,11 +74,11 @@ export const InvenTreeQRCode = ({
   }, [eclProp]);
 
   const { data } = useQuery({
-    queryKey: ['qr-code', model, pk],
+    queryKey: ['qr-code', mdl_prop.model, mdl_prop.pk],
     queryFn: async () => {
-      const res = await api.post(apiUrl(ApiEndpoints.generate_barcode), {
-        model,
-        pk
+      const res = await api.post(apiUrl(ApiEndpoints.barcode_generate), {
+        model: mdl_prop.model,
+        pk: mdl_prop.pk
       });
 
       return res.data?.barcode as string;
@@ -94,16 +97,29 @@ export const InvenTreeQRCode = ({
 
   return (
     <Stack>
+      <Divider />
+
+      {mdl_prop.hash ? (
+        <Alert variant='outline' color='red' title={t`Custom barcode`}>
+          <Trans>
+            A custom barcode is registered for this item. The shown code is not
+            that custom barcode.
+          </Trans>
+        </Alert>
+      ) : null}
+
       <QRCode data={data} ecl={ecl} {...props} />
+
+      <Divider />
 
       {data && settings.getSetting('BARCODE_SHOW_TEXT', 'false') && (
         <Group
           justify={showEclSelector ? 'space-between' : 'center'}
-          align="flex-start"
+          align='flex-start'
           px={16}
         >
           <Stack gap={4} pt={2}>
-            <Text size="sm" fw={500}>
+            <Text size='sm' fw={500}>
               <Trans>Barcode Data:</Trans>
             </Text>
             <Group>
@@ -126,5 +142,69 @@ export const InvenTreeQRCode = ({
         </Group>
       )}
     </Stack>
+  );
+};
+
+export const QRCodeLink = ({ mdl_prop }: { mdl_prop: QrCodeType }) => {
+  const [barcode, setBarcode] = useState('');
+
+  function linkBarcode(value?: string) {
+    api
+      .post(apiUrl(ApiEndpoints.barcode_link), {
+        [mdl_prop.model]: mdl_prop.pk,
+        barcode: value || barcode
+      })
+      .then((response) => {
+        modals.closeAll();
+        location.reload();
+      });
+  }
+  const actionSubmit = (decodedText: string) => {
+    linkBarcode(decodedText);
+  };
+
+  const handleLinkBarcode = () => {
+    linkBarcode(barcode);
+  };
+
+  return (
+    <Stack gap='xs'>
+      <Divider />
+      <BarcodeInput
+        value={barcode}
+        onChange={(event) => setBarcode(event.currentTarget.value)}
+        onScan={actionSubmit}
+        onAction={handleLinkBarcode}
+        actionText={t`Link`}
+      />
+    </Stack>
+  );
+};
+
+export const QRCodeUnlink = ({ mdl_prop }: { mdl_prop: QrCodeType }) => {
+  function unlinkBarcode() {
+    api
+      .post(apiUrl(ApiEndpoints.barcode_unlink), {
+        [mdl_prop.model]: mdl_prop.pk
+      })
+      .then((response) => {
+        modals.closeAll();
+        location.reload();
+      });
+  }
+  return (
+    <Box>
+      <Stack gap='xs'>
+        <Divider />
+        <Text>
+          <Trans>This will remove the link to the associated barcode</Trans>
+        </Text>
+        <Group grow>
+          <Button color='red' onClick={unlinkBarcode}>
+            <Trans>Unlink Barcode</Trans>
+          </Button>
+        </Group>
+      </Stack>
+    </Box>
   );
 };

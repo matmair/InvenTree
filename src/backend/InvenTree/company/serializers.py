@@ -9,6 +9,7 @@ from rest_framework import serializers
 from sql_util.utils import SubqueryCount
 from taggit.serializers import TagListSerializerField
 
+import company.filters
 import part.filters
 import part.serializers as part_serializers
 from importer.mixins import DataImportExportSerializerMixin
@@ -166,6 +167,10 @@ class CompanySerializer(
 
     image = InvenTreeImageSerializerField(required=False, allow_null=True)
 
+    email = serializers.EmailField(
+        required=False, default='', allow_blank=True, allow_null=True
+    )
+
     parts_supplied = serializers.IntegerField(read_only=True)
     parts_manufactured = serializers.IntegerField(read_only=True)
     address_count = serializers.IntegerField(read_only=True)
@@ -319,6 +324,7 @@ class SupplierPartSerializer(
             'availability_updated',
             'description',
             'in_stock',
+            'on_order',
             'link',
             'active',
             'manufacturer',
@@ -392,6 +398,8 @@ class SupplierPartSerializer(
     # Annotated field showing total in-stock quantity
     in_stock = serializers.FloatField(read_only=True, label=_('In Stock'))
 
+    on_order = serializers.FloatField(read_only=True, label=_('On Order'))
+
     available = serializers.FloatField(required=False, label=_('Available'))
 
     pack_quantity_native = serializers.FloatField(read_only=True)
@@ -437,6 +445,10 @@ class SupplierPartSerializer(
             in_stock: Current stock quantity for each SupplierPart
         """
         queryset = queryset.annotate(in_stock=part.filters.annotate_total_stock())
+
+        queryset = queryset.annotate(
+            on_order=company.filters.annotate_on_order_quantity()
+        )
 
         return queryset
 
@@ -507,6 +519,13 @@ class SupplierPriceBreakSerializer(
 
         if not part_detail:
             self.fields.pop('part_detail', None)
+
+    @staticmethod
+    def annotate_queryset(queryset):
+        """Prefetch related fields for the queryset."""
+        queryset = queryset.select_related('part', 'part__supplier', 'part__part')
+
+        return queryset
 
     quantity = InvenTreeDecimalField()
 
