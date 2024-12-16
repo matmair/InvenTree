@@ -7,8 +7,13 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 3 : undefined,
-  reporter: process.env.CI ? [['html', { open: 'never' }], ['github']] : 'list',
-
+  reporter: process.env.CI
+    ? [
+        ['html', { open: 'never' }],
+        ['github'],
+        ['junit', { outputFile: 'junit.xml' }]
+      ]
+    : 'list',
   /* Configure projects for major browsers */
   projects: [
     {
