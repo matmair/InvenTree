@@ -102,14 +102,14 @@ def get_config_file(create=True) -> Path:
         cfg_filename = base_dir.joinpath('config.yaml').resolve()
 
     if not cfg_filename.exists() and create:
-        print(
+        logger.warning(
             "InvenTree configuration file 'config.yaml' not found - creating default file"
         )
         ensure_dir(cfg_filename.parent)
 
         cfg_template = base_dir.joinpath('config_template.yaml')
         shutil.copyfile(cfg_template, cfg_filename)
-        print(f'Created config file {cfg_filename}')
+        logger.warning(f'Created config file {cfg_filename}')
 
     return cfg_filename
 
