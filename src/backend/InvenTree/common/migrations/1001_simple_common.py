@@ -74,8 +74,6 @@ def set_currencies(apps, schema_editor):
         setting.save()
 
 
-####
-
 
 class Migration(migrations.Migration):
     replaces = [
