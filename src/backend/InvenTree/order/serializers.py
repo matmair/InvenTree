@@ -28,6 +28,7 @@ import stock.models
 import stock.serializers
 import stock.status_codes
 from common.serializers import ProjectCodeSerializer
+from company import models as company_models
 from company.serializers import (
     AddressBriefSerializer,
     CompanyBriefSerializer,
@@ -570,7 +571,7 @@ class PurchaseOrderLineItemSerializer(
         return queryset
 
     part = serializers.PrimaryKeyRelatedField(
-        queryset=part_models.SupplierPart.objects.all(),
+        queryset=company_models.SupplierPart.objects.all(),
         many=False,
         required=True,
         allow_null=True,
