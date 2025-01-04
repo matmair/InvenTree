@@ -1,5 +1,5 @@
 name: 'Migration test'
-description: 'Run migration test sequenze'
+description: 'Run migration test sequence'
 author: 'InvenTree'
 
 runs:
@@ -9,9 +9,9 @@ runs:
         shell: bash
         run: |
           invoke migrate
-          invoke import-fixtures
+          invoke dev.import-fixtures
           invoke export-records -f data.json
-          python3 ./InvenTree/manage.py flush --noinput
+          python3 ./src/backend/InvenTree/manage.py flush --noinput
           invoke migrate
-          invoke import-records -f data.json
-          invoke import-records -f data.json
+          invoke import-records -c -f data.json
+          invoke import-records -c -f data.json

@@ -1,0 +1,128 @@
+{% load static %}
+{% load i18n %}
+{% load inventree_extras %}
+
+{% settings_value "SERVER_RESTART_REQUIRED" as server_restart_required %}
+{% settings_value "_PENDING_MIGRATIONS" as pending_migrations %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+{% include "favicon.html" %}
+
+<!-- CSS -->
+<link rel="stylesheet" href="{% static 'css/inventree.css' %}">
+
+<title>
+{% block page_title %}
+{% inventree_title %}
+{% endblock page_title %}
+</title>
+</head>
+
+<body>
+
+<div class='main body wrapper container-fluid inventree-body'>
+    <div class='row flex-nowrap inventree-body'>
+        <div class='col-auto px-1 sidebar-wrapper'>
+            <div id='sidebar' class='collapse collapse-horizontal show' style='display: none;'>
+                <div id='sidebar-nav' class='list-group text-sm-start'>
+                    <ul id='sidebar-list-group' class='list-group sidebar-list-group'>
+                        {% block sidebar %}
+                        <!-- Sidebar goes here -->
+                        {% endblock sidebar %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <main class='col ps-md-2 pt-2 pe-2'>
+
+            {% block alerts %}
+            <div class='notification-area' id='alerts'>
+                <!-- Div for displayed alerts -->
+                {% if server_restart_required %}
+                <div id='alert-restart-server' class='alert alert-danger' role='alert'>
+                    <span class='fas fa-server'></span>
+                    <strong>{% trans "Server Restart Required" %}</strong>
+                    <small>
+                        <br>
+                        {% trans "A configuration option has been changed which requires a server restart" %}. {% trans "Contact your system administrator for further information" %}
+                    </small>
+                </div>
+                {% endif %}
+                {% if pending_migrations > 0 %}
+                <div id='alert-pending-migrations' class='alert alert-danger' role='alert'>
+                    <span class='fas fa-database'></span>
+                    <strong>{% trans "Pending Database Migrations" %}</strong>
+                    <small>
+                        <br>
+                        {% trans "There are pending database migrations which require attention" %}. {% trans "Contact your system administrator for further information" %}
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+            {% endblock alerts %}
+
+            {% block breadcrumb_list %}
+            <div class='container-fluid navigation' id='breadcrumb-div'>
+                <nav aria-label='breadcrumb'>
+                    <ol class='breadcrumb' id='breadcrumb-list'>
+                        {% block breadcrumbs %}
+                        {% endblock breadcrumbs %}
+                    </ol>
+                </nav>
+
+                <div id='breadcrumb-tree-collapse' class='collapse collapse-horizontal show border' style='display: none;'>
+                    {% block breadcrumb_tree %}
+                    {% endblock breadcrumb_tree %}
+                </div>
+            </div>
+
+            {% endblock breadcrumb_list %}
+
+            {% block content %}
+                <!-- Each view fills in here.. -->
+            {% endblock content %}
+        </main>
+    </div>
+</div>
+
+<script defer type='text/javascript'>
+
+$(document).ready(function () {
+
+{% block js_ready %}
+{% endblock js_ready %}
+
+    inventreeDocReady();
+
+    {% if barcodes %}
+    $('#barcode-scan').click(function() {
+        barcodeScanDialog();
+    });
+    {% endif %}
+
+    moment.locale('{{ request.LANGUAGE_CODE }}');
+
+    // Account notifications
+    {% if messages %}
+    {% for message in messages %}
+    showMessage(
+        '{{ message }}',
+        {
+            style: 'info',
+        }
+    );
+    {% endfor %}
+    {% endif %}
+});
+
+</script>
+
+</body>
+</html>

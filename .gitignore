@@ -26,10 +26,12 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+*.DS_Store
 
 # Django stuff:
 *.log
 local_settings.py
+*.sqlite
 *.sqlite3
 *.sqlite3-journal
 *.backup
@@ -38,12 +40,6 @@ local_settings.py
 # Files used for testing
 inventree-demo-dataset/
 inventree-data/
-dummy_image.*
-_tmp.csv
-inventree/label.pdf
-inventree/label.png
-inventree/my_special*
-_tests*.txt
 
 # Local static and media file storage (only when running in development mode)
 inventree_media
@@ -66,6 +62,7 @@ secret_key.txt
 .idea/
 *.code-workspace
 .bash_history
+.DS_Store
 
 # https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
 .vscode/*
@@ -88,7 +85,12 @@ data/
 env/
 
 # Locale stats file
-locale_stats.json
+src/backend/InvenTree/InvenTree/locale_stats.json
+src/backend/InvenTree/InvenTree/licenses.txt
+
+# Logs
+src/backend/InvenTree/logs.json
+src/backend/InvenTree/logs.log
 
 # node.js
 node_modules/
@@ -97,7 +99,21 @@ node_modules/
 maintenance_mode_state.txt
 
 # plugin dev directory
-InvenTree/plugins/
+src/backend/InvenTree/plugins/
 
 # Compiled translation files
 *.mo
+messages.ts
+
+# Generated API schema file
+api.yaml
+
+# web frontend (static files)
+src/backend/InvenTree/web/static
+InvenTree/web/static
+
+# Generated docs files
+docs/schema.yml
+docs/docs/api/*.yml
+docs/docs/api/schema/*.yml
+inventree_settings.json

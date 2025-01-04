@@ -1,0 +1,37 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 82%
+    patch: off
+
+github_checks:
+    annotations: true
+
+flag_management:
+  default_rules:
+    carryforward: true
+  individual_flags:
+    - name: backend
+      carryforward: true
+      statuses:
+        - type: project
+          target: 85%
+    - name: migrations
+      carryforward: true
+      statuses:
+        - type: project
+          target: 40%
+    - name: pui
+      carryforward: true
+      statuses:
+        - type: project
+          target: 45%
+
+comment:
+  require_bundle_changes: True
+  bundle_change_threshold: "1Kb"
+
+bundle_analysis:
+  warning_threshold: "5%"
+  status: "informational"

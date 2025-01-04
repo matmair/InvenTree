@@ -4,6 +4,19 @@ mkdocs:
   configuration: docs/mkdocs.yml
 
 python:
-  version: 3.7
   install:
     - requirements: docs/requirements.txt
+    - requirements: src/backend/requirements.txt
+
+build:
+  os: "ubuntu-22.04"
+  tools:
+    python: "3.9"
+  jobs:
+    post_install:
+      - echo "Generating API schema file"
+      - pip install -U invoke
+      - invoke migrate
+      - invoke int.export-settings-definitions --filename docs/inventree_settings.json --overwrite
+      - invoke dev.schema --filename docs/schema.yml --ignore-warnings
+      - python docs/extract_schema.py docs/schema.yml

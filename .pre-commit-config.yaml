@@ -2,55 +2,88 @@
 # See https://pre-commit.com/hooks.html for more hooks
 exclude: |
     (?x)^(
-        InvenTree/InvenTree/static/.*|
-        InvenTree/locale/.*
+        src/backend/InvenTree/InvenTree/static/.*|
+        src/backend/InvenTree/locale/.*|
+        src/frontend/src/locales/.* |
+        .*/migrations/.* |
+        src/frontend/yarn.lock
     )$
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
     -   id: mixed-line-ending
--   repo: https://github.com/pycqa/flake8
-    rev: '6.0.0'
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.3
     hooks:
-    -   id: flake8
-        additional_dependencies: [
-                'flake8-bugbear',
-                'flake8-comprehensions',
-                'flake8-docstrings',
-                'flake8-string-format',
-                'flake8-tidy-imports',
-                'pep8-naming'
-        ]
--   repo: https://github.com/pycqa/isort
-    rev: '5.12.0'
-    hooks:
-    -   id: isort
--   repo: https://github.com/jazzband/pip-tools
-    rev: 6.13.0
+    - id: ruff-format
+      args: [--preview]
+    - id: ruff
+      args: [
+        --fix,
+        # --unsafe-fixes,
+        --preview
+      ]
+-   repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.5.1
     hooks:
       - id: pip-compile
         name: pip-compile requirements-dev.in
-        args: [requirements-dev.in, -o, requirements-dev.txt]
-        files: ^requirements-dev\.(in|txt)$
+        args: [src/backend/requirements-dev.in, -o, src/backend/requirements-dev.txt, --no-strip-extras, --generate-hashes]
+        files: src/backend/requirements-dev\.(in|txt)$
       - id: pip-compile
         name: pip-compile requirements.txt
-        args: [requirements.in, -o, requirements.txt]
-        files: ^requirements\.(in|txt)$
+        args: [src/backend/requirements.in, -o, src/backend/requirements.txt, --no-strip-extras, --generate-hashes]
+        files: src/backend/requirements\.(in|txt)$
+      - id: pip-compile
+        name: pip-compile requirements.txt
+        args: [contrib/dev_reqs/requirements.in, -o, contrib/dev_reqs/requirements.txt, --no-strip-extras, --generate-hashes]
+        files: contrib/dev_reqs/requirements\.(in|txt)$
+      - id: pip-compile
+        name: pip-compile requirements.txt
+        args: [docs/requirements.in, -o, docs/requirements.txt, --no-strip-extras, --generate-hashes]
+        files: docs/requirements\.(in|txt)$
+      - id: pip-compile
+        name: pip-compile requirements.txt
+        args: [contrib/container/requirements.in, -o, contrib/container/requirements.txt, --python-version=3.11, --no-strip-extras, --generate-hashes]
+        files: contrib/container/requirements\.(in|txt)$
 -   repo: https://github.com/Riverside-Healthcare/djLint
-    rev: v1.29.0
+    rev: v1.36.1
     hooks:
       - id: djlint-django
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.2.4
+  rev: v2.3.0
   hooks:
   - id: codespell
+    additional_dependencies:
+      - tomli
     exclude: >
       (?x)^(
           docs/docs/stylesheets/.*|
           docs/docs/javascripts/.*|
-          docs/docs/webfonts/.*
+          docs/docs/webfonts/.* |
+          src/frontend/src/locales/.* |
+          pyproject.toml |
+          src/frontend/vite.config.ts |
       )$
+-   repo: https://github.com/biomejs/pre-commit
+    rev: "v0.5.0"
+    hooks:
+    -   id: biome-check
+        additional_dependencies: ["@biomejs/biome@1.9.4"]
+        files: ^src/frontend/.*\.(js|ts|tsx)$
+-   repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+    -   id: gitleaks
+#-   repo: https://github.com/jumanjihouse/pre-commit-hooks
+#    rev: 3.0.0
+#    hooks:
+#    -   id: shellcheck
+-   repo: https://github.com/isidentical/teyit
+    rev: 0.4.3
+    hooks:
+    -   id: teyit

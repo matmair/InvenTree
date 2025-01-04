@@ -15,53 +15,95 @@ name: Docker
 
 on:
   release:
-    types: [ published ]
+    types: [published]
 
   push:
     branches:
-      - 'master'
+      - "master"
+  pull_request:
+    branches:
+      - "master"
 
-  # pull_request:
-  #   branches:
-  #     - 'master'
+permissions:
+  contents: read
 
 jobs:
+  paths-filter:
+    permissions:
+      contents: read # for dorny/paths-filter to fetch a list of changed files
+      pull-requests: read # for dorny/paths-filter to read pull requests
+    name: Filter
+    runs-on: ubuntu-latest
+
+    outputs:
+      docker: ${{ steps.filter.outputs.docker }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
+        with:
+          persist-credentials: false
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # pin@v3.0.2
+        id: filter
+        with:
+          filters: |
+            docker:
+              - .github/workflows/docker.yaml
+              - contrib/container/**
+              - src/backend/InvenTree/InvenTree/settings.py
+              - src/backend/requirements.txt
+              - tasks.py
 
   # Build the docker image
   build:
-    runs-on: ubuntu-latest
+    needs: paths-filter
+    if: needs.paths-filter.outputs.docker == 'true' || github.event_name == 'release' || github.event_name == 'push'
     permissions:
       contents: read
       packages: write
       id-token: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      python_version: 3.9
+      python_version: "3.11"
+    runs-on: ubuntu-latest # in the future we can try to use alternative runners here
+
     steps:
       - name: Check out repo
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # pin@v3.1.0
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
+        with:
+          persist-credentials: false
       - name: Set Up Python ${{ env.python_version }}
-        uses: actions/setup-python@13ae5bb136fac2878aff31522b9efb785519f984 # pin@v4.3.0
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # pin@v5.3.0
         with:
           python-version: ${{ env.python_version }}
       - name: Version Check
         run: |
-          pip install requests
-          pip install pyyaml
-          python3 ci/version_check.py
+          pip install --require-hashes -r contrib/dev_reqs/requirements.txt
+          python3 .github/scripts/version_check.py
           echo "git_commit_hash=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "git_commit_date=$(git show -s --format=%ci)" >> $GITHUB_ENV
+      - name: Test Docker Image
+        id: test-docker
+        run: |
+          docker build . --target production --tag inventree-test -f contrib/container/Dockerfile
+          docker run --rm inventree-test invoke --version
+          docker run --rm inventree-test invoke --list
+          docker run --rm inventree-test gunicorn --version
+          docker run --rm inventree-test pg_dump --version
+          docker run --rm inventree-test test -f /home/inventree/init.sh
+          docker run --rm inventree-test test -f /home/inventree/tasks.py
+          docker run --rm inventree-test test -f /home/inventree/gunicorn.conf.py
+          docker run --rm inventree-test test -f /home/inventree/src/backend/requirements.txt
+          docker run --rm inventree-test test -f /home/inventree/src/backend/InvenTree/manage.py
       - name: Build Docker Image
         # Build the development docker image (using docker-compose.yml)
-        run: |
-          docker-compose build --no-cache
+        run: docker compose --project-directory . -f contrib/container/dev-docker-compose.yml build --no-cache
       - name: Update Docker Image
         run: |
-          docker-compose run inventree-dev-server invoke update
-          docker-compose run inventree-dev-server invoke setup-dev
-          docker-compose up -d
-          docker-compose run inventree-dev-server pip install --upgrade setuptools
-          docker-compose run inventree-dev-server invoke wait
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke install
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke update
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke dev.setup-dev
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml up -d
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke wait
       - name: Check Data Directory
         # The following file structure should have been created by the docker image
         run: |
@@ -76,28 +118,41 @@ jobs:
           test -f data/secret_key.txt
       - name: Run Unit Tests
         run: |
-          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> docker.dev.env
-          docker-compose run inventree-dev-server invoke test --disable-pty
-          docker-compose down
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> contrib/container/docker.dev.env
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run --rm inventree-dev-server invoke dev.test --disable-pty --translations
+      - name: Run Migration Tests
+        run: |
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run --rm inventree-dev-server invoke dev.test --migrations --translations
+      - name: Clean up test folder
+        run: |
+          rm -rf InvenTree/_testfolder
       - name: Set up QEMU
         if: github.event_name != 'pull_request'
-        uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18 # pin@v2.1.0
+        uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf # pin@v3.2.0
       - name: Set up Docker Buildx
         if: github.event_name != 'pull_request'
-        uses: docker/setup-buildx-action@95cb08cb2672c73d4ffd2f422e6d11953d2a9c70 # pin@v2.1.0
+        uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5 # pin@v3.8.0
       - name: Set up cosign
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@7cc35d7fdbe70d4278a0c96779081e6fac665f88 # pin@v2.8.0
+        uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # pin@v3.7.0
+      - name: Check if Dockerhub login is required
+        id: docker_login
+        run: |
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then
+            echo "skip_dockerhub_login=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip_dockerhub_login=false" >> $GITHUB_OUTPUT
+          fi
       - name: Login to Dockerhub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # pin@v2.1.0
+        if: github.event_name != 'pull_request' && steps.docker_login.outputs.skip_dockerhub_login != 'true'
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # pin@v3.3.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Log into registry ghcr.io
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # pin@v2
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # pin@v3.3.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -106,29 +161,26 @@ jobs:
       - name: Extract Docker metadata
         if: github.event_name != 'pull_request'
         id: meta
-        uses: docker/metadata-action@12cce9efe0d49980455aaaca9b071c0befcdd702 # pin@v4.1.0
+        uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # pin@v5.6.1
         with:
           images: |
             inventree/inventree
-            ghcr.io/inventree/inventree
-
-      - name: Build and Push
-        id: build-and-push
+            ghcr.io/${{ github.repository }}
+      - uses: depot/setup-action@v1
+      - name: Push Docker Images
+        id: push-docker
         if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 # pin@v3.2.0
+        uses: depot/build-push-action@v1
         with:
+          project: jczzbjkk68
           context: .
+          file: ./contrib/container/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
+          sbom: true
+          provenance: false
           target: production
           tags: ${{ env.docker_tags }}
           build-args: |
             commit_hash=${{ env.git_commit_hash }}
             commit_date=${{ env.git_commit_date }}
-
-      - name: Sign the published image
-        if: ${{ false }} # github.event_name != 'pull_request'
-        env:
-          COSIGN_EXPERIMENTAL: "true"
-        run: cosign sign ${{ steps.meta.outputs.tags }}@${{
-          steps.build-and-push.outputs.digest }}

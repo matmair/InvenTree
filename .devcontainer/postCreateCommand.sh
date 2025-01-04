@@ -1,21 +1,20 @@
 #!/bin/bash
 
 # Avoiding Dubious Ownership in Dev Containers for setup commands that use git
-# Note that the local workspace directory is passed through as the first argument $1
-git config --global --add safe.directory $1
-
-# create folders
-mkdir -p $1/dev/{commandhistory,plugins}
-cd $1
+git config --global --add safe.directory /home/inventree
 
 # create venv
-python3 -m venv dev/venv
-. dev/venv/bin/activate
+python3 -m venv /home/inventree/dev/venv --system-site-packages --upgrade-deps
+. /home/inventree/dev/venv/bin/activate
 
-# setup InvenTree server
-pip install invoke
-invoke update
-invoke setup-dev
+# Run initial InvenTree server setup
+invoke update -s
+
+# Configure dev environment
+invoke dev.setup-dev
+
+# Install required frontend packages
+invoke int.frontend-install
 
 # remove existing gitconfig created by "Avoiding Dubious Ownership" step
 # so that it gets copied from host to the container to have your global

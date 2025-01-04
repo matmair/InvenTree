@@ -4,7 +4,7 @@ title: Stock Test Result
 
 ## Stock Test Result
 
-Stock items which are associated with a *trackable* part can have associated test data - this is particularly useful for tracking unit testing / commissioning / acceptance data against a serialized stock item.
+Stock items which are associated with a [testable part](../part/part.md#testable) can have associated test data - this is particularly useful for tracking unit testing / commissioning / acceptance data against a serialized stock item.
 
 The master "Part" record for the stock item can define multiple [test templates](../part/test.md), against which test data can be uploaded. Additionally, arbitrary test information can be assigned to the stock item.
 
@@ -14,9 +14,9 @@ The master "Part" record for the stock item can define multiple [test templates]
 
 ### Test Result Fields
 
-#### Test Name
+#### Test Template
 
-The name of the test data is used to associate the test with a test template object.
+The *template* field links to a [Part Test Template](../part/test.md#part-test-templates) object. Each test result instance must link to a test template.
 
 #### Result
 
@@ -42,7 +42,7 @@ Multiple results can be uploaded against the same test name. In cases where mult
 
 For any information regarding the reporting architecture, please refer to the [Report Generation](../report/report.md) page.
 
-### Automated Test Intgration
+### Automated Test Integration
 
 The stock item testing framework is especially useful when integrating with an automated acceptance testing framework. Test results can be uploaded using the [InvenTree API](../api/api.md) or the [InvenTree Python Interface](../api/python/python.md).
 

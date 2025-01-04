@@ -1,0 +1,56 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dependencies:
+        patterns:
+          - "*" # Include all dependencies
+
+  - package-ecosystem: docker
+    directory: /contrib/container
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: pip
+    directories:
+    - /docs
+    - /contrib/dev_reqs
+    schedule:
+      interval: weekly
+      day: friday
+    groups:
+      dependencies:
+        patterns:
+          - "*" # Include all dependencies
+    assignees:
+      - "matmair"
+    versioning-strategy: increase
+
+  - package-ecosystem: pip
+    directories:
+    - /contrib/container
+    - /src/backend
+    schedule:
+      interval: weekly
+      day: friday
+    groups:
+      dependencies:
+        patterns:
+          - "*" # Include all dependencies
+    assignees:
+      - "matmair"
+    versioning-strategy: increase
+
+  - package-ecosystem: npm
+    directories:
+    - /src/frontend
+    - /src/backend
+    schedule:
+      interval: weekly
+    groups:
+      dependencies:
+        patterns:
+          - "*" # Include all dependencies

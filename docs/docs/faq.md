@@ -14,30 +14,17 @@ InvenTree installation is not officially supported natively on Windows. However 
 
 ### Command 'invoke' not found
 
-If the `invoke` command does not work, it means that the [invoke](https://pypi.org/project/invoke/) python library has not been correctly installed.
+If the `invoke` command does not work, it means that the invoke tool has not been correctly installed.
 
-Update the installed python packages with PIP:
+Refer to the [invoke installation guide](./start/invoke.md#installation) for more information.
 
-```
-pip3 install -U -r requirements.txt
-```
+### Can't find any collection named tasks
+
+Refer to the [invoke guide](./start/invoke.md#cant-find-any-collection-named-tasks) for more information.
 
 ### Invoke Version
 
-If the installed version of invoke is too old, users may see error messages during the installation procedure, such as *"'update' did not receive all required positional arguments!"* (or similar).
-
-As per the [invoke guide](./start/intro.md#invoke), the minimum required version of Invoke is `1.4.0`.
-
-To determine the version of invoke you have installed, run either:
-
-```
-invoke --version
-```
-```
-python -m invoke --version
-```
-
-If you are running an older version of invoke, ensure it is updated to the latest version.
+If the installed version of invoke is too old, users may see error messages during the installation procedure. Refer to the [invoke guide](./start/invoke.md#minimum-version) for more information.
 
 ### No module named 'django'
 
@@ -51,11 +38,38 @@ Most likely you are trying to run the InvenTree server from outside the context 
 
 Always activate the virtual environment before running server commands!
 
+### 'str' object has no attribute 'removeSuffix'
+
+This error occurs because your installed python version is not up to date. We [require Python {{ config.extra.min_python_version }} or newer](./start/intro.md#python-requirements)
+
+You (or your system administrator) needs to update python to meet the minimum requirements for InvenTree.
+
+### InvenTree Site URL
+
+During the installation or update process, you may see an error similar to:
+
+```
+'No CSRF_TRUSTED_ORIGINS specified. Please provide a list of trusted origins, or specify INVENTREE_SITE_URL'
+```
+
+If you see this error, it means that the `INVENTREE_SITE_URL` environment variable has not correctly specified. Refer to the [configuration documentation](./start/config.md#site-url) for more information.
+
+### Login Issues
+
+If you have successfully started the InvenTree server, but are experiencing issues logging in, it may be due to the security interactions between your web browser and the server. While the default configuration should work for most users, if you do experience login issues, ensure that your [server access settings](./start/config.md#server-access) are correctly configured.
+
+### Session Cookies
+
+The [0.17.0 release](https://github.com/inventree/InvenTree/releases/tag/0.17.0) included [a change to the way that session cookies were handled](https://github.com/inventree/InvenTree/pull/8269). This change may cause login issues for existing InvenTree installs which are upgraded from an older version. System administrators should refer to the [server access settings](./start/config.md#server-access) and ensure that the following settings are correctly configured:
+
+- **INVENTREE_SESSION_COOKIE_SECURE**: `False`
+- **INVENTREE_COOKIE_SAMESITE**: `False`
+
 ## Update Issues
 
 Sometimes, users may encounter unexpected error messages when updating their InvenTree installation to a newer version.
 
-The most common problem here is that the correct sequenct of steps has not been followed:
+The most common problem here is that the correct sequence of steps has not been followed:
 
 1. Ensure that the InvenTree web server and background worker processes are *halted*
 1. Update the InvenTree software (e.g. using git or docker, depending on installation method)
@@ -64,11 +78,31 @@ The most common problem here is that the correct sequenct of steps has not been 
 
 For more information, refer to the installation guides:
 
-- [Docker Installation](./start/docker_prod.md#updating-inventree)
+- [Docker Installation](./start/docker_install.md#updating-inventree)
 - [Bare Metal Installation](./start/install.md#updating-inventree)
 
 !!! warning "Invoke Update"
     You must ensure that the `invoke update` command is performed *every time* you update InvenTree
+
+### Breaking Changes
+
+Before performing an update, check the release notes! Any *breaking changes* (changes which require user intervention) will be clearly noted.
+
+### Cannot import name get_storage_class
+
+When running an install or update, you may see an error similar to:
+
+```python
+ImportError: cannot import name 'get_storage_class' from 'django.core.files.storage'
+```
+
+In such a situation, it is likely that the automatic backup procedure is unable to run, as the required python packages are not yet installed or are unavailable.
+
+To proceed in this case, you can skip the backup procedure by running the `invoke update` command with the `--skip-backup` flag:
+
+```bash
+invoke update --skip-backup
+```
 
 ### Feature *x* does not work after update
 
@@ -104,7 +138,7 @@ invoke worker
 
 ### File Sync Issues - Docker
 
-When installing under [Docker](./start/docker.md), sometimes issues may arise keeping [persistent data](./start/docker.md#persistent-data) in sync. Refer to the [common issues](./start/docker_prod.md#common-issues) section in the docker setup guide for further details.
+When installing under [Docker](./start/docker.md), sometimes issues may arise keeping [persistent data](./start/docker.md#persistent-data) in sync. Refer to the [common issues](./start/docker.md#common-issues) section in the docker setup guide for further details.
 
 ### Permission denied for mkdir: /home/inventree
 

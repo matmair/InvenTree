@@ -1,0 +1,107 @@
+
+[tool.ruff]
+exclude = [
+    ".git",
+    "__pycache__",
+    "test.py",
+    "tests",
+    "venv",
+    "env",
+    ".venv",
+    ".env",
+    "src/backend/plugins/*",
+]
+src = ["src/backend/InvenTree"]
+# line-length = 120
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = ["D104"]
+
+[tool.ruff.lint]
+select = ["A", "B", "C", "C4", "D", "F", "I", "N", "SIM", "PIE", "PLE", "PLW", "RUF", "UP", "W"]
+# Things that should be enabled in the future:
+# - LOG
+# - DJ # for Django stuff
+# - S # for security stuff (bandit)
+
+ignore = [
+    "PLE1205",
+    # - PLE1205 - Too many arguments for logging format string
+    "PLW2901",
+    # - PLW2901 - Outer {outer_kind} variable {name} overwritten by inner {inner_kind} target
+    "PLW0602","PLW0603","PLW0604",  # global variable things
+    "RUF015",
+    # - RUF015 - Prefer next({iterable}) over single element slice
+    "RUF012",
+    # - RUF012 - Mutable class attributes should be annotated with typing.ClassVar
+    "SIM117",
+    # - SIM117 - Use a single with statement with multiple contexts instead of nested with statements
+    "SIM102",
+    # - SIM102 - Use a single if statement instead of nested if statements
+    "SIM105",
+    # - SIM105 - Use contextlib.suppress({exception}) instead of try-except-pass
+    "C901",
+    # - C901 - function is too complex
+    "N999",
+    # - N802 - function name should be lowercase
+	"N802",
+	# - N806 - variable should be lowercase
+	"N806",
+	# - N812 - lowercase imported as non-lowercase
+	"N812",
+    # - D417 Missing argument descriptions in the docstring
+    "D417",
+    # - RUF032 - decimal-from-float-literal
+    "RUF032",
+
+    # TODO These should be followed up and fixed
+    # - B904 Within an `except` clause, raise exceptions
+    "B904",
+
+    # Remove fast
+    "A002", "B018"
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false
+combine-as-imports = false
+section-order = [
+    "future",
+    "standard-library",
+    "django",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.isort.sections]
+"django" = ["django"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = true
+line-ending = "auto"
+
+[tool.uv.pip]
+python-version = "3.9"
+no-strip-extras=true
+generate-hashes=true
+
+[tool.coverage.run]
+source = ["src/backend/InvenTree", "InvenTree"]
+
+[tool.djlint]
+ignore = "D018,H006,H008,H020,H021,H023,H025,H030,H031,T002"
+
+[tool.isort]
+src_paths=["src/backend/InvenTree", ]
+skip_glob ="*/migrations/*.py"
+known_django="django"
+sections=["FUTURE","STDLIB","DJANGO","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
+
+[tool.codespell]
+ignore-words-list = ["assertIn","SME","intoto","fitH"]

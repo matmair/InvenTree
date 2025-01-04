@@ -26,6 +26,7 @@ Parameter templates are used to define the different types of parameters which a
 | Units | Optional units field (*must be a valid [physical unit](#parameter-units)*) |
 | Choices | A comma-separated list of valid choices for parameter values linked to this template. |
 | Checkbox | If set, parameters linked to this template can only be assigned values *true* or *false* |
+| Selection List | If set, parameters linked to this template can only be assigned values from the linked [selection list](#selection-lists) |
 
 ### Create Template
 
@@ -77,18 +78,24 @@ The parametric parts table allows the returned parts to be sorted by particular 
 
 ## Parameter Units
 
-The *units* field (which is defined against a [parameter template](#parameter-templates)) defines the base unit of that template. Any parameters which are created against that unit *must* be specified in compatible units. Unit conversion is implemented using the [pint](https://pint.readthedocs.io/en/stable/) Python library. This conversion library is used to perform two main functions:
-
-- Enforce use of compatible units when creating part parameters
-- Perform conversion to the base template unit
+The *units* field (which is defined against a [parameter template](#parameter-templates)) defines the base unit of that template. Any parameters which are created against that unit *must* be specified in compatible units.
 
 The in-built conversion functionality means that parameter values can be input in different dimensions - *as long as the dimension is compatible with the base template units*.
+
+!!! info "Read Mode"
+    Read more about how InvenTree supports [physical units of measure](../concepts/units.md)
 
 ### Incompatible Units
 
 If a part parameter is created with a value which is incompatible with the units specified for the template, it will be rejected:
 
 {% with id="invalid_units", url="part/part_invalid_units.png", description="Invalid Parameter Units" %}
+{% include 'img.html' %}
+{% endwith %}
+
+This behaviour can be disabled if required, so that any parameter value is accepted:
+
+{% with id="enforce_units", url="part/part_parameters_enforce.png", description="Enforce part parameters" %}
 {% include 'img.html' %}
 {% endwith %}
 
@@ -99,3 +106,12 @@ Parameter sorting takes unit conversion into account, meaning that values provid
 {% with id="sort_by_param_units", url="part/part_sorting_units.png", description="Sort by Parameter Units" %}
 {% include 'img.html' %}
 {% endwith %}
+
+### Selection Lists
+
+Selection Lists can be used to add a large number of predefined values to a parameter template. This can be useful for parameters which must be selected from a large predefined list of values (e.g. a list of standardised colo codes). Choices on templates are limited to 5000 characters, selection lists can be used to overcome this limitation.
+
+It is possible that plugins lock selection lists to ensure a known state.
+
+
+Administration of lists can be done through the Part Parameter section in the Admin Center or via the API.

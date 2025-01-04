@@ -16,17 +16,30 @@ You need to make sure that you have the following tools installed before continu
 - [docker](https://www.docker.com/products/docker-desktop/) is needed to run the devcontainer
 - [vscode](https://code.visualstudio.com/Download) is needed to edit and debug code
 
+#### Docker Containers
+
+The InvenTree devcontainer setup will install the following docker containers:
+
+| Container | Description |
+| --- | --- |
+| inventree | InvenTree host server |
+| db | InvenTree database (postgresql) |
+| redis | Redis server for caching |
+
 #### Setup/Installation
 
 1. Clone the repository (If you want to submit changes fork it and use the url to your fork in the next step)
    ```bash
    git clone https://github.com/inventree/InvenTree.git
    ```
-2. open vscode, navigate to the extensions sidebar and search for `ms-vscode-remote.remote-containers`. Click on install.
-3. open the cloned folder from above by clicking on `file > open folder`
-4. vscode should now ask you if you'd like to reopen this folder in a devcontainer. Click `Reopen in Container`. If it shouldn't ask you open the command palette (<kbd>CMD</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) and search for `Reopen in Container`. This can take a few minutes until the image is downloaded, build and setup with all dependencies.
+2. Open vscode, navigate to the extensions sidebar and search for `ms-vscode-remote.remote-containers`. Click on install.
+3. Open the cloned folder from above by clicking on `file > open folder`
+4. vscode should now ask you if you'd like to reopen this folder in a devcontainer. Click `Reopen in Container`. If it does not ask you, open the command palette (<kbd>CTRL/CMD</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) and search for `Reopen in Container`. This can take a few minutes until the image is downloaded, build and setup with all dependencies.
+5. Open a new terminal from the top menu by clicking `Terminal > New Terminal`
+6. The last line in your terminal should now show the text `(venv)` at the start of the line
+7. You are done! You now should have a functioning InvenTree development installation
 
-### Setup in codespaces
+### Setup in Codespaces
 
 Open [inventree/InvenTree](https://github.com/inventree/InvenTree) with your browser and click on `Code`, select the `codespaces` tab and click on create codespace on current branch. This may can take a few minutes until your inventree development environment is setup.
 
@@ -39,20 +52,28 @@ Tasks can help you executing scripts. You can run them by open the command panel
 
 #### Setup demo dataset
 
-If you need some demo test-data, run the `setup-test` task. This will import an `admin` user with the password `inventree`. For more info on what this dataset contains see [inventree/demo-dataset](https://github.com/inventree/demo-dataset).
+If you need some demo test-data, run the `setup-test` task. This will import an `admin` user with the password `inventree`. For more info on what this dataset contains see [inventree/demo-dataset](../demo.md).
 
 #### Setup a superuser
 
 If you only need a superuser, run the `superuser` task. It should prompt you for credentials.
+
+#### Run background workers
+
+If you need to process your queue with background workers, run the `worker` task. This is a foreground task which will execute in the terminal.
 
 ### Running InvenTree
 
 You can either only run InvenTree or use the integrated debugger for debugging. Goto the `Run and debug` side panel make sure `InvenTree Server` is selected. Click on the play button on the left.
 
 !!! tip "Debug with 3rd party"
-    Sometimes you need to debug also some 3rd party packages. Just select `python: Django - 3rd party`
+    Sometimes you need to debug also some 3rd party packages. Just select `InvenTree Server - 3rd party`
 
 You can now set breakpoints and vscode will automatically pause execution if that point is hit. You can see all variables available in that context and evaluate some code with the debugger console at the bottom. Use the play or step buttons to continue execution.
+
+!!! info "React Frontend development"
+
+The React frontend requires additional steps to run. Refer to [Platform UI / React](./react-frontend.md)
 
 ### Plugin development
 
@@ -81,10 +102,27 @@ Your plugin should now be activateable from the InvenTree settings. You can also
 ### Troubleshooting
 
 #### Your ssh-keys are not available in the devcontainer but are loaded to the active `ssh-agent` on macOS
+
 Make sure you enabled full disk access on macOS for vscode, otherwise your ssh-keys are not available inside the container (Ref: [Automatically add SSH keys to ssh-agent [comment]](https://github.com/microsoft/vscode-remote-release/issues/4024#issuecomment-831671081)).
 
 #### You're not able to use your gpg-keys inside the devcontainer to sign commits on macOS
+
 Make sure you have `gnupg` and `pinentry-mac` installed and set up correctly. Read this [medium post](https://medium.com/@jma/setup-gpg-for-git-on-macos-4ad69e8d3733) for more info on how to set it up correctly.
 
 #### Where are the database, media files, ... stored?
+
 Backups, Commandhistory, media/static files, venv, plugin.txt, secret_key.txt, ... are stored in the `dev` folder. If you want to start with a clean setup, you can remove that folder, but be aware that this will delete everything you already setup in InvenTree.
+
+### Performance Improvements
+
+If you are running a devcontainer in Windows, you may experience some performance issues - particularly related to file system operations.
+
+For a significant improvement in performance, the source code should be installed into the **WSL 2** filesystem (not on your "Windows" filesystem). This will greatly improve file access performance, and also make the devcontainer much more responsive to file system changes.
+
+You can also refer to the [Improve disk performance guide](https://code.visualstudio.com/remote/advancedcontainers/improve-performance) for more information.
+
+### Redis Caching
+
+The devcontainer setup provides a [redis](https://redis.io/) container which can be used for managing global cache. By default this is disabled, but it can be easily enabled for testing or developing with the [redis cache](../start/config.md#caching) enabled.
+
+To enable the cache, locate the InvenTree configuration file (`./dev/config.yaml`) and set the `cache.enabled` setting to `True`.

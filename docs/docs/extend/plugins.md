@@ -9,14 +9,14 @@ The InvenTree server code supports an extensible plugin architecture, allowing c
 Plugins can be added from multiple sources:
 
 - Plugins can be installed in InvenTrees venv via PIP (python package manager)
-- Custom plugins should be placed in the directory `./InvenTree/plugins`.
-- InvenTree built-in plugins are located in the directory `./InvenTree/plugin/builtin`.
+- Custom plugins should be placed in the directory `./data/plugins`.
+- InvenTree built-in plugins are located in the directory `./src/backend/InvenTree/plugin/builtin`.
 
 For further information, read more about [installing plugins](./plugins/install.md).
 
 ### Plugin Base Class
 
-Custom plugins must inherit from the [InvenTreePlugin class](https://github.com/inventree/InvenTree/blob/2d1776a151721d65d0ae007049d358085b2fcfd5/InvenTree/plugin/plugin.py#L204). Any plugins installed via the methods outlined above will be "discovered" when the InvenTree server launches.
+Custom plugins must inherit from the [InvenTreePlugin class]({{ sourcefile("src/backend/InvenTree/plugin/plugin.py") }}). Any plugins installed via the methods outlined above will be "discovered" when the InvenTree server launches.
 
 !!! warning "Namechange"
     The name of the base class was changed with `0.7.0` from `IntegrationPluginBase` to `InvenTreePlugin`. While the old name is still available till `0.8.0` we strongly suggest upgrading your plugins. Deprecation warnings are raised if the old name is used.
@@ -28,7 +28,7 @@ Please read all release notes and watch out for warnings - we generally provide 
 
 #### Plugins
 
-General classes and mechanisms are provided under the `plugin` [namespaces](https://github.com/inventree/InvenTree/blob/master/InvenTree/plugin/__init__.py). These include:
+General classes and mechanisms are provided under the `plugin` [namespaces]({{ sourcefile("src/backend/InvenTree/plugin/__init__.py") }}). These include:
 
 ```python
 # Management objects
@@ -44,7 +44,7 @@ MixinNotImplementedError    # Is raised if a mixin was not implemented (core mec
 
 #### Mixins
 
-Mixins are split up internally to keep the source tree clean and enable better testing separation. All public APIs that should be used are exposed under `plugin.mixins`. These include all built-in mixins and notification methods. An up-to-date reference can be found in the source code (current master can be [found here](https://github.com/inventree/InvenTree/blob/master/InvenTree/plugin/mixins/__init__.py)).
+Mixins are split up internally to keep the source tree clean and enable better testing separation. All public APIs that should be used are exposed under `plugin.mixins`. These include all built-in mixins and notification methods. An up-to-date reference can be found in the source code [can be found here]({{ sourcefile("src/backend/InvenTree/plugin/mixins/__init__.py") }}).
 
 #### Models and other internal InvenTree APIs
 
@@ -72,7 +72,7 @@ MIN_VERSION = None  # Lowest InvenTree version number that is supported by the p
 MAX_VERSION = None  # Highest InvenTree version number that is supported by the plugin
 ```
 
-Refer to the [sample plugins](https://github.com/inventree/InvenTree/tree/master/InvenTree/plugin/samples) for further examples.
+Refer to the [sample plugins]({{ sourcedir("src/backend/InvenTree/plugin/samples") }}) for further examples.
 
 ### Plugin Config
 
@@ -83,9 +83,9 @@ The configuration entries must be enabled via the [InvenTree admin interface](..
 !!! warning "Disabled by Default"
     Newly discovered plugins are disabled by default, and must be manually enabled (in the admin interface) by a user with staff privileges.
 
-### Plugin Mixins
+## Plugin Mixins
 
-Common use cases are covered by pre-supplied modules in the form of *mixins* (similar to how [Django](https://docs.djangoproject.com/en/stable/topics/class-based-views/mixins/) does it). Each mixin enables the integration into a specific area of InvenTree. Sometimes it also enhances the plugin with helper functions to supply often used functions out-of-the-box.
+Common use cases are covered by pre-supplied modules in the form of *mixins* (similar to how [Django]({% include "django.html" %}/topics/class-based-views/mixins/) does it). Each mixin enables the integration into a specific area of InvenTree. Sometimes it also enhances the plugin with helper functions to supply often used functions out-of-the-box.
 
 Supported mixin classes are:
 
@@ -95,13 +95,21 @@ Supported mixin classes are:
 | [APICallMixin](./plugins/api.md) | Perform calls to external APIs |
 | [AppMixin](./plugins/app.md) | Integrate additional database tables |
 | [BarcodeMixin](./plugins/barcode.md) | Support custom barcode actions |
+| [CurrencyExchangeMixin](./plugins/currency.md) | Custom interfaces for currency exchange rates |
 | [EventMixin](./plugins/event.md) | Respond to events |
 | [LabelPrintingMixin](./plugins/label.md) | Custom label printing support |
 | [LocateMixin](./plugins/locate.md) | Locate and identify stock items |
 | [NavigationMixin](./plugins/navigation.md) | Add custom pages to the web interface |
-| [PanelMixin](./plugins/panel.md) | Add custom panels to web views |
 | [ReportMixin](./plugins/report.md) | Add custom context data to reports |
 | [ScheduleMixin](./plugins/schedule.md) | Schedule periodic tasks |
 | [SettingsMixin](./plugins/settings.md) | Integrate user configurable settings |
 | [UrlsMixin](./plugins/urls.md) | Respond to custom URL endpoints |
 | [ValidationMixin](./plugins/validation.md) | Provide custom validation of database models |
+
+## Static Files
+
+If your plugin requires static files (e.g. CSS, JavaScript, images), these should be placed in the top level `static` directory within the distributed plugin package. These files will be automatically collected by InvenTree when the plugin is installed, and copied to an appropriate location.
+
+These files will be available to the InvenTree web interface, and can be accessed via the URL `/static/plugins/<plugin_name>/<filename>`. Static files are served by the [proxy server](../start/processes.md#proxy-server).
+
+For example, if the plugin is named `my_plugin`, and contains a file `CustomPanel.js`, it can be accessed via the URL `/static/plugins/my_plugin/CustomPanel.js`.

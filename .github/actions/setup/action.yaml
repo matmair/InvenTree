@@ -35,38 +35,43 @@ runs:
     using: 'composite'
     steps:
       - name: Checkout Code
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # pin@v3.1.0
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
+        with:
+          persist-credentials: false
 
       # Python installs
       - name: Set up Python ${{ env.python_version }}
         if: ${{ inputs.python == 'true' }}
-        uses: actions/setup-python@13ae5bb136fac2878aff31522b9efb785519f984 # pin@v4.3.0
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # pin@v5.0.0
         with:
           python-version: ${{ env.python_version }}
           cache: pip
+          cache-dependency-path: |
+            src/backend/requirements.txt
+            src/backend/requirements-dev.txt
+            contrib/container/requirements.txt
+            contrib/dev_reqs/requirements.txt
       - name: Install Base Python Dependencies
         if: ${{ inputs.python == 'true' }}
         shell: bash
         run: |
           python3 -m pip install -U pip
-          pip3 install invoke wheel
+          pip3 install -U invoke wheel
+          pip3 install 'uv<0.3.0'
+      - name: Allow uv to use the system Python by default
+        run: echo "UV_SYSTEM_PYTHON=1" >> $GITHUB_ENV
+        shell: bash
       - name: Install Specific Python Dependencies
         if: ${{ inputs.pip-dependency }}
         shell: bash
-        run: pip3 install ${{ inputs.pip-dependency }}
+        run: uv pip install ${{ inputs.pip-dependency }}
 
       # NPM installs
       - name: Install node.js ${{ env.node_version }}
         if: ${{ inputs.npm == 'true' }}
-        uses: actions/setup-node@969bd2663942d722d85b6a8626225850c2f7be4b  # pin to v3.5.0
+        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7  # pin to v3.8.2
         with:
           node-version: ${{ env.node_version }}
-          cache: 'npm'
-      - name: Install npm packages
-        if: ${{ inputs.npm == 'true' }}
-        shell: bash
-        run: npm install
-
       # OS installs
       - name: Install OS Dependencies
         if: ${{ inputs.apt-dependency }}
@@ -74,17 +79,18 @@ runs:
         run: |
           sudo apt-get update
           sudo apt-get install ${{ inputs.apt-dependency }}
+          sudo apt-get install ${{ inputs.apt-dependency }}
 
       # Invoke commands
       - name: Install dev requirements
-        if: ${{ inputs.dev-install == 'true' ||inputs.install == 'true' }}
+        if: ${{ inputs.dev-install == 'true' || inputs.install == 'true' }}
         shell: bash
-        run: pip install -r requirements-dev.txt
+        run: uv pip install --require-hashes -r src/backend/requirements-dev.txt
       - name: Run invoke install
         if: ${{ inputs.install == 'true' }}
         shell: bash
-        run: invoke install
+        run: invoke install --uv
       - name: Run invoke update
         if: ${{ inputs.update == 'true' }}
         shell: bash
-        run: invoke update
+        run: invoke update --uv --skip-backup --skip-static
