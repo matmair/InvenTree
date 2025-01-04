@@ -8,6 +8,7 @@ import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
 import mptt.fields
+import common.models
 
 
 class Migration(migrations.Migration):
@@ -378,7 +379,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         help_text="Select file to attach",
                         null=True,
-                        upload_to=InvenTree.models.rename_attachment,
+                        upload_to=common.models.rename_attachment,
                         verbose_name="Attachment",
                     ),
                 ),
