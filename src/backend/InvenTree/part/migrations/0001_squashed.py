@@ -978,13 +978,7 @@ class Migration(migrations.Migration):
                 (
                     "currency",
                     models.CharField(
-                        choices=[
-                            ("USD", "US Dollar"),
-                            ("EUR", "Euro"),
-                            ("NZD", "New Zealand Dollar"),
-                            ("CNY", "Chinese Yuan"),
-                            ("AUD", "Australian Dollar"),
-                        ],
+                        choices=common.currency.currency_code_mappings(),
                         default=common.currency.currency_code_default,
                         help_text="Currency used to cache pricing calculations",
                         max_length=10,
