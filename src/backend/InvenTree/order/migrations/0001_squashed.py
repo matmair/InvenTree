@@ -441,204 +441,6 @@ class Migration(migrations.Migration):
             bases=(InvenTree.models.PluginValidationMixin, models.Model),
         ),
         migrations.CreateModel(
-            name="ReturnOrder",
-            fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                (
-                    "metadata",
-                    models.JSONField(
-                        blank=True,
-                        help_text="JSON metadata field, for use by external plugins",
-                        null=True,
-                        verbose_name="Plugin Metadata",
-                    ),
-                ),
-                ("reference_int", models.BigIntegerField(default=0)),
-                (
-                    "notes",
-                    InvenTree.fields.InvenTreeNotesField(
-                        blank=True,
-                        help_text="Markdown notes (optional)",
-                        max_length=50000,
-                        null=True,
-                        verbose_name="Notes",
-                    ),
-                ),
-                (
-                    "barcode_data",
-                    models.CharField(
-                        blank=True,
-                        help_text="Third party barcode data",
-                        max_length=500,
-                        verbose_name="Barcode Data",
-                    ),
-                ),
-                (
-                    "barcode_hash",
-                    models.CharField(
-                        blank=True,
-                        help_text="Unique hash of barcode data",
-                        max_length=128,
-                        verbose_name="Barcode Hash",
-                    ),
-                ),
-                (
-                    "total_price_currency",
-                    djmoney.models.fields.CurrencyField(
-                        choices=[], default="", editable=False, max_length=3, null=True
-                    ),
-                ),
-                (
-                    "total_price",
-                    InvenTree.fields.InvenTreeModelMoneyField(
-                        blank=True,
-                        currency_choices=[],
-                        decimal_places=6,
-                        default_currency="",
-                        help_text="Total price for this order",
-                        max_digits=19,
-                        null=True,
-                        validators=[djmoney.models.validators.MinMoneyValidator(0)],
-                        verbose_name="Total Price",
-                    ),
-                ),
-                (
-                    "order_currency",
-                    models.CharField(
-                        blank=True,
-                        help_text="Currency for this order (leave blank to use company default)",
-                        max_length=3,
-                        null=True,
-                        validators=[InvenTree.validators.validate_currency_code],
-                        verbose_name="Order Currency",
-                    ),
-                ),
-                (
-                    "description",
-                    models.CharField(
-                        blank=True,
-                        help_text="Order description (optional)",
-                        max_length=250,
-                        verbose_name="Description",
-                    ),
-                ),
-                (
-                    "link",
-                    InvenTree.fields.InvenTreeURLField(
-                        blank=True,
-                        help_text="Link to external page",
-                        verbose_name="Link",
-                    ),
-                ),
-                (
-                    "target_date",
-                    models.DateField(
-                        blank=True,
-                        help_text="Expected date for order delivery. Order will be overdue after this date.",
-                        null=True,
-                        verbose_name="Target Date",
-                    ),
-                ),
-                (
-                    "creation_date",
-                    models.DateField(
-                        blank=True, null=True, verbose_name="Creation Date"
-                    ),
-                ),
-                (
-                    "reference",
-                    models.CharField(
-                        default=order.validators.generate_next_return_order_reference,
-                        help_text="Return Order reference",
-                        max_length=64,
-                        unique=True,
-                        validators=[order.validators.validate_return_order_reference],
-                        verbose_name="Reference",
-                    ),
-                ),
-                (
-                    "status_custom_key",
-                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
-                        blank=True,
-                        default=None,
-                        help_text="Additional status information for this item",
-                        null=True,
-                        validators=[
-                            generic.states.validators.CustomStatusCodeValidator(
-                                status_class=order.status_codes.ReturnOrderStatus
-                            )
-                        ],
-                        verbose_name="Custom status key",
-                    ),
-                ),
-                (
-                    "status",
-                    generic.states.fields.InvenTreeCustomStatusModelField(
-                        choices=[
-                            (10, "Pending"),
-                            (20, "In Progress"),
-                            (25, "On Hold"),
-                            (30, "Complete"),
-                            (40, "Cancelled"),
-                        ],
-                        default=10,
-                        help_text="Return order status",
-                        validators=[
-                            generic.states.validators.CustomStatusCodeValidator(
-                                status_class=order.status_codes.ReturnOrderStatus
-                            )
-                        ],
-                        verbose_name="Status",
-                    ),
-                ),
-                (
-                    "customer_reference",
-                    models.CharField(
-                        blank=True,
-                        help_text="Customer order reference code",
-                        max_length=64,
-                        verbose_name="Customer Reference ",
-                    ),
-                ),
-                (
-                    "issue_date",
-                    models.DateField(
-                        blank=True,
-                        help_text="Date order was issued",
-                        null=True,
-                        verbose_name="Issue Date",
-                    ),
-                ),
-                (
-                    "complete_date",
-                    models.DateField(
-                        blank=True,
-                        help_text="Date order was completed",
-                        null=True,
-                        verbose_name="Completion Date",
-                    ),
-                ),
-            ],
-            options={
-                "verbose_name": "Return Order",
-            },
-            bases=(
-                generic.states.states.StatusCodeMixin,
-                generic.states.transition.StateTransitionMixin,
-                InvenTree.models.InvenTreeAttachmentMixin,
-                InvenTree.models.PluginValidationMixin,
-                models.Model,
-            ),
-        ),
-        migrations.CreateModel(
             name="ReturnOrderExtraLine",
             fields=[
                 (
@@ -1335,6 +1137,205 @@ class Migration(migrations.Migration):
                 models.Model,
             ),
         ),
+        migrations.CreateModel(
+            name="ReturnOrder",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "metadata",
+                    models.JSONField(
+                        blank=True,
+                        help_text="JSON metadata field, for use by external plugins",
+                        null=True,
+                        verbose_name="Plugin Metadata",
+                    ),
+                ),
+                ("reference_int", models.BigIntegerField(default=0)),
+                (
+                    "notes",
+                    InvenTree.fields.InvenTreeNotesField(
+                        blank=True,
+                        help_text="Markdown notes (optional)",
+                        max_length=50000,
+                        null=True,
+                        verbose_name="Notes",
+                    ),
+                ),
+                (
+                    "barcode_data",
+                    models.CharField(
+                        blank=True,
+                        help_text="Third party barcode data",
+                        max_length=500,
+                        verbose_name="Barcode Data",
+                    ),
+                ),
+                (
+                    "barcode_hash",
+                    models.CharField(
+                        blank=True,
+                        help_text="Unique hash of barcode data",
+                        max_length=128,
+                        verbose_name="Barcode Hash",
+                    ),
+                ),
+                (
+                    "total_price_currency",
+                    djmoney.models.fields.CurrencyField(
+                        choices=[], default="", editable=False, max_length=3, null=True
+                    ),
+                ),
+                (
+                    "total_price",
+                    InvenTree.fields.InvenTreeModelMoneyField(
+                        blank=True,
+                        currency_choices=[],
+                        decimal_places=6,
+                        default_currency="",
+                        help_text="Total price for this order",
+                        max_digits=19,
+                        null=True,
+                        validators=[djmoney.models.validators.MinMoneyValidator(0)],
+                        verbose_name="Total Price",
+                    ),
+                ),
+                (
+                    "order_currency",
+                    models.CharField(
+                        blank=True,
+                        help_text="Currency for this order (leave blank to use company default)",
+                        max_length=3,
+                        null=True,
+                        validators=[InvenTree.validators.validate_currency_code],
+                        verbose_name="Order Currency",
+                    ),
+                ),
+                (
+                    "description",
+                    models.CharField(
+                        blank=True,
+                        help_text="Order description (optional)",
+                        max_length=250,
+                        verbose_name="Description",
+                    ),
+                ),
+                (
+                    "link",
+                    InvenTree.fields.InvenTreeURLField(
+                        blank=True,
+                        help_text="Link to external page",
+                        verbose_name="Link",
+                    ),
+                ),
+                (
+                    "target_date",
+                    models.DateField(
+                        blank=True,
+                        help_text="Expected date for order delivery. Order will be overdue after this date.",
+                        null=True,
+                        verbose_name="Target Date",
+                    ),
+                ),
+                (
+                    "creation_date",
+                    models.DateField(
+                        blank=True, null=True, verbose_name="Creation Date"
+                    ),
+                ),
+                (
+                    "reference",
+                    models.CharField(
+                        default=order.validators.generate_next_return_order_reference,
+                        help_text="Return Order reference",
+                        max_length=64,
+                        unique=True,
+                        validators=[order.validators.validate_return_order_reference],
+                        verbose_name="Reference",
+                    ),
+                ),
+                (
+                    "status_custom_key",
+                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
+                        blank=True,
+                        default=None,
+                        help_text="Additional status information for this item",
+                        null=True,
+                        validators=[
+                            generic.states.validators.CustomStatusCodeValidator(
+                                status_class=order.status_codes.ReturnOrderStatus
+                            )
+                        ],
+                        verbose_name="Custom status key",
+                    ),
+                ),
+                (
+                    "status",
+                    generic.states.fields.InvenTreeCustomStatusModelField(
+                        choices=[
+                            (10, "Pending"),
+                            (20, "In Progress"),
+                            (25, "On Hold"),
+                            (30, "Complete"),
+                            (40, "Cancelled"),
+                        ],
+                        default=10,
+                        help_text="Return order status",
+                        validators=[
+                            generic.states.validators.CustomStatusCodeValidator(
+                                status_class=order.status_codes.ReturnOrderStatus
+                            )
+                        ],
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "customer_reference",
+                    models.CharField(
+                        blank=True,
+                        help_text="Customer order reference code",
+                        max_length=64,
+                        verbose_name="Customer Reference ",
+                    ),
+                ),
+                (
+                    "issue_date",
+                    models.DateField(
+                        blank=True,
+                        help_text="Date order was issued",
+                        null=True,
+                        verbose_name="Issue Date",
+                    ),
+                ),
+                (
+                    "complete_date",
+                    models.DateField(
+                        blank=True,
+                        help_text="Date order was completed",
+                        null=True,
+                        verbose_name="Completion Date",
+                    ),
+                ),
+            ],
+            options={
+                "verbose_name": "Return Order",
+            },
+            bases=(
+                generic.states.states.StatusCodeMixin,
+                generic.states.transition.StateTransitionMixin,
+                InvenTree.models.InvenTreeAttachmentMixin,
+                InvenTree.models.PluginValidationMixin,
+                models.Model,
+            ),
+        ),
+        
         migrations.CreateModel(
             name="SalesOrderLineItem",
             fields=[
