@@ -9,6 +9,18 @@ class Migration(migrations.Migration):
 
     initial = True
 
+    replaces = [
+        ("plugin", "0001_initial"),
+        ("plugin", "0002_alter_pluginconfig_options"),
+        ("plugin", "0003_pluginsetting"),
+        ("plugin", "0004_alter_pluginsetting_key"),
+        ("plugin", "0005_notificationusersetting"),
+        ("plugin", "0006_pluginconfig_metadata"),
+        ("plugin", "0007_auto_20230805_1748"),
+        ("plugin", "0008_pluginconfig_package_name"),
+        ("plugin", "0009_alter_pluginconfig_key"),
+    ]
+
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]

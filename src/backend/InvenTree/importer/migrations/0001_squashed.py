@@ -11,6 +11,12 @@ class Migration(migrations.Migration):
 
     initial = True
 
+    replaces = [
+        ("importer", "0001_initial"),
+        ("importer", "0002_dataimportsession_field_overrides"),
+        ("importer", "0003_dataimportsession_field_filters"),
+    ]
+
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]

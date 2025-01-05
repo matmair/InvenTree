@@ -11,6 +11,8 @@ class Migration(migrations.Migration):
 
     initial = True
 
+    replaces = [('users', '0001_initial'), ('users', '0002_auto_20201004_0158'), ('users', '0003_auto_20201005_2227'), ('users', '0004_auto_20210113_1909'), ('users', '0005_owner_model'), ('users', '0006_alter_ruleset_name'), ('users', '0007_alter_ruleset_name'), ('users', '0008_apitoken'), ('users', '0009_auto_20231020_2356'), ('users', '0010_alter_apitoken_key'), ('users', '0011_auto_20240523_1640'), ('users', '0012_alter_ruleset_can_view')]
+
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("auth", "0012_alter_user_first_name_max_length"),

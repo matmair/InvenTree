@@ -14,6 +14,8 @@ class Migration(migrations.Migration):
 
     initial = True
 
+    replaces = [('report', '0001_initial'), ('report', '0002_delete_reporttemplate'), ('report', '0003_testreport_enabled'), ('report', '0004_auto_20200823_1104'), ('report', '0005_auto_20210119_0815'), ('report', '0006_reportsnippet'), ('report', '0007_auto_20210204_1617'), ('report', '0008_auto_20210204_2100'), ('report', '0009_testreport_revision'), ('report', '0010_auto_20210205_1201'), ('report', '0011_auto_20210212_2024'), ('report', '0012_buildreport'), ('report', '0013_testreport_include_installed'), ('report', '0014_purchaseorderreport_salesorderreport'), ('report', '0015_auto_20210403_1837'), ('report', '0016_auto_20210513_1303'), ('report', '0017_auto_20230317_0816'), ('report', '0018_returnorderreport'), ('report', '0019_returnorderreport_metadata'), ('report', '0020_stocklocationreport'), ('report', '0021_auto_20231009_0144'), ('report', '0022_reporttemplate'), ('report', '0023_auto_20240421_0455'), ('report', '0024_delete_billofmaterialsreport_delete_buildreport_and_more'), ('report', '0025_labeltemplate'), ('report', '0026_auto_20240422_1301'), ('report', '0027_alter_labeltemplate_model_type_and_more'), ('report', '0028_labeltemplate_attach_to_model_and_more')]
+
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
