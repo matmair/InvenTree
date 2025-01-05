@@ -151,6 +151,21 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "status_custom_key",
+                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
+                        blank=True,
+                        default=None,
+                        help_text="Additional status information for this item",
+                        null=True,
+                        validators=[
+                            generic.states.validators.CustomStatusCodeValidator(
+                                status_class=order.status_codes.PurchaseOrderStatus
+                            )
+                        ],
+                        verbose_name="Custom status key",
+                    ),
+                ),
+                (
                     "status",
                     generic.states.fields.InvenTreeCustomStatusModelField(
                         choices=[
@@ -197,21 +212,6 @@ class Migration(migrations.Migration):
                         help_text="Date order was completed",
                         null=True,
                         verbose_name="Completion Date",
-                    ),
-                ),
-                (
-                    "status_custom_key",
-                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
-                        blank=True,
-                        default=None,
-                        help_text="Additional status information for this item",
-                        null=True,
-                        validators=[
-                            generic.states.validators.CustomStatusCodeValidator(
-                                status_class=order.status_codes.PurchaseOrderStatus
-                            )
-                        ],
-                        verbose_name="Custom status key",
                     ),
                 ),
             ],
@@ -565,6 +565,21 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "status_custom_key",
+                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
+                        blank=True,
+                        default=None,
+                        help_text="Additional status information for this item",
+                        null=True,
+                        validators=[
+                            generic.states.validators.CustomStatusCodeValidator(
+                                status_class=order.status_codes.ReturnOrderStatus
+                            )
+                        ],
+                        verbose_name="Custom status key",
+                    ),
+                ),
+                (
                     "status",
                     generic.states.fields.InvenTreeCustomStatusModelField(
                         choices=[
@@ -609,21 +624,6 @@ class Migration(migrations.Migration):
                         help_text="Date order was completed",
                         null=True,
                         verbose_name="Completion Date",
-                    ),
-                ),
-                (
-                    "status_custom_key",
-                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
-                        blank=True,
-                        default=None,
-                        help_text="Additional status information for this item",
-                        null=True,
-                        validators=[
-                            generic.states.validators.CustomStatusCodeValidator(
-                                status_class=order.status_codes.ReturnOrderStatus
-                            )
-                        ],
-                        verbose_name="Custom status key",
                     ),
                 ),
             ],
@@ -826,6 +826,21 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "outcome_custom_key",
+                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
+                        blank=True,
+                        default=None,
+                        help_text="Additional status information for this item",
+                        null=True,
+                        validators=[
+                            generic.states.validators.CustomStatusCodeValidator(
+                                status_class=order.status_codes.ReturnOrderLineStatus
+                            )
+                        ],
+                        verbose_name="Custom status key",
+                    ),
+                ),
+                (
                     "outcome",
                     generic.states.fields.InvenTreeCustomStatusModelField(
                         choices=[
@@ -864,21 +879,6 @@ class Migration(migrations.Migration):
                         null=True,
                         validators=[djmoney.models.validators.MinMoneyValidator(0)],
                         verbose_name="Price",
-                    ),
-                ),
-                (
-                    "outcome_custom_key",
-                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
-                        blank=True,
-                        default=None,
-                        help_text="Additional status information for this item",
-                        null=True,
-                        validators=[
-                            generic.states.validators.CustomStatusCodeValidator(
-                                status_class=order.status_codes.ReturnOrderLineStatus
-                            )
-                        ],
-                        verbose_name="Custom status key",
                     ),
                 ),
             ],
@@ -1016,6 +1016,21 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "status_custom_key",
+                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
+                        blank=True,
+                        default=None,
+                        help_text="Additional status information for this item",
+                        null=True,
+                        validators=[
+                            generic.states.validators.CustomStatusCodeValidator(
+                                status_class=order.status_codes.SalesOrderStatus
+                            )
+                        ],
+                        verbose_name="Custom status key",
+                    ),
+                ),
+                (
                     "status",
                     generic.states.fields.InvenTreeCustomStatusModelField(
                         choices=[
@@ -1051,21 +1066,6 @@ class Migration(migrations.Migration):
                     "shipment_date",
                     models.DateField(
                         blank=True, null=True, verbose_name="Shipment Date"
-                    ),
-                ),
-                (
-                    "status_custom_key",
-                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
-                        blank=True,
-                        default=None,
-                        help_text="Additional status information for this item",
-                        null=True,
-                        validators=[
-                            generic.states.validators.CustomStatusCodeValidator(
-                                status_class=order.status_codes.SalesOrderStatus
-                            )
-                        ],
-                        verbose_name="Custom status key",
                     ),
                 ),
             ],

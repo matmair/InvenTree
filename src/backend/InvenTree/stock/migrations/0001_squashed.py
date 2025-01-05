@@ -152,6 +152,21 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "status_custom_key",
+                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
+                        blank=True,
+                        default=None,
+                        help_text="Additional status information for this item",
+                        null=True,
+                        validators=[
+                            generic.states.validators.CustomStatusCodeValidator(
+                                status_class=stock.status_codes.StockStatus
+                            )
+                        ],
+                        verbose_name="Custom status key",
+                    ),
+                ),
+                (
                     "status",
                     generic.states.fields.InvenTreeCustomStatusModelField(
                         choices=[
@@ -191,21 +206,6 @@ class Migration(migrations.Migration):
                         null=True,
                         validators=[djmoney.models.validators.MinMoneyValidator(0)],
                         verbose_name="Purchase Price",
-                    ),
-                ),
-                (
-                    "status_custom_key",
-                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
-                        blank=True,
-                        default=None,
-                        help_text="Additional status information for this item",
-                        null=True,
-                        validators=[
-                            generic.states.validators.CustomStatusCodeValidator(
-                                status_class=stock.status_codes.StockStatus
-                            )
-                        ],
-                        verbose_name="Custom status key",
                     ),
                 ),
                 ("lft", models.PositiveIntegerField(editable=False)),

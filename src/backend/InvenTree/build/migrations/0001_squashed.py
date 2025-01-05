@@ -107,6 +107,21 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "status_custom_key",
+                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
+                        blank=True,
+                        default=None,
+                        help_text="Additional status information for this item",
+                        null=True,
+                        validators=[
+                            generic.states.validators.CustomStatusCodeValidator(
+                                status_class=build.status_codes.BuildStatus
+                            )
+                        ],
+                        verbose_name="Custom status key",
+                    ),
+                ),
+                (
                     "status",
                     generic.states.fields.InvenTreeCustomStatusModelField(
                         choices=[
@@ -171,21 +186,6 @@ class Migration(migrations.Migration):
                         help_text="Priority of this build order",
                         validators=[django.core.validators.MinValueValidator(0)],
                         verbose_name="Build Priority",
-                    ),
-                ),
-                (
-                    "status_custom_key",
-                    generic.states.fields.ExtraInvenTreeCustomStatusModelField(
-                        blank=True,
-                        default=None,
-                        help_text="Additional status information for this item",
-                        null=True,
-                        validators=[
-                            generic.states.validators.CustomStatusCodeValidator(
-                                status_class=build.status_codes.BuildStatus
-                            )
-                        ],
-                        verbose_name="Custom status key",
                     ),
                 ),
                 ("lft", models.PositiveIntegerField(editable=False)),
