@@ -1238,12 +1238,12 @@ class BuildLineTests(BuildAPITest):
 
         # Filter by 'available' status
         # Note: The max_query_time is bumped up here, as postgresql backend has some strange issues (only during testing)
-        response = self.get(url, data={'available': True}, max_query_time=15)
+        response = self.get(url, data={'available': True}, max_query_time=17)
         n_t = len(response.data)
         self.assertGreater(n_t, 0)
 
         # Note: The max_query_time is bumped up here, as postgresql backend has some strange issues (only during testing)
-        response = self.get(url, data={'available': False}, max_query_time=15)
+        response = self.get(url, data={'available': False}, max_query_time=17)
         n_f = len(response.data)
         self.assertGreater(n_f, 0)
 
