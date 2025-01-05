@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("plugin", "0001_squashed"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("common", "0001_initial"),
+        ("common", "0001_squashed"),
     ]
 
     operations = [
