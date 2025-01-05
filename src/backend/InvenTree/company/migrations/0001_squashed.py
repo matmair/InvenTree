@@ -325,93 +325,6 @@ class Migration(migrations.Migration):
             bases=(InvenTree.models.PluginValidationMixin, models.Model),
         ),
         migrations.CreateModel(
-            name="ManufacturerPart",
-            fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                (
-                    "metadata",
-                    models.JSONField(
-                        blank=True,
-                        help_text="JSON metadata field, for use by external plugins",
-                        null=True,
-                        verbose_name="Plugin Metadata",
-                    ),
-                ),
-                (
-                    "notes",
-                    InvenTree.fields.InvenTreeNotesField(
-                        blank=True,
-                        help_text="Markdown notes (optional)",
-                        max_length=50000,
-                        null=True,
-                        verbose_name="Notes",
-                    ),
-                ),
-                (
-                    "barcode_data",
-                    models.CharField(
-                        blank=True,
-                        help_text="Third party barcode data",
-                        max_length=500,
-                        verbose_name="Barcode Data",
-                    ),
-                ),
-                (
-                    "barcode_hash",
-                    models.CharField(
-                        blank=True,
-                        help_text="Unique hash of barcode data",
-                        max_length=128,
-                        verbose_name="Barcode Hash",
-                    ),
-                ),
-                (
-                    "MPN",
-                    models.CharField(
-                        help_text="Manufacturer Part Number",
-                        max_length=100,
-                        null=True,
-                        verbose_name="MPN",
-                    ),
-                ),
-                (
-                    "link",
-                    InvenTree.fields.InvenTreeURLField(
-                        blank=True,
-                        help_text="URL for external manufacturer part link",
-                        null=True,
-                        verbose_name="Link",
-                    ),
-                ),
-                (
-                    "description",
-                    models.CharField(
-                        blank=True,
-                        help_text="Manufacturer part description",
-                        max_length=250,
-                        null=True,
-                        verbose_name="Description",
-                    ),
-                ),
-            ],
-            options={
-                "verbose_name": "Manufacturer Part",
-            },
-            bases=(
-                InvenTree.models.InvenTreeAttachmentMixin,
-                InvenTree.models.PluginValidationMixin,
-                models.Model,
-            ),
-        ),
-        migrations.CreateModel(
             name="ManufacturerPartParameter",
             fields=[
                 (
@@ -639,6 +552,93 @@ class Migration(migrations.Migration):
                 "db_table": "part_supplierpart",
             },
             bases=(InvenTree.models.PluginValidationMixin, models.Model),
+        ),
+        migrations.CreateModel(
+            name="ManufacturerPart",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "metadata",
+                    models.JSONField(
+                        blank=True,
+                        help_text="JSON metadata field, for use by external plugins",
+                        null=True,
+                        verbose_name="Plugin Metadata",
+                    ),
+                ),
+                (
+                    "notes",
+                    InvenTree.fields.InvenTreeNotesField(
+                        blank=True,
+                        help_text="Markdown notes (optional)",
+                        max_length=50000,
+                        null=True,
+                        verbose_name="Notes",
+                    ),
+                ),
+                (
+                    "barcode_data",
+                    models.CharField(
+                        blank=True,
+                        help_text="Third party barcode data",
+                        max_length=500,
+                        verbose_name="Barcode Data",
+                    ),
+                ),
+                (
+                    "barcode_hash",
+                    models.CharField(
+                        blank=True,
+                        help_text="Unique hash of barcode data",
+                        max_length=128,
+                        verbose_name="Barcode Hash",
+                    ),
+                ),
+                (
+                    "MPN",
+                    models.CharField(
+                        help_text="Manufacturer Part Number",
+                        max_length=100,
+                        null=True,
+                        verbose_name="MPN",
+                    ),
+                ),
+                (
+                    "link",
+                    InvenTree.fields.InvenTreeURLField(
+                        blank=True,
+                        help_text="URL for external manufacturer part link",
+                        null=True,
+                        verbose_name="Link",
+                    ),
+                ),
+                (
+                    "description",
+                    models.CharField(
+                        blank=True,
+                        help_text="Manufacturer part description",
+                        max_length=250,
+                        null=True,
+                        verbose_name="Description",
+                    ),
+                ),
+            ],
+            options={
+                "verbose_name": "Manufacturer Part",
+            },
+            bases=(
+                InvenTree.models.InvenTreeAttachmentMixin,
+                InvenTree.models.PluginValidationMixin,
+                models.Model,
+            ),
         ),
         migrations.CreateModel(
             name="SupplierPriceBreak",
