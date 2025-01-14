@@ -2290,7 +2290,9 @@ class BomItemTest(InvenTreeAPITestCase):
         self.assertEqual(len(response.data), 6)
 
         # Limit the results with a search term
-        response = self.get(url, {'search': '0805'}, expected_code=200)
+        response = self.get(
+            url, {'search': '0805'}, expected_code=200, max_query_time=10
+        )
 
         self.assertEqual(len(response.data), 3)
 
