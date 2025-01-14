@@ -60,5 +60,5 @@ class Migration(migrations.Migration):
 
 
     operations = [
-        migrations.RunPython(build_refs, reverse_code=migrations.RunPython.noop)
+        migrations.RunPython(build_refs, reverse_code=migrations.RunPython.noop, elidable=True,)
     ]

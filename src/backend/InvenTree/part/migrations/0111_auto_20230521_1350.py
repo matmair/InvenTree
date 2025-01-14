@@ -89,5 +89,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(code=migrate_part_units, reverse_code=migrations.RunPython.noop)
+        migrations.RunPython(code=migrate_part_units, reverse_code=migrations.RunPython.noop, elidable=True)
     ]

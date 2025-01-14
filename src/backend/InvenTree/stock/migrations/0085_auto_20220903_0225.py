@@ -43,6 +43,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(
             uid_to_barcode,
-            reverse_code=barcode_to_uid
+            reverse_code=barcode_to_uid,
+            elidable=True,
         )
     ]

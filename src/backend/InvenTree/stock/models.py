@@ -36,7 +36,6 @@ import report.models
 import stock.tasks
 from common.icons import validate_icon
 from common.settings import get_global_setting
-from company import models as CompanyModels
 from generic.states import StatusCodeMixin
 from generic.states.fields import InvenTreeCustomStatusModelField
 from InvenTree.fields import InvenTreeModelMoneyField, InvenTreeURLField
@@ -50,7 +49,6 @@ from part import models as PartModels
 from plugin.events import trigger_event
 from stock.events import StockEvents
 from stock.generators import generate_batch_code
-from users.models import Owner
 
 logger = structlog.get_logger('inventree')
 
@@ -179,7 +177,7 @@ class StockLocation(
     )
 
     owner = models.ForeignKey(
-        Owner,
+        'users.Owner',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -913,7 +911,7 @@ class StockItem(
     )
 
     customer = models.ForeignKey(
-        CompanyModels.Company,
+        'company.Company',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -1044,7 +1042,7 @@ class StockItem(
     )
 
     owner = models.ForeignKey(
-        Owner,
+        'users.Owner',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -2615,7 +2613,7 @@ class StockItemTracking(InvenTree.models.InvenTreeModel):
     tracking_type = models.IntegerField(default=StockHistoryCode.LEGACY)
 
     item = models.ForeignKey(
-        StockItem, on_delete=models.CASCADE, related_name='tracking_info'
+        'stock.StockItem', on_delete=models.CASCADE, related_name='tracking_info'
     )
 
     date = models.DateTimeField(auto_now_add=True, editable=False)
@@ -2713,7 +2711,7 @@ class StockItemTestResult(InvenTree.models.InvenTreeMetadataModel):
         return InvenTree.helpers.generateTestKey(self.test_name)
 
     stock_item = models.ForeignKey(
-        StockItem, on_delete=models.CASCADE, related_name='test_results'
+        'stock.StockItem', on_delete=models.CASCADE, related_name='test_results'
     )
 
     @property

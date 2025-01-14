@@ -61,5 +61,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(
             update_stock_history, reverse_code=migrations.RunPython.noop,
+            elidable=True,
         )
     ]
