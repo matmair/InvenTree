@@ -47,5 +47,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             code=update_supplier_part_units,
             reverse_code=reverse_pack_quantity,
+            elidable=True,
         )
     ]

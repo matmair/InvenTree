@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             field=models.EmailField(blank=True, help_text='Contact email address', max_length=254, null=True, unique=False, verbose_name='Email'),
         ),
         # Convert empty email string to NULL
-        migrations.RunPython(make_empty_email_field_null, reverse_code=reverse_empty_email),
+        migrations.RunPython(make_empty_email_field_null, reverse_code=reverse_empty_email, elidable=True,),
         # Remove unique constraint on name field
         migrations.AlterField(
             model_name='company',

@@ -88,5 +88,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             add_shipment,
             reverse_code=reverse_add_shipment,
+            elidable=True,
         )
     ]

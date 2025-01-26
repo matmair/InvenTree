@@ -46,5 +46,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             update_serials,
             reverse_code=migrations.RunPython.noop,
+            elidable=True,
         )
     ]
