@@ -5,7 +5,6 @@ import sys
 
 from moneyed import CURRENCIES
 from django.db import migrations, connection
-from company.models import SupplierPriceBreak
 
 
 logger = logging.getLogger('inventree')
@@ -150,5 +149,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_currencies, reverse_code=reverse_currencies),
+        migrations.RunPython(migrate_currencies, reverse_code=reverse_currencies, elidable=True,),
     ]

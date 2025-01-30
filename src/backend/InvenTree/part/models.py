@@ -47,13 +47,11 @@ import InvenTree.tasks
 import part.helpers as part_helpers
 import part.settings as part_settings
 import report.mixins
-import users.models
 from build import models as BuildModels
 from build.status_codes import BuildStatusGroups
 from common.currency import currency_code_default
 from common.icons import validate_icon
 from common.settings import get_global_setting
-from company.models import SupplierPart
 from InvenTree import helpers, validators
 from InvenTree.exceptions import log_error
 from InvenTree.fields import InvenTreeURLField
@@ -1129,7 +1127,7 @@ class Part(
         return None
 
     default_supplier = models.ForeignKey(
-        SupplierPart,
+        'company.SupplierPart',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -1254,7 +1252,7 @@ class Part(
     )
 
     responsible_owner = models.ForeignKey(
-        users.models.Owner,
+        'users.Owner',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -3125,7 +3123,7 @@ class PartPricing(common.models.MetaMixin):
     scheduled_for_update = models.BooleanField(default=False)
 
     part = models.OneToOneField(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='pricing_data',
         verbose_name=_('Part'),
@@ -3269,7 +3267,7 @@ class PartStocktake(models.Model):
     """
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='stocktakes',
         verbose_name=_('Part'),
@@ -3416,7 +3414,7 @@ class PartSellPriceBreak(common.models.PriceBreak):
         return reverse('api-part-sale-price-list')
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='salepricebreaks',
         limit_choices_to={'salable': True},
@@ -3438,7 +3436,7 @@ class PartInternalPriceBreak(common.models.PriceBreak):
         return reverse('api-part-internal-price-list')
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='internalpricebreaks',
         verbose_name=_('Part'),
@@ -3461,7 +3459,7 @@ class PartStar(models.Model):
         unique_together = ['part', 'user']
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         verbose_name=_('Part'),
         related_name='starred_users',
@@ -3489,7 +3487,7 @@ class PartCategoryStar(models.Model):
         unique_together = ['category', 'user']
 
     category = models.ForeignKey(
-        PartCategory,
+        'part.PartCategory',
         on_delete=models.CASCADE,
         verbose_name=_('Category'),
         related_name='starred_users',
@@ -3595,7 +3593,7 @@ class PartTestTemplate(InvenTree.models.InvenTreeMetadataModel):
         super().validate_unique(exclude)
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='test_templates',
         limit_choices_to={'testable': True},
@@ -3804,7 +3802,7 @@ class PartParameterTemplate(InvenTree.models.InvenTreeMetadataModel):
     )
 
     selectionlist = models.ForeignKey(
-        common.models.SelectionList,
+        'common.SelectionList',
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
@@ -3957,7 +3955,7 @@ class PartParameter(InvenTree.models.InvenTreeMetadataModel):
                 self.data_numeric = None
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='parameters',
         verbose_name=_('Part'),
@@ -3965,7 +3963,7 @@ class PartParameter(InvenTree.models.InvenTreeMetadataModel):
     )
 
     template = models.ForeignKey(
-        PartParameterTemplate,
+        'part.PartParameterTemplate',
         on_delete=models.CASCADE,
         related_name='instances',
         verbose_name=_('Template'),
@@ -4066,7 +4064,7 @@ class PartCategoryParameterTemplate(InvenTree.models.InvenTreeMetadataModel):
                 raise ValidationError({'default_value': e.message})
 
     category = models.ForeignKey(
-        PartCategory,
+        'part.PartCategory',
         on_delete=models.CASCADE,
         related_name='parameter_templates',
         verbose_name=_('Category'),
@@ -4074,7 +4072,7 @@ class PartCategoryParameterTemplate(InvenTree.models.InvenTreeMetadataModel):
     )
 
     parameter_template = models.ForeignKey(
-        PartParameterTemplate,
+        'part.PartParameterTemplate',
         on_delete=models.CASCADE,
         related_name='part_categories',
         verbose_name=_('Parameter Template'),
@@ -4250,7 +4248,7 @@ class BomItem(
     # A link to the parent part
     # Each part will get a reverse lookup field 'bom_items'
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='bom_items',
         verbose_name=_('Part'),
@@ -4261,7 +4259,7 @@ class BomItem(
     # A link to the child item (sub-part)
     # Each part will get a reverse lookup field 'used_in'
     sub_part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='used_in',
         verbose_name=_('Sub part'),
@@ -4608,7 +4606,7 @@ class BomItemSubstitute(InvenTree.models.InvenTreeMetadataModel):
         return reverse('api-bom-substitute-list')
 
     bom_item = models.ForeignKey(
-        BomItem,
+        'part.BomItem',
         on_delete=models.CASCADE,
         related_name='substitutes',
         verbose_name=_('BOM Item'),
@@ -4616,7 +4614,7 @@ class BomItemSubstitute(InvenTree.models.InvenTreeMetadataModel):
     )
 
     part = models.ForeignKey(
-        Part,
+        'part.Part',
         on_delete=models.CASCADE,
         related_name='substitute_items',
         verbose_name=_('Part'),
@@ -4634,14 +4632,14 @@ class PartRelated(InvenTree.models.InvenTreeMetadataModel):
         unique_together = ('part_1', 'part_2')
 
     part_1 = models.ForeignKey(
-        Part,
+        'part.Part',
         related_name='related_parts_1',
         verbose_name=_('Part 1'),
         on_delete=models.CASCADE,
     )
 
     part_2 = models.ForeignKey(
-        Part,
+        'part.Part',
         related_name='related_parts_2',
         on_delete=models.CASCADE,
         verbose_name=_('Part 2'),

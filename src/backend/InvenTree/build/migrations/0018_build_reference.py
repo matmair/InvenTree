@@ -42,7 +42,8 @@ class Migration(migrations.Migration):
         # Auto-populate the new reference field for any existing build order objects
         migrations.RunPython(
             add_default_reference,
-            reverse_code=migrations.RunPython.noop
+            reverse_code=migrations.RunPython.noop,
+            elidable=True,
         ),
 
         # Now that each build has a non-empty, unique reference, update the field requirements!
