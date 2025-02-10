@@ -25,6 +25,12 @@ You probably have a reference to invoke or a directory with invoke in your PATH 
 ### INVE-W (InvenTree Warning)
 Warnings - These are non-critical errors which should be addressed when possible.
 
+#### INVE-W4
+**The %s file '%s' could not be found in the static %s directories**
+
+A customisation that requires a file could not be found in the specified directories. This probably pertains to a logo or spalsh screen.
+Check the file path and the setting.
+
 ### INVE-I (InvenTree Information)
 Information — These are not errors but information messages. They might point out potential issues or just provide information.
 

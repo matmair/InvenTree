@@ -366,9 +366,7 @@ def get_secret_key():
     return key_data
 
 
-def get_custom_file(
-    env_ref: str, conf_ref: str, log_ref: str, lookup_media: bool = False
-):
+def get_custom_file(env_ref: str, conf_ref: str, lookup_media: bool = False):
     """Returns the checked path to a custom file.
 
     Set lookup_media to True to also search in the media folder.
@@ -384,14 +382,14 @@ def get_custom_file(
     static_storage = StaticFilesStorage()
 
     if static_storage.exists(value):
-        logger.info('Loading %s from %s directory: %s', log_ref, 'static', value)
+        logger.info('Loading %s from %s directory: %s', env_ref, 'static', value)
     elif lookup_media and default_storage.exists(value):
-        logger.info('Loading %s from %s directory: %s', log_ref, 'media', value)
+        logger.info('Loading %s from %s directory: %s', env_ref, 'media', value)
     else:
         add_dir_str = ' or media' if lookup_media else ''
         logger.warning(
-            "The %s file '%s' could not be found in the static %s directories",
-            log_ref,
+            "INVE-W4: The %s file '%s' could not be found in the static%s directories",
+            env_ref,
             value,
             add_dir_str,
         )
