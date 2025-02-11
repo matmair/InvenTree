@@ -151,5 +151,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(migrate_currencies, reverse_code=reverse_currencies),
+        migrations.RunPython(migrate_currencies, reverse_code=reverse_currencies, elidable=True, ),
     ]
