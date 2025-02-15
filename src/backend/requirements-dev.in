@@ -11,4 +11,4 @@ setuptools                              # Standard dependency
 pdfminer.six                            # PDF validation
 django-extensions                       # Model visualization
 pyparsing                               # Model visualization
- pydot                                  # Model visualization
+pydot                                   # Model visualization

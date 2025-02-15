@@ -497,9 +497,12 @@ if LDAP_AUTH:
 # Internal flag to determine if we are running in docker mode
 DOCKER = get_boolean_setting('INVENTREE_DOCKER', default_value=False)
 
-# Allow secure http developer server in debug mode
+# In dev we are adding a few more commands
 if DEBUG:
+    # Allow secure http developer server in debug mode
     INSTALLED_APPS.append('sslserver')
+    # Add graphing support
+    INSTALLED_APPS.append('django_extensions')
 
 # InvenTree URL configuration
 ROOT_URLCONF = 'InvenTree.urls'
