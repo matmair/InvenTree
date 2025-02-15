@@ -314,3 +314,13 @@ The tags describe issues and PRs in multiple areas:
 |  | CI | CI / unit testing ecosystem |
 |  | refactor | Refactoring existing code |
 |  | setup | Relates to the InvenTree setup / installation process |
+
+## Discoverying model relations
+
+In the dev environment, you can use the following command to draw the relations between models:
+
+```bash
+cd src/backend/InvenTree
+./manage.py graph_models -a > my_project.dot
+dot -Tpng my_project.dot > my_project.png
+```
