@@ -25,5 +25,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_thumbnails, reverse_code=create_thumbnails),
+        migrations.RunPython(create_thumbnails, reverse_code=create_thumbnails, elidable=True, ),
     ]

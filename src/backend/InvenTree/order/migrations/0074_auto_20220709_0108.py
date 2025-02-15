@@ -94,9 +94,11 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             update_salesorder_reference,
             reverse_code=migrations.RunPython.noop,
+            elidable=True,
         ),
         migrations.RunPython(
             update_purchaseorder_reference,
             reverse_code=migrations.RunPython.noop,
+            elidable=True,
         )
     ]
