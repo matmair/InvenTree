@@ -356,5 +356,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(associate_manufacturers, reverse_code=reverse_association)
+        migrations.RunPython(associate_manufacturers, reverse_code=reverse_association, elidable=True,)
     ]

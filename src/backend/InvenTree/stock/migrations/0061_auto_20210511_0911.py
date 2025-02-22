@@ -210,5 +210,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(update_history, reverse_code=migrations.RunPython.noop)
+        migrations.RunPython(update_history, reverse_code=migrations.RunPython.noop, elidable=True,)
     ]

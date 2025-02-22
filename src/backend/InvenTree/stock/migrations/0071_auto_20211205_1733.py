@@ -46,5 +46,6 @@ class Migration(migrations.Migration):
         migrations.RunPython(
             delete_scheduled,
             reverse_code=migrations.RunPython.noop,
+            elidable=True,
         )
     ]

@@ -29,11 +29,10 @@ import InvenTree.validators
 import order.validators
 import report.mixins
 import stock.models
-import users.models as UserModels
 from common.currency import currency_code_default
 from common.notifications import InvenTreeNotificationBodies
 from common.settings import get_global_setting
-from company.models import Address, Company, Contact, SupplierPart
+from company.models import Address
 from generic.states import StateTransitionMixin, StatusCodeMixin
 from generic.states.fields import InvenTreeCustomStatusModelField
 from InvenTree.exceptions import log_error
@@ -387,7 +386,7 @@ class Order(
     )
 
     responsible = models.ForeignKey(
-        UserModels.Owner,
+        'users.Owner',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -397,7 +396,7 @@ class Order(
     )
 
     contact = models.ForeignKey(
-        Contact,
+        'company.Contact',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -551,7 +550,7 @@ class PurchaseOrder(TotalPriceMixin, Order):
         return PurchaseOrderStatus.text(self.status)
 
     supplier = models.ForeignKey(
-        Company,
+        'company.Company',
         on_delete=models.SET_NULL,
         null=True,
         limit_choices_to={'is_supplier': True},
@@ -1110,7 +1109,7 @@ class SalesOrder(TotalPriceMixin, Order):
     )
 
     customer = models.ForeignKey(
-        Company,
+        'company.Company',
         on_delete=models.SET_NULL,
         null=True,
         limit_choices_to={'is_customer': True},
@@ -1652,7 +1651,7 @@ class PurchaseOrderLineItem(OrderLineItem):
         return self.part.part
 
     part = models.ForeignKey(
-        SupplierPart,
+        'company.SupplierPart',
         on_delete=models.SET_NULL,
         blank=False,
         null=True,
@@ -2325,7 +2324,7 @@ class ReturnOrder(TotalPriceMixin, Order):
     )
 
     customer = models.ForeignKey(
-        Company,
+        'company.Company',
         on_delete=models.SET_NULL,
         null=True,
         limit_choices_to={'is_customer': True},
@@ -2606,7 +2605,7 @@ class ReturnOrderLineItem(StatusCodeMixin, OrderLineItem):
     )
 
     item = models.ForeignKey(
-        stock.models.StockItem,
+        'stock.StockItem',
         on_delete=models.CASCADE,
         related_name='return_order_lines',
         verbose_name=_('Item'),

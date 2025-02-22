@@ -275,7 +275,7 @@ class Contact(InvenTree.models.InvenTreeMetadataModel):
         return reverse('api-contact-list')
 
     company = models.ForeignKey(
-        Company, related_name='contacts', on_delete=models.CASCADE
+        'company.Company', related_name='contacts', on_delete=models.CASCADE
     )
 
     name = models.CharField(max_length=100)
@@ -485,7 +485,7 @@ class ManufacturerPart(
     )
 
     manufacturer = models.ForeignKey(
-        Company,
+        'company.Company',
         on_delete=models.CASCADE,
         null=True,
         related_name='manufactured_parts',
@@ -576,7 +576,7 @@ class ManufacturerPartParameter(InvenTree.models.InvenTreeModel):
         return reverse('api-manufacturer-part-parameter-list')
 
     manufacturer_part = models.ForeignKey(
-        ManufacturerPart,
+        'company.ManufacturerPart',
         on_delete=models.CASCADE,
         related_name='parameters',
         verbose_name=_('Manufacturer Part'),
@@ -775,7 +775,7 @@ class SupplierPart(
     )
 
     supplier = models.ForeignKey(
-        Company,
+        'company.Company',
         on_delete=models.CASCADE,
         related_name='supplied_parts',
         limit_choices_to={'is_supplier': True},
@@ -796,7 +796,7 @@ class SupplierPart(
     )
 
     manufacturer_part = models.ForeignKey(
-        ManufacturerPart,
+        'company.ManufacturerPart',
         on_delete=models.CASCADE,
         blank=True,
         null=True,
@@ -1033,7 +1033,7 @@ class SupplierPriceBreak(common.models.PriceBreak):
         return reverse('api-part-supplier-price-list')
 
     part = models.ForeignKey(
-        SupplierPart,
+        'company.SupplierPart',
         on_delete=models.CASCADE,
         related_name='pricebreaks',
         verbose_name=_('Part'),
