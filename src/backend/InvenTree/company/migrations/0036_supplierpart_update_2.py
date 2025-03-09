@@ -106,5 +106,5 @@ class Migration(migrations.Migration):
     operations = [
         # Make new ManufacturerPart with SupplierPart "manufacturer" and "MPN"
         # fields, then link it to the new SupplierPart "manufacturer_part" field
-        migrations.RunPython(supplierpart_make_manufacturer_parts, reverse_code=supplierpart_populate_manufacturer_info),
+        migrations.RunPython(supplierpart_make_manufacturer_parts, reverse_code=supplierpart_populate_manufacturer_info, elidable=True,),
     ]

@@ -9,19 +9,7 @@ import django.core.validators
 
 import InvenTree.validators
 import part.models
-
-
-def attach_file(instance, filename):  # pragma: no cover
-    """
-    Generate a filename for the uploaded attachment.
-
-    2021-11-17 - This was moved here from part.models.py,
-    as the function itself is no longer used,
-    but is still required for migration
-    """
-
-    # Construct a path to store a file attachment
-    return os.path.join('part_files', str(instance.part.id), filename)
+from part.migrations._fnc import attach_file
 
 
 class Migration(migrations.Migration):

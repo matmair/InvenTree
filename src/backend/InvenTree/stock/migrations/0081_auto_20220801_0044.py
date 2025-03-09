@@ -43,6 +43,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(
             update_pathstring,
-            reverse_code=migrations.RunPython.noop
+            reverse_code=migrations.RunPython.noop,
+            elidable=True,
         )
     ]

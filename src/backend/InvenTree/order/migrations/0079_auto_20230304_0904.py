@@ -117,10 +117,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(
             update_purchase_order_price,
-            reverse_code=migrations.RunPython.noop
+            reverse_code=migrations.RunPython.noop,
+            elidable=True,
         ),
         migrations.RunPython(
             update_sales_order_price,
             reverse_code=migrations.RunPython.noop,
+            elidable=True,
         )
     ]
