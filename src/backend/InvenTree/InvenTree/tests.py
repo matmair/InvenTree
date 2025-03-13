@@ -1,6 +1,9 @@
 """Test general functions and helpers."""
 
+import ast
+import inspect
 import os
+import textwrap
 import time
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -21,6 +24,7 @@ from djmoney.contrib.exchange.exceptions import MissingRate
 from djmoney.contrib.exchange.models import Rate, convert_money
 from djmoney.money import Money
 from maintenance_mode.core import get_maintenance_mode, set_maintenance_mode
+from rest_framework import serializers
 from sesame.utils import get_user
 
 import InvenTree.conversion
@@ -1674,3 +1678,72 @@ class SchemaPostprocessingTest(TestCase):
         self.assertNotIn('customer_detail', schemas_out.get('SalesOrder')['required'])
         # required key removed when empty
         self.assertNotIn('required', schemas_out.get('SalesOrderShipment'))
+
+
+class ApiSchemaTest(TestCase):
+    """Tests for the API schema generation helpers."""
+
+    def test_schema_postprocessor(self):
+        """Test that the schema postprocessor contain the correct fields."""
+
+        class CallFinder(ast.NodeVisitor):
+            def __init__(self):
+                self.calls = {}
+
+            def visit_Call(self, node):
+                if isinstance(node.func, ast.Attribute):
+                    if isinstance(node.func.value, ast.Attribute):
+                        if node.func.value.attr == 'fields' and node.func.attr == 'pop':
+                            # ToDO: this is a hacky way to get the target field needed because we have dynamic fields in serializers
+                            target = (
+                                node.args[0].value
+                                if hasattr(node.args[0], 'value')
+                                else '__unknown__'
+                            )
+                            self.calls[node.lineno] = target
+                self.generic_visit(node)
+
+        found_infractions = {}
+        for serials in InvenTree.helpers.inheritors(serializers.Serializer):
+            try:
+                cls_txt = inspect.getsource(serials)
+                try:
+                    parsed = ast.parse(cls_txt)
+                except IndentationError:
+                    # This fixes subclassed serializers that have a different indentation level
+                    parsed = ast.parse(textwrap.dedent(cls_txt))
+                call_finder = CallFinder()
+                call_finder.visit(parsed)
+                if call_finder.calls:
+                    found_infractions[serials] = call_finder.calls
+            except Exception as e:
+                print(f'Found `{e}` issue in {serials}')
+
+        # Print results
+        if not found_infractions:
+            print('No infractions found')
+
+        print(f'Found infractions in {len(found_infractions)} classes\n')
+        # pivot to all infacting fields and collate a total list
+        field_list = []
+        for cls, calls in found_infractions.items():
+            print(f'In {cls.__name__}')
+            for line, field in calls.items():
+                print(f'  - {field} at line {line}')
+                field_list.append(field)
+
+        # Compare fields
+        discovered = set(field_list)
+        print(f'\n\nUnique fields found: {len(discovered)}\n')
+
+        from .schema import conditionally_removed
+
+        missing_lft = list(set(conditionally_removed) - discovered)
+        print(f'Missing in static list: {missing_lft}')
+        missing_rgt = list(discovered - set(conditionally_removed))
+        # remove the __unknown__ value as it is probably a dynamic field that we do not resolve right now
+        missing_rgt = [x for x in missing_rgt if x != '__unknown__']
+        print(f'Missing in dynamic list: {missing_rgt}')
+
+        self.assertEqual(len(missing_lft), 0, f'Missing in static list: {missing_lft}')
+        self.assertEqual(len(missing_rgt), 0, f'Missing in dynamic list: {missing_rgt}')
