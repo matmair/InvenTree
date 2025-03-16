@@ -214,7 +214,19 @@ class RuleSet(models.Model):
 
     @staticmethod
     def get_ruleset_models():
-        """Return a dictionary of models associated with each ruleset."""
+        """
+        Return a dictionary mapping ruleset names to lists of model identifiers.
+        
+        This function constructs a mapping where each key is a ruleset (e.g., 'admin',
+        'part', 'stock', etc.) and its value is a list of strings representing the related
+        database model names. The 'admin' ruleset includes models for user authentication,
+        OAuth (e.g., oauth2_provider_accesstoken, oauth2_provider_idtoken), reporting, and more.
+        If the multi-site configuration is enabled (SITE_MULTI), the 'sites_site' model is added
+        to the 'admin' ruleset.
+        
+        Returns:
+            dict: A dictionary with ruleset names as keys and lists of model identifier strings as values.
+        """
         ruleset_models = {
             'admin': [
                 'auth_group',

@@ -47,7 +47,20 @@ class RolePermission(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        """Determine if the current user has the specified permissions."""
+        """
+        Determines whether the current user is authorized to perform the requested action on the view.
+        
+        Superusers are granted access immediately. For other users, the HTTP request method is mapped to a
+        permission type (e.g., view, add, change, delete) using a default mapping that can be overridden by the view.
+        If the view specifies a required role (which can include an explicit permission using the syntax
+        "role.permission"), the user's roles are checked accordingly. In the absence of an explicit role requirement,
+        the method attempts to infer the target model from the view and builds a permission table name using the
+        model’s app label and name; it then verifies that the user has the corresponding permission via the ruleset.
+        If model metadata is unavailable, the method defaults to granting permission.
+        
+        Returns:
+            bool: True if the user is authorized, False otherwise.
+        """
         user = request.user
 
         # Superuser can do it all
@@ -98,9 +111,33 @@ class RolePermission(permissions.BasePermission):
 
 
 def map_scope(roles: Optional[list[str]] = None, only_read=False) -> dict:
-    """Map the required scopes to the current view."""
+    """
+    Map HTTP request methods to their required permission scopes.
+    
+    This function returns a dictionary mapping common HTTP methods to the scopes needed
+    for permission checks. If the only_read flag is True, every scope is set to require read
+    access regardless of roles. Otherwise, if roles are provided, each action scope is combined
+    with each role to form a pair [action, role]. If no roles are specified, a default scope with
+    the action name alone is returned. The OPTIONS method always requires read access.
+    
+    Args:
+        roles: Optional list of role identifiers used to build entity-specific scopes.
+        only_read: If True, all actions will be mapped to read-only permission scopes.
+    
+    Returns:
+        A dictionary with HTTP methods ('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS')
+        as keys and lists of required permission scopes (each represented as a list of strings)
+        as values.
+    """
 
     def scope_name(tables, action):
+        """
+        Constructs a scope specification list based on the given action and table names.
+        
+        If the global flag only_read is set, returns a read-only scope [['read']]. Otherwise,
+        when tables are provided, returns a list of scopes pairing the action with each table; if
+        tables is empty, returns a list containing a single scope with the action.
+        """
         if only_read:
             return [['read']]
         if tables:
@@ -131,7 +168,16 @@ class InvenTreeTokenMatchesOASRequirements(TokenMatchesOASRequirements):
     """Permission that discovers the required scopes from the OpenAPI schema."""
 
     def has_permission(self, request, view):
-        """Check if the user has the required scopes or was authenticated another way."""
+        """
+        Determines if the request has valid permission.
+        
+        If the user is authenticated by any method other than OAuth2, permission is granted without further checks.
+        For OAuth2-authenticated requests, the method defers to the superclass’s permission check (which verifies
+        the required scopes).
+        
+        Returns:
+            bool: True if the request has permission, False otherwise.
+        """
         is_authenticated = permissions.IsAuthenticated().has_permission(request, view)
         oauth2authenticated = False
         if is_authenticated:
@@ -144,7 +190,15 @@ class InvenTreeTokenMatchesOASRequirements(TokenMatchesOASRequirements):
         )
 
     def get_required_alternate_scopes(self, request, view):
-        """Return the required scopes for the current request."""
+        """
+        Return alternate OAuth2 scopes for the request based on the view's attributes.
+        
+        If the view defines a 'required_alternate_scopes' attribute, that value is returned.
+        Otherwise, the function attempts to determine the model associated with the view via
+        get_model_for_view. If a model is identified, it retrieves the corresponding roles from
+        the precalculated mapping and computes the required scopes using map_scope. In cases
+        where the model is absent or an error occurs, a read-only scope mapping is returned.
+        """
         if hasattr(view, 'required_alternate_scopes'):
             return view.required_alternate_scopes
         try:

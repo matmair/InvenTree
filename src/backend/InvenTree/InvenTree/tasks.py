@@ -697,7 +697,12 @@ def check_for_migrations(force: bool = False, reload_registry: bool = True):
 
 
 def email_user(user_id: int, subject: str, message: str) -> None:
-    """Send a message to a user."""
+    """
+    Sends an email message to the specified user.
+    
+    Retrieves the user by ID and sends an email with the given subject and message. If the
+    user is not found, a warning is logged and no email is sent.
+    """
     try:
         user = get_user_model().objects.get(pk=user_id)
     except Exception:
@@ -709,7 +714,12 @@ def email_user(user_id: int, subject: str, message: str) -> None:
 
 @scheduled_task(ScheduledTask.DAILY)
 def run_oauth_maintenance():
-    """Run the OAuth maintenance task(s)."""
+    """
+    Clears expired OAuth tokens.
+    
+    Logs the start and completion of the OAuth maintenance process and invokes the cleanup
+    function to remove expired tokens.
+    """
     from oauth2_provider.models import clear_expired
 
     logger.info('Starting OAuth maintenance task')
