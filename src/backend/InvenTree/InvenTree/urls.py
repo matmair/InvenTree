@@ -99,6 +99,13 @@ apipatterns = [
                 users.api.LoginRedirect.as_view(),
                 name='api-login-redirect',
             ),
+            # Magic login URLs
+            path(
+                'email/generate/',
+                csrf_exempt(GetSimpleLoginView().as_view()),
+                name='sesame-generate',
+            ),
+            path('email/login/', LoginView.as_view(), name='sesame-login'),
             path(
                 '',
                 include(
@@ -107,13 +114,6 @@ apipatterns = [
             ),  # Allauth headless logic (only the browser client is included as we only use sessions based auth there)
         ]),
     ),
-    # Magic login URLs
-    path(
-        'email/generate/',
-        csrf_exempt(GetSimpleLoginView().as_view()),
-        name='sesame-generate',
-    ),
-    path('email/login/', LoginView.as_view(), name='sesame-login'),
     # Unknown endpoint
     re_path(r'^.*$', NotFoundView.as_view(), name='api-404'),
 ]

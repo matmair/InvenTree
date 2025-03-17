@@ -1485,7 +1485,7 @@ class MagicLoginTest(InvenTreeTestCase):
         self.assertEqual(mail.outbox[0].subject, '[InvenTree] Log in to the app')
 
         # Check that the token is in the email
-        self.assertIn('http://testserver/api/email/login/', mail.outbox[0].body)
+        self.assertIn('http://testserver/api/auth/email/login/', mail.outbox[0].body)
         token = mail.outbox[0].body.split('/')[-1].split('\n')[0][8:]
         self.assertEqual(get_user(token), self.user)
 

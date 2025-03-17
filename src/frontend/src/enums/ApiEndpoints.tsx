@@ -16,7 +16,7 @@ export enum ApiEndpoints {
   user_roles = 'user/roles/',
   user_token = 'user/token/',
   user_tokens = 'user/tokens/',
-  user_simple_login = 'email/generate/',
+  user_simple_login = 'auth/email/generate/',
 
   // User auth endpoints
   user_reset = 'auth/v1/auth/password/request',
