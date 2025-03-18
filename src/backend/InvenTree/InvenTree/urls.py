@@ -28,14 +28,7 @@ import users.api
 from plugin.urls import get_plugin_urls
 from web.urls import urlpatterns as platform_urls
 
-from .api import (
-    APISearchView,
-    InfoView,
-    LicenseView,
-    NotFoundView,
-    VersionTextView,
-    VersionView,
-)
+from .api import APISearchView, InfoView, LicenseView, NotFoundView
 from .magic_login import GetSimpleLoginView
 from .views import auth_request
 
@@ -77,6 +70,32 @@ apipatterns = [
     path('', include(plugin.api.plugin_api_urls)),
     # Common endpoints endpoint
     path('', include(common.api.common_api_urls)),
+    # Core
+    path(
+        'core/',
+        include([
+            path('license/', LicenseView.as_view(), name='api-license'),  # license info
+            path(
+                'icons/', common.api.IconList.as_view(), name='api-icon-list'
+            ),  # icons
+            # Currencies
+            path(
+                'currency/',
+                include([
+                    path(
+                        'exchange/',
+                        common.api.CurrencyExchangeView.as_view(),
+                        name='api-currency-exchange',
+                    ),
+                    path(
+                        'refresh/',
+                        common.api.CurrencyRefreshView.as_view(),
+                        name='api-currency-refresh',
+                    ),
+                ]),
+            ),
+        ]),
+    ),
     # OpenAPI Schema
     path(
         'schema/',
@@ -84,11 +103,6 @@ apipatterns = [
         name='schema',
     ),
     # InvenTree information endpoints
-    path('license/', LicenseView.as_view(), name='api-license'),  # license info
-    path(
-        'version-text', VersionTextView.as_view(), name='api-version-text'
-    ),  # version text
-    path('version/', VersionView.as_view(), name='api-version'),  # version info
     path('', InfoView.as_view(), name='api-inventree-info'),  # server info
     # Auth API endpoints
     path(

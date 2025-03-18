@@ -33,7 +33,7 @@ from common.icons import get_icon_packs
 from common.settings import get_global_setting
 from generic.states.api import urlpattern as generic_states_api_urls
 from importer.mixins import DataExportViewMixin
-from InvenTree.api import BulkDeleteMixin, MetadataView
+from InvenTree.api import BulkDeleteMixin, MetadataView, VersionTextView, VersionView
 from InvenTree.config import CONFIG_LOOKUPS
 from InvenTree.filters import ORDER_FILTER, SEARCH_ORDER_FILTER
 from InvenTree.helpers import inheritors
@@ -940,20 +940,6 @@ common_api_urls = [
     path('webhook/<slug:endpoint>/', WebhookView.as_view(), name='api-webhook'),
     # Uploaded images for notes
     path('notes-image-upload/', NotesImageList.as_view(), name='api-notes-image-list'),
-    # Background task information
-    path(
-        'background-task/',
-        include([
-            path('pending/', PendingTaskList.as_view(), name='api-pending-task-list'),
-            path(
-                'scheduled/',
-                ScheduledTaskList.as_view(),
-                name='api-scheduled-task-list',
-            ),
-            path('failed/', FailedTaskList.as_view(), name='api-failed-task-list'),
-            path('', BackgroundTaskOverview.as_view(), name='api-task-overview'),
-        ]),
-    ),
     # Attachments
     path(
         'attachment/',
@@ -971,13 +957,6 @@ common_api_urls = [
                 ]),
             ),
             path('', AttachmentList.as_view(), name='api-attachment-list'),
-        ]),
-    ),
-    path(
-        'error-report/',
-        include([
-            path('<int:pk>/', ErrorMessageDetail.as_view(), name='api-error-detail'),
-            path('', ErrorMessageList.as_view(), name='api-error-list'),
         ]),
     ),
     # Project codes
@@ -1015,20 +994,6 @@ common_api_urls = [
             path('', CustomUnitList.as_view(), name='api-custom-unit-list'),
         ]),
     ),
-    # Currencies
-    path(
-        'currency/',
-        include([
-            path(
-                'exchange/',
-                CurrencyExchangeView.as_view(),
-                name='api-currency-exchange',
-            ),
-            path(
-                'refresh/', CurrencyRefreshView.as_view(), name='api-currency-refresh'
-            ),
-        ]),
-    ),
     # Notifications
     path(
         'notifications/',
@@ -1052,19 +1017,6 @@ common_api_urls = [
             ),
             # Notification messages list
             path('', NotificationList.as_view(), name='api-notifications-list'),
-        ]),
-    ),
-    # News
-    path(
-        'news/',
-        include([
-            path(
-                '<int:pk>/',
-                include([
-                    path('', NewsFeedEntryDetail.as_view(), name='api-news-detail')
-                ]),
-            ),
-            path('', NewsFeedEntryList.as_view(), name='api-news-list'),
         ]),
     ),
     # Flags
@@ -1092,14 +1044,52 @@ common_api_urls = [
             path('', ContentTypeList.as_view(), name='api-contenttype-list'),
         ]),
     ),
-    # Icons
-    path('icons/', IconList.as_view(), name='api-icon-list'),
     # Selection lists
     path('selection/', include(selection_urls)),
 ]
 
 admin_api_urls = [
-    # Admin
+    # Background task information
+    path(
+        'background-task/',
+        include([
+            path('pending/', PendingTaskList.as_view(), name='api-pending-task-list'),
+            path(
+                'scheduled/',
+                ScheduledTaskList.as_view(),
+                name='api-scheduled-task-list',
+            ),
+            path('failed/', FailedTaskList.as_view(), name='api-failed-task-list'),
+            path('', BackgroundTaskOverview.as_view(), name='api-task-overview'),
+        ]),
+    ),
+    # Errors
+    path(
+        'error-report/',
+        include([
+            path('<int:pk>/', ErrorMessageDetail.as_view(), name='api-error-detail'),
+            path('', ErrorMessageList.as_view(), name='api-error-list'),
+        ]),
+    ),
+    # News
+    path(
+        'news/',
+        include([
+            path(
+                '<int:pk>/',
+                include([
+                    path('', NewsFeedEntryDetail.as_view(), name='api-news-detail')
+                ]),
+            ),
+            path('', NewsFeedEntryList.as_view(), name='api-news-list'),
+        ]),
+    ),
+    # Admin config
     path('config/', ConfigList.as_view(), name='api-config-list'),
     path('config/<str:key>/', ConfigDetail.as_view(), name='api-config-detail'),
+    # Internal info
+    path('version/', VersionView.as_view(), name='api-version'),  # version info
+    path(
+        'version-text', VersionTextView.as_view(), name='api-version-text'
+    ),  # version text
 ]
