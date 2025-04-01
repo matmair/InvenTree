@@ -89,3 +89,51 @@ jobs:
           file: ${{ steps.attest.outputs.bundle-path}}
           tag: ${{ github.ref }}
           overwrite: true
+
+  docs:
+    runs-on: ubuntu-latest
+    name: Build docs
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
+    env:
+      SOLIDIFY_DIR: ${{ github.workspace }}/solid_docs
+      DOC_BUILD_PATH: ${{ github.workspace }}/docs/site
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
+        with:
+          persist-credentials: false
+      - name: Environment Setup
+        uses: ./.github/actions/setup
+        with:
+          npm: true
+      - name: Build docs
+        run: |
+          invoke int.export-definitions --basedir "docs"
+          invoke dev.schema --filename docs/schema.yml --ignore-warnings
+          python docs/extract_schema.py docs/schema.yml
+
+          mkdocs build -f docs/mkdocs.yml
+      - name: Zip docs
+        run: |
+          cd $SOLIDIFY_DIR
+          zip -r ../docs-mk.zip *
+          cd $DOC_BUILD_PATH
+          zip -r ../docs.zip *
+      - name: Upload mk doc files
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # pin@2.9.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: $SOLIDIFY_DIR/docs-mk.zip
+          asset_name: docs-mk.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+      - name: Upload doc files
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # pin@2.9.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: $DOC_BUILD_PATH/docs.zip
+          asset_name: docs.zip
+          tag: ${{ github.ref }}
+          overwrite: true
