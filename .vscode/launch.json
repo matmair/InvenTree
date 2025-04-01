@@ -46,6 +46,25 @@
       "request": "launch",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}/src/frontend"
-    }
+    },    {
+      "name": "Invoke task",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/.venv/bin/invoke",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "dev.docs-server"
+      ],
+      "justMyCode": false
+    },
+    {
+      "name": "Docs server",
+      "type": "debugpy",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "module": "mkdocs",
+      "args": ["serve", "-f" ,"docs/mkdocs.yml"],
+      "justMyCode": false
+    },
   ]
 }
