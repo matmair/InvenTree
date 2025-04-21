@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   stable:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Write release to stable branch
     permissions:
       contents: write
