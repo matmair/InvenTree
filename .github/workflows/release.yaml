@@ -97,6 +97,15 @@ jobs:
     name: Build and publish documentation
     permissions:
       contents: write
+    env:
+      INVENTREE_DB_ENGINE: sqlite3
+      INVENTREE_DB_NAME: inventree
+      INVENTREE_MEDIA_ROOT: /home/runner/work/InvenTree/test_inventree_media
+      INVENTREE_STATIC_ROOT: /home/runner/work/InvenTree/test_inventree_static
+      INVENTREE_BACKUP_DIR: /home/runner/work/InvenTree/test_inventree_backup
+      INVENTREE_SITE_URL: http://localhost:8000
+      INVENTREE_DEBUG: true
+
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
         with:
