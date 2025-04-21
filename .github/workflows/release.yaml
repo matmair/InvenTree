@@ -128,16 +128,15 @@ jobs:
           mkdocs build  -f docs/mkdocs.yml
       - name: Discovery build docs
         run: |
+          cd docs/site
+          zip -r docs-html.zip *
           echo "ls docs###"
           ls docs
-          echo "ls docs/site###"
-          ls docs/site
-          zip -r docs-html.zip docs/site
       - name: Publish documentation
         uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # pin@2.9.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: docs-html.zip
+          file: docs/docs-html.zip
           asset_name: documentation
           tag: ${{ github.ref }}
           overwrite: true
