@@ -34,7 +34,7 @@ jobs:
           force: true
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Build and attest frontend
     permissions:
       id-token: write
@@ -91,7 +91,7 @@ jobs:
           overwrite: true
 
   docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Build and publish documentation
     permissions:
       contents: write
