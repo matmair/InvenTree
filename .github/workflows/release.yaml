@@ -126,12 +126,16 @@ jobs:
           invoke dev.schema --filename docs/schema.yml --ignore-warnings
           python docs/extract_schema.py docs/schema.yml
           mkdocs build  -f docs/mkdocs.yml
-      - name: Discovery build docs
+      - name: Zip build docs
         run: |
           cd docs/site
           zip -r docs-html.zip *
+      - name: Discover
+        run: |
           echo "ls docs###"
           ls docs
+          echo "ls###"
+          ls
       - name: Publish documentation
         uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # pin@2.9.0
         with:
