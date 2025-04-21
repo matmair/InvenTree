@@ -23,6 +23,9 @@
         },
         {
             "pattern": "^https://dev.azure.com"
+        },
+        {
+            "pattern": "^https://github.com/inventree/inventree/blob/refs/tags/"
         }
     ]
 }
