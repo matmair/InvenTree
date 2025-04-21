@@ -132,6 +132,8 @@ jobs:
           zip -r docs-html.zip *
       - name: Discover
         run: |
+          echo "ls docs/site###"
+          ls docs/site
           echo "ls docs###"
           ls docs
           echo "ls###"
@@ -140,7 +142,7 @@ jobs:
         uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # pin@2.9.0
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: docs/docs-html.zip
+          file: docs/site/docs-html.zip
           asset_name: documentation
           tag: ${{ github.ref }}
           overwrite: true
