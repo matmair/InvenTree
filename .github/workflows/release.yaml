@@ -11,7 +11,7 @@ env:
 
 jobs:
   stable:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: Write release to stable branch
     permissions:
       contents: write
@@ -36,7 +36,7 @@ jobs:
           force: true
 
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: Build and attest frontend
     permissions:
       id-token: write
@@ -93,7 +93,7 @@ jobs:
           overwrite: true
 
   docs:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: Build and publish documentation
     permissions:
       contents: write
