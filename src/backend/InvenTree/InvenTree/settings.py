@@ -313,6 +313,8 @@ INSTALLED_APPS = [
     'django_remake_migrations',
 ]
 
+REMAKE_MIGRATIONS_REPLACES_ALL = True  # Replace all migrations with a single one
+REMAKE_MIGRATIONS_RUN_BEFORE = {'app1': [('oauth2_provider', '0001_initial')]}
 MIDDLEWARE = CONFIG.get(
     'middleware',
     [
