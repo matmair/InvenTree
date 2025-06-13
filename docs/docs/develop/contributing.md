@@ -60,6 +60,7 @@ invoke dev.setup-dev
 InvenTree roughly follow the [GitLab flow](https://about.gitlab.com/topics/version-control/what-are-gitlab-flow-best-practices/) branching style, to allow simple management of multiple tagged releases, short-lived branches, and development on the main branch.
 
 There are nominally 5 active branches:
+
 - `master` - The main development branch
 - `stable` - The latest stable release
 - `l10n` - Translation branch: Source to Crowdin
