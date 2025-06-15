@@ -212,19 +212,25 @@ function BasePanelGroup({
           orientation='vertical'
           keepMounted={false}
           aria-label={`panel-group-${pageKey}`}
-          classNames={{ tab: classes.selectedPanelTab }}
+          classNames={{
+            tab: classes.selectedPanelTab,
+            tabLabel: classes.selectedPanelTabLabel
+          }}
         >
           <Tabs.List justify='left' aria-label={`panel-tabs-${pageKey}`}>
             {groupedPanels.map((group) => (
               <Box key={`group-${group.id}`} w={'100%'}>
                 <Text
-                  fs={'italic'}
-                  ml={'1rem'}
+                  hidden={!group.label || !expanded}
                   c={vars.colors.primaryColors[7]}
                   key={`group-label-${group.id}`}
+                  style={{
+                    paddingLeft: '10px'
+                  }}
                 >
                   {group.label}
                 </Text>
+                {group.label && <Divider c={vars.colors.primaryColors[7]} />}
                 {group.panels?.map(
                   (panel) =>
                     !panel.hidden && (
