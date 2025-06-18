@@ -28,6 +28,28 @@ test('Permissions - Admin', async ({ browser, request }) => {
   await page.getByRole('button', { name: 'Submit' }).waitFor();
   await page.getByRole('button', { name: 'Cancel' }).click();
 
+  // Unlock user
+  await page.getByRole('cell', { name: 'Ian', exact: true }).click({
+    button: 'right'
+  });
+  await page.getByRole('button', { name: 'Unlock user' }).click();
+  await page
+    .getByRole('row', { name: 'ian Ian Inactive 1 No No Yes' })
+    .locator('span')
+    .nth(2)
+    .waitFor();
+
+  // Lock user
+  await page.getByRole('cell', { name: 'Ian', exact: true }).click({
+    button: 'right'
+  });
+  await page.getByRole('button', { name: 'Lock user' }).click();
+  await page
+    .getByRole('row', { name: 'ian Ian Inactive 1 No No No' })
+    .locator('span')
+    .nth(2)
+    .waitFor();
+
   // Change password
   await page.getByRole('cell', { name: 'Ian', exact: true }).click({
     button: 'right'
