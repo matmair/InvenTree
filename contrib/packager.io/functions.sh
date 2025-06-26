@@ -179,9 +179,6 @@ function detect_envs() {
     export INVENTREE_STATIC_ROOT=${DATA_DIR}/static
     export INVENTREE_BACKUP_DIR=${DATA_DIR}/backup
     export INVENTREE_PLUGINS_ENABLED=true
-    export INVENTREE_PLUGIN_FILE=${CONF_DIR}/plugins.txt
-    export INVENTREE_SECRET_KEY_FILE=${CONF_DIR}/secret_key.txt
-    export INVENTREE_OIDC_PRIVATE_KEY_FILE=${CONF_DIR}/oidc.pem
 
     export INVENTREE_DB_ENGINE=${INVENTREE_DB_ENGINE:-sqlite3}
     export INVENTREE_DB_NAME=${INVENTREE_DB_NAME:-${DATA_DIR}/database.sqlite3}
@@ -336,12 +333,6 @@ function set_env() {
   sed -i s=#backup_dir:\ \'/home/inventree/data/backup\'=backup_dir:\ \'${INVENTREE_BACKUP_DIR}\'=g ${INVENTREE_CONFIG_FILE}
   # Plugins enabled
   sed -i s=plugins_enabled:\ False=plugins_enabled:\ ${INVENTREE_PLUGINS_ENABLED}=g ${INVENTREE_CONFIG_FILE}
-  # Plugin file
-  sed -i s=#plugin_file:\ \'/path/to/plugins.txt\'=plugin_file:\ \'${INVENTREE_PLUGIN_FILE}\'=g ${INVENTREE_CONFIG_FILE}
-  # Secret key file
-  sed -i s=#secret_key_file:\ \'/etc/inventree/secret_key.txt\'=secret_key_file:\ \'${INVENTREE_SECRET_KEY_FILE}\'=g ${INVENTREE_CONFIG_FILE}
-  # OIDC private key file
-  sed -i s=#oidc_private_key_file:\ \'/etc/inventree/oidc.pem\'=oidc_private_key_file:\ \'${INVENTREE_OIDC_PRIVATE_KEY_FILE}\'=g ${INVENTREE_CONFIG_FILE}
   # Debug mode
   sed -i s=debug:\ True=debug:\ False=g ${INVENTREE_CONFIG_FILE}
 
