@@ -237,7 +237,7 @@ jobs:
       - name: Create artifact directory
         run: mkdir -p artifact
       - name: Download schema artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # pin@v4.3.0
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # pin@v5.0.0
         with:
           path: artifact
           merge-multiple: true
@@ -684,7 +684,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@d6bbdef45e766d081b84a2def353b0055f728d3e # pin@v3
+        uses: github/codeql-action/upload-sarif@76621b61decf072c1cee8dd1ce2d2a82d33c17ed # pin@v3
         with:
           sarif_file: results.sarif
           category: zizmor
