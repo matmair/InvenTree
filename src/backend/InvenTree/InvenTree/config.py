@@ -349,6 +349,11 @@ def get_backup_dir(create=True, error=True):
     return bd
 
 
+def get_constraint_file() -> Union[str, Path]:
+    """Returns the path to the constraints file."""
+    return get_base_dir().joinpath('InvenTree', 'constraint.txt')
+
+
 def get_plugin_file() -> Path:
     """Returns the path of the InvenTree plugins specification file.
 
