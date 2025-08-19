@@ -349,7 +349,7 @@ def get_backup_dir(create=True, error=True):
     return bd
 
 
-def get_constraint_file(force_write: bool = False) -> Union[str, Path]:
+def get_constraint_file(force_write: bool = False) -> Path:
     """Returns the path to the constraints file.
 
     Args:
