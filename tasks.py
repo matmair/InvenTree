@@ -457,6 +457,17 @@ def check_file_existence(filename: Path, overwrite: bool = False):
 
 # Install tasks
 # region tasks
+@task
+@state_logger('TASK13')
+def update_constraint(c):
+    """Update the constraints file for plugin installations."""
+    from src.backend.InvenTree.InvenTree.config import get_constraint_file
+
+    info('Generating constraint file for plugin installations...')
+    get_constraint_file(force_write=True)
+    info('New constraint file written to: ', get_constraint_file())
+
+
 @task(help={'uv': 'Use UV (experimental package manager)'})
 @state_logger('TASK01')
 def plugins(c, uv=False):
@@ -488,10 +499,11 @@ def plugins(c, uv=False):
 
 
 @task(
+    pre=[update_constraint],
     help={
         'uv': 'Use UV package manager (experimental)',
         'skip_plugins': 'Skip plugin installation',
-    }
+    },
 )
 @state_logger('TASK02')
 def install(c, uv=False, skip_plugins=False):
@@ -801,6 +813,7 @@ def update(
     info('Updating InvenTree installation...')
 
     # Ensure required components are installed
+    update_constraint(c)
     install(c, uv=uv)
 
     if not skip_backup:

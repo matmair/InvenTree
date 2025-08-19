@@ -358,10 +358,10 @@ def get_constraint_file(force_write: bool = False) -> Union[str, Path]:
     Returns:
         Path or str: The path to the constraints file.
     """
-    from InvenTree.version import INVENTREE_SW_NXT_MAJOR, INVENTREE_SW_VERSION
+    from .version import INVENTREE_SW_NXT_MAJOR, INVENTREE_SW_VERSION
 
     const_file = get_base_dir().joinpath('InvenTree', 'constraint.txt')
-    if not const_file.exists() or force_write:
+    if force_write or (not const_file.exists()):
         if not force_write:
             logger.warning(
                 'Constraint file does not exist - creating default file at %s',
