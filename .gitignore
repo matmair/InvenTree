@@ -87,6 +87,8 @@ env/
 # Locale stats file
 src/backend/InvenTree/InvenTree/locale_stats.json
 src/backend/InvenTree/InvenTree/licenses.txt
+src/backend/InvenTree/InvenTree/locale_stats.json
+src/backend/InvenTree/InvenTree/constraint.txt
 
 # Logs
 src/backend/InvenTree/logs.json

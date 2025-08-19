@@ -349,9 +349,32 @@ def get_backup_dir(create=True, error=True):
     return bd
 
 
-def get_constraint_file() -> Union[str, Path]:
-    """Returns the path to the constraints file."""
-    return get_base_dir().joinpath('InvenTree', 'constraint.txt')
+def get_constraint_file(force_write: bool = False) -> Union[str, Path]:
+    """Returns the path to the constraints file.
+
+    Args:
+        force_write (bool): If True, the constraints file will be created if it does not exist.
+
+    Returns:
+        Path or str: The path to the constraints file.
+    """
+    from InvenTree.version import INVENTREE_SW_NXT_MAJOR, INVENTREE_SW_VERSION
+
+    const_file = get_base_dir().joinpath('InvenTree', 'constraint.txt')
+    if not const_file.exists() or force_write:
+        if not force_write:
+            logger.warning(
+                'Constraint file does not exist - creating default file at %s',
+                const_file,
+            )
+        ensure_dir(const_file.parent)
+        vers = INVENTREE_SW_VERSION.replace(
+            ' ', ''
+        )  # ensure that the uv resolver parses the condition correctly
+        const_file.write_text(
+            f'# InvenTree constraints file\ninventree-server~={vers},<{INVENTREE_SW_NXT_MAJOR}\n'
+        )
+    return const_file
 
 
 def get_plugin_file() -> Path:
