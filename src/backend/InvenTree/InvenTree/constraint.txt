@@ -1,2 +1,0 @@
-# InvenTree constraints file
-inventree-server~=0.18.0dev,<2.0
