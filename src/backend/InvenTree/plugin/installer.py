@@ -135,7 +135,15 @@ def install_plugins_file():
         logger.warning('Plugin file %s does not exist', str(pf))
         return
 
-    cmd = ['install', '--disable-pip-version-check', '-U', '-r', str(pf)]
+    cmd = [
+        'install',
+        '--disable-pip-version-check',
+        '-U',
+        '-r',
+        str(pf),
+        '-c',
+        str(get_constraint_file()),
+    ]
 
     try:
         pip_command(*cmd)
