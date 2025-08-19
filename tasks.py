@@ -464,8 +464,7 @@ def update_constraint(c):
     from src.backend.InvenTree.InvenTree.config import get_constraint_file
 
     info('Generating constraint file for plugin installations...')
-    get_constraint_file(force_write=True)
-    info('New constraint file written to: ', get_constraint_file())
+    info('New constraint file written to: ', get_constraint_file(force_write=True))
 
 
 @task(help={'uv': 'Use UV (experimental package manager)'})
