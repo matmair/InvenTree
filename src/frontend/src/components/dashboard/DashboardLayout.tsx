@@ -12,7 +12,7 @@ import DashboardMenu from './DashboardMenu';
 import DashboardWidget, { type DashboardWidgetProps } from './DashboardWidget';
 import DashboardWidgetDrawer from './DashboardWidgetDrawer';
 
-const ReactGridLayout = WidthProvider(Responsive);
+const ReactGridLayout = WidthProvider(Responsive) as any;
 
 export default function DashboardLayout() {
   // Dashboard layout definition
