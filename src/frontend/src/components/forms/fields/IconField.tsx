@@ -19,7 +19,9 @@ import { IconX } from '@tabler/icons-react';
 import Fuse from 'fuse.js';
 import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
 import type { FieldValues, UseControllerReturn } from 'react-hook-form';
-import { FixedSizeGrid as Grid } from 'react-window';
+import { FixedSizeGrid } from 'react-window';
+
+const Grid = FixedSizeGrid as any;
 
 import type { ApiFormFieldType } from '@lib/types/Forms';
 import { useShallow } from 'zustand/react/shallow';
@@ -272,7 +274,7 @@ function DropdownList({
   const columnCount = Math.floor(innerWidth / 35);
   const rowCount = columnCount > 0 ? Math.ceil(icons.length / columnCount) : 0;
 
-  const gridRef = useRef<Grid>(null);
+  const gridRef = useRef<any>(null);
   const hasScrolledToPositionRef = useRef(true);
 
   // Reset the has already scrolled to position state when the dropdown open state is changed
@@ -317,7 +319,7 @@ function DropdownList({
       outerRef={innerRef}
       ref={gridRef}
     >
-      {({ columnIndex, rowIndex, data, style }) => {
+      {({ columnIndex, rowIndex, data, style }: any) => {
         const icon = data[rowIndex * columnCount + columnIndex];
 
         // Grid has empty cells in the last row if the number of icons is not a multiple of columnCount
