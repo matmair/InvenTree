@@ -530,8 +530,8 @@ msgid "Error"
 msgstr "エラー"
 
 #: lib/enums/ModelInformation.tsx:275
-#: src/tables/machine/MachineListTable.tsx:371
-#: src/tables/machine/MachineTypeTable.tsx:299
+#: src/tables/machine/MachineListTable.tsx:354
+#: src/tables/machine/MachineTypeTable.tsx:281
 msgid "Errors"
 msgstr "エラー"
 
@@ -1658,10 +1658,10 @@ msgstr "ホスト"
 #: src/pages/part/CategoryDetail.tsx:86
 #: src/pages/part/PartDetail.tsx:447
 #: src/pages/stock/LocationDetail.tsx:84
-#: src/tables/machine/MachineTypeTable.tsx:67
-#: src/tables/machine/MachineTypeTable.tsx:151
-#: src/tables/machine/MachineTypeTable.tsx:254
-#: src/tables/machine/MachineTypeTable.tsx:357
+#: src/tables/machine/MachineTypeTable.tsx:72
+#: src/tables/machine/MachineTypeTable.tsx:118
+#: src/tables/machine/MachineTypeTable.tsx:236
+#: src/tables/machine/MachineTypeTable.tsx:339
 #: src/tables/plugin/PluginErrorTable.tsx:33
 #: src/tables/purchasing/ManufacturerPartParameterTable.tsx:36
 #: src/tables/settings/ApiTokenTable.tsx:58
@@ -1774,30 +1774,30 @@ msgstr "中断"
 msgid "Running"
 msgstr "実行中"
 
-#: src/components/forms/fields/IconField.tsx:85
+#: src/components/forms/fields/IconField.tsx:83
 msgid "No icon selected"
 msgstr "アイコン選択なし"
 
-#: src/components/forms/fields/IconField.tsx:163
+#: src/components/forms/fields/IconField.tsx:161
 msgid "Uncategorized"
 msgstr "未分類"
 
-#: src/components/forms/fields/IconField.tsx:213
+#: src/components/forms/fields/IconField.tsx:211
 #: src/components/nav/Layout.tsx:80
 #: src/tables/part/PartThumbTable.tsx:201
 msgid "Search..."
 msgstr "検索…"
 
-#: src/components/forms/fields/IconField.tsx:227
+#: src/components/forms/fields/IconField.tsx:225
 msgid "Select category"
 msgstr "カテゴリを選択"
 
-#: src/components/forms/fields/IconField.tsx:236
+#: src/components/forms/fields/IconField.tsx:234
 msgid "Select pack"
 msgstr "パック選択"
 
 #. placeholder {0}: filteredIcons.length
-#: src/components/forms/fields/IconField.tsx:241
+#: src/components/forms/fields/IconField.tsx:239
 msgid "{0} icons"
 msgstr "{0} アイコン"
 
@@ -2714,8 +2714,8 @@ msgstr "プラグイン情報"
 #: src/pages/stock/LocationDetail.tsx:104
 #: src/tables/ColumnRenderers.tsx:269
 #: src/tables/build/BuildAllocatedStockTable.tsx:91
-#: src/tables/machine/MachineTypeTable.tsx:161
-#: src/tables/machine/MachineTypeTable.tsx:257
+#: src/tables/machine/MachineTypeTable.tsx:128
+#: src/tables/machine/MachineTypeTable.tsx:239
 #: src/tables/plugin/PluginListTable.tsx:110
 msgid "Description"
 msgstr "説明"
@@ -2741,8 +2741,8 @@ msgstr "日付"
 #: src/tables/bom/UsedInTable.tsx:90
 #: src/tables/company/CompanyTable.tsx:57
 #: src/tables/company/CompanyTable.tsx:91
-#: src/tables/machine/MachineListTable.tsx:353
-#: src/tables/machine/MachineListTable.tsx:683
+#: src/tables/machine/MachineListTable.tsx:336
+#: src/tables/machine/MachineListTable.tsx:606
 #: src/tables/part/ParametricPartTable.tsx:350
 #: src/tables/part/PartTable.tsx:184
 #: src/tables/part/PartVariantTable.tsx:15
@@ -2765,8 +2765,8 @@ msgid "Installation Path"
 msgstr "設置経路"
 
 #: src/components/plugins/PluginDrawer.tsx:116
-#: src/tables/machine/MachineTypeTable.tsx:184
-#: src/tables/machine/MachineTypeTable.tsx:293
+#: src/tables/machine/MachineTypeTable.tsx:151
+#: src/tables/machine/MachineTypeTable.tsx:275
 #: src/tables/plugin/PluginListTable.tsx:101
 #: src/tables/plugin/PluginListTable.tsx:417
 msgid "Builtin"
@@ -3977,7 +3977,7 @@ msgstr "ビルド出力"
 #: src/pages/stock/StockDetail.tsx:162
 #: src/tables/Filter.tsx:266
 #: src/tables/build/BuildOutputTable.tsx:408
-#: src/tables/machine/MachineListTable.tsx:356
+#: src/tables/machine/MachineListTable.tsx:339
 #: src/tables/part/PartPurchaseOrdersTable.tsx:38
 #: src/tables/sales/ReturnOrderLineItemTable.tsx:135
 #: src/tables/sales/ReturnOrderLineItemTable.tsx:172
@@ -5834,8 +5834,8 @@ msgstr "ロケーションタイプ"
 #~ msgstr "Quick Actions"
 
 #: src/pages/Index/Settings/AdminCenter/Index.tsx:225
-#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:51
-#: src/tables/machine/MachineTypeTable.tsx:325
+#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:48
+#: src/tables/machine/MachineTypeTable.tsx:307
 msgid "Machines"
 msgstr "機械"
 
@@ -5881,35 +5881,31 @@ msgstr "高度なオプション"
 #~ msgid "Machine Error Stack"
 #~ msgstr "Machine Error Stack"
 
-#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:59
-msgid "Machine Drivers"
-msgstr ""
+#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:56
+msgid "Machine Types"
+msgstr "マシンの種類"
 
 #: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:62
 #~ msgid "There are no machine registry errors."
 #~ msgstr "There are no machine registry errors."
 
-#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:67
-msgid "Machine Types"
-msgstr "マシンの種類"
-
-#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:75
+#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:64
 msgid "Machine Errors"
 msgstr "マシンエラー"
 
-#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:88
+#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:77
 msgid "Registry Registry Errors"
 msgstr "レジストリ エラー"
 
-#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:91
+#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:80
 msgid "There are machine registry errors"
 msgstr "マシンのレジストリエラー"
 
-#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:97
+#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:86
 msgid "Machine Registry Errors"
 msgstr "マシンレジストリエラー"
 
-#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:100
+#: src/pages/Index/Settings/AdminCenter/MachineManagementPanel.tsx:89
 msgid "There are no machine registry errors"
 msgstr "マシンのレジストリエラーはありません。"
 
@@ -9291,57 +9287,51 @@ msgstr "行削除"
 msgid "Add Extra Line Item"
 msgstr "追加項目"
 
-#: src/tables/machine/MachineListTable.tsx:124
+#: src/tables/machine/MachineListTable.tsx:206
 msgid "Machine restarted"
 msgstr "マシン再起動"
 
-#: src/tables/machine/MachineListTable.tsx:225
-#: src/tables/machine/MachineListTable.tsx:274
-#: src/tables/machine/MachineListTable.tsx:613
+#: src/tables/machine/MachineListTable.tsx:216
+#: src/tables/machine/MachineListTable.tsx:264
 msgid "Edit machine"
 msgstr "編集機"
 
-#: src/tables/machine/MachineListTable.tsx:235
-#~ msgid "Are you sure you want to remove the machine \"{0}\"?"
-#~ msgstr "マシン「{0}」を削除しますか？"
-
-#: src/tables/machine/MachineListTable.tsx:239
-#: src/tables/machine/MachineListTable.tsx:278
+#: src/tables/machine/MachineListTable.tsx:230
+#: src/tables/machine/MachineListTable.tsx:268
 msgid "Delete machine"
 msgstr "マシンの削除"
 
-#: src/tables/machine/MachineListTable.tsx:240
-#: src/tables/machine/MachineListTable.tsx:576
+#: src/tables/machine/MachineListTable.tsx:231
 msgid "Machine successfully deleted."
 msgstr "マシンは正常に削除されました。"
 
-#: src/tables/machine/MachineListTable.tsx:245
-#: src/tables/machine/MachineListTable.tsx:581
-msgid "Are you sure you want to remove this machine?"
-msgstr ""
+#. placeholder {0}: machine?.name ?? 'unknown'
+#: src/tables/machine/MachineListTable.tsx:235
+msgid "Are you sure you want to remove the machine \"{0}\"?"
+msgstr "マシン「{0}」を削除しますか？"
 
-#: src/tables/machine/MachineListTable.tsx:262
+#: src/tables/machine/MachineListTable.tsx:252
 msgid "Machine"
 msgstr "マシン"
 
-#: src/tables/machine/MachineListTable.tsx:267
-#: src/tables/machine/MachineListTable.tsx:461
+#: src/tables/machine/MachineListTable.tsx:257
+#: src/tables/machine/MachineListTable.tsx:444
 msgid "Restart required"
 msgstr "再起動が必要"
 
-#: src/tables/machine/MachineListTable.tsx:271
+#: src/tables/machine/MachineListTable.tsx:261
 msgid "Machine Actions"
 msgstr "マシンアクション"
 
-#: src/tables/machine/MachineListTable.tsx:283
+#: src/tables/machine/MachineListTable.tsx:273
 msgid "Restart"
 msgstr "再実行"
 
-#: src/tables/machine/MachineListTable.tsx:285
+#: src/tables/machine/MachineListTable.tsx:275
 msgid "Restart machine"
 msgstr "マシンの再起動"
 
-#: src/tables/machine/MachineListTable.tsx:287
+#: src/tables/machine/MachineListTable.tsx:277
 msgid "manual restart required"
 msgstr "手動再起動が必要"
 
@@ -9349,33 +9339,33 @@ msgstr "手動再起動が必要"
 #~ msgid "Machine information"
 #~ msgstr "Machine information"
 
-#: src/tables/machine/MachineListTable.tsx:312
+#: src/tables/machine/MachineListTable.tsx:295
 msgid "Machine Information"
 msgstr "機械情報"
 
-#: src/tables/machine/MachineListTable.tsx:322
-#: src/tables/machine/MachineListTable.tsx:688
+#: src/tables/machine/MachineListTable.tsx:305
+#: src/tables/machine/MachineListTable.tsx:611
 msgid "Machine Type"
 msgstr "機種"
 
-#: src/tables/machine/MachineListTable.tsx:335
+#: src/tables/machine/MachineListTable.tsx:318
 msgid "Machine Driver"
 msgstr "マシンドライバー"
 
-#: src/tables/machine/MachineListTable.tsx:350
+#: src/tables/machine/MachineListTable.tsx:333
 msgid "Initialized"
 msgstr "初期化"
 
-#: src/tables/machine/MachineListTable.tsx:379
-#: src/tables/machine/MachineTypeTable.tsx:307
+#: src/tables/machine/MachineListTable.tsx:362
+#: src/tables/machine/MachineTypeTable.tsx:289
 msgid "No errors reported"
 msgstr "エラーなし"
 
-#: src/tables/machine/MachineListTable.tsx:398
+#: src/tables/machine/MachineListTable.tsx:381
 msgid "Machine Settings"
 msgstr "マシン設定"
 
-#: src/tables/machine/MachineListTable.tsx:414
+#: src/tables/machine/MachineListTable.tsx:397
 msgid "Driver Settings"
 msgstr "ドライバーの設定"
 
@@ -9383,95 +9373,78 @@ msgstr "ドライバーの設定"
 #~ msgid "Create machine"
 #~ msgstr "Create machine"
 
-#: src/tables/machine/MachineListTable.tsx:532
+#: src/tables/machine/MachineListTable.tsx:517
 msgid "Add Machine"
+msgstr "マシン追加"
+
+#: src/tables/machine/MachineListTable.tsx:559
+msgid "Add machine"
 msgstr "マシン追加"
 
 #: src/tables/machine/MachineListTable.tsx:561
 #~ msgid "Machine detail"
 #~ msgstr "Machine detail"
 
-#: src/tables/machine/MachineListTable.tsx:575
-#: src/tables/machine/MachineListTable.tsx:620
-msgid "Delete Machine"
-msgstr ""
-
-#: src/tables/machine/MachineListTable.tsx:588
-msgid "Edit Machine"
-msgstr ""
-
-#: src/tables/machine/MachineListTable.tsx:602
-msgid "Restart Machine"
-msgstr ""
-
-#: src/tables/machine/MachineListTable.tsx:633
-msgid "Add machine"
-msgstr "マシン追加"
-
-#: src/tables/machine/MachineListTable.tsx:649
+#: src/tables/machine/MachineListTable.tsx:573
 msgid "Machine Detail"
 msgstr "マシン詳細"
 
-#: src/tables/machine/MachineListTable.tsx:697
+#: src/tables/machine/MachineListTable.tsx:620
 msgid "Driver"
 msgstr "ドライバー"
 
-#: src/tables/machine/MachineTypeTable.tsx:72
-msgid "Driver Type"
-msgstr ""
-
-#: src/tables/machine/MachineTypeTable.tsx:76
+#: src/tables/machine/MachineTypeTable.tsx:77
 msgid "Builtin driver"
 msgstr "内蔵ドライバー"
+
+#: src/tables/machine/MachineTypeTable.tsx:95
+msgid "Not Found"
+msgstr "みつかりません"
+
+#: src/tables/machine/MachineTypeTable.tsx:98
+msgid "Machine type not found."
+msgstr "マシンタイプが見つかりません。"
 
 #: src/tables/machine/MachineTypeTable.tsx:99
 #~ msgid "Machine type information"
 #~ msgstr "Machine type information"
 
-#: src/tables/machine/MachineTypeTable.tsx:128
-msgid "Not Found"
-msgstr "みつかりません"
-
-#: src/tables/machine/MachineTypeTable.tsx:131
-msgid "Machine type not found."
-msgstr "マシンタイプが見つかりません。"
-
-#: src/tables/machine/MachineTypeTable.tsx:141
+#: src/tables/machine/MachineTypeTable.tsx:108
 msgid "Machine Type Information"
 msgstr "マシンタイプ情報"
+
+#: src/tables/machine/MachineTypeTable.tsx:123
+#: src/tables/machine/MachineTypeTable.tsx:237
+msgid "Slug"
+msgstr "スラッグ"
+
+#: src/tables/machine/MachineTypeTable.tsx:134
+#: src/tables/machine/MachineTypeTable.tsx:258
+msgid "Provider plugin"
+msgstr "プロバイダプラグイン"
+
+#: src/tables/machine/MachineTypeTable.tsx:146
+#: src/tables/machine/MachineTypeTable.tsx:270
+msgid "Provider file"
+msgstr "プロバイダーファイル"
 
 #: src/tables/machine/MachineTypeTable.tsx:148
 #~ msgid "Available drivers"
 #~ msgstr "Available drivers"
 
-#: src/tables/machine/MachineTypeTable.tsx:156
-#: src/tables/machine/MachineTypeTable.tsx:255
-msgid "Slug"
-msgstr "スラッグ"
-
-#: src/tables/machine/MachineTypeTable.tsx:167
-#: src/tables/machine/MachineTypeTable.tsx:276
-msgid "Provider plugin"
-msgstr "プロバイダプラグイン"
-
-#: src/tables/machine/MachineTypeTable.tsx:179
-#: src/tables/machine/MachineTypeTable.tsx:288
-msgid "Provider file"
-msgstr "プロバイダーファイル"
-
-#: src/tables/machine/MachineTypeTable.tsx:194
+#: src/tables/machine/MachineTypeTable.tsx:161
 msgid "Available Drivers"
 msgstr "利用可能なドライバー"
 
-#: src/tables/machine/MachineTypeTable.tsx:234
+#: src/tables/machine/MachineTypeTable.tsx:216
 msgid "Machine driver not found."
 msgstr "マシンドライバーが見つかりません。"
 
-#: src/tables/machine/MachineTypeTable.tsx:242
+#: src/tables/machine/MachineTypeTable.tsx:224
 msgid "Machine driver information"
 msgstr "マシンドライバー情報"
 
-#: src/tables/machine/MachineTypeTable.tsx:262
+#: src/tables/machine/MachineTypeTable.tsx:244
 msgid "Machine type"
 msgstr "マシンタイプ"
 
@@ -9479,19 +9452,19 @@ msgstr "マシンタイプ"
 #~ msgid "Machine type detail"
 #~ msgstr "Machine type detail"
 
+#: src/tables/machine/MachineTypeTable.tsx:344
+msgid "Builtin type"
+msgstr "内蔵タイプ"
+
 #: src/tables/machine/MachineTypeTable.tsx:348
 #~ msgid "Machine driver detail"
 #~ msgstr "Machine driver detail"
 
-#: src/tables/machine/MachineTypeTable.tsx:362
-msgid "Builtin type"
-msgstr "内蔵タイプ"
-
-#: src/tables/machine/MachineTypeTable.tsx:371
+#: src/tables/machine/MachineTypeTable.tsx:353
 msgid "Machine Type Detail"
 msgstr "マシンタイプ詳細"
 
-#: src/tables/machine/MachineTypeTable.tsx:381
+#: src/tables/machine/MachineTypeTable.tsx:363
 msgid "Machine Driver Detail"
 msgstr "マシンドライバー詳細"
 
@@ -11547,3 +11520,4 @@ msgstr "ドキュメントを読む"
 #: src/views/MobileAppView.tsx:38
 msgid "Ignore and continue to Desktop view"
 msgstr "無視してデスクトップビューへ"
+
