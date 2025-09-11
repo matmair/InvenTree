@@ -240,31 +240,14 @@ export default function DashboardLayout() {
               </Card>
             </Center>
           ) : (
-            <ReactGridLayout
-              className='dashboard-layout'
-              breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-              cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-              rowHeight={64}
-              layouts={layouts}
-              onLayoutChange={onLayoutChange}
-              compactType={'vertical'}
-              isDraggable={editing}
-              isResizable={editing}
-              margin={[10, 10]}
-              containerPadding={[0, 0]}
-              resizeHandles={['ne', 'se', 'sw', 'nw']}
-            >
-              {widgets.map((item: DashboardWidgetProps) => {
-                return DashboardWidget({
-                  item: item,
-                  editing: editing,
-                  removing: removing,
-                  onRemove: () => {
-                    removeWidget(item.label);
-                  }
-                });
-              })}
-            </ReactGridLayout>
+            WidgetGrid(
+              layouts,
+              onLayoutChange,
+              editing,
+              widgets,
+              removing,
+              removeWidget
+            )
           )}
         </>
       ) : (
@@ -273,5 +256,42 @@ export default function DashboardLayout() {
         </Center>
       )}
     </>
+  );
+}
+
+function WidgetGrid(
+  layouts: {},
+  onLayoutChange: (layout: any, newLayouts: any) => void,
+  editing: boolean,
+  widgets: DashboardWidgetProps[],
+  removing: boolean,
+  removeWidget: (widget: string) => void
+) {
+  return (
+    <ReactGridLayout
+      className='dashboard-layout'
+      breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+      cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+      rowHeight={64}
+      layouts={layouts}
+      onLayoutChange={onLayoutChange}
+      compactType={'vertical'}
+      isDraggable={editing}
+      isResizable={editing}
+      margin={[10, 10]}
+      containerPadding={[0, 0]}
+      resizeHandles={['ne', 'se', 'sw', 'nw']}
+    >
+      {widgets.map((item: DashboardWidgetProps) => {
+        return DashboardWidget({
+          item: item,
+          editing: editing,
+          removing: removing,
+          onRemove: () => {
+            removeWidget(item.label);
+          }
+        });
+      })}
+    </ReactGridLayout>
   );
 }
