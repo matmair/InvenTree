@@ -1,5 +1,13 @@
 import { t } from '@lingui/core/macro';
-import { Alert, Card, Center, Divider, Loader, Text } from '@mantine/core';
+import {
+  Alert,
+  Card,
+  Center,
+  Divider,
+  Loader,
+  Space,
+  Text
+} from '@mantine/core';
 import { useDisclosure, useHotkeys } from '@mantine/hooks';
 import { IconExclamationCircle, IconInfoCircle } from '@tabler/icons-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -199,6 +207,41 @@ export default function DashboardLayout() {
     setLayouts({});
   }, []);
 
+  const defaultLayouts = {
+    lg: [
+      {
+        w: 6,
+        h: 4,
+        x: 0,
+        y: 0,
+        i: 'gstart',
+        minW: 5,
+        minH: 4,
+        moved: false,
+        static: false
+      },
+      {
+        w: 6,
+        h: 4,
+        x: 6,
+        y: 0,
+        i: 'news',
+        minW: 5,
+        minH: 4,
+        moved: false,
+        static: false
+      }
+    ]
+  };
+  const loadWigs = ['news', 'gstart'];
+  const defaultWidgets = useMemo(() => {
+    return loadWigs
+      .map((lwid: string) =>
+        availableWidgets.items.find((wid) => wid.label === lwid)
+      )
+      .filter((widget): widget is DashboardWidgetProps => widget !== undefined);
+  }, [availableWidgets.items, defaultLayouts]);
+
   return (
     <>
       <DashboardWidgetDrawer
@@ -228,17 +271,28 @@ export default function DashboardLayout() {
       {layouts && loaded && availableWidgets.loaded ? (
         <>
           {widgetLabels.length == 0 ? (
-            <Center>
-              <Card shadow='xs' padding='xl' style={{ width: '100%' }}>
-                <Alert
-                  color='blue'
-                  title={t`No Widgets Selected`}
-                  icon={<IconInfoCircle />}
-                >
-                  <Text>{t`Use the menu to add widgets to the dashboard`}</Text>
-                </Alert>
-              </Card>
-            </Center>
+            <>
+              <Center>
+                <Card shadow='xs' padding='xl' style={{ width: '100%' }}>
+                  <Alert
+                    color='blue'
+                    title={t`No Widgets Selected`}
+                    icon={<IconInfoCircle />}
+                  >
+                    <Text>{t`Use the menu to add widgets to the dashboard`}</Text>
+                  </Alert>
+                </Card>
+              </Center>
+              <Space h='lg' />
+              {WidgetGrid(
+                defaultLayouts,
+                () => {},
+                editing,
+                defaultWidgets,
+                removing,
+                () => {}
+              )}
+            </>
           ) : (
             WidgetGrid(
               layouts,
