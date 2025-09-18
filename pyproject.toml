@@ -105,7 +105,6 @@ generate-hashes=true
 root = "src/backend/InvenTree"
 
 [tool.ty.rules]
-unresolved-reference="ignore"  # 21 # see https://github.com/astral-sh/ty/issues/220
 unresolved-attribute="ignore"  # 505 # need Plugin Mixin typing
 call-non-callable="ignore"  # 8 ##
 invalid-return-type="ignore"  # 22 ##
