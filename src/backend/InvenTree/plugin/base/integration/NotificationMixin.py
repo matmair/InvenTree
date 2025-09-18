@@ -30,7 +30,7 @@ class NotificationMixin:
     def __init__(self):
         """Register mixin."""
         super().__init__()
-        self.add_mixin(PluginMixinEnum.NOTIFICATION, True, __class__)
+        self.add_mixin(PluginMixinEnum.NOTIFICATION, True, self.__class__)
 
     def filter_targets(self, targets: list[User]) -> list[User]:
         """Filter notification targets based on the plugin's logic."""

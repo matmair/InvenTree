@@ -27,7 +27,7 @@ class TransitionMixin:
         """Initialize the mixin and register it."""
         super().__init__()
         self.add_mixin(
-            PluginMixinEnum.STATE_TRANSITION, 'has_transition_handlers', __class__
+            PluginMixinEnum.STATE_TRANSITION, 'has_transition_handlers', self.__class__
         )
 
     @property

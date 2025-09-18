@@ -521,7 +521,9 @@ class Order(
     @classmethod
     def get_status_class(cls):
         """Return the enumeration class which represents the 'status' field for this model."""
-        raise NotImplementedError(f'get_status_class() not implemented for {__class__}')
+        raise NotImplementedError(
+            f'get_status_class() not implemented for {cls.__class__}'
+        )
 
 
 class PurchaseOrder(TotalPriceMixin, Order):
