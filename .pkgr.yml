@@ -2,7 +2,7 @@ name: inventree
 description: Open Source Inventory Management System
 homepage: https://inventree.org
 notifications: true
-buildpack: https://github.com/heroku/heroku-buildpack-python
+buildpack: https://github.com/mjmair/heroku-buildpack-python#v216-mjmair
 env:
   - STACK=heroku-24
   - DISABLE_COLLECTSTATIC=1
@@ -40,3 +40,4 @@ targets:
   ubuntu-20.04: true
   ubuntu-24.04: true
   debian-11: true
+  debian-12: true
