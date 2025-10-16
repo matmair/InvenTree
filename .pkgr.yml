@@ -29,9 +29,9 @@ dependencies:
   - python3-cffi
   - python3-brotli
   - python3-wheel
-  - libpango-1.0-0
-  - libharfbuzz0b
-  - libpangoft2-1.0-0
+  - weasyprint
+  # debian # libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0
+  # ubutnu # libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 libharfbuzz0b libffi-dev libjpeg-dev libopenjp2-7-dev
   - gettext
   - nginx
   - jq
