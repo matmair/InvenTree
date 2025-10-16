@@ -57,6 +57,9 @@ case "$OS" in
             SUPPORTED=true
             NEEDS_LIBSSL1_1=true
             DIST_VER="20.04"
+        elif [[ $VER == "24.04" ]]; then
+            SUPPORTED=true
+            DIST_VER="24.04"
         elif [[ $VER == "20.04" ]]; then
             SUPPORTED=true
         else
