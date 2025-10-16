@@ -2,7 +2,7 @@ name: inventree
 description: Open Source Inventory Management System
 homepage: https://inventree.org
 notifications: true
-buildpack: https://github.com/heroku/heroku-buildpack-python/#v312
+buildpack: https://github.com/heroku/heroku-buildpack-python
 env:
   - STACK=heroku-24
   - DISABLE_COLLECTSTATIC=1
