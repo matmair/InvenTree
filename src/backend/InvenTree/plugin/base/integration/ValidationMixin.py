@@ -230,7 +230,7 @@ class ValidationMixin:
 
     def validate_part_parameter(
         self, parameter: generic.parameters.models.PartParameter, data: str
-    ) -> None:
+    ) -> Optional[bool]:
         """Validate a parameter value.
 
         Arguments:
