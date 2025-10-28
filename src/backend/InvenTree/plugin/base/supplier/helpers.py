@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-import part.models as part_models
+import generic.parameters.models as part_models
 
 
 @dataclass

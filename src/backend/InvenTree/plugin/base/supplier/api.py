@@ -11,8 +11,8 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from generic.parameters.models import PartCategoryParameterTemplate
 from InvenTree import permissions
-from part.models import PartCategoryParameterTemplate
 from plugin import registry
 from plugin.plugin import PluginMixinEnum
 

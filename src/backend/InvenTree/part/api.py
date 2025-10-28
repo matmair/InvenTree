@@ -14,9 +14,9 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.response import Response
 
+import generic.parameters.api
 import part.filters
 from data_exporter.mixins import DataExportViewMixin
-from generic.parameters.api import part_parameters_urls, partcategory_parameter_urls
 from InvenTree.api import (
     BulkDeleteMixin,
     BulkUpdateMixin,
@@ -1207,7 +1207,7 @@ class PartRelatedDetail(PartRelatedMixin, RetrieveUpdateDestroyAPI):
     """API endpoint for accessing detail view of a PartRelated object."""
 
 
-class PartStocktakeFilter(rest_filters.FilterSet):
+class PartStocktakeFilter(FilterSet):
     """Custom filter for the PartStocktakeList endpoint."""
 
     class Meta:
@@ -1503,7 +1503,7 @@ part_api_urls = [
         'category/',
         include([
             path('tree/', CategoryTree.as_view(), name='api-part-category-tree'),
-            path('parameters/', partcategory_parameter_urls),
+            path('parameters/', generic.parameters.api.partcategory_parameter_urls),
             # Category detail endpoints
             path(
                 '<int:pk>/',
@@ -1591,7 +1591,7 @@ part_api_urls = [
         ]),
     ),
     # Base URL for PartParameter API endpoints
-    path('parameter/', part_parameters_urls),
+    path('parameter/', generic.parameters.api.part_parameters_urls),
     # Part stocktake data
     path(
         'stocktake/',

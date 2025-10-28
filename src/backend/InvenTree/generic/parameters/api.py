@@ -4,13 +4,13 @@ from django.urls import include, path
 
 from django_filters import rest_framework as rest_filters
 
+from data_exporter.mixins import DataExportViewMixin
 from generic.parameters.models import (
     PartCategoryParameterTemplate,
     PartParameter,
     PartParameterTemplate,
     PartParameterTemplateFilter,
 )
-from importer.mixins import DataExportViewMixin
 from InvenTree.api import MetadataView
 from InvenTree.filters import SEARCH_ORDER_FILTER, SEARCH_ORDER_FILTER_ALIAS
 from InvenTree.helpers import str2bool
@@ -203,8 +203,7 @@ partcategory_parameter_urls = include([
         include([
             path(
                 'metadata/',
-                MetadataView.as_view(),
-                {'model': PartCategoryParameterTemplate},
+                MetadataView.as_view(model=PartCategoryParameterTemplate),
                 name='api-part-category-parameter-metadata',
             ),
             path(
@@ -225,8 +224,7 @@ part_parameters_urls = include([
                 include([
                     path(
                         'metadata/',
-                        MetadataView.as_view(),
-                        {'model': PartParameterTemplate},
+                        MetadataView.as_view(model=PartParameterTemplate),
                         name='api-part-parameter-template-metadata',
                     ),
                     path(
@@ -248,8 +246,7 @@ part_parameters_urls = include([
         include([
             path(
                 'metadata/',
-                MetadataView.as_view(),
-                {'model': PartParameter},
+                MetadataView.as_view(model=PartParameter),
                 name='api-part-parameter-metadata',
             ),
             path('', PartParameterDetail.as_view(), name='api-part-parameter-detail'),
