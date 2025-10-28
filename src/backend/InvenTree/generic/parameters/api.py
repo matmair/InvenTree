@@ -11,10 +11,11 @@ from generic.parameters.models import (
     PartParameterTemplate,
     PartParameterTemplateFilter,
 )
-from InvenTree.api import MetadataView
+from InvenTree.api import BulkCreateMixin, MetadataView
+from InvenTree.fields import InvenTreeOutputOption, OutputConfiguration
 from InvenTree.filters import SEARCH_ORDER_FILTER, SEARCH_ORDER_FILTER_ALIAS
 from InvenTree.helpers import str2bool
-from InvenTree.mixins import ListCreateAPI, RetrieveUpdateDestroyAPI
+from InvenTree.mixins import ListCreateAPI, OutputOptionsMixin, RetrieveUpdateDestroyAPI
 from part import serializers as part_serializers
 from part.models import Part, PartCategory
 
@@ -74,7 +75,7 @@ class PartParameterFilter(rest_filters.FilterSet):
         """Metaclass options for the filterset."""
 
         model = PartParameter
-        fields = ['template']
+        fields = ['template', 'updated_by']
 
     part = rest_filters.ModelChoiceFilter(
         queryset=Part.objects.all(), method='filter_part'
@@ -135,16 +136,30 @@ class PartParameterTemplateList(
     ordering_fields = ['name', 'units', 'checkbox', 'parts']
 
 
+class PartParameterOutputOptions(OutputConfiguration):
+    """Output options for the PartParameter endpoints."""
+
+    OPTIONS = [
+        InvenTreeOutputOption('part_detail'),
+        InvenTreeOutputOption(
+            'template_detail',
+            default=True,
+            description='Include detailed information about the part parameter template.',
+        ),
+    ]
+
+
 class PartParameterAPIMixin:
     """Mixin class for PartParameter API endpoints."""
 
     queryset = PartParameter.objects.all()
     serializer_class = part_serializers.PartParameterSerializer
+    output_options = PartParameterOutputOptions
 
     def get_queryset(self, *args, **kwargs):
         """Override get_queryset method to prefetch related fields."""
         queryset = super().get_queryset(*args, **kwargs)
-        queryset = queryset.prefetch_related('part', 'template')
+        queryset = queryset.prefetch_related('part', 'template', 'updated_by')
         return queryset
 
     def get_serializer(self, *args, **kwargs):
@@ -165,7 +180,13 @@ class PartParameterAPIMixin:
         return self.serializer_class(*args, **kwargs)
 
 
-class PartParameterList(PartParameterAPIMixin, DataExportViewMixin, ListCreateAPI):
+class PartParameterList(
+    BulkCreateMixin,
+    PartParameterAPIMixin,
+    OutputOptionsMixin,
+    DataExportViewMixin,
+    ListCreateAPI,
+):
     """API endpoint for accessing a list of PartParameter objects.
 
     - GET: Return list of PartParameter objects
@@ -176,7 +197,7 @@ class PartParameterList(PartParameterAPIMixin, DataExportViewMixin, ListCreateAP
 
     filter_backends = SEARCH_ORDER_FILTER_ALIAS
 
-    ordering_fields = ['name', 'data', 'part', 'template']
+    ordering_fields = ['name', 'data', 'part', 'template', 'updated', 'updated_by']
 
     ordering_field_aliases = {
         'name': 'template__name',
@@ -193,7 +214,9 @@ class PartParameterList(PartParameterAPIMixin, DataExportViewMixin, ListCreateAP
     ]
 
 
-class PartParameterDetail(PartParameterAPIMixin, RetrieveUpdateDestroyAPI):
+class PartParameterDetail(
+    PartParameterAPIMixin, OutputOptionsMixin, RetrieveUpdateDestroyAPI
+):
     """API endpoint for detail view of a single PartParameter object."""
 
 
