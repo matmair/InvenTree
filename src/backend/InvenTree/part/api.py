@@ -17,6 +17,7 @@ from rest_framework.response import Response
 import part.filters
 from data_exporter.mixins import DataExportViewMixin
 from InvenTree.api import (
+    BulkCreateMixin,
     BulkDeleteMixin,
     BulkUpdateMixin,
     ListCreateDestroyAPIView,
@@ -282,13 +283,11 @@ class CategoryDetail(CategoryMixin, OutputOptionsMixin, CustomRetrieveUpdateDest
 
     def destroy(self, request, *args, **kwargs):
         """Delete a Part category instance via the API."""
-        delete_parts = (
-            'delete_parts' in request.data and request.data['delete_parts'] == '1'
+        delete_parts = str2bool(request.data.get('delete_parts', False))
+        delete_child_categories = str2bool(
+            request.data.get('delete_child_categories', False)
         )
-        delete_child_categories = (
-            'delete_child_categories' in request.data
-            and request.data['delete_child_categories'] == '1'
-        )
+
         return super().destroy(
             request,
             *args,
@@ -1021,6 +1020,9 @@ class PartMixin(SerializerContextMixin):
         if str2bool(self.request.query_params.get('parameters', False)):
             queryset = queryset.prefetch_related('parameters', 'parameters__template')
 
+        if str2bool(self.request.query_params.get('price_breaks', True)):
+            queryset = queryset.prefetch_related('salepricebreaks')
+
         return queryset
 
     def get_serializer(self, *args, **kwargs):
@@ -1060,6 +1062,7 @@ class PartOutputOptions(OutputConfiguration):
         InvenTreeOutputOption('category_detail'),
         InvenTreeOutputOption('location_detail'),
         InvenTreeOutputOption('path_detail'),
+        InvenTreeOutputOption('price_breaks'),
     ]
 
 
@@ -1416,7 +1419,11 @@ class PartParameterFilter(FilterSet):
 
 
 class PartParameterList(
-    PartParameterAPIMixin, OutputOptionsMixin, DataExportViewMixin, ListCreateAPI
+    BulkCreateMixin,
+    PartParameterAPIMixin,
+    OutputOptionsMixin,
+    DataExportViewMixin,
+    ListCreateAPI,
 ):
     """API endpoint for accessing a list of PartParameter objects.
 
@@ -1443,6 +1450,8 @@ class PartParameterList(
         'template__description',
         'template__units',
     ]
+
+    unique_create_fields = ['part', 'template']
 
 
 class PartParameterDetail(

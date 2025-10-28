@@ -25,7 +25,7 @@ import InvenTree.permissions
 import stock.serializers as StockSerializers
 from build.models import Build
 from build.serializers import BuildSerializer
-from company.models import Company, SupplierPart
+from company.models import Company, ManufacturerPart, SupplierPart
 from company.serializers import CompanySerializer
 from data_exporter.mixins import DataExportViewMixin
 from generic.states.api import StatusView
@@ -431,8 +431,12 @@ class StockLocationDetail(
 
     def destroy(self, request, *args, **kwargs):
         """Delete a Stock location instance via the API."""
-        delete_stock_items = str(request.data.get('delete_stock_items', 0)) == '1'
-        delete_sub_locations = str(request.data.get('delete_sub_locations', 0)) == '1'
+        delete_stock_items = InvenTree.helpers.str2bool(
+            request.data.get('delete_stock_items', False)
+        )
+        delete_sub_locations = InvenTree.helpers.str2bool(
+            request.data.get('delete_sub_locations', False)
+        )
 
         return super().destroy(
             request,
@@ -552,6 +556,12 @@ class StockFilter(FilterSet):
             Q(supplier_part__manufacturer_part__manufacturer__is_manufacturer=True)
             & Q(supplier_part__manufacturer_part__manufacturer=company)
         )
+
+    manufacturer_part = rest_filters.ModelChoiceFilter(
+        label=_('Manufacturer Part'),
+        queryset=ManufacturerPart.objects.all(),
+        field_name='supplier_part__manufacturer_part',
+    )
 
     supplier = rest_filters.ModelChoiceFilter(
         label=_('Supplier'),
