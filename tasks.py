@@ -461,7 +461,9 @@ def check_file_existence(filename: Path, overwrite: bool = False):
 @state_logger('TASK13')
 def update_constraint(c):
     """Update the constraints file for plugin installations."""
-    from src.backend.InvenTree.InvenTree.config import get_constraint_file
+    from src.backend.InvenTree.InvenTree.config import (
+        get_constraint_file,  # type: ignore[import]
+    )
 
     info('Generating constraint file for plugin installations...')
     info('New constraint file written to: ', get_constraint_file(force_write=True))
