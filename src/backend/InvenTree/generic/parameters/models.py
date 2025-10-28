@@ -173,7 +173,9 @@ class PartParameterTemplate(InvenTree.models.InvenTreeMetadataModel):
     )
 
 
-class PartParameter(InvenTree.models.InvenTreeMetadataModel):
+class PartParameter(
+    common.models.UpdatedUserMixin, InvenTree.models.InvenTreeMetadataModel
+):
     """A PartParameter is a specific instance of a PartParameterTemplate. It assigns a particular parameter <key:value> pair to a part.
 
     Attributes:
@@ -319,6 +321,12 @@ class PartParameter(InvenTree.models.InvenTreeMetadataModel):
     )
 
     data_numeric = models.FloatField(default=None, null=True, blank=True)
+    note = models.CharField(
+        max_length=500,
+        blank=True,
+        verbose_name=_('Note'),
+        help_text=_('Optional note field'),
+    )
 
     @property
     def units(self):
