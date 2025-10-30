@@ -279,7 +279,7 @@ export default function PartTestTemplateTable({
             onRowClick: (row) => {
               if (row.part && row.part != partId) {
                 // This test is defined for a different part
-                navigate(getDetailUrl(ModelType.part, row.part));
+                navigate({ to: getDetailUrl(ModelType.part, row.part) });
               }
             }
           }}

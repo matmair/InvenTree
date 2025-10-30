@@ -87,7 +87,7 @@ export function MachineDriverTable({
         enableDownload: false,
         enableSearch: false,
         onRowClick: (machine) => {
-          navigate(`${prefix ?? '.'}/driver-${machine.slug}/`);
+          navigate({ to: `${prefix ?? '.'}/driver-${machine.slug}/` });
         },
         dataFormatter: (data: any) => {
           if (machineType) {
@@ -397,7 +397,7 @@ export function MachineTypeListTable({
           ...props,
           enableDownload: false,
           enableSearch: false,
-          onRowClick: (machine) => navigate(`./type-${machine.slug}/`),
+          onRowClick: (machine) => navigate({ to: `./type-${machine.slug}/` }),
           params: {
             ...props.params
           }

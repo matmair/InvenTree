@@ -403,7 +403,7 @@ export default function PluginListTable() {
           rowActions: rowActions,
           onRowClick: (plugin) => {
             setSelectedPlugin(plugin);
-            navigate(`${plugin.key}/`);
+            navigate({ to: `${plugin.key}/` });
           },
           tableActions: tableActions,
           tableFilters: [

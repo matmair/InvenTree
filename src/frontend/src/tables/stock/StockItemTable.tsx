@@ -534,7 +534,7 @@ export function StockItemTable({
     onFormSuccess: (response: any) => {
       // Returns a list that may contain multiple serialized stock items
       // Navigate to the first result
-      navigate(getDetailUrl(ModelType.stockitem, response[0].pk));
+      navigate({ to: getDetailUrl(ModelType.stockitem, response[0].pk) });
     },
     successMessage: t`Stock item serialized`
   });

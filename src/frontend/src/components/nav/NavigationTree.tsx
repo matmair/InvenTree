@@ -79,7 +79,7 @@ export default function NavigationTree({
         navigateToLink(url, navigate, event);
       } else {
         onClose();
-        navigate(url);
+        navigate({ to: url });
       }
     },
     [modelType, navigate]

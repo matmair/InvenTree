@@ -16,7 +16,8 @@ import { useUserState } from '../../states/UserState';
 import { InvenTreeTable } from '../InvenTreeTable';
 
 function ErrorDetail({ errorId }: Readonly<{ errorId?: number }>) {
-  const { id } = useParams();
+  const params = useParams({ strict: false }) as { id?: string };
+  const id = params.id;
 
   const errorPrimaryKey = useMemo(() => {
     return errorId ?? id;
@@ -161,7 +162,7 @@ export default function ErrorReportTable() {
           rowActions: rowActions,
           onRowClick: (row) => {
             setSelectedError(row);
-            navigate(`${row.pk}/`);
+            navigate({ to: `${row.pk}/` });
           }
         }}
       />

@@ -246,7 +246,7 @@ export function UserTable({
   const openDetailDrawer = useCallback(
     (pk: number) => {
       if (user.hasChangePermission(ModelType.user)) {
-        navigate(`user-${pk}/`);
+        navigate({ to: `user-${pk}/` });
       }
     },
     [user]
@@ -314,7 +314,7 @@ export function UserTable({
           icon: <IconUserCircle />,
           title: t`Open Profile`,
           onClick: () => {
-            navigate(getDetailUrl(ModelType.user, record.pk));
+            navigate({ to: getDetailUrl(ModelType.user, record.pk) });
           }
         },
         {

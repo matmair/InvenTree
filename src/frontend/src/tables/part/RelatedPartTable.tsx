@@ -59,7 +59,7 @@ export function RelatedPartTable({
               wrap='nowrap'
               justify='left'
               onClick={() => {
-                navigate(`/part/${part.pk}/`);
+                navigate({ to: `/part/${part.pk}/` });
               }}
             >
               <Thumbnail src={part.thumbnail || part.image} />

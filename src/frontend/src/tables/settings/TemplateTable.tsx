@@ -198,7 +198,7 @@ export function TemplateTable({
   const navigate = useNavigate();
   const user = useUserState();
 
-  const openDetailDrawer = useCallback((pk: number) => navigate(`${pk}/`), []);
+  const openDetailDrawer = useCallback((pk: number) => navigate({ to: `${pk}/` }), []);
 
   const columns: TableColumn<TemplateI>[] = useMemo(() => {
     return [

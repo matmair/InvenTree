@@ -134,7 +134,7 @@ export function GroupTable({
   const openDetailDrawer = useCallback(
     (pk: number) => {
       if (user.hasChangePermission(ModelType.group)) {
-        navigate(`group-${pk}/`);
+        navigate({ to: `group-${pk}/` });
       }
     },
     [user]
@@ -169,7 +169,7 @@ export function GroupTable({
           icon: <IconUsersGroup />,
           title: t`Open Profile`,
           onClick: () => {
-            navigate(getDetailUrl(ModelType.group, record.pk));
+            navigate({ to: getDetailUrl(ModelType.group, record.pk) });
           }
         }
       ];

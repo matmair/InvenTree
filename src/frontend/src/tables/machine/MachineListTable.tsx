@@ -674,9 +674,7 @@ export function MachineListTable({
     },
     onFormSuccess: (data) => {
       table.refreshTable();
-      navigate(
-        renderMachineDrawer ? `machine-${data.pk}/` : `../machine-${data.pk}/`
-      );
+      navigate({ to: renderMachineDrawer ? `machine-${data.pk}/` : `../machine-${data.pk}/` });
     },
     onClose: () => {
       setCreateFormMachineType(null);
@@ -783,11 +781,7 @@ export function MachineListTable({
           ...props,
           enableDownload: false,
           onRowClick: (machine) =>
-            navigate(
-              renderMachineDrawer
-                ? `machine-${machine.pk}/`
-                : `../machine-${machine.pk}/`
-            ),
+            navigate({ to: renderMachineDrawer ? `machine-${machine.pk}/` : `../machine-${machine.pk}/` }),
           rowActions: rowActions,
           tableActions: tableActions,
           params: {
