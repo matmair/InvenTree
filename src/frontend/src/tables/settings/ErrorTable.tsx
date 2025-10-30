@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { Group, Loader, Stack, Table, Text } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from '@tanstack/react-router';
 
 import { type RowAction, RowDeleteAction } from '@lib/components/RowActions';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';

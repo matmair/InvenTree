@@ -16,7 +16,7 @@ import {
 import { IconBell, IconSearch } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from '@tanstack/react-router';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { apiUrl } from '@lib/functions/Api';

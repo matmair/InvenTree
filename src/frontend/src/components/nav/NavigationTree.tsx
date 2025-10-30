@@ -21,7 +21,7 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import type { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import type { ModelType } from '@lib/enums/ModelType';

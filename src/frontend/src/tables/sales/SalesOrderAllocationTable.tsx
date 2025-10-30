@@ -16,7 +16,7 @@ import type { TableFilter } from '@lib/types/Filters';
 import type { StockOperationProps } from '@lib/types/Forms';
 import type { TableColumn } from '@lib/types/Tables';
 import { IconTruckDelivery } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { formatDate } from '../../defaults/formatters';
 import { useSalesOrderAllocationFields } from '../../forms/SalesOrderForms';
 import {

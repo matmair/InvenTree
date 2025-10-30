@@ -29,7 +29,7 @@ import {
   useLocation,
   useNavigate,
   useParams
-} from 'react-router-dom';
+} from '@tanstack/react-router';
 
 import type { ModelType } from '@lib/enums/ModelType';
 import { identifierString } from '@lib/functions/Conversion';

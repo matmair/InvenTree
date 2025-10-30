@@ -8,7 +8,7 @@ import { t } from '@lingui/core/macro';
 import { Group, Skeleton, Stack, Text } from '@mantine/core';
 import { IconInfoCircle, IconPackages, IconSitemap } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { api } from '../../App';
 import { useBarcodeScanDialog } from '../../components/barcodes/BarcodeScanDialog';
 import AdminButton from '../../components/buttons/AdminButton';
@@ -252,7 +252,7 @@ export default function Stock() {
       if (location.parent) {
         navigate(getDetailUrl(ModelType.stocklocation, location.parent));
       } else {
-        navigate('/stock/');
+        navigate({ to: '/stock/' });
       }
     }
   });

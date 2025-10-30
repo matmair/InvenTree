@@ -19,7 +19,7 @@ import {
 } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { api } from '../../App';
 import useCalendar from '../../hooks/UseCalendar';
 import { useUserState } from '../../states/UserState';

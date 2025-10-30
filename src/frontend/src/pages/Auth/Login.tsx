@@ -3,7 +3,7 @@ import { Trans } from '@lingui/react/macro';
 import { Anchor, Divider, Group, Loader, Text } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from '@tanstack/react-router';
 
 import { useShallow } from 'zustand/react/shallow';
 import { setApiDefaults } from '../../App';
@@ -116,7 +116,7 @@ export default function Login() {
                       type='button'
                       c='dimmed'
                       size='xs'
-                      onClick={() => navigate('/register')}
+                      onClick={() => navigate({ to: '/register' })}
                     >
                       <Trans>Register</Trans>
                     </Anchor>
