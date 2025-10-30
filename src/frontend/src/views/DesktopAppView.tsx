@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { RouterProvider } from '@tanstack/react-router';
 
 import { getBaseUrl } from '@lib/functions/Navigation';
 import { useShallow } from 'zustand/react/shallow';
@@ -7,7 +7,7 @@ import { api, queryClient } from '../App';
 import { ApiProvider } from '../contexts/ApiContext';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { defaultHostList } from '../defaults/defaultHostList';
-import { routes } from '../router';
+import { router } from '../router';
 import { useLocalState } from '../states/LocalState';
 
 export default function DesktopAppView() {
@@ -19,10 +19,13 @@ export default function DesktopAppView() {
     }
   }, [hostList]);
 
+  // Set the basepath for the router
+  const basepath = getBaseUrl();
+
   return (
     <ApiProvider client={queryClient} api={api}>
       <ThemeContext>
-        <BrowserRouter basename={getBaseUrl()}>{routes}</BrowserRouter>
+        <RouterProvider router={router} basepath={basepath} />
       </ThemeContext>
     </ApiProvider>
   );
