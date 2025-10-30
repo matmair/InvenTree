@@ -1,5 +1,5 @@
 import type { PluginProps } from '@lib/types/Plugins';
-import type { NavigateFunction } from 'react-router-dom';
+import type { NavigateFunction } from '@tanstack/react-router';
 import { setApiDefaults } from '../App';
 import { useGlobalStatusState } from './GlobalStatusState';
 import { useIconState } from './IconState';

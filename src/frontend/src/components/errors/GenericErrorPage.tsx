@@ -11,7 +11,7 @@ import {
   Text
 } from '@mantine/core';
 import { IconArrowBack, IconExclamationCircle } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { LanguageContext } from '../../contexts/LanguageContext';
 
@@ -58,7 +58,7 @@ export default function ErrorPage({
                 <Button
                   variant='outline'
                   color='green'
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate({ to: '/' })}
                 >
                   <Trans>Return to the index page</Trans>
                   <IconArrowBack />

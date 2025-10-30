@@ -11,7 +11,7 @@ import {
   IconTrash
 } from '@tabler/icons-react';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { ActionButton } from '@lib/components/ActionButton';
 import type { RowAction } from '@lib/components/RowActions';
@@ -403,7 +403,7 @@ export default function PluginListTable() {
           rowActions: rowActions,
           onRowClick: (plugin) => {
             setSelectedPlugin(plugin);
-            navigate(`${plugin.key}/`);
+            navigate({ to: `${plugin.key}/` });
           },
           tableActions: tableActions,
           tableFilters: [

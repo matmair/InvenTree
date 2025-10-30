@@ -2,7 +2,7 @@ import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { Button, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { handleReset } from '../../functions/auth';
 import { Wrapper } from './Layout';
 

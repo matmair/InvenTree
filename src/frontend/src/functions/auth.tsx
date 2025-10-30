@@ -10,7 +10,8 @@ import { t } from '@lingui/core/macro';
 import { notifications, showNotification } from '@mantine/notifications';
 import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
-import type { Location, NavigateFunction } from 'react-router-dom';
+import type { Location, NavigateFunction } from '@tanstack/react-router';
+import type { NavigateFunction } from '../../types/navigate';
 import { api, setApiDefaults } from '../App';
 import { useLocalState } from '../states/LocalState';
 import { useServerApiState } from '../states/ServerApiState';
@@ -185,7 +186,7 @@ export async function doBasicLogin(
       // No code or success - off to the mfa page
       if (!loginDone) {
         success = true;
-        navigate('/mfa');
+        navigate({ to: '/mfa' });
       }
     }
   }
@@ -214,7 +215,7 @@ export const doLogout = async (navigate: NavigateFunction) => {
   clearUserState();
   clearCsrfCookie();
   setAuthContext(undefined);
-  navigate('/login');
+  navigate({ to: '/login' });
 };
 
 export const doSimpleLogin = async (email: string) => {
@@ -306,7 +307,7 @@ export function handleReset(
         color: 'green',
         autoClose: false
       });
-      navigate('/login');
+      navigate({ to: '/login' });
     } else {
       notifications.show({
         title: t`Reset failed`,
@@ -561,7 +562,7 @@ export function handlePasswordReset(
       color: 'green',
       autoClose: false
     });
-    navigate('/login');
+    navigate({ to: '/login' });
   }
 
   function passwordError(values: any) {
@@ -611,7 +612,7 @@ export function handleVerifyEmail(
     })
     .then((val) => {
       if (val.status === 200) {
-        navigate('/login');
+        navigate({ to: '/login' });
       }
     });
 }
@@ -672,7 +673,7 @@ export function handleChangePassword(
         });
         clearUserState();
         clearCsrfCookie();
-        navigate('/login');
+        navigate({ to: '/login' });
       } else {
         // compile errors
         const errors: { [key: string]: string[] } = {};

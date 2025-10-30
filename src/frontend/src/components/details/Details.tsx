@@ -15,7 +15,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { getValueAtPath } from 'mantine-datatable';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { ProgressBar } from '@lib/components/ProgressBar';
 import { YesNoButton } from '@lib/components/YesNoButton';

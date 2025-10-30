@@ -3,7 +3,7 @@ import { Group } from '@mantine/core';
 import { useHover } from '@mantine/hooks';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { YesNoButton } from '@lib/components/YesNoButton';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';

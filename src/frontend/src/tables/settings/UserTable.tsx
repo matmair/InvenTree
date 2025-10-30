@@ -24,7 +24,7 @@ import { type ApiFormModalProps, getDetailUrl } from '@lib/index';
 import type { TableFilter } from '@lib/types/Filters';
 import type { TableColumn, TableState } from '@lib/types/Tables';
 import { showNotification } from '@mantine/notifications';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { useShallow } from 'zustand/react/shallow';
 import { api } from '../../App';
 import { EditApiForm } from '../../components/forms/ApiForm';
@@ -246,7 +246,7 @@ export function UserTable({
   const openDetailDrawer = useCallback(
     (pk: number) => {
       if (user.hasChangePermission(ModelType.user)) {
-        navigate(`user-${pk}/`);
+        navigate({ to: `user-${pk}/` });
       }
     },
     [user]
@@ -314,7 +314,7 @@ export function UserTable({
           icon: <IconUserCircle />,
           title: t`Open Profile`,
           onClick: () => {
-            navigate(getDetailUrl(ModelType.user, record.pk));
+            navigate({ to: getDetailUrl(ModelType.user, record.pk) });
           }
         },
         {

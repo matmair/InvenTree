@@ -4,7 +4,7 @@ import { t } from '@lingui/core/macro';
 import { Badge, Group, Skeleton, Stack } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { type ReactNode, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 import {
   type DetailsField,
   DetailsTable

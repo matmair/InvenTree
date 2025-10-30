@@ -3,7 +3,7 @@ import { Trans } from '@lingui/react/macro';
 import { Button, Checkbox, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import { useShallow } from 'zustand/react/shallow';
 import { handleMfaLogin, handleWebauthnLogin } from '../../functions/auth';
 import { useServerApiState } from '../../states/ServerApiState';

@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { IconTruckDelivery } from '@tabler/icons-react';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { AddItemButton } from '@lib/components/AddItemButton';
 import {

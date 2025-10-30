@@ -11,7 +11,7 @@ import {
 } from '@tabler/icons-react';
 import type { DataTableRowExpansionProps } from 'mantine-datatable';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { ActionButton } from '@lib/components/ActionButton';
 import { ProgressBar } from '@lib/components/ProgressBar';

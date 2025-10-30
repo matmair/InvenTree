@@ -2,7 +2,7 @@ import { t } from '@lingui/core/macro';
 import { Accordion, Alert, Card, Stack, Text } from '@mantine/core';
 import { IconExclamationCircle } from '@tabler/icons-react';
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { useInstance } from '../../hooks/UseInstance';

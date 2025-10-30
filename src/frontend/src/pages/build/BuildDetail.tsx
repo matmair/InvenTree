@@ -13,7 +13,7 @@ import {
   IconSitemap
 } from '@tabler/icons-react';
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';

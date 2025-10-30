@@ -9,7 +9,7 @@ import {
   IconSitemap
 } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from '@tanstack/react-router';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -219,7 +219,7 @@ export default function CategoryDetail() {
       if (category.parent) {
         navigate(getDetailUrl(ModelType.partcategory, category.parent));
       } else {
-        navigate('/part/');
+        navigate({ to: '/part/' });
       }
     }
   });

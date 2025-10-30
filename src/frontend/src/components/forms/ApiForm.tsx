@@ -20,7 +20,8 @@ import {
   type SubmitHandler,
   useForm
 } from 'react-hook-form';
-import { type NavigateFunction, useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
+import type { NavigateFunction } from '../../types/navigate';
 
 import { isTrue } from '@lib/functions/Conversion';
 import { getDetailUrl } from '@lib/functions/Navigation';

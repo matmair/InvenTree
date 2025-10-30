@@ -8,7 +8,7 @@ import {
   IconUserBolt,
   IconUserCog
 } from '@tabler/icons-react';
-import type { NavigateFunction } from 'react-router-dom';
+import type { NavigateFunction } from '@tanstack/react-router';
 
 import { ModelInformationDict } from '@lib/enums/ModelInformation';
 import { UserRoles } from '@lib/index';
@@ -40,7 +40,7 @@ export function getActions(navigate: NavigateFunction) {
         id: 'dashboard',
         label: t`Dashboard`,
         description: t`Go to the InvenTree dashboard`,
-        onClick: () => navigate('/'),
+        onClick: () => navigate({ to: '/' }),
         leftSection: <IconLink size='1.2rem' />
       },
       {
@@ -92,7 +92,7 @@ export function getActions(navigate: NavigateFunction) {
         label: t`User Settings`,
 
         description: t`Go to your user settings`,
-        onClick: () => navigate('/settings/user'),
+        onClick: () => navigate({ to: '/settings/user' }),
         leftSection: <IconUserCog size='1.2rem' />
       }
     ];
@@ -143,7 +143,7 @@ export function getActions(navigate: NavigateFunction) {
         id: 'system-settings',
         label: t`System Settings`,
         description: t`Go to System Settings`,
-        onClick: () => navigate('/settings/system'),
+        onClick: () => navigate({ to: '/settings/system' }),
         leftSection: <IconSettings size='1.2rem' />
       });
 

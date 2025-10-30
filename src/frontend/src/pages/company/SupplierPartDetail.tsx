@@ -7,7 +7,7 @@ import {
   IconShoppingCart
 } from '@tabler/icons-react';
 import { type ReactNode, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from '@tanstack/react-router';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';

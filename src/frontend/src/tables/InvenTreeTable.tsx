@@ -24,7 +24,7 @@ import {
 } from 'mantine-datatable';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { Boundary } from '../components/Boundary';
 import { useApi } from '../contexts/ApiContext';
 import { extractAvailableFields, mapFields } from '../functions/forms';
