@@ -4,11 +4,12 @@ import datetime
 import hashlib
 import inspect
 import io
+import json
 import os
 import os.path
 import re
 from decimal import Decimal, InvalidOperation
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Union
 from wsgiref.util import FileWrapper
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -21,6 +22,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import bleach
+import bleach.css_sanitizer
+import bleach.sanitizer
 import structlog
 from bleach import clean
 from djmoney.money import Money
@@ -28,6 +31,7 @@ from PIL import Image
 
 from common.currency import currency_code_default
 
+from .setting.storages import StorageBackends
 from .settings import MEDIA_URL, STATIC_URL
 
 logger = structlog.get_logger('inventree')
@@ -123,7 +127,7 @@ def extract_int(
     return ref_int
 
 
-def generateTestKey(test_name: str) -> str:
+def generateTestKey(test_name: Union[str, None]) -> str:
     """Generate a test 'key' for a given test name. This must not have illegal chars as it will be used for dict lookup in a template.
 
     Tests must be named such that they will have unique keys.
@@ -154,7 +158,7 @@ def generateTestKey(test_name: str) -> str:
     return key
 
 
-def constructPathString(path, max_chars=250):
+def constructPathString(path: list[str], max_chars: int = 250) -> str:
     """Construct a 'path string' for the given path.
 
     Arguments:
@@ -173,6 +177,8 @@ def constructPathString(path, max_chars=250):
 
 def getMediaUrl(filename):
     """Return the qualified access path for the given file, under the media directory."""
+    if settings.STORAGE_TARGET == StorageBackends.S3:
+        return str(filename)
     return os.path.join(MEDIA_URL, str(filename))
 
 
@@ -279,12 +285,12 @@ def str2bool(text, test=True):
     return str(text).lower() in ['0', 'n', 'no', 'none', 'f', 'false', 'off']
 
 
-def is_bool(text):
+def is_bool(text: str) -> bool:
     """Determine if a string value 'looks' like a boolean."""
     return str2bool(text, True) or str2bool(text, False)
 
 
-def isNull(text):
+def isNull(text: str) -> bool:
     """Test if a string 'looks' like a null value. This is useful for querying the API against a null key.
 
     Args:
@@ -304,10 +310,13 @@ def isNull(text):
     ]
 
 
-def normalize(d):
+def normalize(d, rounding: Optional[int] = None) -> Decimal:
     """Normalize a decimal number, and remove exponential formatting."""
     if type(d) is not Decimal:
         d = Decimal(d)
+
+    if rounding is not None:
+        d = round(d, rounding)
 
     d = d.normalize()
 
@@ -362,9 +371,7 @@ def increment(value):
     except ValueError:
         pass
 
-    number = number.zfill(width)
-
-    return prefix + number
+    return prefix + str(number).zfill(width)
 
 
 def decimal2string(d):
@@ -716,22 +723,24 @@ def extract_serial_numbers(
         raise ValidationError([_('No serial numbers found')])
 
     if len(errors) == 0 and len(serials) != expected_quantity:
+        n = len(serials)
+        q = expected_quantity
+
         raise ValidationError([
-            _(
-                f'Number of unique serial numbers ({len(serials)}) must match quantity ({expected_quantity})'
-            )
+            _(f'Number of unique serial numbers ({n}) must match quantity ({q})')
         ])
 
     return serials
 
 
-def validateFilterString(value, model=None):
+def validateFilterString(value: str, model=None) -> dict:
     """Validate that a provided filter string looks like a list of comma-separated key=value pairs.
 
     These should nominally match to a valid database filter based on the model being filtered.
 
     e.g. "category=6, IPN=12"
     e.g. "part__name=widget"
+    e.g. "item=[1,2,3], status=active"
 
     The ReportTemplate class uses the filter string to work out which items a given report applies to.
     For example, an acceptance test report template might only apply to stock items with a given IPN,
@@ -749,7 +758,8 @@ def validateFilterString(value, model=None):
     if not value or len(value) == 0:
         return results
 
-    groups = value.split(',')
+    # Split by comma, but ignore commas within square brackets
+    groups = re.split(r',(?![^\[]*\])', value)
 
     for group in groups:
         group = group.strip()
@@ -766,6 +776,16 @@ def validateFilterString(value, model=None):
 
         if not k or not v:
             raise ValidationError(f'Invalid group: {group}')
+
+        # Account for 'list' support
+        if v.startswith('[') and v.endswith(']'):
+            try:
+                v = json.loads(v)
+            except json.JSONDecodeError:
+                raise ValidationError(f'Invalid list value: {v}')
+
+            if not isinstance(v, list):
+                raise ValidationError(f'Expected a list for key "{k}", got {type(v)}')
 
         results[k] = v
 
@@ -949,7 +969,7 @@ def current_time(local=True):
     """
     if settings.USE_TZ:
         now = timezone.now()
-        now = to_local_time(now, target_tz=server_timezone() if local else 'UTC')
+        now = to_local_time(now, target_tz_str=server_timezone() if local else 'UTC')
         return now
     else:
         return datetime.datetime.now()
@@ -968,12 +988,12 @@ def server_timezone() -> str:
     return settings.TIME_ZONE
 
 
-def to_local_time(time, target_tz: Optional[str] = None):
+def to_local_time(time, target_tz_str: Optional[str] = None):
     """Convert the provided time object to the local timezone.
 
     Arguments:
         time: The time / date to convert
-        target_tz: The desired timezone (string) - defaults to server time
+        target_tz_str: The desired timezone (string) - defaults to server time
 
     Returns:
         A timezone aware datetime object, with the desired timezone
@@ -997,11 +1017,11 @@ def to_local_time(time, target_tz: Optional[str] = None):
         # Default to UTC if not provided
         source_tz = ZoneInfo('UTC')
 
-    if not target_tz:
-        target_tz = server_timezone()
+    if not target_tz_str:
+        target_tz_str = server_timezone()
 
     try:
-        target_tz = ZoneInfo(str(target_tz))
+        target_tz = ZoneInfo(str(target_tz_str))
     except ZoneInfoNotFoundError:
         target_tz = ZoneInfo('UTC')
 
@@ -1094,16 +1114,17 @@ def pui_url(subpath: str) -> str:
 
 def plugins_info(*args, **kwargs):
     """Return information about activated plugins."""
+    from plugin import PluginMixinEnum
     from plugin.registry import registry
 
     # Check if plugins are even enabled
     if not settings.PLUGINS_ENABLED:
         return False
 
-    # Fetch plugins
-    plug_list = [plg for plg in registry.plugins.values() if plg.plugin_config().active]
+    # Fetch active plugins
+    plugins = registry.with_mixin(PluginMixinEnum.BASE)
+
     # Format list
     return [
-        {'name': plg.name, 'slug': plg.slug, 'version': plg.version}
-        for plg in plug_list
+        {'name': plg.name, 'slug': plg.slug, 'version': plg.version} for plg in plugins
     ]

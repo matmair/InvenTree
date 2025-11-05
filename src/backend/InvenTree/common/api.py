@@ -1,6 +1,7 @@
 """Provides a JSON API for common components."""
 
 import json
+import json.decoder
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -13,14 +14,15 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
 
+import django_filters.rest_framework.filters as rest_filters
 import django_q.models
-from django_filters import rest_framework as rest_filters
+from django_filters.rest_framework.filterset import FilterSet
 from django_q.tasks import async_task
 from djmoney.contrib.exchange.models import ExchangeBackend, Rate
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from error_report.models import Error
 from pint._typing import UnitLike
-from rest_framework import serializers
+from rest_framework import generics, serializers
 from rest_framework.exceptions import NotAcceptable, NotFound, PermissionDenied
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
@@ -37,10 +39,13 @@ from InvenTree.api import BulkDeleteMixin, MetadataView
 from InvenTree.config import CONFIG_LOOKUPS
 from InvenTree.filters import ORDER_FILTER, SEARCH_ORDER_FILTER
 from InvenTree.helpers import inheritors
+from InvenTree.helpers_email import send_email
 from InvenTree.mixins import (
+    CreateAPI,
     ListAPI,
     ListCreateAPI,
     RetrieveAPI,
+    RetrieveDestroyAPI,
     RetrieveUpdateAPI,
     RetrieveUpdateDestroyAPI,
 )
@@ -53,8 +58,6 @@ from InvenTree.permissions import (
     IsSuperuserOrSuperScope,
     UserSettingsPermissionsOrScope,
 )
-from plugin.models import NotificationUserSetting
-from plugin.serializers import NotificationUserSettingSerializer
 
 
 class CsrfExemptMixin:
@@ -275,6 +278,9 @@ class UserSettingsList(SettingsList):
 
         queryset = super().filter_queryset(queryset)
 
+        if not user.is_authenticated:  # pragma: no cover
+            raise PermissionDenied('User must be authenticated to access user settings')
+
         queryset = queryset.filter(user=user)
 
         return queryset
@@ -304,36 +310,6 @@ class UserSettingsDetail(RetrieveUpdateAPI):
         return common.models.InvenTreeUserSetting.get_setting_object(
             key, user=self.request.user, cache=False, create=True
         )
-
-
-class NotificationUserSettingsList(SettingsList):
-    """API endpoint for accessing a list of notification user settings objects."""
-
-    queryset = NotificationUserSetting.objects.all()
-    serializer_class = NotificationUserSettingSerializer
-    permission_classes = [UserSettingsPermissionsOrScope]
-
-    def filter_queryset(self, queryset):
-        """Only list settings which apply to the current user."""
-        try:
-            user = self.request.user
-        except AttributeError:
-            return NotificationUserSetting.objects.none()
-
-        queryset = super().filter_queryset(queryset)
-        queryset = queryset.filter(user=user)
-        return queryset
-
-
-class NotificationUserSettingsDetail(RetrieveUpdateAPI):
-    """Detail view for an individual "notification user setting" object.
-
-    - User can only view / edit settings their own settings objects
-    """
-
-    queryset = NotificationUserSetting.objects.all()
-    serializer_class = NotificationUserSettingSerializer
-    permission_classes = [UserSettingsPermissionsOrScope]
 
 
 class NotificationMessageMixin:
@@ -381,6 +357,10 @@ class NotificationList(NotificationMessageMixin, BulkDeleteMixin, ListAPI):
             return common.models.NotificationMessage.objects.none()
 
         queryset = super().filter_queryset(queryset)
+
+        if not user.is_authenticated:  # pragma: no cover
+            raise PermissionDenied('User must be authenticated to access notifications')
+
         queryset = queryset.filter(user=user)
         return queryset
 
@@ -577,6 +557,7 @@ class BackgroundTaskOverview(APIView):
     permission_classes = [IsAuthenticatedOrReadScope, IsAdminUser]
     serializer_class = None
 
+    @extend_schema(responses={200: common.serializers.TaskOverviewSerializer})
     def get(self, request, fmt=None):
         """Return information about the current status of the background task queue."""
         import django_q.models as q_models
@@ -644,6 +625,9 @@ class FlagList(ListAPI):
     serializer_class = common.serializers.FlagSerializer
     permission_classes = [AllowAnyOrReadScope]
 
+    # Specifically disable pagination for this view
+    pagination_class = None
+
 
 class FlagDetail(RetrieveAPI):
     """Detail view for an individual feature flag."""
@@ -698,7 +682,7 @@ class ContentTypeModelDetail(ContentTypeDetail):
         return super().get(request, *args, **kwargs)
 
 
-class AttachmentFilter(rest_filters.FilterSet):
+class AttachmentFilter(FilterSet):
     """Filterset for the AttachmentList API endpoint."""
 
     class Meta:
@@ -850,10 +834,67 @@ class DataOutputList(DataOutputEndpointMixin, BulkDeleteMixin, ListAPI):
 
     filter_backends = SEARCH_ORDER_FILTER
     ordering_fields = ['pk', 'user', 'plugin', 'output_type', 'created']
+    filterset_fields = ['user']
 
 
-class DataOutputDetail(DataOutputEndpointMixin, RetrieveAPI):
+class DataOutputDetail(DataOutputEndpointMixin, generics.DestroyAPIView, RetrieveAPI):
     """Detail view for a DataOutput object."""
+
+
+class EmailMessageMixin:
+    """Mixin class for Email endpoints."""
+
+    queryset = common.models.EmailMessage.objects.all()
+    serializer_class = common.serializers.EmailMessageSerializer
+    permission_classes = [IsSuperuserOrSuperScope]
+
+
+class EmailMessageList(EmailMessageMixin, BulkDeleteMixin, ListAPI):
+    """List view for email objects."""
+
+    filter_backends = SEARCH_ORDER_FILTER
+    ordering_fields = [
+        'created',
+        'subject',
+        'to',
+        'sender',
+        'status',
+        'timestamp',
+        'direction',
+    ]
+    search_fields = [
+        'subject',
+        'to',
+        'sender',
+        'global_id',
+        'message_id_key',
+        'thread_id_key',
+    ]
+
+
+class EmailMessageDetail(EmailMessageMixin, RetrieveDestroyAPI):
+    """Detail view for an email object."""
+
+
+class TestEmail(CreateAPI):
+    """Send a test email."""
+
+    serializer_class = common.serializers.TestEmailSerializer
+    permission_classes = [IsSuperuserOrSuperScope]
+
+    def perform_create(self, serializer):
+        """Send a test email."""
+        data = serializer.validated_data
+
+        delivered, reason = send_email(
+            subject='Test email from InvenTree',
+            body='This is a test email from InvenTree.',
+            recipients=[data['email']],
+        )
+        if not delivered:
+            raise serializers.ValidationError(
+                detail=f'Failed to send test email: "{reason}"'
+            )  # pragma: no cover
 
 
 selection_urls = [
@@ -901,24 +942,6 @@ settings_api_urls = [
             ),
             # User Settings List
             path('', UserSettingsList.as_view(), name='api-user-setting-list'),
-        ]),
-    ),
-    # Notification settings
-    path(
-        'notification/',
-        include([
-            # Notification Settings Detail
-            path(
-                '<int:pk>/',
-                NotificationUserSettingsDetail.as_view(),
-                name='api-notification-setting-detail',
-            ),
-            # Notification Settings List
-            path(
-                '',
-                NotificationUserSettingsList.as_view(),
-                name='api-notification-setting-list',
-            ),
         ]),
     ),
     # Global settings
@@ -1115,4 +1138,13 @@ admin_api_urls = [
     # Admin
     path('config/', ConfigList.as_view(), name='api-config-list'),
     path('config/<str:key>/', ConfigDetail.as_view(), name='api-config-detail'),
+    # Email
+    path(
+        'email/',
+        include([
+            path('test/', TestEmail.as_view(), name='api-email-test'),
+            path('<str:pk>/', EmailMessageDetail.as_view(), name='api-email-detail'),
+            path('', EmailMessageList.as_view(), name='api-email-list'),
+        ]),
+    ),
 ]

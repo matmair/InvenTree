@@ -1,19 +1,21 @@
 import { t } from '@lingui/core/macro';
-import { IconPackages } from '@tabler/icons-react';
+import { IconBuildingStore, IconCopy, IconPackages } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { apiUrl } from '@lib/functions/Api';
 import type { ApiFormFieldSet } from '@lib/types/Forms';
 import { useApi } from '../contexts/ApiContext';
-import { useGlobalSettingsState } from '../states/SettingsState';
+import { useGlobalSettingsState } from '../states/SettingsStates';
 
 /**
  * Construct a set of fields for creating / editing a Part instance
  */
 export function usePartFields({
-  create = false
+  create = false,
+  duplicatePartInstance
 }: {
+  duplicatePartInstance?: any;
   create?: boolean;
 }): ApiFormFieldSet {
   const settings = useGlobalSettingsState();
@@ -89,6 +91,7 @@ export function usePartFields({
       };
 
       fields.initial_supplier = {
+        icon: <IconBuildingStore />,
         children: {
           supplier: {
             filters: {
@@ -102,6 +105,36 @@ export function usePartFields({
             }
           },
           mpn: {}
+        }
+      };
+    }
+
+    // Additional fields for part duplication
+    if (create && duplicatePartInstance?.pk) {
+      fields.duplicate = {
+        icon: <IconCopy />,
+        children: {
+          part: {
+            value: duplicatePartInstance?.pk,
+            hidden: true
+          },
+          copy_image: {
+            value: true
+          },
+          copy_bom: {
+            value: settings.isSet('PART_COPY_BOM'),
+            hidden: !duplicatePartInstance?.assembly
+          },
+          copy_notes: {
+            value: true
+          },
+          copy_parameters: {
+            value: settings.isSet('PART_COPY_PARAMETERS')
+          },
+          copy_tests: {
+            value: true,
+            hidden: !duplicatePartInstance?.testable
+          }
         }
       };
     }
@@ -126,7 +159,7 @@ export function usePartFields({
     }
 
     return fields;
-  }, [create, settings]);
+  }, [create, duplicatePartInstance, settings]);
 }
 
 /**
@@ -245,12 +278,22 @@ export function usePartParameterFields({
         type: fieldType,
         field_type: fieldType,
         choices: fieldType === 'choice' ? choices : undefined,
-        default: fieldType === 'boolean' ? 'false' : undefined,
+        default: fieldType === 'boolean' ? false : undefined,
         adjustValue: (value: any) => {
           // Coerce boolean value into a string (required by backend)
-          return value.toString();
+
+          let v: string = value.toString().trim();
+
+          if (fieldType === 'boolean') {
+            if (v.toLowerCase() !== 'true') {
+              v = 'false';
+            }
+          }
+
+          return v;
         }
-      }
+      },
+      note: {}
     };
   }, [editTemplate, fieldType, choices]);
 }
@@ -267,16 +310,5 @@ export function partStocktakeFields(): ApiFormFieldSet {
     cost_max: {},
     cost_max_currency: {},
     note: {}
-  };
-}
-
-export function generateStocktakeReportFields(): ApiFormFieldSet {
-  return {
-    part: {},
-    category: {},
-    location: {},
-    exclude_external: {},
-    generate_report: {},
-    update_parts: {}
   };
 }

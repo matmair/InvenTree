@@ -38,17 +38,30 @@ class SettingsValueField(serializers.Field):
         """Return the object instance, not the attribute value."""
         return instance
 
-    def to_representation(self, instance) -> str:
+    def to_representation(self, instance: common_models.InvenTreeSetting) -> str:
         """Return the value of the setting.
 
         Protected settings are returned as '***'
         """
         if instance.protected:
             return '***'
-        elif instance.value is None:
-            return ''
         else:
-            return str(instance.value)
+            value = instance.value
+
+            if value is None:
+                value = ''
+
+            # Attempt to coerce the value to a native type
+            if instance.is_int():
+                value = instance.as_int()
+
+            elif instance.is_float():
+                value = instance.as_float()
+
+            elif instance.is_bool():
+                value = instance.as_bool()
+
+            return value
 
     def to_internal_value(self, data) -> str:
         """Return the internal value of the setting."""
@@ -213,6 +226,7 @@ class GenericReferencedSettingSerializer(SettingsSerializer):
                 'model_filters',
                 'api_url',
                 'typ',
+                'units',
                 'required',
             ]
 
@@ -326,6 +340,12 @@ class ConfigSerializer(serializers.Serializer):
     This is a read-only serializer.
     """
 
+    key = serializers.CharField(read_only=True)
+    env_var = serializers.CharField(read_only=True, allow_null=True)
+    config_key = serializers.CharField(read_only=True, allow_null=True)
+    source = serializers.CharField(read_only=True)
+    accessed = serializers.DateTimeField(read_only=True)
+
     def to_representation(self, instance):
         """Return the configuration data as a dictionary."""
         if not isinstance(instance, str):
@@ -391,6 +411,12 @@ class CustomStateSerializer(DataImportExportSerializerMixin, InvenTreeModelSeria
 
 class FlagSerializer(serializers.Serializer):
     """Serializer for feature flags."""
+
+    key = serializers.CharField(read_only=True)
+    state = serializers.CharField(read_only=True)
+    conditions = serializers.ListField(
+        child=serializers.DictField(), read_only=True, allow_null=True
+    )
 
     def to_representation(self, instance):
         """Return the configuration data as a dictionary."""
@@ -834,3 +860,44 @@ class DataOutputSerializer(InvenTreeModelSerializer):
     user_detail = UserSerializer(source='user', read_only=True, many=False)
 
     output = InvenTreeAttachmentSerializerField(allow_null=True, read_only=True)
+
+
+class EmailMessageSerializer(InvenTreeModelSerializer):
+    """Serializer for the EmailMessage model."""
+
+    class Meta:
+        """Meta options for EmailMessageSerializer."""
+
+        model = common_models.EmailMessage
+        fields = [
+            'pk',
+            'global_id',
+            'message_id_key',
+            'thread_id_key',
+            'thread',
+            'subject',
+            'body',
+            'to',
+            'sender',
+            'status',
+            'timestamp',
+            'headers',
+            'full_message',
+            'direction',
+            'priority',
+            'error_code',
+            'error_message',
+            'error_timestamp',
+            'delivery_options',
+        ]
+
+
+class TestEmailSerializer(serializers.Serializer):
+    """Serializer to send a test email."""
+
+    class Meta:
+        """Meta options for TestEmailSerializer."""
+
+        fields = ['email']
+
+    email = serializers.EmailField(required=True)

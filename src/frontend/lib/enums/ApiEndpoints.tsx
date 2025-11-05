@@ -11,6 +11,7 @@ export enum ApiEndpoints {
 
   // User API endpoints
   user_list = 'user/',
+  user_set_password = 'user/:id/set-password/',
   user_me = 'user/me/',
   user_profile = 'user/profile/',
   user_roles = 'user/roles/',
@@ -31,6 +32,8 @@ export enum ApiEndpoints {
   auth_mfa_reauthenticate = 'auth/v1/auth/2fa/reauthenticate',
   auth_totp = 'auth/v1/account/authenticators/totp',
   auth_trust = 'auth/v1/auth/2fa/trust',
+  auth_webauthn = 'auth/v1/account/authenticators/webauthn',
+  auth_webauthn_login = 'auth/v1/auth/webauthn/authenticate',
   auth_reauthenticate = 'auth/v1/auth/reauthenticate',
   auth_email = 'auth/v1/account/email',
   auth_email_verify = 'auth/v1/auth/email/verify',
@@ -95,6 +98,7 @@ export enum ApiEndpoints {
   build_output_delete = 'build/:id/delete-outputs/',
   build_order_auto_allocate = 'build/:id/auto-allocate/',
   build_order_allocate = 'build/:id/allocate/',
+  build_order_consume = 'build/:id/consume/',
   build_order_deallocate = 'build/:id/unallocate/',
 
   build_line_list = 'build/line/',
@@ -111,13 +115,12 @@ export enum ApiEndpoints {
   part_parameter_template_list = 'part/parameter/template/',
   part_thumbs_list = 'part/thumbs/',
   part_pricing = 'part/:id/pricing/',
+  part_requirements = 'part/:id/requirements/',
   part_serial_numbers = 'part/:id/serial-numbers/',
   part_scheduling = 'part/:id/scheduling/',
   part_pricing_internal = 'part/internal-price/',
   part_pricing_sale = 'part/sale-price/',
   part_stocktake_list = 'part/stocktake/',
-  part_stocktake_report_list = 'part/stocktake/report/',
-  part_stocktake_report_generate = 'part/stocktake/report/generate/',
   category_list = 'part/category/',
   category_tree = 'part/category/tree/',
   category_parameter_list = 'part/category/parameters/',
@@ -144,6 +147,7 @@ export enum ApiEndpoints {
   stock_test_result_list = 'stock/test/',
   stock_transfer = 'stock/transfer/',
   stock_remove = 'stock/remove/',
+  stock_return = 'stock/return/',
   stock_add = 'stock/add/',
   stock_count = 'stock/count/',
   stock_change_status = 'stock/change_status/',
@@ -153,7 +157,6 @@ export enum ApiEndpoints {
   stock_install = 'stock/:id/install/',
   stock_uninstall = 'stock/:id/uninstall/',
   stock_serialize = 'stock/:id/serialize/',
-  stock_return = 'stock/:id/return/',
   stock_serial_info = 'stock/:id/serial-numbers/',
 
   // Generator API endpoints
@@ -206,6 +209,7 @@ export enum ApiEndpoints {
   // Plugin API endpoints
   plugin_list = 'plugins/',
   plugin_setting_list = 'plugins/:plugin/settings/',
+  plugin_user_setting_list = 'plugins/:plugin/user-settings/',
   plugin_registry_status = 'plugins/status/',
   plugin_install = 'plugins/install/',
   plugin_reload = 'plugins/reload/',
@@ -218,6 +222,9 @@ export enum ApiEndpoints {
 
   // Special plugin endpoints
   plugin_locate_item = 'locate/',
+  plugin_supplier_list = 'supplier/list/',
+  plugin_supplier_search = 'supplier/search/',
+  plugin_supplier_import = 'supplier/import/',
 
   // Machine API endpoints
   machine_types_list = 'machine/types/',
@@ -233,5 +240,8 @@ export enum ApiEndpoints {
   error_report_list = 'error-report/',
   project_code_list = 'project-code/',
   custom_unit_list = 'units/',
-  notes_image_upload = 'notes-image-upload/'
+  notes_image_upload = 'notes-image-upload/',
+  email_list = 'admin/email/',
+  email_test = 'admin/email/test/',
+  config_list = 'admin/config/'
 }

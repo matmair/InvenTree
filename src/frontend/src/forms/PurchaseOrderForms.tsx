@@ -24,14 +24,15 @@ import {
 } from '@tabler/icons-react';
 import { useEffect, useMemo, useState } from 'react';
 
+import { ActionButton } from '@lib/components/ActionButton';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { IconCalendarExclamation } from '@tabler/icons-react';
 import dayjs from 'dayjs';
-import { ActionButton } from '../components/buttons/ActionButton';
 import RemoveRowButton from '../components/buttons/RemoveRowButton';
 import { StandaloneField } from '../components/forms/StandaloneField';
 
+import { ProgressBar } from '@lib/components/ProgressBar';
 import { apiUrl } from '@lib/functions/Api';
 import type {
   ApiFormAdjustFilterType,
@@ -42,7 +43,6 @@ import {
   type TableFieldRowProps
 } from '../components/forms/fields/TableField';
 import { Thumbnail } from '../components/images/Thumbnail';
-import { ProgressBar } from '../components/items/ProgressBar';
 import { StylishText } from '../components/items/StylishText';
 import { getStatusCodeOptions } from '../components/render/StatusRenderer';
 import { InvenTreeIcon } from '../functions/icons';
@@ -51,7 +51,7 @@ import {
   useBatchCodeGenerator,
   useSerialNumberGenerator
 } from '../hooks/UseGenerator';
-import { useGlobalSettingsState } from '../states/SettingsState';
+import { useGlobalSettingsState } from '../states/SettingsStates';
 /*
  * Construct a set of fields for creating / editing a PurchaseOrderLineItem instance
  */
@@ -120,6 +120,9 @@ export function usePurchaseOrderLineItemFields({
       auto_pricing: {
         value: autoPricing,
         onValueChange: setAutoPricing
+      },
+      project_code: {
+        description: t`Select project code for this line item`
       },
       target_date: {
         icon: <IconCalendar />
@@ -295,16 +298,22 @@ function LineItemFormRow({
   }, [record.destination]);
 
   // Batch code generator
-  const batchCodeGenerator = useBatchCodeGenerator((value: any) => {
-    if (value) {
-      props.changeFn(props.idx, 'batch_code', value);
+  const batchCodeGenerator = useBatchCodeGenerator({
+    isEnabled: () => batchOpen,
+    onGenerate: (value: any) => {
+      if (value) {
+        props.changeFn(props.idx, 'batch_code', value);
+      }
     }
   });
 
   // Serial number generator
-  const serialNumberGenerator = useSerialNumberGenerator((value: any) => {
-    if (value) {
-      props.changeFn(props.idx, 'serial_numbers', value);
+  const serialNumberGenerator = useSerialNumberGenerator({
+    isEnabled: () => batchOpen && trackable,
+    onGenerate: (value: any) => {
+      if (value) {
+        props.changeFn(props.idx, 'serial_numbers', value);
+      }
     }
   });
 
@@ -430,7 +439,10 @@ function LineItemFormRow({
     }
 
     // Selected location is base part's default location
-    if (location === record.part_detail.default_location) {
+    if (
+      record.part_detail?.default_location &&
+      location === record.part_detail.default_location
+    ) {
       return t`Default location selected`;
     }
 
@@ -478,8 +490,10 @@ function LineItemFormRow({
             fieldDefinition={{
               field_type: 'number',
               value: props.item.quantity,
-              onValueChange: (value) =>
-                props.changeFn(props.idx, 'quantity', value)
+              onValueChange: (value) => {
+                props.changeFn(props.idx, 'quantity', value);
+                serialNumberGenerator.update({ quantity: value });
+              }
             }}
             error={props.rowErrors?.quantity?.message}
           />
@@ -492,7 +506,7 @@ function LineItemFormRow({
               icon={<InvenTreeIcon icon='location' />}
               tooltip={t`Set Location`}
               tooltipAlignment='top'
-              variant={locationOpen ? 'filled' : 'transparent'}
+              variant={locationOpen ? 'outline' : 'transparent'}
             />
             <ActionButton
               size='sm'
@@ -500,7 +514,7 @@ function LineItemFormRow({
               icon={<InvenTreeIcon icon='batch_code' />}
               tooltip={batchToolTip}
               tooltipAlignment='top'
-              variant={batchOpen ? 'filled' : 'transparent'}
+              variant={batchOpen ? 'outline' : 'transparent'}
             />
             {settings.isSet('STOCK_ENABLE_EXPIRY') && (
               <ActionButton
@@ -509,7 +523,7 @@ function LineItemFormRow({
                 icon={<IconCalendarExclamation />}
                 tooltip={t`Set Expiry Date`}
                 tooltipAlignment='top'
-                variant={expiryDateOpen ? 'filled' : 'transparent'}
+                variant={expiryDateOpen ? 'outline' : 'transparent'}
               />
             )}
             <ActionButton
@@ -518,20 +532,20 @@ function LineItemFormRow({
               tooltip={t`Adjust Packaging`}
               tooltipAlignment='top'
               onClick={() => packagingHandlers.toggle()}
-              variant={packagingOpen ? 'filled' : 'transparent'}
+              variant={packagingOpen ? 'outline' : 'transparent'}
             />
             <ActionButton
               onClick={() => statusHandlers.toggle()}
               icon={<InvenTreeIcon icon='status' />}
               tooltip={t`Change Status`}
               tooltipAlignment='top'
-              variant={statusOpen ? 'filled' : 'transparent'}
+              variant={statusOpen ? 'outline' : 'transparent'}
             />
             <ActionButton
               icon={<InvenTreeIcon icon='note' />}
               tooltip={t`Add Note`}
               tooltipAlignment='top'
-              variant={noteOpen ? 'filled' : 'transparent'}
+              variant={noteOpen ? 'outline' : 'transparent'}
               onClick={() => noteHandlers.toggle()}
             />
             {barcode ? (
@@ -766,6 +780,10 @@ export function useReceiveLineItems(props: LineItemsForm) {
         }),
         modelRenderer: (row: TableFieldRowProps) => {
           const record = records[row.item.line_item];
+
+          if (!record) {
+            return null;
+          }
 
           return (
             <LineItemFormRow

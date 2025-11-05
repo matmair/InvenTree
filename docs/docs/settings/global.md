@@ -25,7 +25,7 @@ Configuration of basic server settings:
 {{ globalsetting("INVENTREE_COMPANY_NAME") }}
 {{ globalsetting("INVENTREE_INSTANCE") }}
 {{ globalsetting("INVENTREE_INSTANCE_TITLE") }}
-{{ globalsetting("INVENTREE_INSTANCE_ID") }}
+{{ globalsetting("INVENTREE_INSTANCE_ID", default="Randomly generated value") }}
 {{ globalsetting("INVENTREE_ANNOUNCE_ID") }}
 {{ globalsetting("INVENTREE_RESTRICT_ABOUT") }}
 {{ globalsetting("DISPLAY_FULL_NAMES") }}
@@ -40,6 +40,8 @@ Configuration of basic server settings:
 {{ globalsetting("INVENTREE_DELETE_TASKS_DAYS") }}
 {{ globalsetting("INVENTREE_DELETE_ERRORS_DAYS") }}
 {{ globalsetting("INVENTREE_DELETE_NOTIFICATIONS_DAYS") }}
+{{ globalsetting("INVENTREE_DELETE_EMAIL_DAYS") }}
+{{ globalsetting("INVENTREE_PROTECT_EMAIL_LOG") }}
 
 
 ### Login Settings
@@ -108,6 +110,7 @@ Configuration of pricing data and currency support:
 {{ globalsetting("CURRENCY_UPDATE_INTERVAL") }}
 {{ globalsetting("PRICING_DECIMAL_PLACES_MIN") }}
 {{ globalsetting("PRICING_DECIMAL_PLACES") }}
+{{ globalsetting("PRICING_AUTO_UPDATE") }}
 {{ globalsetting("PRICING_UPDATE_DAYS") }}
 
 #### Part Pricing
@@ -183,10 +186,10 @@ In this section of the settings, staff users can set a list of parameters associ
 
 To add a parameter to a part category:
 
-1. select the category in the dropdown list
-2. click the <span class="badge inventree add">{{ icon("plus-circle") }} New Parameter</span> button on the top right
-3. fill out the "Create Category Parameter Template" form
-4. click the <span class="badge inventree confirm">Submit</span> button.
+1. Select the category in the dropdown list
+2. Click the <span class="badge inventree add">{{ icon("plus-circle") }} New Parameter</span> button on the top right
+3. Fill out the "Create Category Parameter Template" form
+4. Click the <span class="badge inventree confirm">Submit</span> button.
 
 After a list of parameters is added to a part category and upon creation of a new part in this category, this list of parameters will be added by default to the new part.
 
@@ -197,7 +200,6 @@ Configuration of stock item options
 | Name | Description | Default | Units |
 | ---- | ----------- | ------- | ----- |
 {{ globalsetting("SERIAL_NUMBER_GLOBALLY_UNIQUE") }}
-{{ globalsetting("SERIAL_NUMBER_AUTOFILL") }}
 {{ globalsetting("STOCK_DELETE_DEPLETED_DEFAULT") }}
 {{ globalsetting("STOCK_BATCH_CODE_TEMPLATE") }}
 {{ globalsetting("STOCK_ENABLE_EXPIRY") }}
@@ -210,7 +212,6 @@ Configuration of stock item options
 {{ globalsetting("STOCK_ENFORCE_BOM_INSTALLATION") }}
 {{ globalsetting("STOCK_ALLOW_OUT_OF_STOCK_TRANSFER") }}
 {{ globalsetting("TEST_STATION_DATA") }}
-{{ globalsetting("TEST_UPLOAD_CREATE_TEMPLATE") }}
 
 ### Build Orders
 
@@ -240,6 +241,13 @@ Refer to the [return order settings](../sales/return_order.md#return-order-setti
 {{ globalsetting("ENABLE_PLUGINS_SCHEDULE") }}
 {{ globalsetting("ENABLE_PLUGINS_EVENTS") }}
 {{ globalsetting("ENABLE_PLUGINS_INTERFACE") }}
+{{ globalsetting("ENABLE_PLUGINS_MAILS") }}
+
+### Machine Settings
+
+| Name | Description | Default | Units |
+| ---- | ----------- | ------- | ----- |
+{{ globalsetting("MACHINE_PING_ENABLED") }}
 
 ### Project Codes
 

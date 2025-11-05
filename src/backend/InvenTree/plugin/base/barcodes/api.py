@@ -5,7 +5,7 @@ from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
 
 import structlog
-from django_filters import rest_framework as rest_filters
+from django_filters.rest_framework.filterset import FilterSet
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -100,7 +100,7 @@ class BarcodeView(CreateAPIView):
                 BarcodeScanResult.objects.filter(pk__in=old_scan_ids).delete()
         except Exception:
             # Gracefully log error to database
-            log_error(f'{self.__class__.__name__}.log_scan')
+            log_error(f'{self.__class__.__name__}.log_scan', scope='barcode')
 
     def queryset(self):
         """This API view does not have a queryset."""
@@ -770,7 +770,7 @@ class BarcodeScanResultMixin:
         return queryset
 
 
-class BarcodeScanResultFilter(rest_filters.FilterSet):
+class BarcodeScanResultFilter(FilterSet):
     """Custom filterset for the BarcodeScanResult API."""
 
     class Meta:

@@ -1,6 +1,7 @@
 """Background tasks for the 'order' app."""
 
 from datetime import datetime, timedelta
+from typing import Union
 
 from django.contrib.auth.models import Group, User
 from django.db import transaction
@@ -8,6 +9,7 @@ from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 
 import structlog
+from opentelemetry import trace
 
 import common.notifications
 import InvenTree.helpers_model
@@ -22,9 +24,11 @@ from order.status_codes import (
 from plugin.events import trigger_event
 from users.models import Owner
 
+tracer = trace.get_tracer(__name__)
 logger = structlog.get_logger('inventree')
 
 
+@tracer.start_as_current_span('notify_overdue_purchase_order')
 def notify_overdue_purchase_order(po: order.models.PurchaseOrder) -> None:
     """Notify users that a PurchaseOrder has just become 'overdue'.
 
@@ -62,6 +66,7 @@ def notify_overdue_purchase_order(po: order.models.PurchaseOrder) -> None:
     trigger_event(event_name, purchase_order=po.pk)
 
 
+@tracer.start_as_current_span('scheduled_task')
 @scheduled_task(ScheduledTask.DAILY)
 def check_overdue_purchase_orders():
     """Check if any outstanding PurchaseOrders have just become overdue.
@@ -97,9 +102,10 @@ def check_overdue_purchase_orders():
             notified_orders.add(line.order.pk)
 
 
+@tracer.start_as_current_span('notify_overdue_sales_order')
 def notify_overdue_sales_order(so: order.models.SalesOrder) -> None:
     """Notify appropriate users that a SalesOrder has just become 'overdue'."""
-    targets: list[User, Group, Owner] = []
+    targets: list[Union[User, Group, Owner]] = []
 
     if so.created_by:
         targets.append(so.created_by)
@@ -130,6 +136,7 @@ def notify_overdue_sales_order(so: order.models.SalesOrder) -> None:
     trigger_event(event_name, sales_order=so.pk)
 
 
+@tracer.start_as_current_span('scheduled_task')
 @scheduled_task(ScheduledTask.DAILY)
 def check_overdue_sales_orders():
     """Check if any outstanding SalesOrders have just become overdue.
@@ -162,9 +169,10 @@ def check_overdue_sales_orders():
             notified_orders.add(line.order.pk)
 
 
+@tracer.start_as_current_span('notify_overdue_return_order')
 def notify_overdue_return_order(ro: order.models.ReturnOrder) -> None:
     """Notify appropriate users that a ReturnOrder has just become 'overdue'."""
-    targets: list[User, Group, Owner] = []
+    targets: list[Union[User, Group, Owner]] = []
 
     if ro.created_by:
         targets.append(ro.created_by)
@@ -195,6 +203,7 @@ def notify_overdue_return_order(ro: order.models.ReturnOrder) -> None:
     trigger_event(event_name, return_order=ro.pk)
 
 
+@tracer.start_as_current_span('check_overdue_return_orders')
 @scheduled_task(ScheduledTask.DAILY)
 def check_overdue_return_orders():
     """Check if any outstanding return orders have just become overdue.
@@ -227,6 +236,7 @@ def check_overdue_return_orders():
             notified_orders.add(line.order.pk)
 
 
+@tracer.start_as_current_span('complete_sales_order_shipment')
 def complete_sales_order_shipment(shipment_id: int, user_id: int) -> None:
     """Complete allocations for a pending shipment against a SalesOrder.
 

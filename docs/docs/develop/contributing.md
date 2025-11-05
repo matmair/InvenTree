@@ -186,6 +186,10 @@ To see all the available options:
 invoke dev.test --help
 ```
 
+```
+{{ invoke_commands('dev.test --help') }}
+```
+
 #### Database Permission Issues
 
 For local testing django creates a test database and removes it after testing. If you encounter permission issues while running unit test, ensure that your database user has permission to create new databases.
@@ -207,6 +211,21 @@ coverage html -i
 ```
 
 The coverage database is also generated in the CI-pipeline and exposd for 14 days as a artifact named `coverage`.
+
+### Database Query Profiling
+
+It may be useful during development to profile parts of the backend code to see how many database queries are executed. To that end, the `count_queries` context manager can be used to count the number of queries executed in a specific code block.
+
+```python
+from InvenTree.helpers import count_queries
+
+with count_queries("My code block"):
+    # Code block to profile
+    ...
+```
+
+A developer can use this to profile a specific code block, and the number of queries executed will be printed to the console.
+
 
 ## Code Style
 
@@ -245,6 +264,12 @@ T002: Double quotes should be used in tags
 ## Documentation
 
 New features or updates to existing features should be accompanied by user documentation.
+
+### Stable link references
+
+The documentation framework enables addition of redirections. This is used to build stable references for linking in external resources.
+
+New references can be added in `docs/mkdocs.yml` in the `redirect_maps` section. Both external targets and documentation pages are possible targets. All references are linted in the docs CI pipeline.
 
 ## Translations
 
