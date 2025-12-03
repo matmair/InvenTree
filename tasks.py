@@ -1378,7 +1378,7 @@ def setup_test(
     # Remove old data directory
     if template_dir.exists():
         info('Removing old data ...')
-        run(c, f'rm {template_dir} -r')
+        shutil.rmtree(template_dir)
 
     URL = 'https://github.com/inventree/demo-dataset'
 
