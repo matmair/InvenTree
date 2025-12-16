@@ -370,7 +370,7 @@ jobs:
           path: .coverage
           retention-days: 14
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # pin@v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # pin@v5.5.2
         if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -513,7 +513,7 @@ jobs:
       - name: Run Tests
         run: invoke dev.test --check --migrations --report --coverage --translations
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # pin@v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # pin@v5.5.2
         if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -644,7 +644,7 @@ jobs:
       - name: Report coverage
         run: cd src/frontend && npx nyc report --report-dir ./coverage --temp-dir .nyc_output --reporter=lcov --exclude-after-remap false
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # pin@v5.5.1
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # pin@v5.5.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: inventree/InvenTree
