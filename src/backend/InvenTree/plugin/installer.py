@@ -12,6 +12,7 @@ import structlog
 
 import plugin.models
 import plugin.staticfiles
+from InvenTree.config import get_constraint_file
 from InvenTree.exceptions import log_error
 
 logger = structlog.get_logger('inventree')
@@ -134,7 +135,15 @@ def install_plugins_file():
         logger.warning('Plugin file %s does not exist', pf)
         return
 
-    cmd = ['install', '--disable-pip-version-check', '-U', '-r', str(pf)]
+    cmd = [
+        'install',
+        '--disable-pip-version-check',
+        '-U',
+        '-r',
+        str(pf),
+        '-c',
+        str(get_constraint_file()),
+    ]
 
     try:
         pip_command(*cmd)
@@ -245,7 +254,13 @@ def install_plugin(url=None, packagename=None, user=None, version=None):
     logger.info('install_plugin: %s, %s', url, packagename)
 
     # build up the command
-    install_name = ['install', '-U', '--disable-pip-version-check']
+    install_name = [
+        'install',
+        '-U',
+        '--disable-pip-version-check',
+        '-c',
+        str(get_constraint_file()),
+    ]
 
     full_pkg = ''
 
@@ -291,6 +306,7 @@ def install_plugin(url=None, packagename=None, user=None, version=None):
         log_error('install_plugin', scope='plugins')
 
     if version := ret.get('version'):
+        # TODO do not pin version
         # Save plugin to plugins file
         update_plugins_file(packagename, full_package=full_pkg, version=version)
 
