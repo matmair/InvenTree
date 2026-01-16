@@ -38,7 +38,8 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, useMemo, useState } from 'react';
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { useParams } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 import Select from 'react-select';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
@@ -268,7 +269,7 @@ function BomValidationInformation({
  * Detail view for a single Part instance
  */
 export default function PartDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
 
   const api = useApi();
   const navigate = useNavigate();

@@ -1,7 +1,8 @@
 import { t } from '@lingui/core/macro';
 import { Group, Loader, Stack, Table, Text } from '@mantine/core';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { useParams } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { type RowAction, RowDeleteAction } from '@lib/components/RowActions';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
@@ -16,7 +17,8 @@ import { useUserState } from '../../states/UserState';
 import { InvenTreeTable } from '../InvenTreeTable';
 
 function ErrorDetail({ errorId }: Readonly<{ errorId?: number }>) {
-  const { id } = useParams();
+  const params = useParams({ strict: false }) as any;
+  const id = params?.id;
 
   const errorPrimaryKey = useMemo(() => {
     return errorId ?? id;

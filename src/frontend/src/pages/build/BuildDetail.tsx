@@ -139,7 +139,7 @@ function BuildAllocationsPanel({
  * Detail page for a single Build Order
  */
 export default function BuildDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
 
   const user = useUserState();
   const globalSettings = useGlobalSettingsState();

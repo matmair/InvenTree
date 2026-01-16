@@ -11,10 +11,10 @@ export type NavigateOptions = {
   state?: any;
 };
 
-export type NavigateFunction = {
-  (to: string, options?: NavigateOptions): void;
-  (delta: number): void;
-};
+export type NavigateFunction = (
+  to: string | number,
+  options?: NavigateOptions
+) => void;
 
 /**
  * Hook that returns a navigate function compatible with React Router v6

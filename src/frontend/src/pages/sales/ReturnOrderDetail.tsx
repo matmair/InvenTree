@@ -52,7 +52,7 @@ import ReturnOrderLineItemTable from '../../tables/sales/ReturnOrderLineItemTabl
  * Detail page for a single ReturnOrder
  */
 export default function ReturnOrderDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
 
   const user = useUserState();
 

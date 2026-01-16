@@ -1,7 +1,6 @@
 import { t } from '@lingui/core/macro';
 import type { SpotlightActionData } from '@mantine/spotlight';
-import {
-  IconBarcode,
+import { IconBarcode,
   IconLink,
   IconPlug,
   IconPointer,
@@ -9,7 +8,7 @@ import {
   IconUserBolt,
   IconUserCog
 } from '@tabler/icons-react';
-import type { NavigateFunction } from '@tanstack/react-router';
+import type { NavigateFunction } from '@lib/functions/navigation';
 
 import { ModelInformationDict } from '@lib/enums/ModelInformation';
 import { UserRoles } from '@lib/index';

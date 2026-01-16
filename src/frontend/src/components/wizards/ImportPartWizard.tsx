@@ -113,7 +113,7 @@ const SearchResult = ({
               </Badge>
             )}
           {searchResult.existing_part_id && (
-            <Link to={`/part/${searchResult.existing_part_id}`}>
+            <Link to={`/part/${searchResult.existing_part_id}` as any}>
               <Badge size='sm' color='blue'>
                 <Trans>Already Imported</Trans>
               </Badge>
@@ -597,7 +597,7 @@ export default function ImportPartWizard({
               rightSection={
                 importResult && (
                   <Group gap='xs'>
-                    <Link to={`/part/${importResult.part_id}`} target='_blank'>
+                    <Link to={`/part/${importResult.part_id}` as any} target='_blank'>
                       <InvenTreeIcon icon='part' />
                     </Link>
                     <ActionIcon
@@ -746,7 +746,7 @@ export default function ImportPartWizard({
               <Group justify='flex-end'>
                 <Button
                   component={Link}
-                  to={`/part/${importResult?.part_id}`}
+                  to={`/part/${importResult?.part_id}` as any}
                   variant='light'
                   aria-label='action-button-import-open-part'
                 >

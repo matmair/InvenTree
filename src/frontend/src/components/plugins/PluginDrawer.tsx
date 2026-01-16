@@ -22,7 +22,7 @@ export default function PluginDrawer({
   pluginKey?: string;
   pluginInstance: PluginInterface;
 }>) {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
 
   const pluginPrimaryKey: string = useMemo(() => {
     return pluginKey || id || '';

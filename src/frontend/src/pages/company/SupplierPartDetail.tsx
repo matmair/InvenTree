@@ -7,7 +7,8 @@ import {
   IconShoppingCart
 } from '@tabler/icons-react';
 import { type ReactNode, useMemo } from 'react';
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { useParams } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -50,7 +51,7 @@ import SupplierPriceBreakTable from '../../tables/purchasing/SupplierPriceBreakT
 import { StockItemTable } from '../../tables/stock/StockItemTable';
 
 export default function SupplierPartDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
 
   const user = useUserState();
 

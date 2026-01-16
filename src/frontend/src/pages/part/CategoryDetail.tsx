@@ -10,7 +10,8 @@ import {
   IconTable
 } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { useParams } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -55,7 +56,7 @@ import { StockItemTable } from '../../tables/stock/StockItemTable';
  * Note: If no category ID is supplied, this acts as the top-level part category page
  */
 export default function CategoryDetail() {
-  const { id: _id } = useParams();
+  const { id: _id } = useParams({ strict: false });
   const id = useMemo(
     () => (!Number.isNaN(Number.parseInt(_id || '')) ? _id : undefined),
     [_id]

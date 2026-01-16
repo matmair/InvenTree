@@ -1,7 +1,8 @@
 import { t } from '@lingui/core/macro';
 import { useDebouncedCallback } from '@mantine/hooks';
 import { useEffect } from 'react';
-import { useLocation, useNavigate } from '@tanstack/react-router';
+import { useLocation } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { checkLoginState } from '../../functions/auth';
 import { Wrapper } from './Layout';

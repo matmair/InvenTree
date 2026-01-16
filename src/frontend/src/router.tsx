@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { Navigate, Route, Routes } from '@tanstack/react-router';
+import { Navigate } from '@tanstack/react-router';
 
 import { Loadable } from './functions/loading';
 

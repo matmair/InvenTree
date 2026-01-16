@@ -455,7 +455,7 @@ export const checkLoginState = async (
 function handleSuccessFullAuth(
   response: any,
   navigate: NavigateFunction,
-  location?: Location<any>,
+  location?: any,
   setError?: (message: string | undefined) => void
 ) {
   const { setAuthenticated, fetchUserState } = useUserState.getState();
