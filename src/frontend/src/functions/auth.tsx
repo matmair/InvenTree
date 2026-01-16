@@ -10,7 +10,7 @@ import { t } from '@lingui/core/macro';
 import { notifications, showNotification } from '@mantine/notifications';
 import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
-import type { NavigateFunction } from './navigation';
+import type { NavigateFunction } from '@lib/functions/navigation';
 import { api, setApiDefaults } from '../App';
 import { useLocalState } from '../states/LocalState';
 import { useServerApiState } from '../states/ServerApiState';
