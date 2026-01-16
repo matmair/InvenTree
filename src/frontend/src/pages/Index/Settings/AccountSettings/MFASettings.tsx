@@ -28,7 +28,7 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { useShallow } from 'zustand/react/shallow';
 import { api, queryClient } from '../../../../App';
 import { CopyButton } from '../../../../components/buttons/CopyButton';

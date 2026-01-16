@@ -1,8 +1,8 @@
 import { ActionIcon, Divider, Drawer, Group, Stack, Text } from '@mantine/core';
 import { IconChevronLeft } from '@tabler/icons-react';
 import { useCallback, useMemo } from 'react';
-import { Link, Route, Routes, useNavigate, useParams } from 'react-router-dom';
-import type { To } from 'react-router-dom';
+import { Link, Route, Routes, useNavigate, useParams } from '@tanstack/react-router';
+import type { To } from '@tanstack/react-router';
 
 import type { UiSizeType } from '@lib/types/Core';
 import { useShallow } from 'zustand/react/shallow';

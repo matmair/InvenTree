@@ -9,7 +9,7 @@ import {
   IconUserBolt,
   IconUserCog
 } from '@tabler/icons-react';
-import type { NavigateFunction } from 'react-router-dom';
+import type { NavigateFunction } from '@tanstack/react-router';
 
 import { ModelInformationDict } from '@lib/enums/ModelInformation';
 import { UserRoles } from '@lib/index';

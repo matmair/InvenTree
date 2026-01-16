@@ -3,7 +3,7 @@ import { Trans } from '@lingui/react/macro';
 import { Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from '@tanstack/react-router';
 
 import { handleVerifyEmail } from '../../functions/auth';
 import { Wrapper } from './Layout';

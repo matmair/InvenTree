@@ -18,7 +18,7 @@ import { useHover } from '@mantine/hooks';
 import { IconCirclePlus } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { useApi } from '../../contexts/ApiContext';
 import { useParameterFields } from '../../forms/CommonForms';
 import {

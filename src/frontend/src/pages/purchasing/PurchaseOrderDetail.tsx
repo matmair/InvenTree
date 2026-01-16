@@ -2,7 +2,7 @@ import { t } from '@lingui/core/macro';
 import { Accordion, Grid, Skeleton, Stack } from '@mantine/core';
 import { IconInfoCircle, IconList, IconPackages } from '@tabler/icons-react';
 import { type ReactNode, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';

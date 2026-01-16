@@ -4,7 +4,7 @@ import type { TableColumn } from '@lib/types/Tables';
 import { t } from '@lingui/core/macro';
 import { IconTrash } from '@tabler/icons-react';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import type { BarcodeScanItem } from '../../components/barcodes/BarcodeScanItem';
 import { RenderInstance } from '../../components/render/Instance';
 import { useTable } from '../../hooks/UseTable';

@@ -7,7 +7,7 @@ import {
 } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, Navigate, useLocation, useNavigate } from '@tanstack/react-router';
 
 import { identifierString } from '@lib/functions/Conversion';
 import { ApiEndpoints, apiUrl } from '@lib/index';

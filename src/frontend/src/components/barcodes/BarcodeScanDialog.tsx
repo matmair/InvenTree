@@ -7,7 +7,7 @@ import { t } from '@lingui/core/macro';
 import { Box, Divider, Modal } from '@mantine/core';
 import { hideNotification, showNotification } from '@mantine/notifications';
 import { useCallback, useState } from 'react';
-import { type NavigateFunction, useNavigate } from 'react-router-dom';
+import { type NavigateFunction, useNavigate } from '@tanstack/react-router';
 import { api } from '../../App';
 import { extractErrorMessage } from '../../functions/api';
 import { useUserState } from '../../states/UserState';

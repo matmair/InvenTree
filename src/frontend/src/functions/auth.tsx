@@ -10,7 +10,7 @@ import { t } from '@lingui/core/macro';
 import { notifications, showNotification } from '@mantine/notifications';
 import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
-import type { Location, NavigateFunction } from 'react-router-dom';
+import type { Location, NavigateFunction } from '@tanstack/react-router';
 import { api, setApiDefaults } from '../App';
 import { useLocalState } from '../states/LocalState';
 import { useServerApiState } from '../states/ServerApiState';

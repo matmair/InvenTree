@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { ActionIcon } from '@mantine/core';
 import { forwardRef } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from '@tanstack/react-router';
 
 import InvenTreeIcon from './inventree.svg';
 
