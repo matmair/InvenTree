@@ -23,6 +23,7 @@ import {
 import { showNotification } from '@mantine/notifications';
 import { IconArrowDown, IconPlus, IconSearch } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import {
   type FormEventHandler,
   type ReactNode,
@@ -31,7 +32,6 @@ import {
   useMemo,
   useState
 } from 'react';
-import { Link } from '@tanstack/react-router';
 import { api } from '../../App';
 import { usePartFields } from '../../forms/PartForms';
 import { InvenTreeIcon } from '../../functions/icons';

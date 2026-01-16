@@ -3,8 +3,8 @@ import { Trans } from '@lingui/react/macro';
 import { Button, PasswordInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from '@tanstack/react-router';
+import { useEffect } from 'react';
 
 import { handlePasswordReset } from '../../functions/auth';
 import { Wrapper } from './Layout';

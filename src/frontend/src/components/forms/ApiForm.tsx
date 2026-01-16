@@ -12,6 +12,7 @@ import {
 import { useId } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   type FieldValues,
@@ -20,7 +21,6 @@ import {
   type SubmitHandler,
   useForm
 } from 'react-hook-form';
-import { useNavigate } from '@tanstack/react-router';
 import type { NavigateFunction } from '../../types/navigate';
 
 import { isTrue } from '@lib/functions/Conversion';

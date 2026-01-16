@@ -8,8 +8,8 @@ import {
   IconPackages,
   IconSitemap
 } from '@tabler/icons-react';
-import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from '@tanstack/react-router';
+import { useMemo, useState } from 'react';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';

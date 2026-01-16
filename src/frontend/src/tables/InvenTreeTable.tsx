@@ -12,6 +12,7 @@ import { t } from '@lingui/core/macro';
 import { Box, Stack } from '@mantine/core';
 import { IconArrowRight } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import {
   type ContextMenuItemOptions,
   useContextMenu
@@ -24,7 +25,6 @@ import {
 } from 'mantine-datatable';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 import { Boundary } from '../components/Boundary';
 import { useApi } from '../contexts/ApiContext';
 import { extractAvailableFields, mapFields } from '../functions/forms';

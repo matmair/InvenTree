@@ -3,8 +3,8 @@ import { ModelType } from '@lib/enums/ModelType';
 import { t } from '@lingui/core/macro';
 import { Paper, Skeleton, Stack } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
-import { useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
+import { useMemo } from 'react';
 import {
   type DetailsField,
   DetailsTable

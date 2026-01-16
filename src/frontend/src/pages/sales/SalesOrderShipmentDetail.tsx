@@ -6,8 +6,8 @@ import {
   IconCircleX,
   IconInfoCircle
 } from '@tabler/icons-react';
-import { useMemo } from 'react';
 import { useNavigate, useParams } from '@tanstack/react-router';
+import { useMemo } from 'react';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';

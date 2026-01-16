@@ -8,8 +8,8 @@ import {
   Tooltip,
   UnstyledButton
 } from '@mantine/core';
-import { type JSX, useMemo } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { type JSX, useMemo } from 'react';
 
 import { navigateToLink } from '@lib/functions/Navigation';
 import type { InvenTreeIconType } from '@lib/types/Icons';

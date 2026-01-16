@@ -2,8 +2,8 @@ import { t } from '@lingui/core/macro';
 import { Group } from '@mantine/core';
 import { useHover } from '@mantine/hooks';
 import { useQuery } from '@tanstack/react-query';
-import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 
 import { YesNoButton } from '@lib/components/YesNoButton';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';

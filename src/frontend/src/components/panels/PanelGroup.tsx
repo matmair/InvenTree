@@ -16,13 +16,6 @@ import {
   IconLayoutSidebarRightCollapse
 } from '@tabler/icons-react';
 import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
-import {
   Navigate,
   Route,
   Routes,
@@ -30,6 +23,13 @@ import {
   useNavigate,
   useParams
 } from '@tanstack/react-router';
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 
 import type { ModelType } from '@lib/enums/ModelType';
 import { identifierString } from '@lib/functions/Conversion';

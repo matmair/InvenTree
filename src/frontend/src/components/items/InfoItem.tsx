@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro';
 import { Code, Flex, Group, Text } from '@mantine/core';
-import { Link,  } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 
 import { YesNoButton } from '@lib/components/YesNoButton';
 import { DetailDrawerLink } from '../nav/DetailDrawer';

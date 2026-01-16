@@ -37,8 +37,8 @@ import {
   IconVersions
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { type ReactNode, useMemo, useState } from 'react';
 import { useNavigate, useParams } from '@tanstack/react-router';
+import { type ReactNode, useMemo, useState } from 'react';
 import Select from 'react-select';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';

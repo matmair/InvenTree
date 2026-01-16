@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { RouterProvider } from '@tanstack/react-router';
+import { useEffect } from 'react';
 
 import { getBaseUrl } from '@lib/functions/Navigation';
 import { useShallow } from 'zustand/react/shallow';

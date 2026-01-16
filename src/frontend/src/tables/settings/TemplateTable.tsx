@@ -2,8 +2,8 @@ import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { Group, LoadingOverlay, Stack, Text, Title } from '@mantine/core';
 import { IconFileCode } from '@tabler/icons-react';
-import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 
 import { AddItemButton } from '@lib/components/AddItemButton';
 import {
@@ -198,7 +198,10 @@ export function TemplateTable({
   const navigate = useNavigate();
   const user = useUserState();
 
-  const openDetailDrawer = useCallback((pk: number) => navigate({ to: `${pk}/` }), []);
+  const openDetailDrawer = useCallback(
+    (pk: number) => navigate({ to: `${pk}/` }),
+    []
+  );
 
   const columns: TableColumn<TemplateI>[] = useMemo(() => {
     return [

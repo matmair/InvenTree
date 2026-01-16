@@ -1,8 +1,8 @@
 import { t } from '@lingui/core/macro';
 import { Accordion, Grid, Skeleton, Stack, Text } from '@mantine/core';
 import { IconInfoCircle, IconList } from '@tabler/icons-react';
-import { type ReactNode, useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
+import { type ReactNode, useMemo } from 'react';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';

@@ -1,7 +1,7 @@
 import { ActionIcon, Divider, Drawer, Group, Stack, Text } from '@mantine/core';
 import { IconChevronLeft } from '@tabler/icons-react';
-import { useCallback, useMemo } from 'react';
 import { Link, useNavigate, useParams } from '@tanstack/react-router';
+import { useCallback, useMemo } from 'react';
 
 import type { UiSizeType } from '@lib/types/Core';
 import { useShallow } from 'zustand/react/shallow';
@@ -60,7 +60,7 @@ function DetailDrawerComponent({
             <ActionIcon
               variant='outline'
               onClick={() => {
-                navigate({ to: ".." });
+                navigate({ to: '..' });
                 addDetailDrawer(-1);
               }}
             >

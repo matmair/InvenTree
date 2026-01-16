@@ -20,8 +20,8 @@ import {
   IconSitemap
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { useCallback, useMemo } from 'react';
 
 import type { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import type { ModelType } from '@lib/enums/ModelType';

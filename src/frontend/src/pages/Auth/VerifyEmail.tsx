@@ -2,8 +2,8 @@ import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { Button } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { useEffect } from 'react';
 import { useNavigate, useParams } from '@tanstack/react-router';
+import { useEffect } from 'react';
 
 import { handleVerifyEmail } from '../../functions/auth';
 import { Wrapper } from './Layout';

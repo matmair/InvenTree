@@ -1,11 +1,11 @@
-import { lazy } from 'react';
 import {
+  Outlet,
   createRootRoute,
   createRoute,
   createRouter,
-  redirect,
-  Outlet
+  redirect
 } from '@tanstack/react-router';
+import { lazy } from 'react';
 
 import { Loadable } from './functions/loading';
 
@@ -107,9 +107,7 @@ const CoreIndex = Loadable(lazy(() => import('./pages/core/CoreIndex')));
 const UserDetail = Loadable(lazy(() => import('./pages/core/UserDetail')));
 const GroupDetail = Loadable(lazy(() => import('./pages/core/GroupDetail')));
 
-const NotFound = Loadable(
-  lazy(() => import('./components/errors/NotFound'))
-);
+const NotFound = Loadable(lazy(() => import('./components/errors/NotFound')));
 
 // Auth
 const Login = Loadable(lazy(() => import('./pages/Auth/Login')));

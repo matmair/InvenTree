@@ -7,8 +7,8 @@ import {
   IconList,
   IconTools
 } from '@tabler/icons-react';
-import { type ReactNode, useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
+import { type ReactNode, useMemo } from 'react';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';

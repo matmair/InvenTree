@@ -12,8 +12,8 @@ import {
   IconShoppingCart,
   IconSitemap
 } from '@tabler/icons-react';
-import { useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
+import { useMemo } from 'react';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';

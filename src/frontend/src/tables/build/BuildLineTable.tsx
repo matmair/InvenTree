@@ -9,9 +9,9 @@ import {
   IconTool,
   IconWand
 } from '@tabler/icons-react';
+import { useNavigate } from '@tanstack/react-router';
 import type { DataTableRowExpansionProps } from 'mantine-datatable';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 
 import { ActionButton } from '@lib/components/ActionButton';
 import { ProgressBar } from '@lib/components/ProgressBar';

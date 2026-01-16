@@ -6,12 +6,12 @@ import { getDetailUrl } from '@lib/functions/Navigation';
 import { t } from '@lingui/core/macro';
 import { Box, Divider, Modal } from '@mantine/core';
 import { hideNotification, showNotification } from '@mantine/notifications';
-import { useCallback, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import type { NavigateFunction } from '../../types/navigate';
+import { useCallback, useState } from 'react';
 import { api } from '../../App';
 import { extractErrorMessage } from '../../functions/api';
 import { useUserState } from '../../states/UserState';
+import type { NavigateFunction } from '../../types/navigate';
 import { StylishText } from '../items/StylishText';
 import { BarcodeInput } from './BarcodeInput';
 
