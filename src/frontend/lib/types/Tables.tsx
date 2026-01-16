@@ -4,10 +4,13 @@ import type {
   DataTableRowExpansionProps
 } from 'mantine-datatable';
 import type { ReactNode } from 'react';
-import type { NavigateFunction, SetURLSearchParams } from 'react-router-dom';
 import type { ModelType } from '../enums/ModelType';
 import type { FilterSetState, TableFilter } from './Filters';
 import type { ApiFormFieldType } from './Forms';
+import type { NavigateFunction } from '../functions/navigation';
+
+// Type for setting search params - compatible with React Router v6 and our wrapper
+type SetURLSearchParams = (params: Record<string, any>) => void;
 
 /*
  * Type definition for representing the state of a table:

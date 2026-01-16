@@ -2,7 +2,7 @@ import { t } from '@lingui/core/macro';
 import { Accordion, Grid, Skeleton, Stack, Text } from '@mantine/core';
 import { IconInfoCircle, IconList } from '@tabler/icons-react';
 import { type ReactNode, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -52,7 +52,7 @@ import ReturnOrderLineItemTable from '../../tables/sales/ReturnOrderLineItemTabl
  * Detail page for a single ReturnOrder
  */
 export default function ReturnOrderDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
 
   const user = useUserState();
 
