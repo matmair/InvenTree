@@ -16,7 +16,7 @@ import {
 } from '@mantine/core';
 import { IconExclamationCircle, IconRefresh } from '@tabler/icons-react';
 import { useMemo } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { apiUrl } from '@lib/functions/Api';

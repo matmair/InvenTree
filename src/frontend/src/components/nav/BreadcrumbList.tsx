@@ -8,7 +8,7 @@ import {
 } from '@mantine/core';
 import { IconMenu2 } from '@tabler/icons-react';
 import { useMemo } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { identifierString } from '@lib/functions/Conversion';
 import { getBaseUrl, navigateToLink } from '@lib/functions/Navigation';

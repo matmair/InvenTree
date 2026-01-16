@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { Table, Text } from '@mantine/core';
 import { type ReactNode, useCallback, useMemo } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';

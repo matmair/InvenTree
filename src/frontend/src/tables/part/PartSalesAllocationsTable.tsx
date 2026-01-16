@@ -2,7 +2,7 @@ import { t } from '@lingui/core/macro';
 import { Group, Text } from '@mantine/core';
 import type { DataTableRowExpansionProps } from 'mantine-datatable';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { ProgressBar } from '@lib/components/ProgressBar';
 import { RowViewAction } from '@lib/components/RowActions';

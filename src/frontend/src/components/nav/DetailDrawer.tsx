@@ -2,7 +2,7 @@ import { ActionIcon, Divider, Drawer, Group, Stack, Text } from '@mantine/core';
 import { IconChevronLeft } from '@tabler/icons-react';
 import { useCallback, useMemo } from 'react';
 import { Link, useNavigate, useParams } from '@tanstack/react-router';
-import type { To } from '../../functions/navigation';
+import type { To } from '@lib/functions/navigation';
 
 import type { UiSizeType } from '@lib/types/Core';
 import { useShallow } from 'zustand/react/shallow';

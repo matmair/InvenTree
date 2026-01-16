@@ -20,7 +20,7 @@ import { apiUrl } from '@lib/functions/Api';
 import { formatDecimal } from '@lib/functions/Formatting';
 import type { TableFilter } from '@lib/types/Filters';
 import type { TableColumn } from '@lib/types/Tables';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 import ImporterDrawer from '../../components/importer/ImporterDrawer';
 import { RenderInstance } from '../../components/render/Instance';
 import { formatCurrency } from '../../defaults/formatters';

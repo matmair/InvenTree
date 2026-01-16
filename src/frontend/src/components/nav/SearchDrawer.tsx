@@ -30,8 +30,8 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import type { NavigateFunction } from '../../functions/navigation';
+import { useNavigate } from '@lib/functions/navigation';
+import type { NavigateFunction } from '@lib/functions/navigation';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelInformationDict } from '@lib/enums/ModelInformation';

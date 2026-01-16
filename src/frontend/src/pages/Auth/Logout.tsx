@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { doLogout } from '../../functions/auth';
 import { Wrapper } from './Layout';

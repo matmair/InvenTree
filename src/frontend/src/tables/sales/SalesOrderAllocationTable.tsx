@@ -16,7 +16,7 @@ import type { StockOperationProps } from '@lib/types/Forms';
 import type { TableColumn } from '@lib/types/Tables';
 import { Alert } from '@mantine/core';
 import { IconCircleX, IconTruckDelivery } from '@tabler/icons-react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 import { formatDate } from '../../defaults/formatters';
 import { useSalesOrderAllocationFields } from '../../forms/SalesOrderForms';
 import {
