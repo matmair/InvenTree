@@ -268,6 +268,7 @@ class ReturnOrderReportContext(report.mixins.BaseReportContext):
 class Order(
     StatusCodeMixin,
     StateTransitionMixin,
+    InvenTree.models.InvenTreeParameterMixin,
     InvenTree.models.InvenTreeAttachmentMixin,
     InvenTree.models.InvenTreeBarcodeMixin,
     InvenTree.models.InvenTreeNotesMixin,
@@ -431,7 +432,8 @@ class Order(
         Makes use of the overdue_filter() method to avoid code duplication
         """
         return (
-            self.__class__.objects.filter(pk=self.pk)
+            self.__class__.objects
+            .filter(pk=self.pk)
             .filter(self.__class__.overdue_filter())
             .exists()
         )
@@ -951,7 +953,7 @@ class PurchaseOrder(TotalPriceMixin, Order):
             batch_code: Optional batch code for the item (optional)
             expiry_date: Optional expiry date for the item (optional)
             serials: Optional list of serial numbers (optional)
-            notes: Optional notes for the item (optional)
+            note: Optional notes for the item (optional)
         """
         if self.status != PurchaseOrderStatus.PLACED:
             raise ValidationError(
@@ -976,6 +978,9 @@ class PurchaseOrder(TotalPriceMixin, Order):
         # Prefetch line item objects for DB efficiency
         line_items_ids = [item['line_item'].pk for item in items]
 
+        # Cache the custom status options for the StockItem model
+        custom_stock_status_values = stock.models.StockItem.STATUS_CLASS.custom_values()
+
         line_items = PurchaseOrderLineItem.objects.filter(
             pk__in=line_items_ids
         ).prefetch_related('part', 'part__part', 'order')
@@ -985,7 +990,7 @@ class PurchaseOrder(TotalPriceMixin, Order):
 
         # Before we continue, validate that each line item is valid
         # We validate this here because it is far more efficient,
-        # after we have fetched *all* line itemes in a single DB query
+        # after we have fetched *all* line items in a single DB query
         for line_item in line_item_map.values():
             if line_item.order != self:
                 raise ValidationError({_('Line item does not match purchase order')})
@@ -1050,13 +1055,16 @@ class PurchaseOrder(TotalPriceMixin, Order):
                 'supplier_part': supplier_part,
                 'purchase_order': self,
                 'purchase_price': purchase_price,
-                'status': item.get('status', StockStatus.OK.value),
                 'location': stock_location,
                 'quantity': 1 if serialize else stock_quantity,
                 'batch': item.get('batch_code', ''),
                 'expiry_date': item.get('expiry_date', None),
+                'notes': item.get('note', '') or item.get('notes', ''),
                 'packaging': item.get('packaging') or supplier_part.packaging,
             }
+
+            # Extract the "status" field
+            status = item.get('status', StockStatus.OK.value)
 
             # Check linked build order
             # This is for receiving against an *external* build order
@@ -1098,11 +1106,14 @@ class PurchaseOrder(TotalPriceMixin, Order):
 
             # Now, create the new stock items
             if serialize:
-                stock_items.extend(
-                    stock.models.StockItem._create_serial_numbers(
-                        serials=serials, **stock_data
-                    )
+                new_items = stock.models.StockItem._create_serial_numbers(
+                    serials=serials, **stock_data
                 )
+
+                for item in new_items:
+                    item.set_status(status, custom_values=custom_stock_status_values)
+                    stock_items.append(item)
+
             else:
                 new_item = stock.models.StockItem(
                     **stock_data,
@@ -1114,10 +1125,11 @@ class PurchaseOrder(TotalPriceMixin, Order):
                     rght=2,
                 )
 
+                new_item.set_status(status, custom_values=custom_stock_status_values)
+
                 if barcode:
                     new_item.assign_barcode(barcode_data=barcode, save=False)
 
-                # new_item.save()
                 bulk_create_items.append(new_item)
 
             # Update the line item quantity
@@ -1143,9 +1155,11 @@ class PurchaseOrder(TotalPriceMixin, Order):
                 item.add_tracking_entry(
                     StockHistoryCode.RECEIVED_AGAINST_PURCHASE_ORDER,
                     user,
-                    location=item.location,
-                    purchaseorder=self,
-                    quantity=float(item.quantity),
+                    deltas={
+                        'location': item.location.pk if item.location else None,
+                        'purchaseorder': self.pk,
+                        'quantity': float(item.quantity),
+                    },
                     commit=False,
                 )
             )
@@ -1376,8 +1390,13 @@ class SalesOrder(TotalPriceMixin, Order):
         return any(line.is_overallocated() for line in self.lines.all())
 
     def is_completed(self) -> bool:
-        """Check if this order is "shipped" (all line items delivered)."""
-        return all(line.is_completed() for line in self.lines.all())
+        """Check if this order is "shipped" (all line items delivered).
+
+        Note: Any "virtual" parts are ignored in this calculation.
+        """
+        lines = self.lines.all().filter(part__virtual=False)
+
+        return all(line.is_completed() for line in lines)
 
     def can_complete(
         self, raise_error: bool = False, allow_incomplete_lines: bool = False
@@ -1412,10 +1431,15 @@ class SalesOrder(TotalPriceMixin, Order):
                     _('Order cannot be completed as there are incomplete allocations')
                 )
 
-            if not allow_incomplete_lines and self.pending_line_count > 0:
-                raise ValidationError(
-                    _('Order cannot be completed as there are incomplete line items')
-                )
+            if not allow_incomplete_lines:
+                pending_lines = self.pending_line_items().exclude(part__virtual=True)
+
+                if pending_lines.count() > 0:
+                    raise ValidationError(
+                        _(
+                            'Order cannot be completed as there are incomplete line items'
+                        )
+                    )
 
         except ValidationError as e:
             if raise_error:
@@ -1472,6 +1496,7 @@ class SalesOrder(TotalPriceMixin, Order):
 
             trigger_event(SalesOrderEvents.HOLD, id=self.pk)
 
+    @transaction.atomic
     def _action_complete(self, *args, **kwargs):
         """Mark this order as "complete."""
         user = kwargs.pop('user', None)
@@ -1483,6 +1508,16 @@ class SalesOrder(TotalPriceMixin, Order):
             get_global_setting('SALESORDER_SHIP_COMPLETE')
         )
 
+        # Update line items
+        for line in self.lines.all():
+            # Mark any "virtual" parts as shipped at this point
+            if line.part and line.part.virtual and line.shipped != line.quantity:
+                line.shipped = line.quantity
+                line.save()
+
+            if line.part:
+                line.part.schedule_pricing_update(create=True)
+
         if bypass_shipped or self.status == SalesOrderStatus.SHIPPED:
             self.status = SalesOrderStatus.COMPLETE.value
         else:
@@ -1493,11 +1528,6 @@ class SalesOrder(TotalPriceMixin, Order):
             self.shipment_date = InvenTree.helpers.current_date()
 
         self.save()
-
-        # Schedule pricing update for any referenced parts
-        for line in self.lines.all():
-            if line.part:
-                line.part.schedule_pricing_update(create=True)
 
         trigger_event(SalesOrderEvents.COMPLETED, id=self.pk)
 
@@ -1562,7 +1592,7 @@ class SalesOrder(TotalPriceMixin, Order):
         """Attempt to transition to COMPLETED status."""
         return self.handle_transition(
             self.status,
-            SalesOrderStatus.COMPLETED.value,
+            SalesOrderStatus.COMPLETE.value,
             self,
             self._action_complete,
             user=user,
@@ -1960,17 +1990,16 @@ class PurchaseOrderLineItem(OrderLineItem):
     def get_destination(self):
         """Show where the line item is or should be placed.
 
-        NOTE: If a line item gets split when received, only an arbitrary
-              stock items location will be reported as the location for the
-              entire line.
+        1. If a destination is specified against this line item, return that.
+        2. If a destination is specified against the PurchaseOrderPart, return that.
+        3. If a default location is specified against the linked Part, return that.
         """
-        for item in stock.models.StockItem.objects.filter(
-            supplier_part=self.part, purchase_order=self.order
-        ):
-            if item.location:
-                return item.location
         if self.destination:
             return self.destination
+
+        if self.order.destination:
+            return self.order.destination
+
         if self.part and self.part.part and self.part.part.default_location:
             return self.part.part.default_location
 
@@ -2881,7 +2910,7 @@ class ReturnOrder(TotalPriceMixin, Order):
             line.item = stock_item
             line.save()
 
-        status = kwargs.get('status')
+        status = kwargs.get('status', StockStatus.QUARANTINED.value)
 
         if status is None:
             status = StockStatus.QUARANTINED.value
@@ -2892,7 +2921,7 @@ class ReturnOrder(TotalPriceMixin, Order):
             deltas['customer'] = stock_item.customer.pk
 
         # Update the StockItem
-        stock_item.status = status
+        stock_item.set_status(status)
         stock_item.location = location
         stock_item.customer = None
         stock_item.sales_order = None

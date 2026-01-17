@@ -862,10 +862,17 @@ function stockRemoveFields(items: any[]): ApiFormFieldSet {
 
   const records = Object.fromEntries(items.map((item) => [item.pk, item]));
 
+  const initialValue = mapAdjustmentItems(items).map((elem) => {
+    return {
+      ...elem,
+      quantity: 0
+    };
+  });
+
   const fields: ApiFormFieldSet = {
     items: {
       field_type: 'table',
-      value: mapAdjustmentItems(items),
+      value: initialValue,
       modelRenderer: (row: TableFieldRowProps) => {
         const record = records[row.item.pk];
 
@@ -902,10 +909,17 @@ function stockAddFields(items: any[]): ApiFormFieldSet {
 
   const records = Object.fromEntries(items.map((item) => [item.pk, item]));
 
+  const initialValue = mapAdjustmentItems(items).map((elem) => {
+    return {
+      ...elem,
+      quantity: 0
+    };
+  });
+
   const fields: ApiFormFieldSet = {
     items: {
       field_type: 'table',
-      value: mapAdjustmentItems(items),
+      value: initialValue,
       modelRenderer: (row: TableFieldRowProps) => {
         const record = records[row.item.pk];
 
@@ -941,10 +955,12 @@ function stockCountFields(items: any[]): ApiFormFieldSet {
 
   const records = Object.fromEntries(items.map((item) => [item.pk, item]));
 
+  const initialValue = mapAdjustmentItems(items);
+
   const fields: ApiFormFieldSet = {
     items: {
       field_type: 'table',
-      value: mapAdjustmentItems(items),
+      value: initialValue,
       modelRenderer: (row: TableFieldRowProps) => {
         return (
           <StockOperationsRow
@@ -1022,6 +1038,30 @@ function stockMergeFields(items: any[]): ApiFormFieldSet {
 
   const records = Object.fromEntries(items.map((item) => [item.pk, item]));
 
+  // Extract all non-null location values from the items
+  const locationValues = [
+    ...new Set(
+      items.filter((item) => item.location).map((item) => item.location)
+    )
+  ];
+
+  // Extract all non-null default location values from the items
+  const defaultLocationValues = [
+    ...new Set(
+      items
+        .filter((item) => item.part_detail?.default_location)
+        .map((item) => item.part_detail?.default_location)
+    )
+  ];
+
+  // Select a default location value
+  const defaultLocation =
+    locationValues.length === 1
+      ? locationValues[0]
+      : defaultLocationValues.length === 1
+        ? defaultLocationValues[0]
+        : undefined;
+
   const fields: ApiFormFieldSet = {
     items: {
       field_type: 'table',
@@ -1051,7 +1091,7 @@ function stockMergeFields(items: any[]): ApiFormFieldSet {
       ]
     },
     location: {
-      default: items[0]?.part_detail?.default_location,
+      default: defaultLocation,
       filters: {
         structural: false
       }

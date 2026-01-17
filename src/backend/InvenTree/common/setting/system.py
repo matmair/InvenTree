@@ -15,7 +15,6 @@ from jinja2 import Template
 
 import build.validators
 import common.currency
-import common.models
 import common.validators
 import order.validators
 import report.helpers
@@ -105,6 +104,20 @@ def reload_plugin_registry(setting):
     logger.info("Reloading plugin registry due to change in setting '%s'", setting.key)
 
     registry.reload_plugins(full_reload=True, force_reload=True, collect=True)
+
+
+def enforce_mfa(setting):
+    """Enforce multifactor authentication for all users."""
+    from allauth.usersessions.models import UserSession
+
+    from common.models import logger
+
+    logger.info(
+        'Enforcing multifactor authentication for all users by signing out all sessions.'
+    )
+    for session in UserSession.objects.all():
+        session.end()
+    logger.info('All user sessions have been ended.')
 
 
 def barcode_plugins() -> list:
@@ -522,14 +535,6 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'default': '',
         'validator': common.validators.validate_icon,
     },
-    'PART_PARAMETER_ENFORCE_UNITS': {
-        'name': _('Enforce Parameter Units'),
-        'description': _(
-            'If units are provided, parameter values must match the specified units'
-        ),
-        'default': True,
-        'validator': bool,
-    },
     'PRICING_DECIMAL_PLACES_MIN': {
         'name': _('Minimum Pricing Decimal Places'),
         'description': _(
@@ -669,6 +674,14 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'description': _('Default page size for PDF reports'),
         'default': 'A4',
         'choices': report.helpers.report_page_size_options,
+    },
+    'PARAMETER_ENFORCE_UNITS': {
+        'name': _('Enforce Parameter Units'),
+        'description': _(
+            'If units are provided, parameter values must match the specified units'
+        ),
+        'default': True,
+        'validator': bool,
     },
     'SERIAL_NUMBER_GLOBALLY_UNIQUE': {
         'name': _('Globally Unique Serials'),
@@ -1008,6 +1021,11 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'description': _('Users must use multifactor security.'),
         'default': False,
         'validator': bool,
+        'confirm': True,
+        'confirm_text': _(
+            'Enabling this setting will require all users to set up multifactor authentication. All sessions will be disconnected immediately.'
+        ),
+        'after_save': enforce_mfa,
     },
     'PLUGIN_ON_STARTUP': {
         'name': _('Check plugins on startup'),

@@ -1,5 +1,6 @@
 """Tasks for automating certain actions and interacting with InvenTree from the CLI."""
 
+import datetime
 import json
 import os
 import pathlib
@@ -78,7 +79,7 @@ def get_installer(content: Optional[dict] = None):
     """Get the installer for the current environment or a content dict."""
     if content is None:
         content = dict(os.environ)
-    return content.get('INVENTREE_PKG_INSTALLER', None)
+    return content.get('INVENTREE_PKG_INSTALLER')
 
 
 # region execution logging helpers
@@ -271,19 +272,21 @@ def apps():
 
 def content_excludes(
     allow_auth: bool = True,
-    allow_tokens: bool = True,
+    allow_email: bool = False,
     allow_plugins: bool = True,
-    allow_sso: bool = True,
     allow_session: bool = True,
+    allow_sso: bool = True,
+    allow_tokens: bool = True,
 ):
     """Returns a list of content types to exclude from import / export.
 
     Arguments:
         allow_auth (bool): Allow user authentication data to be exported / imported
-        allow_tokens (bool): Allow tokens to be exported / imported
+        allow_email (bool): Allow email log data to be exported / imported
         allow_plugins (bool): Allow plugin information to be exported / imported
-        allow_sso (bool): Allow SSO tokens to be exported / imported
         allow_session (bool): Allow user session data to be exported / imported
+        allow_sso (bool): Allow SSO tokens to be exported / imported
+        allow_tokens (bool): Allow tokens to be exported / imported
     """
     excludes = [
         'contenttypes',
@@ -304,29 +307,33 @@ def content_excludes(
         'importer.dataimportrow',
     ]
 
+    # Optional exclude email message logs
+    if not allow_email:
+        excludes.extend(['common.emailmessage', 'common.emailthread'])
+
     # Optionally exclude user auth data
     if not allow_auth:
-        excludes.append('auth.group')
-        excludes.append('auth.user')
+        excludes.extend(['auth.group', 'auth.user'])
 
     # Optionally exclude user token information
     if not allow_tokens:
-        excludes.append('users.apitoken')
+        excludes.extend(['users.apitoken'])
 
     # Optionally exclude plugin information
     if not allow_plugins:
-        excludes.append('plugin.pluginconfig')
-        excludes.append('plugin.pluginsetting')
+        excludes.extend([
+            'plugin.pluginconfig',
+            'plugin.pluginsetting',
+            'plugin.pluginusersetting',
+        ])
 
     # Optionally exclude SSO application information
     if not allow_sso:
-        excludes.append('socialaccount.socialapp')
-        excludes.append('socialaccount.socialtoken')
+        excludes.extend(['socialaccount.socialapp', 'socialaccount.socialtoken'])
 
     # Optionally exclude user session information
     if not allow_session:
-        excludes.append('sessions.session')
-        excludes.append('usersessions.usersession')
+        excludes.extend(['sessions.session', 'usersessions.usersession'])
 
     return ' '.join([f'--exclude {e}' for e in excludes])
 
@@ -349,6 +356,26 @@ def manage_py_dir():
 def manage_py_path():
     """Return the path of the manage.py file."""
     return manage_py_dir().joinpath('manage.py')
+
+
+def _frontend_info():
+    """Return the path of the frontend info directory."""
+    return manage_py_dir().joinpath('web', 'static', 'web', '.vite')
+
+
+def version_target_pth():
+    """Return the path of the target version file."""
+    return _frontend_info().joinpath('tag.txt')
+
+
+def version_sha_pth():
+    """Return the path of the SHA version file."""
+    return _frontend_info().joinpath('sha.txt')
+
+
+def version_source_pth():
+    """Return the path of the source version file."""
+    return _frontend_info().joinpath('source.txt')
 
 
 # endregion
@@ -592,14 +619,19 @@ def clean_settings(c):
     success('Settings cleaned successfully')
 
 
-@task(help={'mail': "mail of the user who's MFA should be disabled"})
-def remove_mfa(c, mail=''):
+@task(
+    help={
+        'mail': "mail of the user who's MFA should be disabled",
+        'username': "username of the user who's MFA should be disabled",
+    }
+)
+def remove_mfa(c, mail='', username=''):
     """Remove MFA for a user."""
-    if not mail:
-        warning('You must provide a users mail')
+    if not mail and not username:
+        warning('You must provide a users mail or username')
         return
 
-    manage(c, f'remove_mfa {mail}')
+    manage(c, f'remove_mfa --mail {mail} --username {username}')
 
 
 @task(
@@ -886,6 +918,7 @@ def update(
     help={
         'filename': "Output filename (default = 'data.json')",
         'overwrite': 'Overwrite existing files without asking first (default = False)',
+        'include_email': 'Include email logs in the output file (default = False)',
         'include_permissions': 'Include user and group permissions in the output file (default = False)',
         'include_tokens': 'Include API tokens in the output file (default = False)',
         'exclude_plugins': 'Exclude plugin data from the output file (default = False)',
@@ -898,6 +931,7 @@ def export_records(
     c,
     filename='data.json',
     overwrite=False,
+    include_email=False,
     include_permissions=False,
     include_tokens=False,
     exclude_plugins=False,
@@ -934,6 +968,7 @@ def export_records(
     tmpfile = f'{target}.tmp'
 
     excludes = content_excludes(
+        allow_email=include_email,
         allow_tokens=include_tokens,
         allow_plugins=not exclude_plugins,
         allow_session=include_session,
@@ -1275,6 +1310,7 @@ def test_translations(c):
         'coverage': 'Run code coverage analysis (requires coverage package)',
         'translations': 'Compile translations before running tests',
         'keepdb': 'Keep the test database after running tests (default = False)',
+        'pytest': 'Use pytest to run tests',
     }
 )
 def test(
@@ -1287,6 +1323,7 @@ def test(
     coverage=False,
     translations=False,
     keepdb=False,
+    pytest=False,
 ):
     """Run unit-tests for InvenTree codebase.
 
@@ -1332,10 +1369,16 @@ def test(
     else:
         cmd += ' --exclude-tag migration_test'
 
+    cmd += ' --exclude-tag performance_test'
+
     if coverage:
         # Run tests within coverage environment, and generate report
         run(c, f'coverage run {manage_py_path()} {cmd}')
         run(c, 'coverage xml -i')
+    elif pytest:
+        # Use pytest to run the tests
+        migrate(c)
+        run(c, f'pytest {manage_py_path().parent.parent} --codspeed')
     else:
         # Run simple test runner, without coverage
         manage(c, cmd, pty=pty)
@@ -1346,6 +1389,7 @@ def test(
         'dev': 'Set up development environment at the end',
         'validate_files': 'Validate media files are correctly copied',
         'use_ssh': 'Use SSH protocol for cloning the demo dataset (requires SSH key)',
+        'branch': 'Specify branch of demo-dataset to clone (default = main)',
     }
 )
 def setup_test(
@@ -1355,6 +1399,7 @@ def setup_test(
     validate_files=False,
     use_ssh=False,
     path='inventree-demo-dataset',
+    branch='main',
 ):
     """Setup a testing environment."""
     from src.backend.InvenTree.InvenTree.config import (  # type: ignore[import]
@@ -1379,7 +1424,7 @@ def setup_test(
 
     # Get test data
     info('Cloning demo dataset ...')
-    run(c, f'git clone {URL} {template_dir} -v --depth=1')
+    run(c, f'git clone {URL} {template_dir} -b {branch} -v --depth=1')
 
     # Make sure migrations are done - might have just deleted sqlite database
     if not ignore_update:
@@ -1457,7 +1502,7 @@ def schema(
             'False'  # Disable plugins to ensure they are kep out of schema
         )
         envs['INVENTREE_CURRENCY_CODES'] = (
-            'AUD,CNY,EUR,USD'  # Default currency codes to ensure they are stable
+            'AUD,CAD,CNY,EUR,GBP,JPY,NZD,USD'  # Default currency codes to ensure they are stable
         )
 
     manage(c, cmd, pty=True, env=envs)
@@ -1518,6 +1563,13 @@ def version(c):
         get_static_dir,
     )
 
+    def get_value(fnc):
+        """Helper function to safely get value from function, catching import exceptions."""
+        try:
+            return fnc()
+        except (ModuleNotFoundError, ImportError):
+            return wrap_color('ENVIRONMENT ERROR', '91')
+
     # Gather frontend version information
     _, node, yarn = node_available(versions=True)
 
@@ -1550,17 +1602,17 @@ Invoke Tool {invoke_path}
 
 Installation paths:
 Base        {local_dir()}
-Config      {get_config_file()}
-Plugin File {get_plugin_file() or NOT_SPECIFIED}
-Media       {get_media_dir(error=False) or NOT_SPECIFIED}
-Static      {get_static_dir(error=False) or NOT_SPECIFIED}
-Backup      {get_backup_dir(error=False) or NOT_SPECIFIED}
+Config      {get_value(get_config_file)}
+Plugin File {get_value(get_plugin_file) or NOT_SPECIFIED}
+Media       {get_value(lambda: get_media_dir(error=False)) or NOT_SPECIFIED}
+Static      {get_value(lambda: get_static_dir(error=False)) or NOT_SPECIFIED}
+Backup      {get_value(lambda: get_backup_dir(error=False)) or NOT_SPECIFIED}
 
 Versions:
 InvenTree   {InvenTreeVersion.inventreeVersion()}
 API         {InvenTreeVersion.inventreeApiVersion()}
 Python      {python_version()}
-Django      {InvenTreeVersion.inventreeDjangoVersion()}
+Django      {get_value(InvenTreeVersion.inventreeDjangoVersion)}
 Node        {node if node else NA}
 Yarn        {yarn if yarn else NA}
 
@@ -1637,6 +1689,31 @@ def frontend_build(c):
     """
     info('Building frontend')
     yarn(c, 'yarn run build')
+
+    def write_info(path: Path, content: str):
+        """Helper function to write version content to file after cleaning it if it exists."""
+        if path.exists():
+            path.unlink()
+        path.write_text(content, encoding='utf-8')
+
+    # Write version marker
+    try:
+        import src.backend.InvenTree.InvenTree.version as InvenTreeVersion  # type: ignore[import]
+
+        if version_hash := InvenTreeVersion.inventreeCommitHash():
+            write_info(version_sha_pth(), version_hash)
+        elif version_tag := InvenTreeVersion.inventreeVersion():
+            write_info(version_target_pth(), version_tag)
+        else:
+            warning('No version information available to write frontend version marker')
+
+        # Write source marker
+        write_info(
+            version_source_pth(),
+            f'local build on {datetime.datetime.now().isoformat()}',
+        )
+    except Exception:
+        warning('Failed to write frontend version marker')
 
 
 @task
@@ -1762,13 +1839,9 @@ def frontend_download(
         ref = 'tag' if tag else 'commit'
 
         if tag:
-            current = manage_py_dir().joinpath(
-                'web', 'static', 'web', '.vite', 'tag.txt'
-            )
+            current = version_target_pth()
         elif sha:
-            current = manage_py_dir().joinpath(
-                'web', 'static', 'web', '.vite', 'sha.txt'
-            )
+            current = version_sha_pth()
         else:
             raise ValueError('Either tag or sha needs to be set')
 
@@ -1893,7 +1966,7 @@ def doc_schema(c):
 @task(
     help={
         'address': 'Host and port to run the server on (default: localhost:8080)',
-        'compile_schema': 'Compile the schema documentation first (default: False)',
+        'compile_schema': 'Compile the API schema documentation first (default: False)',
     }
 )
 def docs_server(c, address='localhost:8080', compile_schema=False):

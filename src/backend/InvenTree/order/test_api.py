@@ -204,8 +204,8 @@ class PurchaseOrderTest(OrderTest):
                     self.LIST_URL, data={'limit': limit}, expected_code=200
                 )
 
-                # Total database queries must be below 20, independent of the number of results
-                self.assertLess(len(ctx), 20)
+                # Total database queries must be below 25, independent of the number of results
+                self.assertLess(len(ctx), 25)
 
                 for result in response.data['results']:
                     self.assertIn('total_price', result)
@@ -1226,6 +1226,8 @@ class PurchaseOrderReceiveTest(OrderTest):
 
     def test_receive_large_quantity(self):
         """Test receipt of a large number of items."""
+        from stock.status_codes import StockStatus
+
         sp = SupplierPart.objects.first()
 
         # Create a new order
@@ -1256,11 +1258,16 @@ class PurchaseOrderReceiveTest(OrderTest):
             url,
             {
                 'items': [
-                    {'line_item': line.pk, 'quantity': line.quantity} for line in lines
+                    {
+                        'line_item': line.pk,
+                        'quantity': line.quantity,
+                        'status': StockStatus.QUARANTINED.value,
+                    }
+                    for line in lines
                 ],
                 'location': location.pk,
             },
-            max_query_count=100 + 2 * N_LINES,
+            max_query_count=104 + 2 * N_LINES,
         ).data
 
         # Check for expected response
@@ -1269,6 +1276,7 @@ class PurchaseOrderReceiveTest(OrderTest):
 
         for item in response:
             self.assertEqual(item['purchase_order'], po.pk)
+            self.assertEqual(item['status'], StockStatus.QUARANTINED)
 
         # Check that the order has been completed
         po.refresh_from_db()
@@ -1420,8 +1428,8 @@ class SalesOrderTest(OrderTest):
                     self.LIST_URL, data={'limit': limit}, expected_code=200
                 )
 
-                # Total database queries must be less than 20
-                self.assertLess(len(ctx), 20)
+                # Total database queries must be less than 25
+                self.assertLess(len(ctx), 25)
 
                 n = len(response.data['results'])
 
@@ -2743,63 +2751,3 @@ class ReturnOrderLineItemTests(InvenTreeAPITestCase):
 
         line = models.ReturnOrderLineItem.objects.get(pk=1)
         self.assertEqual(float(line.price.amount), 15.75)
-
-
-class OrderMetadataAPITest(InvenTreeAPITestCase):
-    """Unit tests for the various metadata endpoints of API."""
-
-    fixtures = [
-        'category',
-        'part',
-        'company',
-        'location',
-        'supplier_part',
-        'stock',
-        'order',
-        'sales_order',
-        'return_order',
-    ]
-
-    roles = ['purchase_order.change', 'sales_order.change', 'return_order.change']
-
-    def metatester(self, apikey, model):
-        """Generic tester."""
-        modeldata = model.objects.first()
-
-        # Useless test unless a model object is found
-        self.assertIsNotNone(modeldata)
-
-        url = reverse(apikey, kwargs={'pk': modeldata.pk})
-
-        # Metadata is initially null
-        self.assertIsNone(modeldata.metadata)
-
-        numstr = f'12{len(apikey)}'
-
-        self.patch(
-            url,
-            {'metadata': {f'abc-{numstr}': f'xyz-{apikey}-{numstr}'}},
-            expected_code=200,
-        )
-
-        # Refresh
-        modeldata.refresh_from_db()
-        self.assertEqual(
-            modeldata.get_metadata(f'abc-{numstr}'), f'xyz-{apikey}-{numstr}'
-        )
-
-    def test_metadata(self):
-        """Test all endpoints."""
-        for apikey, model in {
-            'api-po-metadata': models.PurchaseOrder,
-            'api-po-line-metadata': models.PurchaseOrderLineItem,
-            'api-po-extra-line-metadata': models.PurchaseOrderExtraLine,
-            'api-so-shipment-metadata': models.SalesOrderShipment,
-            'api-so-metadata': models.SalesOrder,
-            'api-so-line-metadata': models.SalesOrderLineItem,
-            'api-so-extra-line-metadata': models.SalesOrderExtraLine,
-            'api-return-order-metadata': models.ReturnOrder,
-            'api-return-order-line-metadata': models.ReturnOrderLineItem,
-            'api-return-order-extra-line-metadata': models.ReturnOrderExtraLine,
-        }.items():
-            self.metatester(apikey, model)

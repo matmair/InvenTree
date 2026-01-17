@@ -33,7 +33,7 @@ from InvenTree.api import (
     BulkCreateMixin,
     BulkUpdateMixin,
     ListCreateDestroyAPIView,
-    MetadataView,
+    meta_path,
 )
 from InvenTree.fields import InvenTreeOutputOption, OutputConfiguration
 from InvenTree.filters import (
@@ -1290,10 +1290,14 @@ class StockList(
     search_fields = [
         'serial',
         'batch',
+        'location__name',
         'part__name',
         'part__IPN',
         'part__description',
-        'location__name',
+        'supplier_part__SKU',
+        'supplier_part__supplier__name',
+        'supplier_part__manufacturer_part__MPN',
+        'supplier_part__manufacturer_part__manufacturer__name',
         'tags__name',
         'tags__slug',
     ]
@@ -1553,9 +1557,7 @@ class StockTrackingList(
                 deltas = item['deltas'] or {}
 
                 if key in deltas:
-                    item['deltas'][f'{key}_detail'] = related_data.get(
-                        deltas[key], None
-                    )
+                    item['deltas'][f'{key}_detail'] = related_data.get(deltas[key])
 
         if page is not None:
             return self.get_paginated_response(data)
@@ -1608,11 +1610,7 @@ stock_api_urls = [
             path(
                 '<int:pk>/',
                 include([
-                    path(
-                        'metadata/',
-                        MetadataView.as_view(model=StockLocation),
-                        name='api-location-metadata',
-                    ),
+                    meta_path(StockLocation),
                     path('', StockLocationDetail.as_view(), name='api-location-detail'),
                 ]),
             ),
@@ -1626,11 +1624,7 @@ stock_api_urls = [
             path(
                 '<int:pk>/',
                 include([
-                    path(
-                        'metadata/',
-                        MetadataView.as_view(model=StockLocationType),
-                        name='api-location-type-metadata',
-                    ),
+                    meta_path(StockLocationType),
                     path(
                         '',
                         StockLocationTypeDetail.as_view(),
@@ -1657,11 +1651,7 @@ stock_api_urls = [
             path(
                 '<int:pk>/',
                 include([
-                    path(
-                        'metadata/',
-                        MetadataView.as_view(model=StockItemTestResult),
-                        name='api-stock-test-result-metadata',
-                    ),
+                    meta_path(StockItemTestResult),
                     path(
                         '',
                         StockItemTestResultDetail.as_view(),
@@ -1699,11 +1689,7 @@ stock_api_urls = [
         include([
             path('convert/', StockItemConvert.as_view(), name='api-stock-item-convert'),
             path('install/', StockItemInstall.as_view(), name='api-stock-item-install'),
-            path(
-                'metadata/',
-                MetadataView.as_view(model=StockItem),
-                name='api-stock-item-metadata',
-            ),
+            meta_path(StockItem),
             path(
                 'serialize/',
                 StockItemSerialize.as_view(),

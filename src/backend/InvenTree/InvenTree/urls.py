@@ -130,7 +130,9 @@ backendpatterns = [
     path(
         'auth/', include('rest_framework.urls', namespace='rest_framework')
     ),  # Used for (DRF) browsable API auth
-    path('auth/', auth_request),  # Used for proxies to check if user is authenticated
+    path(
+        'auth/', auth_request, name='auth-check'
+    ),  # Used for proxies to check if user is authenticated
     path('accounts/', include('allauth.urls')),
     # OAuth2
     flagged_path('OIDC', 'o/', include(oauth2_urls)),
@@ -183,6 +185,9 @@ urlpatterns.append(
 # Compatibility layer for old (CUI) URLs
 if settings.FRONTEND_SETTINGS.get('url_compatibility'):
     urlpatterns += cui_compatibility_urls(settings.FRONTEND_URL_BASE)
+
+if settings.DJANGO_SILK_ENABLED:
+    urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
 
 # Send any unknown URLs to the index page
 urlpatterns += [

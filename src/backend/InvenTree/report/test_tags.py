@@ -4,6 +4,7 @@ from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 from django.utils import timezone
@@ -12,10 +13,10 @@ from django.utils.safestring import SafeString
 from djmoney.money import Money
 from PIL import Image
 
-from common.models import InvenTreeSetting
+from common.models import InvenTreeSetting, Parameter, ParameterTemplate
 from InvenTree.config import get_testfolder_dir
 from InvenTree.unit_test import InvenTreeTestCase
-from part.models import Part, PartParameter, PartParameterTemplate
+from part.models import Part  # TODO fix import: PartParameter, PartParameterTemplate
 from part.test_api import PartImageTestMixin
 from report.templatetags import barcode as barcode_tags
 from report.templatetags import report as report_tags
@@ -154,6 +155,7 @@ class ReportTagTest(PartImageTestMixin, InvenTreeTestCase):
 
         obj = Part.objects.create(name='test', description='test')
         self.create_test_image()
+        obj.refresh_from_db()
 
         report_tags.part_image(obj, preview=True)
         report_tags.part_image(obj, thumbnail=True)
@@ -270,7 +272,9 @@ class ReportTagTest(PartImageTestMixin, InvenTreeTestCase):
         """Simple tests for number formatting tags."""
         fn = report_tags.format_number
 
-        self.assertEqual(fn(None), 'None')
+        # Passing None should raise an error
+        with self.assertRaises(ValidationError):
+            fn(None)
 
         for i in [1, '1', '1.0000', '  1  ']:
             self.assertEqual(fn(i), '1')
@@ -279,6 +283,8 @@ class ReportTagTest(PartImageTestMixin, InvenTreeTestCase):
             self.assertEqual(fn(x), '10')
 
         self.assertEqual(fn(1234), '1234')
+        self.assertEqual(fn(1234.5678, decimal_places=0), '1235')
+        self.assertEqual(fn(1234.5678, decimal_places=1), '1234.6')
         self.assertEqual(fn(1234.5678, decimal_places=2), '1234.57')
         self.assertEqual(fn(1234.5678, decimal_places=3), '1234.568')
         self.assertEqual(fn(-9999.5678, decimal_places=2, separator=','), '-9,999.57')
@@ -403,13 +409,24 @@ class ReportTagTest(PartImageTestMixin, InvenTreeTestCase):
         """Test the part_parameter template tag."""
         # Test with a valid part
         part = Part.objects.create(name='test', description='test')
-        t1 = PartParameterTemplate.objects.create(name='Template 1', units='mm')
-        parameter = PartParameter.objects.create(part=part, template=t1, data='test')
+        t1 = ParameterTemplate.objects.create(name='Template 1', units='mm')
 
+        content_type = ContentType.objects.get_for_model(Part)
+        parameter = Parameter.objects.create(
+            model_type=content_type, model_id=part.pk, template=t1, data='test'
+        )
+
+        # Note, use the 'parameter' and 'part_parameter' tags interchangeably here
         self.assertEqual(report_tags.part_parameter(part, 'name'), None)
-        self.assertEqual(report_tags.part_parameter(part, 'Template 1'), parameter)
-        # Test with an invalid part
-        self.assertEqual(report_tags.part_parameter(None, 'name'), None)
+        self.assertEqual(report_tags.parameter(part, 'Template 1'), parameter)
+
+        # Test with a null part
+        with self.assertRaises(ValueError):
+            report_tags.parameter(None, 'name')
+
+        # Test with an invalid model type
+        with self.assertRaises(TypeError):
+            report_tags.parameter(parameter, 'name')
 
     def test_render_currency(self):
         """Test the render_currency template tag."""
@@ -448,6 +465,55 @@ class ReportTagTest(PartImageTestMixin, InvenTreeTestCase):
         self.assertEqual(report_tags.render_currency(m, decimal_places='a'), exp_m)
         self.assertEqual(report_tags.render_currency(m, min_decimal_places='a'), exp_m)
         self.assertEqual(report_tags.render_currency(m, max_decimal_places='a'), exp_m)
+
+    def test_create_currency(self):
+        """Test the create_currency template tag."""
+        m = report_tags.create_currency(1000, 'USD')
+        self.assertIsInstance(m, Money)
+        self.assertEqual(m.amount, Decimal('1000'))
+        self.assertEqual(str(m.currency), 'USD')
+
+        # Test with invalid currency code
+        with self.assertRaises(ValidationError):
+            report_tags.create_currency(1000, 'QWERTY')
+
+        # Test with invalid amount
+        with self.assertRaises(ValidationError):
+            report_tags.create_currency('abc', 'USD')
+
+    def test_convert_currency(self):
+        """Test the convert_currency template tag."""
+        from djmoney.contrib.exchange.models import ExchangeBackend, Rate
+
+        # Generate some dummy exchange rates
+        rates = {'AUD': 1.5, 'CAD': 1.7, 'GBP': 0.9, 'USD': 1.0}
+
+        # Create a dummy backend
+        ExchangeBackend.objects.create(name='InvenTreeExchange', base_currency='USD')
+
+        backend = ExchangeBackend.objects.get(name='InvenTreeExchange')
+
+        items = []
+
+        for currency, rate in rates.items():
+            items.append(Rate(currency=currency, value=rate, backend=backend))
+
+        Rate.objects.bulk_create(items)
+
+        m = report_tags.create_currency(1000, 'GBP')
+
+        # Test with valid conversion
+        converted = report_tags.convert_currency(m, 'CAD')
+        self.assertIsInstance(converted, Money)
+        self.assertEqual(str(converted.currency), 'CAD')
+
+        # Test with invalid currency code
+        with self.assertRaises(ValidationError):
+            report_tags.convert_currency(m, 'QWERTY')
+
+        # Test with missing exchange rate
+        with self.assertRaises(ValidationError):
+            report_tags.convert_currency(m, 'AFD')
 
     def test_render_html_text(self):
         """Test the render_html_text template tag."""

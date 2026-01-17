@@ -15,7 +15,7 @@ root_command() {
   no_call=${args[--no-call]}
   dry_run=${args[--dry-run]}
 
-  REQS="wget apt-transport-https"
+  REQS="wget apt-transport-https curl gpg"
 
   function do_call() {
       if [[ $dry_run ]]; then
@@ -64,7 +64,7 @@ root_command() {
       Ubuntu)
           if [[ $VER == "24.04" ]]; then
               SUPPORTED=true
-          if [[ $VER == "22.04" ]]; then
+          elif [[ $VER == "22.04" ]]; then
               SUPPORTED=true
           elif [[ $VER == "20.04" ]]; then
               SUPPORTED=true
