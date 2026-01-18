@@ -89,7 +89,7 @@ import StockItemTestResultTable from '../../tables/stock/StockItemTestResultTabl
 import { StockTrackingTable } from '../../tables/stock/StockTrackingTable';
 
 export default function StockDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ from: '/mainLayout/stock/item/$id' });
 
   const api = useApi();
   const user = useUserState();
@@ -211,12 +211,12 @@ export default function StockDetail() {
                     variant='transparent'
                     size='sm'
                     onClick={() => {
-                      navigate(
-                        getDetailUrl(
+                      navigate({
+                        to: getDetailUrl(
                           ModelType.stockitem,
                           serialNumbers.previous.pk
                         )
-                      );
+                      });
                     }}
                   >
                     {serialNumbers.previous.serial}
@@ -239,9 +239,12 @@ export default function StockDetail() {
                     variant='transparent'
                     size='sm'
                     onClick={() => {
-                      navigate(
-                        getDetailUrl(ModelType.stockitem, serialNumbers.next.pk)
-                      );
+                      navigate({
+                        to: getDetailUrl(
+                          ModelType.stockitem,
+                          serialNumbers.next.pk
+                        )
+                      });
                     }}
                   >
                     {serialNumbers.next.serial}
@@ -696,7 +699,7 @@ export default function StockDetail() {
       // Handle case where multiple stock items are created
       if (Array.isArray(data) && data.length > 0) {
         if (data.length == 1) {
-          navigate(getDetailUrl(ModelType.stockitem, data[0]?.pk));
+          navigate({ to: getDetailUrl(ModelType.stockitem, data[0]?.pk) });
         } else {
           const n: number = data.length;
           notifications.show({
@@ -722,7 +725,7 @@ export default function StockDetail() {
     preFormContent: preDeleteContent,
     onFormSuccess: () => {
       // Redirect to the part page
-      navigate(getDetailUrl(ModelType.part, stockitem.part));
+      navigate({ to: getDetailUrl(ModelType.part, stockitem.part) });
     }
   });
 
@@ -737,9 +740,9 @@ export default function StockDetail() {
             // If an error occurs refreshing the instance,
             // the stock likely has likely been depleted
             if (location) {
-              navigate(getDetailUrl(ModelType.stocklocation, location));
+              navigate({ to: getDetailUrl(ModelType.stocklocation, location) });
             } else {
-              navigate(getOverviewUrl(ModelType.stockitem));
+              navigate({ to: getOverviewUrl(ModelType.stockitem) });
             }
           }
         });
@@ -778,7 +781,7 @@ export default function StockDetail() {
       if (response.length >= stockitem.quantity) {
         // Entire item was serialized
         // Navigate to the first result
-        navigate(getDetailUrl(ModelType.stockitem, response[0].pk));
+        navigate({ to: getDetailUrl(ModelType.stockitem, response[0].pk) });
       } else {
         refreshInstance();
       }

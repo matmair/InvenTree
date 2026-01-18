@@ -141,7 +141,7 @@ function RevisionSelector({
         })
       }
       onChange={(value: any) => {
-        navigate(getDetailUrl(ModelType.part, value.value));
+        navigate({ to: getDetailUrl(ModelType.part, value.value) });
       }}
       styles={{
         menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
@@ -268,7 +268,7 @@ function BomValidationInformation({
  * Detail view for a single Part instance
  */
 export default function PartDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ from: '/mainLayout/part/$id' });
 
   const api = useApi();
   const navigate = useNavigate();
@@ -1099,9 +1099,9 @@ export default function PartDetail() {
     title: t`Delete Part`,
     onFormSuccess: () => {
       if (part.category) {
-        navigate(getDetailUrl(ModelType.partcategory, part.category));
+        navigate({ to: getDetailUrl(ModelType.partcategory, part.category) });
       } else {
-        navigate({ to: '/part/' });
+        navigate({ to: '/part' });
       }
     },
     preFormContent: (

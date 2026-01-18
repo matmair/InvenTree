@@ -9,7 +9,7 @@ import { handleVerifyEmail } from '../../functions/auth';
 import { Wrapper } from './Layout';
 
 export default function VerifyEmail() {
-  const { key } = useParams();
+  const { key } = useParams({ from: '/authLayout/verify-email/$key' });
   const navigate = useNavigate();
 
   // make sure we have a key

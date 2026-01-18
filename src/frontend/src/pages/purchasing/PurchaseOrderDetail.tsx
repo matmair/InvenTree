@@ -52,7 +52,9 @@ import { StockItemTable } from '../../tables/stock/StockItemTable';
  * Detail page for a single PurchaseOrder
  */
 export default function PurchaseOrderDetail() {
-  const { id } = useParams();
+  const { id } = useParams({
+    from: '/mainLayout/purchasing/purchase-order/$id'
+  });
 
   const user = useUserState();
   const globalSettings = useGlobalSettingsState();

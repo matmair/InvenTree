@@ -463,7 +463,9 @@ export function ApiForm({
             if (props.follow && props.modelType && response.data?.pk) {
               // If we want to automatically follow the returned data
               if (!!navigate) {
-                navigate(getDetailUrl(props.modelType, response.data?.pk));
+                navigate({
+                  to: getDetailUrl(props.modelType, response.data?.pk)
+                });
               }
             } else if (props.table) {
               // If we want to automatically update or reload a linked table

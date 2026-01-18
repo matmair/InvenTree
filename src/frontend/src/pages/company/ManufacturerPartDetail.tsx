@@ -45,7 +45,9 @@ import { SupplierPartTable } from '../../tables/purchasing/SupplierPartTable';
 import { StockItemTable } from '../../tables/stock/StockItemTable';
 
 export default function ManufacturerPartDetail() {
-  const { id } = useParams();
+  const { id } = useParams({
+    from: '/mainLayout/purchasing/manufacturer-part/$id/$'
+  });
   const user = useUserState();
   const navigate = useNavigate();
 
@@ -229,7 +231,7 @@ export default function ManufacturerPartDetail() {
     pk: manufacturerPart?.pk,
     title: t`Delete Manufacturer Part`,
     onFormSuccess: () => {
-      navigate(getDetailUrl(ModelType.part, manufacturerPart.part));
+      navigate({ to: getDetailUrl(ModelType.part, manufacturerPart.part) });
     }
   });
 

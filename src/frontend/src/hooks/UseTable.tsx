@@ -1,5 +1,4 @@
 import { randomId } from '@mantine/hooks';
-import { useSearchParams } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
 
 import type { FilterSetState } from '@lib/types/Filters';

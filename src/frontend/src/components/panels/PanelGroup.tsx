@@ -18,7 +18,6 @@ import {
 import {
   Navigate,
   Route,
-  Routes,
   useLocation,
   useNavigate,
   useParams
@@ -176,7 +175,7 @@ function BasePanelGroup({
         const url = `${location.pathname}/../${targetPanel}`;
         navigateToLink(url, navigate, event);
       } else {
-        navigate(`../${targetPanel}`);
+        navigate({ to: `../${targetPanel}` });
       }
 
       localState.setLastUsedPanel(pageKey)(targetPanel);

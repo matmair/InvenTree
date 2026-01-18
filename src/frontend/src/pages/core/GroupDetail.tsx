@@ -24,7 +24,7 @@ import { useInstance } from '../../hooks/UseInstance';
  * Detail page for a single group
  */
 export default function GroupDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ from: '/mainLayout/core/group/$id' });
 
   const { instance, instanceQuery } = useInstance({
     endpoint: ApiEndpoints.group_list,

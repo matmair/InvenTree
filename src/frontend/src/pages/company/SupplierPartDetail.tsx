@@ -50,7 +50,9 @@ import SupplierPriceBreakTable from '../../tables/purchasing/SupplierPriceBreakT
 import { StockItemTable } from '../../tables/stock/StockItemTable';
 
 export default function SupplierPartDetail() {
-  const { id } = useParams();
+  const { id } = useParams({
+    from: '/mainLayout/purchasing/supplier-part/$id'
+  });
 
   const user = useUserState();
 
@@ -344,7 +346,7 @@ export default function SupplierPartDetail() {
     pk: supplierPart?.pk,
     title: t`Delete Supplier Part`,
     onFormSuccess: () => {
-      navigate(getDetailUrl(ModelType.part, supplierPart.part));
+      navigate({ to: getDetailUrl(ModelType.part, supplierPart.part) });
     }
   });
 

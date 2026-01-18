@@ -602,7 +602,7 @@ const resetPasswordRoute = createRoute({
 
 const setPasswordRoute = createRoute({
   getParentRoute: () => loginLayoutRoute,
-  path: '/set-password',
+  path: '/set-password/$key',
   component: ResetPassword
 });
 
@@ -705,48 +705,3 @@ declare module '@tanstack/react-router' {
     router: typeof router;
   }
 }
-
-// Export component loaders for backward compatibility
-export {
-  LayoutComponent,
-  LoginLayoutComponent,
-  Home,
-  CompanyDetail,
-  CustomerDetail,
-  SupplierDetail,
-  ManufacturerDetail,
-  SupplierPartDetail,
-  ManufacturerPartDetail,
-  CategoryDetail,
-  PartDetail,
-  LocationDetail,
-  StockDetail,
-  BuildIndex,
-  BuildDetail,
-  PurchasingIndex,
-  PurchaseOrderDetail,
-  SalesIndex,
-  SalesOrderDetail,
-  SalesOrderShipmentDetail,
-  ReturnOrderDetail,
-  Scan,
-  ErrorPage,
-  Notifications,
-  UserSettings,
-  SystemSettings,
-  AdminCenter,
-  CoreIndex,
-  UserDetail,
-  GroupDetail,
-  NotFound,
-  Login,
-  LoggedIn,
-  Logout,
-  Register,
-  Mfa,
-  MfaSetup,
-  ChangePassword,
-  Reset,
-  ResetPassword,
-  VerifyEmail
-};

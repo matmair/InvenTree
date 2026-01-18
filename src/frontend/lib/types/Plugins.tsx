@@ -2,7 +2,7 @@ import type { I18n } from '@lingui/core';
 import type { MantineColorScheme, MantineTheme } from '@mantine/core';
 import type { QueryClient } from '@tanstack/react-query';
 import type { AxiosInstance } from 'axios';
-import type { NavigateFunction } from 'react-router-dom';
+import type { NavigateFunction } from '../../src/types/navigate';
 import type { ModelDict } from '../enums/ModelInformation';
 import type { ModelType } from '../enums/ModelType';
 import type {

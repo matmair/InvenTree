@@ -41,7 +41,7 @@ export function SettingsHeader({
             { value: 'system', label: t`System Settings` },
             { value: 'admin', label: t`Admin Center` }
           ]}
-          onChange={(value) => navigate(`/settings/${value}`)}
+          onChange={(value) => navigate({ to: `/settings/${value}` })}
           value={label}
         />
       )}

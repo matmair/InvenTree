@@ -109,7 +109,7 @@ export function ScanInputHandler({
             if (onScanSuccess) {
               onScanSuccess(data['barcode'], data);
             } else {
-              navigate(url);
+              navigate({ to: url });
             }
 
             match = true;

@@ -1,4 +1,4 @@
-import type { NavigateFunction } from 'react-router-dom';
+import type { NavigateFunction } from '../../src/types/navigate';
 import { ModelInformationDict } from '../enums/ModelInformation';
 import type { ModelType } from '../enums/ModelType';
 import { apiUrl } from './Api';
@@ -110,7 +110,7 @@ export const navigateToLink = (
       url = link.replace(base, '');
     }
 
-    navigate(url);
+    navigate({ to: url });
   }
 };
 

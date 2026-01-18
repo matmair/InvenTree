@@ -113,7 +113,12 @@ const SearchResult = ({
               </Badge>
             )}
           {searchResult.existing_part_id && (
-            <Link to={`/part/${searchResult.existing_part_id}`}>
+            <Link
+              to={'/part/$id'}
+              params={{
+                id: searchResult.existing_part_id as unknown as string
+              }}
+            >
               <Badge size='sm' color='blue'>
                 <Trans>Already Imported</Trans>
               </Badge>
@@ -597,7 +602,11 @@ export default function ImportPartWizard({
               rightSection={
                 importResult && (
                   <Group gap='xs'>
-                    <Link to={`/part/${importResult.part_id}`} target='_blank'>
+                    <Link
+                      to={'/part/$id'}
+                      params={{ id: importResult.part_id as unknown as string }}
+                      target='_blank'
+                    >
                       <InvenTreeIcon icon='part' />
                     </Link>
                     <ActionIcon

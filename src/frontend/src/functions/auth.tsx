@@ -8,15 +8,15 @@ import { apiUrl } from '@lib/functions/Api';
 import { type AuthProvider, FlowEnum } from '@lib/types/Auth';
 import { t } from '@lingui/core/macro';
 import { notifications, showNotification } from '@mantine/notifications';
-import type { Location } from '@tanstack/react-router';
+import type { ParsedLocation } from '@tanstack/router-core';
 import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
-import type { NavigateFunction } from '../../types/navigate';
 import { api, setApiDefaults } from '../App';
 import { useLocalState } from '../states/LocalState';
 import { useServerApiState } from '../states/ServerApiState';
 import { useUserState } from '../states/UserState';
 import { fetchGlobalStates } from '../states/states';
+import type { NavigateFunction } from '../types/navigate';
 import { showLoginNotification } from './notifications';
 import { generateUrl } from './urls';
 
@@ -255,7 +255,7 @@ function MfaSetupOk(navigate: NavigateFunction) {
       if (err?.response?.status == 401) {
         const mfa_register = err.response.data.id == FlowEnum.MfaRegister;
         if (mfa_register && navigate != undefined) {
-          navigate('/mfa-setup');
+          navigate({ to: '/mfa-setup' });
           return false;
         }
       } else {
@@ -347,7 +347,7 @@ export function handleReset(
 
 export async function handleMfaLogin(
   navigate: NavigateFunction,
-  location: Location<any> | undefined,
+  location: ParsedLocation | undefined,
   values: { code: string; remember?: boolean },
   setError: (message: string | undefined) => void
 ) {
@@ -448,7 +448,7 @@ export const checkLoginState = async (
     await loginSuccess();
   } else if (!no_redirect) {
     setLoginChecked(true);
-    navigate('/login', { state: redirect });
+    navigate({ to: '/login', state: redirect });
   }
   setLoginChecked(true);
 };
@@ -456,7 +456,7 @@ export const checkLoginState = async (
 function handleSuccessFullAuth(
   response: any,
   navigate: NavigateFunction,
-  location?: Location<any>,
+  location?: ParsedLocation,
   setError?: (message: string | undefined) => void
 ) {
   const { setAuthenticated, fetchUserState } = useUserState.getState();
@@ -568,7 +568,7 @@ export const getTotpSecret = async (setTotpQr: any) => {
 export function handleVerifyTotp(
   value: string,
   navigate: NavigateFunction,
-  location: Location<any>
+  location: ParsedLocation
 ) {
   return () => {
     authApi(apiUrl(ApiEndpoints.auth_totp), undefined, 'post', {
@@ -724,7 +724,7 @@ export function handleChangePassword(
 
 export async function handleWebauthnLogin(
   navigate: NavigateFunction,
-  location: Location<any>
+  location: ParsedLocation | undefined
 ) {
   const { setAuthContext } = useServerApiState.getState();
 

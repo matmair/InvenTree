@@ -1582,7 +1582,7 @@ export function useFindSerialNumberForm({
     },
     onFormSuccess: (data) => {
       if (data.length == 1 && data[0].pk) {
-        navigate(getDetailUrl(ModelType.stockitem, data[0].pk));
+        navigate({ to: getDetailUrl(ModelType.stockitem, data[0].pk) });
       }
     }
   });

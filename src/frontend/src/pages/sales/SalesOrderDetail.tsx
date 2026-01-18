@@ -61,7 +61,7 @@ import SalesOrderShipmentTable from '../../tables/sales/SalesOrderShipmentTable'
  * Detail page for a single SalesOrder
  */
 export default function SalesOrderDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ from: '/mainLayout/sales/sales-order/$id' });
 
   const user = useUserState();
 

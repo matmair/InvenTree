@@ -53,8 +53,8 @@ import { StockItemTable } from '../../tables/stock/StockItemTable';
 import StockLocationParametricTable from '../../tables/stock/StockLocationParametricTable';
 import { StockLocationTable } from '../../tables/stock/StockLocationTable';
 
-export default function Stock() {
-  const { id: _id } = useParams();
+export default function LocationDetail() {
+  const { id: _id } = useParams({ from: '/mainLayout/stock/location/$id' });
 
   const id = useMemo(
     () => (!Number.isNaN(Number.parseInt(_id || '')) ? _id : undefined),
@@ -286,9 +286,11 @@ export default function Stock() {
     },
     onFormSuccess: () => {
       if (location.parent) {
-        navigate(getDetailUrl(ModelType.stocklocation, location.parent));
+        navigate({
+          to: getDetailUrl(ModelType.stocklocation, location.parent)
+        });
       } else {
-        navigate({ to: '/stock/' });
+        navigate({ to: '/stock' });
       }
     }
   });
