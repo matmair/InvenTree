@@ -484,34 +484,52 @@ def check_file_existence(filename: Path, overwrite: bool = False):
 
 # Install tasks
 # region tasks
+@task
+@state_logger('TASK13')
+def update_constraint(c):
+    """Update the constraints file for plugin installations."""
+    from src.backend.InvenTree.InvenTree.config import get_constraint_file
+
+    info('Generating constraint file for plugin installations...')
+    info('New constraint file written to: ', get_constraint_file(force_write=True))
+
+
 @task(help={'uv': 'Use UV (experimental package manager)'})
 @state_logger('TASK01')
 def plugins(c, uv=False):
     """Installs all plugins as specified in 'plugins.txt'."""
     from src.backend.InvenTree.InvenTree.config import (  # type: ignore[import]
+        get_constraint_file,
         get_plugin_file,
     )
 
     plugin_file = get_plugin_file()
+    constraint = get_constraint_file()
 
-    info(f"Installing plugin packages from '{plugin_file}'")
+    info(
+        f"Installing plugin packages from '{plugin_file}' with constraints '{constraint}'"
+    )
 
     # Install the plugins
     if not uv:
-        run(c, f"pip3 install --disable-pip-version-check -U -r '{plugin_file}'")
+        run(
+            c,
+            f"pip3 install --disable-pip-version-check -U -r '{plugin_file}' -c '{constraint}'",
+        )
     else:
         run(c, 'pip3 install --no-cache-dir --disable-pip-version-check uv')
-        run(c, f"uv pip install -r '{plugin_file}'")
+        run(c, f"uv pip install -r '{plugin_file}' -c '{constraint}'")
 
     # Collect plugin static files
     manage(c, 'collectplugins')
 
 
 @task(
+    pre=[update_constraint],
     help={
         'uv': 'Use UV package manager (experimental)',
         'skip_plugins': 'Skip plugin installation',
-    }
+    },
 )
 @state_logger('TASK02')
 def install(c, uv=False, skip_plugins=False):
@@ -877,6 +895,7 @@ def update(
     info('Updating InvenTree installation...')
 
     # Ensure required components are installed
+    update_constraint(c)
     install(c, uv=uv)
 
     if not skip_backup:
