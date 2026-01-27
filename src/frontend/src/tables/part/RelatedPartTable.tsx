@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { Group, Text } from '@mantine/core';
+import { useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '@lib/components/AddItemButton';
 import {
@@ -59,7 +59,7 @@ export function RelatedPartTable({
               wrap='nowrap'
               justify='left'
               onClick={() => {
-                navigate(`/part/${part.pk}/`);
+                navigate({ to: `/part/${part.pk}/` });
               }}
             >
               <Thumbnail src={part.thumbnail || part.image} />

@@ -3,8 +3,8 @@ import { ModelType } from '@lib/enums/ModelType';
 import { t } from '@lingui/core/macro';
 import { Badge, Group, Skeleton, Stack } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
+import { useParams } from '@tanstack/react-router';
 import { type ReactNode, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import {
   type DetailsField,
   DetailsTable
@@ -24,7 +24,7 @@ import { useUserState } from '../../states/UserState';
  * Detail page for a single user
  */
 export default function UserDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ from: '/mainLayout/core/user/$id' });
 
   const user = useUserState();
   const settings = useGlobalSettingsState();

@@ -12,6 +12,7 @@ import {
 import { useId } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   type FieldValues,
@@ -20,7 +21,7 @@ import {
   type SubmitHandler,
   useForm
 } from 'react-hook-form';
-import { type NavigateFunction, useNavigate } from 'react-router-dom';
+import type { NavigateFunction } from '../../types/navigate';
 
 import { isTrue } from '@lib/functions/Conversion';
 import { getDetailUrl } from '@lib/functions/Navigation';
@@ -462,7 +463,9 @@ export function ApiForm({
             if (props.follow && props.modelType && response.data?.pk) {
               // If we want to automatically follow the returned data
               if (!!navigate) {
-                navigate(getDetailUrl(props.modelType, response.data?.pk));
+                navigate({
+                  to: getDetailUrl(props.modelType, response.data?.pk)
+                });
               }
             } else if (props.table) {
               // If we want to automatically update or reload a linked table

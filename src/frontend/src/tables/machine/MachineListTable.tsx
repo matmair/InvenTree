@@ -19,8 +19,8 @@ import {
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconRefresh } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '@lib/components/AddItemButton';
 import { YesNoButton } from '@lib/components/YesNoButton';
@@ -257,7 +257,7 @@ function MachineDrawer({
     ),
     onFormSuccess: () => {
       refreshTable();
-      navigate(-1);
+      navigate({ to: '..' });
     }
   });
 
@@ -674,9 +674,11 @@ export function MachineListTable({
     },
     onFormSuccess: (data) => {
       table.refreshTable();
-      navigate(
-        renderMachineDrawer ? `machine-${data.pk}/` : `../machine-${data.pk}/`
-      );
+      navigate({
+        to: renderMachineDrawer
+          ? `machine-${data.pk}/`
+          : `../machine-${data.pk}/`
+      });
     },
     onClose: () => {
       setCreateFormMachineType(null);
@@ -783,11 +785,11 @@ export function MachineListTable({
           ...props,
           enableDownload: false,
           onRowClick: (machine) =>
-            navigate(
-              renderMachineDrawer
+            navigate({
+              to: renderMachineDrawer
                 ? `machine-${machine.pk}/`
                 : `../machine-${machine.pk}/`
-            ),
+            }),
           rowActions: rowActions,
           tableActions: tableActions,
           params: {

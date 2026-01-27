@@ -17,20 +17,19 @@ import {
   IconLayoutSidebarRightCollapse
 } from '@tabler/icons-react';
 import {
+  Navigate,
+  Route,
+  useLocation,
+  useNavigate,
+  useParams
+} from '@tanstack/react-router';
+import {
   type ReactNode,
   useCallback,
   useEffect,
   useMemo,
   useState
 } from 'react';
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-  useParams
-} from 'react-router-dom';
 
 import type { ModelType } from '@lib/enums/ModelType';
 import { identifierString } from '@lib/functions/Conversion';
@@ -177,7 +176,7 @@ function BasePanelGroup({
         const url = `${location.pathname}/../${targetPanel}`;
         navigateToLink(url, navigate, event);
       } else {
-        navigate(`../${targetPanel}`);
+        navigate({ to: `../${targetPanel}` });
       }
 
       localState.setLastUsedPanel(pageKey)(targetPanel);

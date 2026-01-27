@@ -1,6 +1,6 @@
 import {} from '@mantine/core';
 import type { ContextModalProps } from '@mantine/modals';
-import type { NavigateFunction } from 'react-router-dom';
+import type { NavigateFunction } from '../../types/navigate';
 import { ScanInputHandler } from '../barcodes/BarcodeScanDialog';
 
 export function QrModal({

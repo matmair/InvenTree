@@ -11,8 +11,8 @@ import {
   IconTruckReturn,
   IconUsersGroup
 } from '@tabler/icons-react';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { type ReactNode, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -66,7 +66,7 @@ export type CompanyDetailProps = {
  * Detail view for a single company instance
  */
 export default function CompanyDetail(props: Readonly<CompanyDetailProps>) {
-  const { id } = useParams();
+  const { id } = useParams({ from: '/mainLayout/company/$id' });
 
   const navigate = useNavigate();
   const user = useUserState();
@@ -295,7 +295,7 @@ export default function CompanyDetail(props: Readonly<CompanyDetailProps>) {
     pk: company?.pk,
     title: t`Delete Company`,
     onFormSuccess: () => {
-      navigate('/');
+      navigate({ to: '/' });
     }
   });
 

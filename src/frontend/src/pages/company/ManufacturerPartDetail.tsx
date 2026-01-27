@@ -5,8 +5,8 @@ import {
   IconInfoCircle,
   IconPackages
 } from '@tabler/icons-react';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -45,7 +45,9 @@ import { SupplierPartTable } from '../../tables/purchasing/SupplierPartTable';
 import { StockItemTable } from '../../tables/stock/StockItemTable';
 
 export default function ManufacturerPartDetail() {
-  const { id } = useParams();
+  const { id } = useParams({
+    from: '/mainLayout/purchasing/manufacturer-part/$id/$'
+  });
   const user = useUserState();
   const navigate = useNavigate();
 
@@ -230,7 +232,7 @@ export default function ManufacturerPartDetail() {
     pk: manufacturerPart?.pk,
     title: t`Delete Manufacturer Part`,
     onFormSuccess: () => {
-      navigate(getDetailUrl(ModelType.part, manufacturerPart.part));
+      navigate({ to: getDetailUrl(ModelType.part, manufacturerPart.part) });
     }
   });
 

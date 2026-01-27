@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { Anchor, Text } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { RegistrationForm } from '../../components/forms/AuthenticationForm';
 import {} from '../../functions/auth';
 import { Wrapper } from './Layout';
@@ -18,7 +18,7 @@ export default function Register() {
           type='button'
           c='dimmed'
           size='xs'
-          onClick={() => navigate('/login')}
+          onClick={() => navigate({ to: '/login' })}
         >
           <Trans>Go back to login</Trans>
         </Anchor>

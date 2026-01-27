@@ -12,8 +12,8 @@ import {
   IconShoppingCart,
   IconSitemap
 } from '@tabler/icons-react';
+import { useParams } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -139,7 +139,9 @@ function BuildAllocationsPanel({
  * Detail page for a single Build Order
  */
 export default function BuildDetail() {
-  const { id } = useParams();
+  const { id } = useParams({
+    from: '/mainLayout/manufacturing/build-order/$id'
+  });
 
   const user = useUserState();
   const globalSettings = useGlobalSettingsState();

@@ -6,11 +6,12 @@ import { getDetailUrl } from '@lib/functions/Navigation';
 import { t } from '@lingui/core/macro';
 import { Box, Divider, Modal } from '@mantine/core';
 import { hideNotification, showNotification } from '@mantine/notifications';
+import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useState } from 'react';
-import { type NavigateFunction, useNavigate } from 'react-router-dom';
 import { api } from '../../App';
 import { extractErrorMessage } from '../../functions/api';
 import { useUserState } from '../../states/UserState';
+import type { NavigateFunction } from '../../types/navigate';
 import { StylishText } from '../items/StylishText';
 import { BarcodeInput } from './BarcodeInput';
 
@@ -108,7 +109,7 @@ export function ScanInputHandler({
             if (onScanSuccess) {
               onScanSuccess(data['barcode'], data);
             } else {
-              navigate(url);
+              navigate({ to: url });
             }
 
             match = true;

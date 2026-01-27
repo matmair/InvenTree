@@ -1,6 +1,6 @@
 import { t } from '@lingui/core/macro';
+import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '@lib/components/AddItemButton';
 import { type RowAction, RowEditAction } from '@lib/components/RowActions';

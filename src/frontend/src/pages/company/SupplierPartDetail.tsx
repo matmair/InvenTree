@@ -6,8 +6,8 @@ import {
   IconPackages,
   IconShoppingCart
 } from '@tabler/icons-react';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { type ReactNode, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -50,7 +50,9 @@ import SupplierPriceBreakTable from '../../tables/purchasing/SupplierPriceBreakT
 import { StockItemTable } from '../../tables/stock/StockItemTable';
 
 export default function SupplierPartDetail() {
-  const { id } = useParams();
+  const { id } = useParams({
+    from: '/mainLayout/purchasing/supplier-part/$id'
+  });
 
   const user = useUserState();
 
@@ -345,7 +347,7 @@ export default function SupplierPartDetail() {
     pk: supplierPart?.pk,
     title: t`Delete Supplier Part`,
     onFormSuccess: () => {
-      navigate(getDetailUrl(ModelType.part, supplierPart.part));
+      navigate({ to: getDetailUrl(ModelType.part, supplierPart.part) });
     }
   });
 

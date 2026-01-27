@@ -2,8 +2,8 @@ import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { Alert, Badge, Stack, Text } from '@mantine/core';
 import { IconLock } from '@tabler/icons-react';
+import { useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '@lib/components/AddItemButton';
 import {
@@ -279,7 +279,7 @@ export default function PartTestTemplateTable({
             onRowClick: (row) => {
               if (row.part && row.part != partId) {
                 // This test is defined for a different part
-                navigate(getDetailUrl(ModelType.part, row.part));
+                navigate({ to: getDetailUrl(ModelType.part, row.part) });
               }
             }
           }}

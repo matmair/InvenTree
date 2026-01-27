@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { Group, Loader, Stack, Table, Text } from '@mantine/core';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 
 import { type RowAction, RowDeleteAction } from '@lib/components/RowActions';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
@@ -16,7 +16,8 @@ import { useUserState } from '../../states/UserState';
 import { InvenTreeTable } from '../InvenTreeTable';
 
 function ErrorDetail({ errorId }: Readonly<{ errorId?: number }>) {
-  const { id } = useParams();
+  const params = useParams({ strict: false }) as { id?: string };
+  const id = params.id;
 
   const errorPrimaryKey = useMemo(() => {
     return errorId ?? id;
@@ -161,7 +162,7 @@ export default function ErrorReportTable() {
           rowActions: rowActions,
           onRowClick: (row) => {
             setSelectedError(row);
-            navigate(`${row.pk}/`);
+            navigate({ to: `${row.pk}/` });
           }
         }}
       />

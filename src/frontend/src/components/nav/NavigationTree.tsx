@@ -20,8 +20,8 @@ import {
   IconSitemap
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import type { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import type { ModelType } from '@lib/enums/ModelType';
@@ -79,7 +79,7 @@ export default function NavigationTree({
         navigateToLink(url, navigate, event);
       } else {
         onClose();
-        navigate(url);
+        navigate({ to: url });
       }
     },
     [modelType, navigate]

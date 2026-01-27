@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { Group, Text } from '@mantine/core';
+import { useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { ActionButton } from '@lib/components/ActionButton';
 import { AddItemButton } from '@lib/components/AddItemButton';
@@ -534,7 +534,7 @@ export function StockItemTable({
     onFormSuccess: (response: any) => {
       // Returns a list that may contain multiple serialized stock items
       // Navigate to the first result
-      navigate(getDetailUrl(ModelType.stockitem, response[0].pk));
+      navigate({ to: getDetailUrl(ModelType.stockitem, response[0].pk) });
     },
     successMessage: t`Stock item serialized`
   });

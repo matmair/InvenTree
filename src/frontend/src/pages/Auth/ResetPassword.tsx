@@ -3,17 +3,16 @@ import { Trans } from '@lingui/react/macro';
 import { Button, PasswordInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { handlePasswordReset } from '../../functions/auth';
 import { Wrapper } from './Layout';
 
 export default function ResetPassword() {
   const simpleForm = useForm({ initialValues: { password: '' } });
-  const [searchParams] = useSearchParams();
+  const { key } = useParams({ from: '/authLayout/set-password/$key' });
   const navigate = useNavigate();
-  const key = searchParams.get('key');
 
   // make sure we have a key
   useEffect(() => {

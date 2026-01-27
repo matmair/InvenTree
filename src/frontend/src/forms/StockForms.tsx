@@ -25,8 +25,8 @@ import { type JSX, Suspense, useEffect, useMemo, useState } from 'react';
 import { ActionButton } from '@lib/components/ActionButton';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
+import { useNavigate } from '@tanstack/react-router';
 import dayjs from 'dayjs';
-import { useNavigate } from 'react-router-dom';
 import { api } from '../App';
 import RemoveRowButton from '../components/buttons/RemoveRowButton';
 import { StandaloneField } from '../components/forms/StandaloneField';
@@ -1589,7 +1589,7 @@ export function useFindSerialNumberForm({
     },
     onFormSuccess: (data) => {
       if (data.length == 1 && data[0].pk) {
-        navigate(getDetailUrl(ModelType.stockitem, data[0].pk));
+        navigate({ to: getDetailUrl(ModelType.stockitem, data[0].pk) });
       }
     }
   });

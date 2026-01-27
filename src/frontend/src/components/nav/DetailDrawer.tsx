@@ -1,8 +1,7 @@
 import { ActionIcon, Divider, Drawer, Group, Stack, Text } from '@mantine/core';
 import { IconChevronLeft } from '@tabler/icons-react';
+import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { useCallback, useMemo } from 'react';
-import { Link, Route, Routes, useNavigate, useParams } from 'react-router-dom';
-import type { To } from 'react-router-dom';
 
 import type { UiSizeType } from '@lib/types/Core';
 import { useShallow } from 'zustand/react/shallow';
@@ -33,7 +32,8 @@ function DetailDrawerComponent({
   renderContent
 }: Readonly<DrawerProps>) {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const params = useParams({ strict: false }) as { id?: string };
+  const id = params.id;
 
   const content = renderContent(id);
   const opened = useMemo(() => !!id && !!content, [id, content]);
@@ -46,7 +46,7 @@ function DetailDrawerComponent({
     <Drawer
       opened={opened}
       onClose={() => {
-        navigate('../');
+        navigate({ to: '..' });
         addDetailDrawer(false);
       }}
       position={position}
@@ -60,7 +60,7 @@ function DetailDrawerComponent({
             <ActionIcon
               variant='outline'
               onClick={() => {
-                navigate(-1);
+                navigate({ to: '..' });
                 addDetailDrawer(-1);
               }}
             >
@@ -80,17 +80,14 @@ function DetailDrawerComponent({
 }
 
 export function DetailDrawer(props: Readonly<DrawerProps>) {
-  return (
-    <Routes>
-      <Route path=':id?/' element={<DetailDrawerComponent {...props} />} />
-    </Routes>
-  );
+  // TanStack Router handles routing differently - just render the component directly
+  return <DetailDrawerComponent {...props} />;
 }
 
 export function DetailDrawerLink({
   to,
   text
-}: Readonly<{ to: To; text: string }>) {
+}: Readonly<{ to: string; text: string }>) {
   const addDetailDrawer = useLocalState(
     useShallow((state) => state.addDetailDrawer)
   );

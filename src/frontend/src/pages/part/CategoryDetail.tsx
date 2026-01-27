@@ -9,8 +9,8 @@ import {
   IconSitemap,
   IconTable
 } from '@tabler/icons-react';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -55,7 +55,7 @@ import { StockItemTable } from '../../tables/stock/StockItemTable';
  * Note: If no category ID is supplied, this acts as the top-level part category page
  */
 export default function CategoryDetail() {
-  const { id: _id } = useParams();
+  const { id: _id } = useParams({ from: '/mainLayout/part/category/$id' });
   const id = useMemo(
     () => (!Number.isNaN(Number.parseInt(_id || '')) ? _id : undefined),
     [_id]
@@ -220,9 +220,9 @@ export default function CategoryDetail() {
     },
     onFormSuccess: () => {
       if (category.parent) {
-        navigate(getDetailUrl(ModelType.partcategory, category.parent));
+        navigate({ to: getDetailUrl(ModelType.partcategory, category.parent) });
       } else {
-        navigate('/part/');
+        navigate({ to: '/part' });
       }
     }
   });

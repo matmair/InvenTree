@@ -1,8 +1,8 @@
 import { ActionIcon, Anchor, Group, Loader } from '@mantine/core';
 import { IconExclamationCircle } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { ModelInformationDict } from '@lib/enums/ModelInformation';
 import type { ModelType } from '@lib/enums/ModelType';

@@ -3,8 +3,8 @@ import { ModelType } from '@lib/enums/ModelType';
 import { t } from '@lingui/core/macro';
 import { Paper, Skeleton, Stack } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
+import { useParams } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import {
   type DetailsField,
   DetailsTable
@@ -24,7 +24,7 @@ import { useInstance } from '../../hooks/UseInstance';
  * Detail page for a single group
  */
 export default function GroupDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ from: '/mainLayout/core/group/$id' });
 
   const { instance, instanceQuery } = useInstance({
     endpoint: ApiEndpoints.group_list,

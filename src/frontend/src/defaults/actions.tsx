@@ -9,7 +9,7 @@ import {
   IconUserBolt,
   IconUserCog
 } from '@tabler/icons-react';
-import type { NavigateFunction } from 'react-router-dom';
+import type { NavigateFunction } from '../types/navigate';
 
 import { ModelInformationDict } from '@lib/enums/ModelInformation';
 import { UserRoles } from '@lib/index';
@@ -41,7 +41,7 @@ export function getActions(navigate: NavigateFunction) {
         id: 'dashboard',
         label: t`Dashboard`,
         description: t`Go to the InvenTree dashboard`,
-        onClick: () => navigate('/'),
+        onClick: () => navigate({ to: '/' }),
         leftSection: <IconLink size='1.2rem' />
       },
       {
@@ -93,7 +93,7 @@ export function getActions(navigate: NavigateFunction) {
         label: t`User Settings`,
 
         description: t`Go to your user settings`,
-        onClick: () => navigate('/settings/user'),
+        onClick: () => navigate({ to: '/settings/user' }),
         leftSection: <IconUserCog size='1.2rem' />
       }
     ];
@@ -105,7 +105,7 @@ export function getActions(navigate: NavigateFunction) {
         label: t`Purchase Orders`,
         description: t`Go to Purchase Orders`,
         onClick: () =>
-          navigate(ModelInformationDict['purchaseorder'].url_overview!),
+          navigate({ to: ModelInformationDict['purchaseorder'].url_overview! }),
         leftSection: <IconLink size='1.2rem' />
       });
 
@@ -115,7 +115,7 @@ export function getActions(navigate: NavigateFunction) {
         label: t`Sales Orders`,
         description: t`Go to Sales Orders`,
         onClick: () =>
-          navigate(ModelInformationDict['salesorder'].url_overview!),
+          navigate({ to: ModelInformationDict['salesorder'].url_overview! }),
         leftSection: <IconLink size='1.2rem' />
       });
 
@@ -126,7 +126,7 @@ export function getActions(navigate: NavigateFunction) {
         label: t`Return Orders`,
         description: t`Go to Return Orders`,
         onClick: () =>
-          navigate(ModelInformationDict['returnorder'].url_overview!),
+          navigate({ to: ModelInformationDict['returnorder'].url_overview! }),
         leftSection: <IconLink size='1.2rem' />
       });
 
@@ -135,7 +135,8 @@ export function getActions(navigate: NavigateFunction) {
         id: 'builds',
         label: t`Build Orders`,
         description: t`Go to Build Orders`,
-        onClick: () => navigate(ModelInformationDict['build'].url_overview!),
+        onClick: () =>
+          navigate({ to: ModelInformationDict['build'].url_overview! }),
         leftSection: <IconLink size='1.2rem' />
       });
 
@@ -144,7 +145,7 @@ export function getActions(navigate: NavigateFunction) {
         id: 'system-settings',
         label: t`System Settings`,
         description: t`Go to System Settings`,
-        onClick: () => navigate('/settings/system'),
+        onClick: () => navigate({ to: '/settings/system' }),
         leftSection: <IconSettings size='1.2rem' />
       });
 
@@ -153,7 +154,7 @@ export function getActions(navigate: NavigateFunction) {
         id: 'admin-center',
         label: t`Admin Center`,
         description: t`Go to the Admin Center`,
-        onClick: () => navigate('/settings/admin'),
+        onClick: () => navigate({ to: '/settings/admin/$' }),
         leftSection: <IconUserBolt size='1.2rem' />
       });
 
@@ -162,7 +163,8 @@ export function getActions(navigate: NavigateFunction) {
         id: 'plugin-settings',
         label: t`Plugins`,
         description: t`Manage InvenTree plugins`,
-        onClick: () => navigate('/settings/admin/plugin'),
+        onClick: () =>
+          navigate({ to: '/settings/admin/$', params: { panel: 'plugin' } }),
         leftSection: <IconPlug size='1.2rem' />
       });
 

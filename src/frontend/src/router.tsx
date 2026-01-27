@@ -1,223 +1,707 @@
+import {
+  Outlet,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  redirect
+} from '@tanstack/react-router';
 import { lazy } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { Loadable } from './functions/loading';
 
 // Lazy loaded pages
-export const LayoutComponent = Loadable(
+const LayoutComponent = Loadable(
   lazy(() => import('./components/nav/Layout')),
   true,
   true
 );
-export const LoginLayoutComponent = Loadable(
+const LoginLayoutComponent = Loadable(
   lazy(() => import('./pages/Auth/Layout')),
   true,
   true
 );
 
-export const Home = Loadable(lazy(() => import('./pages/Index/Home')));
+const Home = Loadable(lazy(() => import('./pages/Index/Home')));
 
-export const CompanyDetail = Loadable(
+const CompanyDetail = Loadable(
   lazy(() => import('./pages/company/CompanyDetail'))
 );
 
-export const CustomerDetail = Loadable(
+const CustomerDetail = Loadable(
   lazy(() => import('./pages/company/CustomerDetail'))
 );
 
-export const SupplierDetail = Loadable(
+const SupplierDetail = Loadable(
   lazy(() => import('./pages/company/SupplierDetail'))
 );
 
-export const ManufacturerDetail = Loadable(
+const ManufacturerDetail = Loadable(
   lazy(() => import('./pages/company/ManufacturerDetail'))
 );
 
-export const SupplierPartDetail = Loadable(
+const SupplierPartDetail = Loadable(
   lazy(() => import('./pages/company/SupplierPartDetail'))
 );
 
-export const ManufacturerPartDetail = Loadable(
+const ManufacturerPartDetail = Loadable(
   lazy(() => import('./pages/company/ManufacturerPartDetail'))
 );
 
-export const CategoryDetail = Loadable(
+const CategoryDetail = Loadable(
   lazy(() => import('./pages/part/CategoryDetail'))
 );
-export const PartDetail = Loadable(
-  lazy(() => import('./pages/part/PartDetail'))
-);
+const PartDetail = Loadable(lazy(() => import('./pages/part/PartDetail')));
 
-export const LocationDetail = Loadable(
+const LocationDetail = Loadable(
   lazy(() => import('./pages/stock/LocationDetail'))
 );
 
-export const StockDetail = Loadable(
-  lazy(() => import('./pages/stock/StockDetail'))
-);
+const StockDetail = Loadable(lazy(() => import('./pages/stock/StockDetail')));
 
-export const BuildIndex = Loadable(
-  lazy(() => import('./pages/build/BuildIndex'))
-);
+const BuildIndex = Loadable(lazy(() => import('./pages/build/BuildIndex')));
 
-export const BuildDetail = Loadable(
-  lazy(() => import('./pages/build/BuildDetail'))
-);
+const BuildDetail = Loadable(lazy(() => import('./pages/build/BuildDetail')));
 
-export const PurchasingIndex = Loadable(
+const PurchasingIndex = Loadable(
   lazy(() => import('./pages/purchasing/PurchasingIndex'))
 );
 
-export const PurchaseOrderDetail = Loadable(
+const PurchaseOrderDetail = Loadable(
   lazy(() => import('./pages/purchasing/PurchaseOrderDetail'))
 );
 
-export const SalesIndex = Loadable(
-  lazy(() => import('./pages/sales/SalesIndex'))
-);
+const SalesIndex = Loadable(lazy(() => import('./pages/sales/SalesIndex')));
 
-export const SalesOrderDetail = Loadable(
+const SalesOrderDetail = Loadable(
   lazy(() => import('./pages/sales/SalesOrderDetail'))
 );
 
-export const SalesOrderShipmentDetail = Loadable(
+const SalesOrderShipmentDetail = Loadable(
   lazy(() => import('./pages/sales/SalesOrderShipmentDetail'))
 );
 
-export const ReturnOrderDetail = Loadable(
+const ReturnOrderDetail = Loadable(
   lazy(() => import('./pages/sales/ReturnOrderDetail'))
 );
 
-export const Scan = Loadable(lazy(() => import('./pages/Index/Scan')));
+const Scan = Loadable(lazy(() => import('./pages/Index/Scan')));
 
-export const ErrorPage = Loadable(lazy(() => import('./pages/ErrorPage')));
+const ErrorPage = Loadable(lazy(() => import('./pages/ErrorPage')));
 
-export const Notifications = Loadable(
-  lazy(() => import('./pages/Notifications'))
-);
+const Notifications = Loadable(lazy(() => import('./pages/Notifications')));
 
-export const UserSettings = Loadable(
+const UserSettings = Loadable(
   lazy(() => import('./pages/Index/Settings/UserSettings'))
 );
 
-export const SystemSettings = Loadable(
+const SystemSettings = Loadable(
   lazy(() => import('./pages/Index/Settings/SystemSettings'))
 );
 
-export const AdminCenter = Loadable(
+const AdminCenter = Loadable(
   lazy(() => import('./pages/Index/Settings/AdminCenter/Index'))
 );
 
 // Core object
-export const CoreIndex = Loadable(lazy(() => import('./pages/core/CoreIndex')));
-export const UserDetail = Loadable(
-  lazy(() => import('./pages/core/UserDetail'))
-);
-export const GroupDetail = Loadable(
-  lazy(() => import('./pages/core/GroupDetail'))
-);
+const CoreIndex = Loadable(lazy(() => import('./pages/core/CoreIndex')));
+const UserDetail = Loadable(lazy(() => import('./pages/core/UserDetail')));
+const GroupDetail = Loadable(lazy(() => import('./pages/core/GroupDetail')));
 
-export const NotFound = Loadable(
-  lazy(() => import('./components/errors/NotFound'))
-);
+const NotFound = Loadable(lazy(() => import('./components/errors/NotFound')));
 
 // Auth
-export const Login = Loadable(lazy(() => import('./pages/Auth/Login')));
-export const LoggedIn = Loadable(
+const Login = Loadable(lazy(() => import('./pages/Auth/Login')));
+const LoggedIn = Loadable(
   lazy(() => import('./pages/Auth/LoggedIn')),
   true,
   true
 );
-export const Logout = Loadable(lazy(() => import('./pages/Auth/Logout')));
-export const Register = Loadable(lazy(() => import('./pages/Auth/Register')));
-export const Mfa = Loadable(lazy(() => import('./pages/Auth/MFA')));
-export const MfaSetup = Loadable(lazy(() => import('./pages/Auth/MFASetup')));
-export const ChangePassword = Loadable(
+const Logout = Loadable(lazy(() => import('./pages/Auth/Logout')));
+const Register = Loadable(lazy(() => import('./pages/Auth/Register')));
+const Mfa = Loadable(lazy(() => import('./pages/Auth/MFA')));
+const MfaSetup = Loadable(lazy(() => import('./pages/Auth/MFASetup')));
+const ChangePassword = Loadable(
   lazy(() => import('./pages/Auth/ChangePassword'))
 );
-export const Reset = Loadable(lazy(() => import('./pages/Auth/Reset')));
-export const ResetPassword = Loadable(
+const Reset = Loadable(lazy(() => import('./pages/Auth/Reset')));
+const ResetPassword = Loadable(
   lazy(() => import('./pages/Auth/ResetPassword'))
 );
-export const VerifyEmail = Loadable(
+const VerifyEmail = Loadable(
   lazy(() => import('./pages/Auth/VerifyEmail')),
   true,
   true
 );
 
-// Routes
-export const routes = (
-  <Routes>
-    <Route path='*' element={<NotFound />} errorElement={<ErrorPage />} />
-    <Route path='/' element={<LayoutComponent />} errorElement={<ErrorPage />}>
-      <Route index element={<Home />} />,
-      <Route path='home/' element={<Home />} />,
-      <Route path='notifications/*' element={<Notifications />} />,
-      <Route path='scan/' element={<Scan />} />,
-      <Route path='settings/'>
-        <Route index element={<Navigate to='admin/' />} />
-        <Route path='admin/*' element={<AdminCenter />} />
-        <Route path='system/*' element={<SystemSettings />} />
-        <Route path='user/*' element={<UserSettings />} />
-      </Route>
-      <Route path='part/'>
-        <Route index element={<Navigate to='category/index/' />} />
-        <Route path='category/:id?/*' element={<CategoryDetail />} />
-        <Route path=':id/*' element={<PartDetail />} />
-      </Route>
-      <Route path='stock/'>
-        <Route index element={<Navigate to='location/index/' />} />
-        <Route path='location/:id?/*' element={<LocationDetail />} />
-        <Route path='item/:id/*' element={<StockDetail />} />
-      </Route>
-      <Route path='manufacturing/'>
-        <Route index element={<Navigate to='index/' />} />
-        <Route path='index/*' element={<BuildIndex />} />
-        <Route path='build-order/:id/*' element={<BuildDetail />} />
-      </Route>
-      <Route path='purchasing/'>
-        <Route index element={<Navigate to='index/' />} />
-        <Route path='index/*' element={<PurchasingIndex />} />
-        <Route path='purchase-order/:id/*' element={<PurchaseOrderDetail />} />
-        <Route path='supplier/:id/*' element={<SupplierDetail />} />
-        <Route path='supplier-part/:id/*' element={<SupplierPartDetail />} />
-        <Route path='manufacturer/:id/*' element={<ManufacturerDetail />} />
-        <Route
-          path='manufacturer-part/:id/*'
-          element={<ManufacturerPartDetail />}
-        />
-      </Route>
-      <Route path='company/:id/*' element={<CompanyDetail />} />
-      <Route path='sales/'>
-        <Route index element={<Navigate to='index/' />} />
-        <Route path='index/*' element={<SalesIndex />} />
-        <Route path='sales-order/:id/*' element={<SalesOrderDetail />} />
-        <Route path='shipment/:id/*' element={<SalesOrderShipmentDetail />} />
-        <Route path='return-order/:id/*' element={<ReturnOrderDetail />} />
-        <Route path='customer/:id/*' element={<CustomerDetail />} />
-      </Route>
-      <Route path='core/'>
-        <Route index element={<Navigate to='index/' />} />
-        <Route path='index/*' element={<CoreIndex />} />
-        <Route path='user/:id/*' element={<UserDetail />} />
-        <Route path='group/:id/*' element={<GroupDetail />} />
-      </Route>
-    </Route>
-    <Route
-      path='/'
-      element={<LoginLayoutComponent />}
-      errorElement={<ErrorPage />}
-    >
-      <Route path='/login' element={<Login />} />,
-      <Route path='/logged-in' element={<LoggedIn />} />
-      <Route path='/logout' element={<Logout />} />,
-      <Route path='/register' element={<Register />} />,
-      <Route path='/mfa' element={<Mfa />} />,
-      <Route path='/mfa-setup' element={<MfaSetup />} />,
-      <Route path='/change-password' element={<ChangePassword />} />
-      <Route path='/reset-password' element={<Reset />} />
-      <Route path='/set-password' element={<ResetPassword />} />
-      <Route path='/verify-email/:key' element={<VerifyEmail />} />
-    </Route>
-  </Routes>
-);
+// Create root route
+const rootRoute = createRootRoute({
+  component: Outlet,
+  errorComponent: ErrorPage,
+  notFoundComponent: NotFound
+});
+
+// Main layout route
+const mainLayoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: 'mainLayout',
+  component: LayoutComponent
+});
+
+// Home routes
+const homeIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/',
+  component: Home
+});
+
+const homeRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/home',
+  component: Home
+});
+
+// Notifications - with splat for sub-routes
+const notificationsRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/notifications',
+  component: Notifications
+});
+
+const notificationsSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/notifications/$',
+  component: Notifications
+});
+
+// Scan
+const scanRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/scan',
+  component: Scan
+});
+
+// Settings routes
+const settingsIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/settings',
+  beforeLoad: async () => {
+    throw redirect({ to: '/settings/admin', replace: true });
+  }
+});
+
+const settingsAdminRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/settings/admin',
+  component: AdminCenter
+});
+
+const settingsAdminSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/settings/admin/$',
+  component: AdminCenter
+});
+
+const settingsSystemRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/settings/system',
+  component: SystemSettings
+});
+
+const settingsSystemSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/settings/system/$',
+  component: SystemSettings
+});
+
+const settingsUserRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/settings/user',
+  component: UserSettings
+});
+
+const settingsUserSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/settings/user/$',
+  component: UserSettings
+});
+
+// Part routes
+const partIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/part',
+  beforeLoad: async () => {
+    throw redirect({ to: '/part/category', replace: true });
+  }
+});
+
+const partCategoryIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/part/category',
+  component: CategoryDetail
+});
+
+const partCategoryRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/part/category/$id',
+  component: CategoryDetail
+});
+
+const partCategorySplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/part/category/$id/$',
+  component: CategoryDetail
+});
+
+const partDetailRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/part/$id',
+  component: PartDetail
+});
+
+const partDetailSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/part/$id/$',
+  component: PartDetail
+});
+
+// Stock routes
+const stockIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/stock',
+  beforeLoad: async () => {
+    throw redirect({ to: '/stock/location', replace: true });
+  }
+});
+
+const stockLocationIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/stock/location',
+  component: LocationDetail
+});
+
+const stockLocationRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/stock/location/$id',
+  component: LocationDetail
+});
+
+const stockLocationSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/stock/location/$id/$',
+  component: LocationDetail
+});
+
+const stockItemRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/stock/item/$id',
+  component: StockDetail
+});
+
+const stockItemSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/stock/item/$id/$',
+  component: StockDetail
+});
+
+// Manufacturing routes
+const manufacturingIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/manufacturing',
+  beforeLoad: async () => {
+    throw redirect({ to: '/manufacturing/index', replace: true });
+  }
+});
+
+const manufacturingBuildIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/manufacturing/index',
+  component: BuildIndex
+});
+
+const manufacturingBuildIndexSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/manufacturing/index/$',
+  component: BuildIndex
+});
+
+const manufacturingBuildOrderRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/manufacturing/build-order/$id',
+  component: BuildDetail
+});
+
+const manufacturingBuildOrderSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/manufacturing/build-order/$id/$',
+  component: BuildDetail
+});
+
+// Purchasing routes
+const purchasingIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing',
+  beforeLoad: async () => {
+    throw redirect({ to: '/purchasing/index', replace: true });
+  }
+});
+
+const purchasingMainIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/index',
+  component: PurchasingIndex
+});
+
+const purchasingMainIndexSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/index/$',
+  component: PurchasingIndex
+});
+
+const purchasingOrderRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/purchase-order/$id',
+  component: PurchaseOrderDetail
+});
+
+const purchasingOrderSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/purchase-order/$id/$',
+  component: PurchaseOrderDetail
+});
+
+const purchasingSupplierRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/supplier/$id',
+  component: SupplierDetail
+});
+
+const purchasingSupplierSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/supplier/$id/$',
+  component: SupplierDetail
+});
+
+const purchasingSupplierPartRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/supplier-part/$id',
+  component: SupplierPartDetail
+});
+
+const purchasingSupplierPartSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/supplier-part/$id/$',
+  component: SupplierPartDetail
+});
+
+const purchasingManufacturerRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/manufacturer/$id',
+  component: ManufacturerDetail
+});
+
+const purchasingManufacturerSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/manufacturer/$id/$',
+  component: ManufacturerDetail
+});
+
+const purchasingManufacturerPartRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/manufacturer-part/$id',
+  component: ManufacturerPartDetail
+});
+
+const purchasingManufacturerPartSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/purchasing/manufacturer-part/$id/$',
+  component: ManufacturerPartDetail
+});
+
+// Company routes
+const companyRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/company/$id',
+  component: CompanyDetail
+});
+
+const companySplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/company/$id/$',
+  component: CompanyDetail
+});
+
+// Sales routes
+const salesIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales',
+  beforeLoad: async () => {
+    throw redirect({ to: '/sales/index', replace: true });
+  }
+});
+
+const salesMainIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/index',
+  component: SalesIndex
+});
+
+const salesMainIndexSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/index/$',
+  component: SalesIndex
+});
+
+const salesOrderRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/sales-order/$id',
+  component: SalesOrderDetail
+});
+
+const salesOrderSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/sales-order/$id/$',
+  component: SalesOrderDetail
+});
+
+const salesShipmentRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/shipment/$id',
+  component: SalesOrderShipmentDetail
+});
+
+const salesShipmentSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/shipment/$id/$',
+  component: SalesOrderShipmentDetail
+});
+
+const salesReturnOrderRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/return-order/$id',
+  component: ReturnOrderDetail
+});
+
+const salesReturnOrderSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/return-order/$id/$',
+  component: ReturnOrderDetail
+});
+
+const salesCustomerRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/customer/$id',
+  component: CustomerDetail
+});
+
+const salesCustomerSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/sales/customer/$id/$',
+  component: CustomerDetail
+});
+
+// Core routes
+const coreIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/core',
+  beforeLoad: async () => {
+    throw redirect({ to: '/core/index', replace: true });
+  }
+});
+
+const coreMainIndexRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/core/index',
+  component: CoreIndex
+});
+
+const coreMainIndexSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/core/index/$',
+  component: CoreIndex
+});
+
+const coreUserRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/core/user/$id',
+  component: UserDetail
+});
+
+const coreUserSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/core/user/$id/$',
+  component: UserDetail
+});
+
+const coreGroupRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/core/group/$id',
+  component: GroupDetail
+});
+
+const coreGroupSplatRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: '/core/group/$id/$',
+  component: GroupDetail
+});
+
+// Login layout route
+const loginLayoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: 'authLayout',
+  component: LoginLayoutComponent
+});
+
+// Auth routes
+const loginRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/login',
+  component: Login
+});
+
+const loggedInRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/logged-in',
+  component: LoggedIn
+});
+
+const logoutRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/logout',
+  component: Logout
+});
+
+const registerRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/register',
+  component: Register
+});
+
+const mfaRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/mfa',
+  component: Mfa
+});
+
+const mfaSetupRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/mfa-setup',
+  component: MfaSetup
+});
+
+const changePasswordRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/change-password',
+  component: ChangePassword
+});
+
+const resetPasswordRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/reset-password',
+  component: Reset
+});
+
+const setPasswordRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/set-password/$key',
+  component: ResetPassword
+});
+
+const verifyEmailRoute = createRoute({
+  getParentRoute: () => loginLayoutRoute,
+  path: '/verify-email/$key',
+  component: VerifyEmail
+});
+
+// Create route tree
+const routeTree = rootRoute.addChildren([
+  mainLayoutRoute.addChildren([
+    homeIndexRoute,
+    homeRoute,
+    notificationsRoute,
+    notificationsSplatRoute,
+    scanRoute,
+    settingsIndexRoute,
+    settingsAdminRoute,
+    settingsAdminSplatRoute,
+    settingsSystemRoute,
+    settingsSystemSplatRoute,
+    settingsUserRoute,
+    settingsUserSplatRoute,
+    partIndexRoute,
+    partCategoryIndexRoute,
+    partCategoryRoute,
+    partCategorySplatRoute,
+    partDetailRoute,
+    partDetailSplatRoute,
+    stockIndexRoute,
+    stockLocationIndexRoute,
+    stockLocationRoute,
+    stockLocationSplatRoute,
+    stockItemRoute,
+    stockItemSplatRoute,
+    manufacturingIndexRoute,
+    manufacturingBuildIndexRoute,
+    manufacturingBuildIndexSplatRoute,
+    manufacturingBuildOrderRoute,
+    manufacturingBuildOrderSplatRoute,
+    purchasingIndexRoute,
+    purchasingMainIndexRoute,
+    purchasingMainIndexSplatRoute,
+    purchasingOrderRoute,
+    purchasingOrderSplatRoute,
+    purchasingSupplierRoute,
+    purchasingSupplierSplatRoute,
+    purchasingSupplierPartRoute,
+    purchasingSupplierPartSplatRoute,
+    purchasingManufacturerRoute,
+    purchasingManufacturerSplatRoute,
+    purchasingManufacturerPartRoute,
+    purchasingManufacturerPartSplatRoute,
+    companyRoute,
+    companySplatRoute,
+    salesIndexRoute,
+    salesMainIndexRoute,
+    salesMainIndexSplatRoute,
+    salesOrderRoute,
+    salesOrderSplatRoute,
+    salesShipmentRoute,
+    salesShipmentSplatRoute,
+    salesReturnOrderRoute,
+    salesReturnOrderSplatRoute,
+    salesCustomerRoute,
+    salesCustomerSplatRoute,
+    coreIndexRoute,
+    coreMainIndexRoute,
+    coreMainIndexSplatRoute,
+    coreUserRoute,
+    coreUserSplatRoute,
+    coreGroupRoute,
+    coreGroupSplatRoute
+  ]),
+  loginLayoutRoute.addChildren([
+    loginRoute,
+    loggedInRoute,
+    logoutRoute,
+    registerRoute,
+    mfaRoute,
+    mfaSetupRoute,
+    changePasswordRoute,
+    resetPasswordRoute,
+    setPasswordRoute,
+    verifyEmailRoute
+  ])
+]);
+
+// Create router
+export const router = createRouter({
+  routeTree,
+  defaultErrorComponent: ErrorPage,
+  defaultNotFoundComponent: NotFound
+});
+
+// Register router type for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}

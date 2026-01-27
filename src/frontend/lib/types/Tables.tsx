@@ -4,7 +4,7 @@ import type {
   DataTableRowExpansionProps
 } from 'mantine-datatable';
 import type { ReactNode } from 'react';
-import type { NavigateFunction, SetURLSearchParams } from 'react-router-dom';
+import type { NavigateFunction } from '../../src/types/navigate';
 import type { ModelType } from '../enums/ModelType';
 import type { FilterSetState, TableFilter } from './Filters';
 import type { ApiFormFieldType } from './Forms';

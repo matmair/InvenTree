@@ -7,8 +7,8 @@ import {
   IconList,
   IconTools
 } from '@tabler/icons-react';
+import { useParams } from '@tanstack/react-router';
 import { type ReactNode, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -61,7 +61,7 @@ import SalesOrderShipmentTable from '../../tables/sales/SalesOrderShipmentTable'
  * Detail page for a single SalesOrder
  */
 export default function SalesOrderDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ from: '/mainLayout/sales/sales-order/$id' });
 
   const user = useUserState();
 

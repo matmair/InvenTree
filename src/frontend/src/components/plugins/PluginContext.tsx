@@ -1,6 +1,6 @@
 import { useMantineColorScheme, useMantineTheme } from '@mantine/core';
+import { useNavigate } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useShallow } from 'zustand/react/shallow';
 import { api, queryClient } from '../../App';
 import { useLocalState } from '../../states/LocalState';

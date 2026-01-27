@@ -2,8 +2,8 @@ import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { Anchor, Divider, Group, Loader, Text } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
+import { useLocation, useNavigate, useParams } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useShallow } from 'zustand/react/shallow';
 import { setApiDefaults } from '../../App';
@@ -33,7 +33,7 @@ export default function Login() {
   const [hostEdit, setHostEdit] = useToggle([false, true] as const);
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const { login, password } = useParams({ from: 'authLayout/login' });
   const [sso_registration, registration_enabled] = useServerApiState(
     useShallow((state) => [
       state.sso_registration_enabled,
@@ -75,13 +75,9 @@ export default function Login() {
     checkLoginState(navigate, location?.state, true);
 
     // check if we got login params (login and password)
-    if (searchParams.has('login') && searchParams.has('password')) {
+    if (login && password) {
       setIsLoggingIn(true);
-      doBasicLogin(
-        searchParams.get('login') ?? '',
-        searchParams.get('password') ?? '',
-        navigate
-      ).then(() => {
+      doBasicLogin(login, password, navigate).then(() => {
         followRedirect(navigate, location?.state);
       });
     }
@@ -116,7 +112,7 @@ export default function Login() {
                       type='button'
                       c='dimmed'
                       size='xs'
-                      onClick={() => navigate('/register')}
+                      onClick={() => navigate({ to: '/register' })}
                     >
                       <Trans>Register</Trans>
                     </Anchor>

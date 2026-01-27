@@ -4,8 +4,8 @@ import {
   IconCircleX,
   IconTruckDelivery
 } from '@tabler/icons-react';
+import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { AddItemButton } from '@lib/components/AddItemButton';
 import {

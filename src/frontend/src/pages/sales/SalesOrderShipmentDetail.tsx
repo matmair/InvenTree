@@ -6,8 +6,8 @@ import {
   IconCircleX,
   IconInfoCircle
 } from '@tabler/icons-react';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -54,7 +54,7 @@ import { useUserState } from '../../states/UserState';
 import SalesOrderAllocationTable from '../../tables/sales/SalesOrderAllocationTable';
 
 export default function SalesOrderShipmentDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ from: '/mainLayout/sales/shipment/$id' });
   const user = useUserState();
   const navigate = useNavigate();
 
@@ -300,7 +300,7 @@ export default function SalesOrderShipmentDetail() {
     title: t`Cancel Shipment`,
     onFormSuccess: () => {
       // Shipment has been deleted - navigate back to the sales order
-      navigate(getDetailUrl(ModelType.salesorder, shipment.order));
+      navigate({ to: getDetailUrl(ModelType.salesorder, shipment.order) });
     }
   });
 

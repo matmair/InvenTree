@@ -4,8 +4,8 @@ import { getTotpSecret, handleVerifyTotp } from '../../functions/auth';
 import { Wrapper } from './Layout';
 
 import { Button } from '@mantine/core';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { QrRegistrationForm } from '../Index/Settings/AccountSettings/QrRegistrationForm';
 
 export default function MFASetup() {

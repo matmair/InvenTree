@@ -15,8 +15,8 @@ import {
   Title
 } from '@mantine/core';
 import { IconExclamationCircle, IconRefresh } from '@tabler/icons-react';
+import { useNavigate } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { apiUrl } from '@lib/functions/Api';
@@ -87,7 +87,7 @@ export function MachineDriverTable({
         enableDownload: false,
         enableSearch: false,
         onRowClick: (machine) => {
-          navigate(`${prefix ?? '.'}/driver-${machine.slug}/`);
+          navigate({ to: `${prefix ?? '.'}/driver-${machine.slug}/` });
         },
         dataFormatter: (data: any) => {
           if (machineType) {
@@ -395,7 +395,7 @@ export function MachineTypeListTable({
           ...props,
           enableDownload: false,
           enableSearch: false,
-          onRowClick: (machine) => navigate(`./type-${machine.slug}/`),
+          onRowClick: (machine) => navigate({ to: `./type-${machine.slug}/` }),
           params: {
             ...props.params
           }
