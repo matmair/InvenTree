@@ -1,8 +1,10 @@
-import type { NavigateFunction } from 'react-router-dom';
 import { ModelInformationDict } from '../enums/ModelInformation';
 import type { ModelType } from '../enums/ModelType';
 import { apiUrl } from './Api';
 import { cancelEvent } from './Events';
+
+// NavigateFunction type compatible with both React Router and TanStack Router
+export type NavigateFunction = (to: string | number, options?: any) => void;
 
 export const getBaseUrl = (): string =>
   (window as any).INVENTREE_SETTINGS?.base_url || 'web';

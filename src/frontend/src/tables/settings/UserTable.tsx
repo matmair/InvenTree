@@ -24,7 +24,7 @@ import { type ApiFormModalProps, getDetailUrl } from '@lib/index';
 import type { TableFilter } from '@lib/types/Filters';
 import type { TableColumn, TableState } from '@lib/types/Tables';
 import { showNotification } from '@mantine/notifications';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@lib/functions/navigation';
 import { useShallow } from 'zustand/react/shallow';
 import { api } from '../../App';
 import { EditApiForm } from '../../components/forms/ApiForm';

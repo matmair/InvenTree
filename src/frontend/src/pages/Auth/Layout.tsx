@@ -9,7 +9,8 @@ import {
   Paper,
   Stack
 } from '@mantine/core';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 import SplashScreen from '../../components/SplashScreen';
 import { StylishText } from '../../components/items/StylishText';
 import { doLogout } from '../../functions/auth';

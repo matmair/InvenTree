@@ -16,7 +16,7 @@ import { apiUrl } from '@lib/functions/Api';
 import { type ApiFormModalProps, getDetailUrl } from '@lib/index';
 import type { TableColumn, TableState } from '@lib/types/Tables';
 import { IconUsersGroup } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@lib/functions/navigation';
 import { EditApiForm } from '../../components/forms/ApiForm';
 import { RoleTable, type RuleSet } from '../../components/items/RoleTable';
 import { StylishText } from '../../components/items/StylishText';

@@ -5,7 +5,8 @@ import { Wrapper } from './Layout';
 
 import { Button } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 import { QrRegistrationForm } from '../Index/Settings/AccountSettings/QrRegistrationForm';
 
 export default function MFASetup() {
