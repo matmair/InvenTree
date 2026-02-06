@@ -19,7 +19,8 @@ import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 import { useShallow } from 'zustand/react/shallow';
 import { api } from '../../App';
 import {

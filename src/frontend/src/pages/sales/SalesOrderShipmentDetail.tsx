@@ -7,7 +7,8 @@ import {
   IconInfoCircle
 } from '@tabler/icons-react';
 import { useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
@@ -54,7 +55,7 @@ import { useUserState } from '../../states/UserState';
 import SalesOrderAllocationTable from '../../tables/sales/SalesOrderAllocationTable';
 
 export default function SalesOrderShipmentDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
   const user = useUserState();
   const navigate = useNavigate();
 

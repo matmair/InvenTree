@@ -10,7 +10,7 @@ import { t } from '@lingui/core/macro';
 import { notifications, showNotification } from '@mantine/notifications';
 import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
-import type { Location, NavigateFunction } from 'react-router-dom';
+import type { NavigateFunction } from '@lib/functions/navigation';
 import { api, setApiDefaults } from '../App';
 import { useLocalState } from '../states/LocalState';
 import { useServerApiState } from '../states/ServerApiState';
@@ -356,7 +356,7 @@ export function handleReset(
 
 export async function handleMfaLogin(
   navigate: NavigateFunction,
-  location: Location<any> | undefined,
+  location: any | undefined,
   values: { code: string; remember?: boolean },
   setError: (message: string | undefined) => void
 ) {
@@ -465,7 +465,7 @@ export const checkLoginState = async (
 function handleSuccessFullAuth(
   response: any,
   navigate: NavigateFunction,
-  location?: Location<any>,
+  location?: any,
   setError?: (message: string | undefined) => void
 ) {
   const { setAuthenticated, fetchUserState } = useUserState.getState();
@@ -577,7 +577,7 @@ export const getTotpSecret = async (setTotpQr: any) => {
 export function handleVerifyTotp(
   value: string,
   navigate: NavigateFunction,
-  location: Location<any>
+  location: any
 ) {
   return () => {
     authApi(apiUrl(ApiEndpoints.auth_totp), undefined, 'post', {
@@ -733,7 +733,7 @@ export function handleChangePassword(
 
 export async function handleWebauthnLogin(
   navigate: NavigateFunction,
-  location: Location<any>
+  location: any
 ) {
   const { setAuthContext } = useServerApiState.getState();
 

@@ -4,7 +4,7 @@ import { Button, PasswordInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from '@lib/functions/navigation';
 
 import { handlePasswordReset } from '../../functions/auth';
 import { Wrapper } from './Layout';

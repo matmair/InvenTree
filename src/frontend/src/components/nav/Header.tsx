@@ -16,7 +16,8 @@ import {
 import { IconBell, IconSearch } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { apiUrl } from '@lib/functions/Api';
@@ -207,8 +208,12 @@ export function Header() {
 function NavTabs() {
   const user = useUserState();
   const navigate = useNavigate();
-  const match = useMatch(':tabName/*');
-  const tabValue = match?.params.tabName;
+  const location = useLocation();
+  
+  // Extract the first path segment as tabName
+  const pathSegments = location.pathname.split('/').filter(Boolean);
+  const tabValue = pathSegments[0] || undefined;
+  
   const navTabs = getNavTabs(user);
   const userSettings = useUserSettingsState();
 

@@ -17,7 +17,8 @@ import {
   IconUserBolt,
   IconUserCog
 } from '@tabler/icons-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 import { useShallow } from 'zustand/react/shallow';
 import { aboutInvenTree } from '../../defaults/links';
 import { doLogout } from '../../functions/auth';

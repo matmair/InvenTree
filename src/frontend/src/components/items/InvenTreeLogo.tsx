@@ -1,7 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { ActionIcon } from '@mantine/core';
 import { forwardRef } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import InvenTreeIcon from './inventree.svg';
 
@@ -9,11 +9,11 @@ export const InvenTreeLogoHomeButton = forwardRef<HTMLDivElement>(
   (props, ref) => {
     return (
       <div ref={ref} {...props}>
-        <NavLink to={'/'}>
+        <Link to={'/' as any}>
           <ActionIcon size={28} variant='transparent'>
             <InvenTreeLogo />
           </ActionIcon>
-        </NavLink>
+        </Link>
       </div>
     );
   }

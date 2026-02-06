@@ -25,12 +25,10 @@ import {
 } from 'react';
 import {
   Navigate,
-  Route,
-  Routes,
   useLocation,
-  useNavigate,
   useParams
-} from 'react-router-dom';
+} from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import type { ModelType } from '@lib/enums/ModelType';
 import { identifierString } from '@lib/functions/Conversion';
@@ -90,7 +88,8 @@ function BasePanelGroup({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { panel } = useParams();
+  const params = useParams({ strict: false }) as any;
+  const panel = params?.panel;
 
   const [expanded, setExpanded] = useState<boolean>(true);
 
@@ -385,10 +384,14 @@ function IndexPanelComponent({
  * @param collapsible - If true, the panel group can be collapsed (defaults to true)
  */
 export function PanelGroup(props: Readonly<PanelProps>) {
-  return (
-    <Routes>
-      <Route index element={<IndexPanelComponent {...props} />} />
-      <Route path='/:panel/*' element={<BasePanelGroup {...props} />} />
-    </Routes>
-  );
+  const params = useParams({ strict: false }) as any;
+  const panel = params?.panel;
+  
+  // If no panel parameter, show the index component
+  if (!panel) {
+    return <IndexPanelComponent {...props} />;
+  }
+  
+  // Otherwise show the main panel group
+  return <BasePanelGroup {...props} />;
 }

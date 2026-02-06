@@ -25,7 +25,8 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { ActionButton } from '@lib/components/ActionButton';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
@@ -89,7 +90,7 @@ import StockItemTestResultTable from '../../tables/stock/StockItemTestResultTabl
 import { StockTrackingTable } from '../../tables/stock/StockTrackingTable';
 
 export default function StockDetail() {
-  const { id } = useParams();
+  const { id } = useParams({ strict: false });
 
   const api = useApi();
   const user = useUserState();

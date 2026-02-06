@@ -7,7 +7,8 @@ import {
 } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, Navigate, useLocation } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { identifierString } from '@lib/functions/Conversion';
 import { ApiEndpoints, apiUrl } from '@lib/index';
@@ -40,10 +41,12 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
       <Navigate
         to='/logged-in'
         state={{
-          redirectUrl: location.pathname,
-          queryParams: location.search,
-          anchor: location.hash
-        }}
+          redirect: {
+            redirectUrl: location.pathname,
+            queryParams: location.search,
+            anchor: location.hash
+          }
+        } as any}
       />
     );
   }

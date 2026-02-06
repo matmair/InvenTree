@@ -14,7 +14,8 @@ import {
   IconTable
 } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
+import { useNavigate } from '@lib/functions/navigation';
 import { api } from '../../App';
 import { useBarcodeScanDialog } from '../../components/barcodes/BarcodeScanDialog';
 import AdminButton from '../../components/buttons/AdminButton';
@@ -54,7 +55,7 @@ import StockLocationParametricTable from '../../tables/stock/StockLocationParame
 import { StockLocationTable } from '../../tables/stock/StockLocationTable';
 
 export default function Stock() {
-  const { id: _id } = useParams();
+  const { id: _id } = useParams({ strict: false });
 
   const id = useMemo(
     () => (!Number.isNaN(Number.parseInt(_id || '')) ? _id : undefined),

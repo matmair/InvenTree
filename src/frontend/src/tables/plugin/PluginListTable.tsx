@@ -11,7 +11,7 @@ import {
   IconTrash
 } from '@tabler/icons-react';
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@lib/functions/navigation';
 
 import { ActionButton } from '@lib/components/ActionButton';
 import type { RowAction } from '@lib/components/RowActions';

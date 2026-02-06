@@ -3,7 +3,8 @@ import { Trans } from '@lingui/react/macro';
 import { Anchor, Divider, Group, Loader, Text } from '@mantine/core';
 import { useToggle } from '@mantine/hooks';
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
+import { useNavigate, useSearchParams } from '@lib/functions/navigation';
 
 import { useShallow } from 'zustand/react/shallow';
 import { setApiDefaults } from '../../App';
