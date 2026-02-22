@@ -143,7 +143,7 @@ jobs:
           overwrite: true
 
   build-pkgr:
-    # if: github.repository == 'inventree/InvenTree'
+    if: github.repository == 'inventree/InvenTree'
     name: ${{ matrix.target }}
     runs-on: ubuntu-latest
     needs: [build]
@@ -173,6 +173,7 @@ jobs:
           BRANCH: ${{ github.event.release.target_commitish }}
           TARGET: ${{github.event.release.target_commitish}}
           REPO: ${{ github.repository }}
+          VERSION_REF: ${{ github.ref_name }}
           GH_TOKEN: ${{ github.token }}
 
         run: |
@@ -207,13 +208,10 @@ jobs:
           unzip -qq frontend-build.zip -d src/backend/InvenTree/web/static/web
 
           echo "INFO write release_version"
-          echo "VERSION=${{github.ref_name}}" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION_REF" >> $GITHUB_OUTPUT
           echo "REF=${{github.ref}}" >> $GITHUB_OUTPUT
 
-          echo "INFO current GITHUB_OUTPUT"
-          cat $GITHUB_OUTPUT
-
-          # override before.sh
+          mv contrib/packager.io/before.sh contrib/packager.io/__
           echo "#!/bin/bash" > contrib/packager.io/before.sh
 
           echo "calculate release channel"
@@ -242,7 +240,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           token: ${{ secrets.PACKAGER_RELEASE_TOKEN }}
-          repository: "inventree/InvenTree"
+          repository: inventree/inventree
           channel: ${{ env.pkg_channel }}
           file: ${{ steps.package.outputs.package_path }}
       - name: Publish to artifact
