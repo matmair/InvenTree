@@ -211,7 +211,7 @@ jobs:
           echo "INFO current GITHUB_OUTPUT"
           cat $GITHUB_OUTPUT
 
-          mv contrib/packager.io/before.sh contrib/packager.io/__before.sh
+          # override before.sh
           echo "#!/bin/bash" > contrib/packager.io/before.sh
       - name: Package
         uses: pkgr/action/package@c5666febcd31750da6428042193fc5b2fb765435 # pin@main
