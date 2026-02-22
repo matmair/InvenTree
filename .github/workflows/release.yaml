@@ -236,7 +236,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           token: ${{ secrets.PACKAGER_RELEASE_TOKEN }}
-          repository: $APP_REPO
+          repository: "inventree/InvenTree"
           channel: ${{ github.ref_name }}
           file: ${{ steps.package.outputs.package_path }}
       - name: Publish to artifact
