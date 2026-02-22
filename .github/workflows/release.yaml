@@ -143,7 +143,7 @@ jobs:
           overwrite: true
 
   build-pkgr:
-    if: github.repository == 'inventree/InvenTree'
+    # if: github.repository == 'inventree/InvenTree'
     name: ${{ matrix.target }}
     runs-on: ubuntu-latest
     needs: [build]
@@ -226,7 +226,7 @@ jobs:
         with:
           target: ${{ matrix.target }}
           token: ${{ secrets.PACKAGER_RELEASE_TOKEN }}
-          repository: inventree/inventree
+          repository: $APP_REPO
           channel: ${{ github.ref_name }}
           file: ${{ steps.package.outputs.package_path }}
       - name: Publish to artifact
