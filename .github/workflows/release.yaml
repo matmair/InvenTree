@@ -203,6 +203,13 @@ jobs:
           # Move frontend build into place
           mkdir -p src/backend/InvenTree/web/static
           unzip -qq frontend-build.zip -d src/backend/InvenTree/web/static/web
+
+          echo "INFO write release_version"
+          echo "VERSION=${{github.ref_name}}" >> $GITHUB_OUTPUT
+          echo "REF=${{github.ref}}" >> $GITHUB_OUTPUT
+
+          echo "INFO current GITHUB_OUTPUT"
+          cat $GITHUB_OUTPUT
       - name: Package
         uses: pkgr/action/package@c5666febcd31750da6428042193fc5b2fb765435 # pin@main
         id: package
