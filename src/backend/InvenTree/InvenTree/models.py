@@ -1495,7 +1495,7 @@ class InvenTreeImageMixin(models.Model):
 
     def rename_image(self, filename):
         """Rename the uploaded image file using the IMAGE_RENAME function."""
-        return self.IMAGE_RENAME(filename)  # type: ignore
+        return self.IMAGE_RENAME(filename)
 
     image = StdImageField(
         upload_to=rename_image,
