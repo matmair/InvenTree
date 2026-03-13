@@ -20,7 +20,7 @@ export interface MenuLinkItem {
   id: string;
   title: string | JSX.Element;
   description?: string;
-  icon?: keyof InvenTreeIconType;
+  icon?: Extract<keyof InvenTreeIconType, string>;
   action?: () => void;
   link?: string;
   external?: boolean;

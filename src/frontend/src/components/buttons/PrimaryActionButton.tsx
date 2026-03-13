@@ -16,7 +16,7 @@ export default function PrimaryActionButton({
 }: Readonly<{
   title: string;
   tooltip?: string;
-  icon?: keyof InvenTreeIconType;
+  icon?: Extract<keyof InvenTreeIconType, string>;
   color?: string;
   hidden?: boolean;
   onClick: () => void;

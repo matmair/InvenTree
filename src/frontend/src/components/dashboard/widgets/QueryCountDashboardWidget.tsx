@@ -27,7 +27,7 @@ function QueryCountWidget({
 }: Readonly<{
   modelType: ModelType;
   title: string;
-  icon?: keyof InvenTreeIconType;
+  icon?: Extract<keyof InvenTreeIconType, string>;
   params: any;
 }>): ReactNode {
   const api = useApi();

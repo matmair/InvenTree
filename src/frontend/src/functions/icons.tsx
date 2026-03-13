@@ -110,7 +110,6 @@ import {
   IconWorldCode,
   IconX
 } from '@tabler/icons-react';
-import type React from 'react';
 
 const icons: InvenTreeIconType = {
   name: IconPoint,
@@ -270,6 +269,7 @@ const icons: InvenTreeIconType = {
  * Returns a Tabler Icon for the model field name supplied
  * @param field string defining field name
  */
+
 export function GetIcon(field: string | number): TablerIconType {
   return icons[field];
 }
@@ -278,12 +278,12 @@ export function GetIcon(field: string | number): TablerIconType {
 type TablerIconProps = IconProps;
 
 type InvenTreeIconProps = {
-  icon: string | keyof InvenTreeIconType;
+  icon: Extract<keyof InvenTreeIconType, string>;
   iconProps?: TablerIconProps;
 };
 
 export function InvenTreeIcon(props: Readonly<InvenTreeIconProps>) {
-  let Icon: React.ForwardRefExoticComponent<React.RefAttributes<any>>;
+  let Icon: TablerIconType;
 
   if (props.icon in icons) {
     Icon = GetIcon(props.icon);

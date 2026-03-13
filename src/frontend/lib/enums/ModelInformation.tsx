@@ -1,5 +1,4 @@
 import { t } from '@lingui/core/macro';
-import type { InvenTreeIconType } from '../types/Icons';
 import { ApiEndpoints } from './ApiEndpoints';
 import type { ModelType } from './ModelType';
 
@@ -11,7 +10,7 @@ export interface ModelInformationInterface {
   api_endpoint: ApiEndpoints;
   admin_url?: string;
   supports_barcode?: boolean;
-  icon: keyof InvenTreeIconType;
+  icon: string;
 }
 
 export interface TranslatableModelInformationInterface

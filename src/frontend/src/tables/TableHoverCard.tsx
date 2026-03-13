@@ -29,7 +29,7 @@ export function TableHoverCard({
   value: any;
   extra?: ReactNode;
   title?: string;
-  icon?: keyof InvenTreeIconType;
+  icon?: Extract<keyof InvenTreeIconType, string>;
   iconColor?: string;
   position?: FloatingPosition;
   zIndex?: string | number;

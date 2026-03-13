@@ -36,7 +36,7 @@ import { StatusRenderer } from '../render/StatusRenderer';
 
 export type DetailsField = {
   hidden?: boolean;
-  icon?: keyof InvenTreeIconType;
+  icon?: Extract<keyof InvenTreeIconType, string>;
   name: string;
   label?: string;
   badge?: BadgeType;
@@ -502,9 +502,7 @@ export function DetailsTableField({
     <Table.Tr style={{ verticalAlign: 'top' }}>
       <Table.Td style={{ minWidth: 75, lineBreak: 'auto', flex: 2 }}>
         <Group gap='xs' wrap='nowrap'>
-          <InvenTreeIcon
-            icon={field.icon ?? (field.name as keyof InvenTreeIconType)}
-          />
+          <InvenTreeIcon icon={field.icon ?? field.name} />
           <Text style={{ paddingLeft: 10 }}>{field.label}</Text>
         </Group>
       </Table.Td>

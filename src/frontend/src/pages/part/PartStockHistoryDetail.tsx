@@ -5,7 +5,7 @@ import { apiUrl } from '@lib/functions/Api';
 import { AddItemButton } from '@lib/index';
 import type { TableColumn } from '@lib/types/Tables';
 import { t } from '@lingui/core/macro';
-import { type ChartTooltipProps, LineChart } from '@mantine/charts';
+import { LineChart } from '@mantine/charts';
 import {
   Accordion,
   Center,
@@ -31,10 +31,18 @@ import { DateColumn, DecimalColumn } from '../../tables/ColumnRenderers';
 import { InvenTreeTable } from '../../tables/InvenTreeTable';
 import { StockTrackingTable } from '../../tables/stock/StockTrackingTable';
 
+type PartStockChartTooltipProps = {
+  label?: string | number;
+  payload?: ReadonlyArray<Record<string, any>>;
+};
+
 /*
  * Render a tooltip for the chart, with correct date information
  */
-function ChartTooltip({ label, payload }: Readonly<ChartTooltipProps>) {
+function ChartTooltip({
+  label,
+  payload
+}: Readonly<PartStockChartTooltipProps>) {
   const formattedLabel: string = useMemo(() => {
     if (label && typeof label === 'number') {
       return formatDate(dayjs(label).format('YYYY-MM-DD')) ?? label;
