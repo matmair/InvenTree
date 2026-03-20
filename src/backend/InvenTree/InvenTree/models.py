@@ -494,11 +494,31 @@ class TypeIDMixin(models.Model):
         help_text=_('Globally unique identifier'),
     )
 
-    def save(self, *args, **kwargs):
-        """Ensure that the 'metadata_id' field is populated when the model is saved."""
+    def ensure_metadata_id(self):
+        """Ensure that the 'metadata_id' field is populated.
+
+        If the field is empty, or if the object is new (pk=None) and the
+        metadata_id already exists in the database, generate a new one.
+        """
         if not self.metadata_id:
             self.metadata_id = self.generate_typeid()
+        elif self.pk is None:
+            # Check if this metadata_id is already in use
+            if (
+                self.__class__.objects.filter(metadata_id=self.metadata_id)
+                .exclude(pk=self.pk)
+                .exists()
+            ):
+                self.metadata_id = self.generate_typeid()
 
+    def validate_unique(self, exclude=None):
+        """Ensure that the 'metadata_id' field is populated before validating uniqueness."""
+        self.ensure_metadata_id()
+        super().validate_unique(exclude)
+
+    def save(self, *args, **kwargs):
+        """Ensure that the 'metadata_id' field is populated when the model is saved."""
+        self.ensure_metadata_id()
         super().save(*args, **kwargs)
 
 

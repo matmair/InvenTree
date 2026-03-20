@@ -615,6 +615,9 @@ class StockItem(
         # Force single quantity for each item
         data['quantity'] = 1
 
+        # Clear metadata_id so new ones are generated
+        data.pop('metadata_id', None)
+
         for serial in serials:
             data['serial'] = serial
 
@@ -2292,6 +2295,7 @@ class StockItem(
         # Nullify the PK so a new record is created
         new_stock = StockItem.objects.get(pk=self.pk)
         new_stock.pk = None
+        new_stock.metadata_id = None
         new_stock.quantity = quantity
 
         # Update the new stock item to ensure the tree structure is observed
