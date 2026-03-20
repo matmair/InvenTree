@@ -500,16 +500,14 @@ class TypeIDMixin(models.Model):
         If the field is empty, or if the object is new (pk=None) and the
         metadata_id already exists in the database, generate a new one.
         """
-        if not self.metadata_id:
+        if not self.metadata_id or (
+            self.pk is None
+            and self.__class__.objects
+            .filter(metadata_id=self.metadata_id)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
             self.metadata_id = self.generate_typeid()
-        elif self.pk is None:
-            # Check if this metadata_id is already in use
-            if (
-                self.__class__.objects.filter(metadata_id=self.metadata_id)
-                .exclude(pk=self.pk)
-                .exists()
-            ):
-                self.metadata_id = self.generate_typeid()
 
     def validate_unique(self, exclude=None):
         """Ensure that the 'metadata_id' field is populated before validating uniqueness."""
