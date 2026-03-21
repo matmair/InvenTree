@@ -463,7 +463,66 @@ class ContentTypeMixin:
         return ContentType.objects.get_for_model(cls)
 
 
-class InvenTreeModel(ContentTypeMixin, PluginValidationMixin, models.Model):
+class TypeIDMixin(models.Model):
+    """Mixin class for adding a TypeID 'metadata_id' field to a model.
+
+    The 'metadata_id' field is a globally unique, time-sortable identifier.
+    """
+
+    class Meta:
+        """Metaclass options."""
+
+        abstract = True
+
+    @classmethod
+    def get_typeid_prefix(cls):
+        """Return the prefix to be used for the TypeID."""
+        return cls._meta.model_name.lower()
+
+    def generate_typeid(self):
+        """Generate a new TypeID for this model instance."""
+        from typeid import TypeID
+
+        return str(TypeID(prefix=self.get_typeid_prefix()))
+
+    metadata_id = models.CharField(
+        max_length=100,
+        unique=True,
+        editable=False,
+        null=True,
+        verbose_name=_('Metadata ID'),
+        help_text=_('Globally unique identifier'),
+    )
+
+    def ensure_metadata_id(self):
+        """Ensure that the 'metadata_id' field is populated.
+
+        If the field is empty, or if the object is new (pk=None) and the
+        metadata_id already exists in the database, generate a new one.
+        """
+        if not self.metadata_id or (
+            self.pk is None
+            and self.__class__.objects
+            .filter(metadata_id=self.metadata_id)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
+            self.metadata_id = self.generate_typeid()
+
+    def validate_unique(self, exclude=None):
+        """Ensure that the 'metadata_id' field is populated before validating uniqueness."""
+        self.ensure_metadata_id()
+        super().validate_unique(exclude)
+
+    def save(self, *args, **kwargs):
+        """Ensure that the 'metadata_id' field is populated when the model is saved."""
+        self.ensure_metadata_id()
+        super().save(*args, **kwargs)
+
+
+class InvenTreeModel(
+    ContentTypeMixin, PluginValidationMixin, TypeIDMixin, models.Model
+):
     """Base class for InvenTree models, which provides some common functionality.
 
     Includes the following mixins by default:
@@ -689,7 +748,7 @@ class InvenTreeAttachmentMixin(InvenTreePermissionCheckMixin):
         Attachment.objects.create(**kwargs)
 
 
-class InvenTreeTree(ContentTypeMixin, MPTTModel):
+class InvenTreeTree(TypeIDMixin, ContentTypeMixin, MPTTModel):
     """Provides an abstracted self-referencing tree model, based on the MPTTModel class.
 
     Our implementation provides the following key improvements:
