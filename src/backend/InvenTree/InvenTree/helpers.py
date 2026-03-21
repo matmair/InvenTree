@@ -229,8 +229,15 @@ def getStaticUrl(filename):
     return os.path.join(STATIC_URL, str(filename))
 
 
-def TestIfImage(img):
-    """Test if an image file is indeed an image."""
+def TestIfImage(img) -> bool:
+    """Test if an image file is indeed an image.
+
+    Arguments:
+        img: A file-like object
+
+    Returns:
+        True if the file is a valid image, False otherwise
+    """
     try:
         Image.open(img).verify()
         return True
@@ -246,6 +253,13 @@ def getBlankImage():
 def getBlankThumbnail():
     """Return the qualified path for the 'blank image' thumbnail placeholder."""
     return getStaticUrl('img/blank_image.thumbnail.png')
+
+
+def checkStaticFile(*args) -> bool:
+    """Check if a file exists in the static storage."""
+    static_storage = StaticFilesStorage()
+    fn = os.path.join(*args)
+    return static_storage.exists(fn)
 
 
 def getLogoImage(as_file=False, custom=True):
