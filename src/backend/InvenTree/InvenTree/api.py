@@ -14,8 +14,13 @@ from django.views.generic.base import RedirectView
 
 import structlog
 from django_q.models import OrmQ
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
-from rest_framework import serializers
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
+from rest_framework import serializers, viewsets
 from rest_framework.generics import GenericAPIView
 from rest_framework.request import clone_request
 from rest_framework.response import Response
@@ -677,6 +682,11 @@ class BulkDeleteMixin(BulkOperationMixin):
                 item.delete()
 
         return Response({'success': f'Deleted {n_deleted} items'}, status=200)
+
+
+@extend_schema_view(delete=extend_schema(request=BulkRequestSerializer))
+class BulkDeleteViewsetMixin(BulkDeleteMixin, viewsets.GenericViewSet):
+    """Mixin class for enabling 'bulk delete' operations for viewsets."""
 
 
 class ListCreateDestroyAPIView(BulkDeleteMixin, ListCreateAPI):
