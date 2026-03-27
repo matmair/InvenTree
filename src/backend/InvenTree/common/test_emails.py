@@ -4,7 +4,6 @@ from django.core import mail
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.urls import reverse
 
 from anymail.inbound import AnymailInboundMessage
 from anymail.signals import AnymailInboundEvent, AnymailTrackingEvent, inbound, tracking
@@ -110,7 +109,7 @@ class EmailTests(InvenTreeAPITestCase):
         self.assertIn('message_id_key', response.data[0])
 
         response1 = self.get(
-            reverse('api-email-detail', kwargs={'pk': response.data[0]['pk']}),
+            get_url_reverser('api-email-detail', kwargs={'pk': response.data[0]['pk']}),
             expected_code=200,
         )
         self.assertIn('subject', response1.data)

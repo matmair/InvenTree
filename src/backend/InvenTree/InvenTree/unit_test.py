@@ -884,6 +884,7 @@ old_urls = {
     'api-data-output-list': 'data-output-list',
     'api-email-test': 'emailmessage-test',
     'api-email-list': 'emailmessage-list',
+    'api-email-detail': 'emailmessage-detail',
     'api-config-list': 'config-list',
     'api-config-detail': 'config-detail',
     'api-currency-exchange': 'currency-exchange',
