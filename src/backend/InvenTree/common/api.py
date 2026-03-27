@@ -342,7 +342,7 @@ class UserSettingsDetail(RetrieveUpdateAPI):
 class NotificationMessageViewSet(
     BulkDeleteViewsetMixin, RetrieveUpdateDestroyModelViewSet
 ):
-    """Generic mixin for NotificationMessage."""
+    """Notifications for the current user."""
 
     queryset = common.models.NotificationMessage.objects.all()
     serializer_class = common.serializers.NotificationMessageSerializer
