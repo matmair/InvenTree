@@ -66,7 +66,6 @@ from generic.states.custom import state_color_mappings
 from InvenTree.cache import get_session_cache, set_session_cache
 from InvenTree.sanitizer import sanitize_svg
 from InvenTree.tracing import TRACE_PROC, TRACE_PROV
-from InvenTree.unit_test import get_url_reverser
 from InvenTree.version import inventree_identifier
 
 logger = structlog.get_logger('inventree')
@@ -1707,6 +1706,8 @@ class NotificationMessage(models.Model):
     @staticmethod
     def get_api_url():
         """Return API endpoint."""
+        from InvenTree.unit_test import get_url_reverser
+
         return get_url_reverser('api-notifications-list')
 
     def age(self) -> int:
