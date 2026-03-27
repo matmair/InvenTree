@@ -900,5 +900,5 @@ def get_url_reverser(oldname, *args, **kwargs):
     Helper to keep diff small.
     """
     if oldname in old_urls:
-        return reverse(old_urls[oldname], args=args, kwargs=kwargs)
-    return reverse(oldname, args=args, kwargs=kwargs)
+        return reverse(old_urls[oldname], *args, **kwargs)
+    return reverse(oldname, *args, **kwargs)
