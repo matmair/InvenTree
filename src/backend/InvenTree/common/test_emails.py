@@ -12,7 +12,7 @@ from anymail.signals import AnymailInboundEvent, AnymailTrackingEvent, inbound, 
 from common.models import EmailMessage, Priority
 from common.settings import set_global_setting
 from InvenTree.helpers_email import send_email
-from InvenTree.unit_test import InvenTreeAPITestCase
+from InvenTree.unit_test import InvenTreeAPITestCase, get_url_reverser
 
 
 class EmailTests(InvenTreeAPITestCase):
@@ -88,7 +88,7 @@ class EmailTests(InvenTreeAPITestCase):
         )
 
         self.assertEqual(len(mail.outbox), 2)
-        response = self.get(reverse('api-email-list'), expected_code=200)
+        response = self.get(get_url_reverser('api-email-list'), expected_code=200)
         self.assertEqual(len(response.data), 2)
         """
         self.assertEqual(response.data[1]['priority'], Priority.VERY_HIGH)
@@ -103,9 +103,9 @@ class EmailTests(InvenTreeAPITestCase):
     )
     def test_email_api(self):
         """Test that the email api endpoints work."""
-        self.post(reverse('api-email-test'), {'email': 'test@example.org'})
+        self.post(get_url_reverser('api-email-test'), {'email': 'test@example.org'})
 
-        response = self.get(reverse('api-email-list'), expected_code=200)
+        response = self.get(get_url_reverser('api-email-list'), expected_code=200)
         self.assertIn('subject', response.data[0])
         self.assertIn('message_id_key', response.data[0])
 

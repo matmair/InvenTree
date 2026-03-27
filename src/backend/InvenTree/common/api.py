@@ -491,7 +491,7 @@ class ProjectCodeDetail(RetrieveUpdateDestroyAPI):
     permission_classes = [IsStaffOrReadOnlyScope]
 
 
-class CustomUnitModelSet(DataExportViewMixin, viewsets.ModelViewSet):
+class CustomUnitViewset(DataExportViewMixin, viewsets.ModelViewSet):
     """List view for custom units."""
 
     queryset = common.models.CustomUnit.objects.all()
@@ -528,7 +528,7 @@ class CustomUnitModelSet(DataExportViewMixin, viewsets.ModelViewSet):
         }
 
 
-common_router.register('units', CustomUnitModelSet, basename='units')
+common_router.register('units', CustomUnitViewset, basename='units')
 
 
 class ErrorMessageViewSet(BulkDeleteViewsetMixin, RetrieveUpdateDestroyModelViewSet):

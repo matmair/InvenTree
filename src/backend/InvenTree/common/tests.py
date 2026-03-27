@@ -31,6 +31,7 @@ from InvenTree.unit_test import (
     InvenTreeTestCase,
     PluginMixin,
     addUserPermission,
+    get_url_reverser,
 )
 from part.models import Part
 from plugin import registry
@@ -1047,7 +1048,7 @@ class ErrorReportTest(InvenTreeAPITestCase):
         """Test error list."""
         from InvenTree.exceptions import log_error
 
-        url = reverse('api-error-list')
+        url = get_url_reverser('api-error-list')
         response = self.get(url, expected_code=200)
         self.assertEqual(len(response.data), 0)
 
@@ -1290,7 +1291,7 @@ class NotificationTest(InvenTreeAPITestCase):
 
     def test_api_list(self):
         """Test list URL."""
-        url = reverse('api-notifications-list')
+        url = get_url_reverser('api-notifications-list')
 
         self.get(url, expected_code=200)
 
@@ -1333,7 +1334,7 @@ class NotificationTest(InvenTreeAPITestCase):
         self.assertEqual(my_notifications.count(), 10)
 
         # Get notification via the API
-        url = reverse('api-notifications-list')
+        url = get_url_reverser('api-notifications-list')
         response = self.get(url, {}, expected_code=200)
         self.assertEqual(len(response.data), 10)
 
@@ -1451,7 +1452,7 @@ class CommonTest(InvenTreeAPITestCase):
     def test_config_api(self):
         """Test config URLs."""
         # Not superuser
-        self.get(reverse('api-config-list'), expected_code=403)
+        self.get(get_url_reverser('api-config-list'), expected_code=403)
 
         # Turn into superuser
         self.user.is_superuser = True
@@ -1459,11 +1460,13 @@ class CommonTest(InvenTreeAPITestCase):
 
         # Successful checks
         data = [
-            self.get(reverse('api-config-list'), expected_code=200).data[
+            self.get(get_url_reverser('api-config-list'), expected_code=200).data[
                 0
             ],  # list endpoint
             self.get(
-                reverse('api-config-detail', kwargs={'key': 'INVENTREE_DEBUG'}),
+                get_url_reverser(
+                    'api-config-detail', kwargs={'key': 'INVENTREE_DEBUG'}
+                ),
                 expected_code=200,
             ).data,  # detail endpoint
         ]
@@ -1561,7 +1564,9 @@ class CurrencyAPITests(InvenTreeAPITestCase):
 
     def test_exchange_endpoint(self):
         """Test that the currency exchange endpoint works as expected."""
-        response = self.get(reverse('api-currency-exchange'), expected_code=200)
+        response = self.get(
+            get_url_reverser('api-currency-exchange'), expected_code=200
+        )
 
         self.assertIn('base_currency', response.data)
         self.assertIn('exchange_rates', response.data)
@@ -1577,7 +1582,7 @@ class CurrencyAPITests(InvenTreeAPITestCase):
         for _idx in range(5):
             try:
                 self.post(
-                    reverse('api-currency-refresh'),
+                    get_url_reverser('api-currency-refresh'),
                     expected_code=200,
                     max_query_time=30,
                 )
@@ -1764,7 +1769,7 @@ class CustomUnitAPITest(InvenTreeAPITestCase):
     @property
     def url(self):
         """Return the API endpoint for the CustomUnit list."""
-        return reverse('api-custom-unit-list')
+        return get_url_reverser('api-custom-unit-list')
 
     @classmethod
     def setUpTestData(cls):
@@ -1799,7 +1804,7 @@ class CustomUnitAPITest(InvenTreeAPITestCase):
         self.user.save()
 
         self.patch(
-            reverse('api-custom-unit-detail', kwargs={'pk': unit.pk}),
+            get_url_reverser('api-custom-unit-detail', kwargs={'pk': unit.pk}),
             {'name': 'new_unit_name'},
             expected_code=403,
         )
@@ -1809,7 +1814,7 @@ class CustomUnitAPITest(InvenTreeAPITestCase):
         self.user.save()
 
         self.patch(
-            reverse('api-custom-unit-detail', kwargs={'pk': unit.pk}),
+            get_url_reverser('api-custom-unit-detail', kwargs={'pk': unit.pk}),
             {'name': 'new_unit_name'},
             # expected_code=200
         )
@@ -1828,14 +1833,14 @@ class CustomUnitAPITest(InvenTreeAPITestCase):
         # Test invalid 'name' values (must be valid identifier)
         invalid_name_values = ['1', '1abc', 'abc def', 'abc-def', 'abc.def']
 
-        url = reverse('api-custom-unit-detail', kwargs={'pk': unit.pk})
+        url = get_url_reverser('api-custom-unit-detail', kwargs={'pk': unit.pk})
 
         for name in invalid_name_values:
             self.patch(url, {'name': name}, expected_code=400)
 
     def test_api(self):
         """Test the CustomUnit API."""
-        response = self.get(reverse('api-all-unit-list'))
+        response = self.get(get_url_reverser('api-all-unit-list'))
         self.assertIn('default_system', response.data)
         self.assertIn('available_systems', response.data)
         self.assertIn('available_units', response.data)

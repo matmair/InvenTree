@@ -3,7 +3,7 @@
 from django.urls import reverse
 
 import common.models
-from InvenTree.unit_test import InvenTreeAPITestCase
+from InvenTree.unit_test import InvenTreeAPITestCase, get_url_reverser
 
 
 class DataOutputAPITests(InvenTreeAPITestCase):
@@ -26,7 +26,7 @@ class DataOutputAPITests(InvenTreeAPITestCase):
 
     def test_data_output_list(self):
         """Test the DataOutput API list endpoint."""
-        url = reverse('api-data-output-list')
+        url = get_url_reverser('api-data-output-list')
 
         #  Non-staff user should only see outputs which are either enabled for all users, or created by themselves
         self.user.is_staff = False
