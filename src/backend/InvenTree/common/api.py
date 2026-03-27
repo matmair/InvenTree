@@ -1236,6 +1236,7 @@ class EmailViewSet(BulkDeleteViewsetMixin, RetrieveDestroyModelViewSet):
             raise serializers.ValidationError(
                 detail=f'Failed to send test email: "{reason}"'
             )  # pragma: no cover
+        return Response(serializer.data, status=201)
 
 
 admin_router.register('email', EmailViewSet)
