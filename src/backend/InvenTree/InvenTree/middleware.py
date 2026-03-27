@@ -19,7 +19,11 @@ from error_report.middleware import ExceptionProcessor
 from common.settings import get_global_setting
 from InvenTree.cache import create_session_cache, delete_session_cache
 from InvenTree.config import CONFIG_LOOKUPS, inventreeInstaller
-from InvenTree.version import inventreeVersion
+from InvenTree.version import (
+    inventreeApiVersion,
+    inventreePythonVersion,
+    inventreeVersion,
+)
 from users.models import ApiToken
 
 logger = structlog.get_logger('inventree')
@@ -402,4 +406,7 @@ class InvenTreeVersionHeaderMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         """Add the InvenTree version header to the response."""
         response['X-InvenTree-Version'] = inventreeVersion()
+        response['X-InvenTree-API'] = inventreeApiVersion()
+        response['X-InvenTree-Python'] = inventreePythonVersion()
+        response['X-InvenTree-Installer'] = inventreeInstaller()
         return response
