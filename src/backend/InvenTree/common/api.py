@@ -1544,3 +1544,5 @@ common_api_urls = [
     # Router
     path('', include(common_router.urls)),
 ]
+
+admin_api_urls = admin_router.urls
