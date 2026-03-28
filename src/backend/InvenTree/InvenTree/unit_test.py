@@ -876,30 +876,3 @@ class InvenTreeAPIPerformanceTestCase(InvenTreeAPITestCase):
 
     MAX_QUERY_COUNT = 50
     MAX_QUERY_TIME = 60
-
-
-old_urls = {
-    'api-error-list': 'error-list',
-    'api-notifications-list': 'notifications-list',
-    'api-data-output-list': 'data-output-list',
-    'api-email-test': 'emailmessage-test',
-    'api-email-list': 'emailmessage-list',
-    'api-email-detail': 'emailmessage-detail',
-    'api-config-list': 'config-list',
-    'api-config-detail': 'config-detail',
-    'api-currency-exchange': 'currency-exchange',
-    'api-currency-refresh': 'currency-refresh',
-    'api-all-unit-list': 'units-all',
-    'api-custom-unit-detail': 'units-detail',
-    'api-custom-unit-list': 'units-list',
-}
-
-
-def get_url_reverser(oldname, *args, **kwargs):
-    """Reverse a url although the internal name was changed.
-
-    Helper to keep diff small.
-    """
-    if oldname in old_urls:
-        return reverse(old_urls[oldname], *args, **kwargs)
-    return reverse(oldname, *args, **kwargs)

@@ -20,7 +20,7 @@ import django_q.models
 import django_q.tasks
 from django_filters.rest_framework.filterset import FilterSet
 from djmoney.contrib.exchange.models import ExchangeBackend, Rate
-from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from error_report.models import Error
 from opentelemetry import trace
 from pint._typing import UnitLike
@@ -165,18 +165,16 @@ class WebhookView(CsrfExemptMixin, APIView):
             raise NotFound()
 
 
-@extend_schema_view(
-    exchange=extend_schema(
-        responses={200: common.serializers.CurrencyExchangeSerializer}
-    )
-)
 class CurrencyViewSet(viewsets.GenericViewSet):
     """Viewset for currency exchange information."""
 
     serializer_class = EmptySerializer
 
     @action(
-        detail=False, methods=['get'], permission_classes=[IsAuthenticatedOrReadScope]
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAuthenticatedOrReadScope],
+        serializer_class=common.serializers.CurrencyExchangeSerializer,
     )
     def exchange(self, request, fmt=None):
         """Return information on available currency conversions."""
@@ -225,7 +223,7 @@ class CurrencyViewSet(viewsets.GenericViewSet):
         return Response({'success': 'Exchange rates updated'})
 
 
-common_router.register('currency', CurrencyViewSet, basename='currency')
+common_router.register('currency', CurrencyViewSet, basename='api-currency')
 
 
 class SettingsList(ListAPI):
@@ -409,7 +407,7 @@ class NotificationMessageViewSet(
 
 
 common_router.register(
-    'notifications', NotificationMessageViewSet, basename='notifications'
+    'notifications', NotificationMessageViewSet, basename='api-notifications'
 )
 
 
@@ -426,7 +424,7 @@ class NewsFeedViewSet(BulkDeleteViewsetMixin, RetrieveUpdateDestroyModelViewSet)
     filterset_fields = ['read']
 
 
-common_router.register('news', NewsFeedViewSet, basename='news')
+common_router.register('news', NewsFeedViewSet, basename='api-news')
 
 
 class ConfigViewSet(viewsets.ReadOnlyModelViewSet):
@@ -449,7 +447,7 @@ class ConfigViewSet(viewsets.ReadOnlyModelViewSet):
         return {key: value}
 
 
-admin_router.register('config', ConfigViewSet, basename='config')
+admin_router.register('config', ConfigViewSet, basename='api-config')
 
 
 class NotesImageList(ListCreateAPI):
@@ -528,7 +526,7 @@ class CustomUnitViewset(DataExportViewMixin, viewsets.ModelViewSet):
         }
 
 
-common_router.register('units', CustomUnitViewset, basename='units')
+common_router.register('units', CustomUnitViewset, basename='api-custom-unit')
 
 
 class ErrorMessageViewSet(BulkDeleteViewsetMixin, RetrieveUpdateDestroyModelViewSet):
@@ -547,7 +545,7 @@ class ErrorMessageViewSet(BulkDeleteViewsetMixin, RetrieveUpdateDestroyModelView
     search_fields = ['info', 'data']
 
 
-common_router.register('error-report', ErrorMessageViewSet, basename='error')
+common_router.register('error-report', ErrorMessageViewSet, basename='api-error')
 
 
 class BackgroundTaskDetail(APIView):
@@ -1185,7 +1183,7 @@ class DataOutputViewSet(BulkDeleteViewsetMixin, RetrieveDestroyModelViewSet):
         return queryset.filter(user=user)
 
 
-common_router.register('data-output', DataOutputViewSet, basename='data-output')
+common_router.register('data-output', DataOutputViewSet, basename='api-data-output')
 
 
 class EmailViewSet(BulkDeleteViewsetMixin, RetrieveDestroyModelViewSet):
@@ -1239,7 +1237,7 @@ class EmailViewSet(BulkDeleteViewsetMixin, RetrieveDestroyModelViewSet):
         return Response(serializer.data, status=201)
 
 
-admin_router.register('email', EmailViewSet)
+admin_router.register('email', EmailViewSet, basename='api-email')
 
 
 class HealthCheckStatusSerializer(serializers.Serializer):

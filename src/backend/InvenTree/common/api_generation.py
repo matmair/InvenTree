@@ -38,3 +38,9 @@ class BulkEnabledRouter(routers.SimpleRouter):
             list_route.mapping['delete'] = 'delete'
 
         return routes
+
+    # override base--name to fit old api- pre-fix on all basenames
+    def get_default_basename(self, viewset):
+        """Extract the default base name from the viewset."""
+        basename = super().get_default_basename(viewset)
+        return 'api-' + basename

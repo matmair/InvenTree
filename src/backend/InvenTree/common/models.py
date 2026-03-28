@@ -1706,9 +1706,7 @@ class NotificationMessage(models.Model):
     @staticmethod
     def get_api_url():
         """Return API endpoint."""
-        from InvenTree.unit_test import get_url_reverser
-
-        return get_url_reverser('api-notifications-list')
+        return reverse('api-notifications-list')
 
     def age(self) -> int:
         """Age of the message in seconds."""
