@@ -3,6 +3,7 @@
 import re
 import subprocess
 import sys
+from importlib.util import find_spec
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -16,23 +17,44 @@ from InvenTree.exceptions import log_error
 
 logger = structlog.get_logger('inventree')
 
+UV_AVAILABLE = None
 
-def pip_command(*args):
+
+def check_for_uv():
+    """Check if we are running in a uv environment."""
+    global UV_AVAILABLE
+    if find_spec('numpy') is not None:
+        logger.debug('UV environment detected')
+        UV_AVAILABLE = True
+    else:
+        logger.debug('UV environment not detected')
+        UV_AVAILABLE = False
+    return UV_AVAILABLE
+
+
+def pip_command(*args, disable_version_check=False):
     """Build and run a pip command using using the current python executable.
+
+    Args:
+        *args: Arguments to pass to pip
+        disable_version_check: If True, add the --disable-pip-version-check flag to the command
 
     Returns: The output of the pip command
 
     Raises:
         subprocess.CalledProcessError: If the pip command fails
     """
-    python = sys.executable
+    use_uv = UV_AVAILABLE if UV_AVAILABLE is not None else check_for_uv()
 
-    command = [python, '-m', 'pip']
+    if use_uv:
+        command = ['uv', 'pip']
+    else:
+        command = [sys.executable, '-m', 'pip']
+        if disable_version_check:
+            command.extend(['--disable-pip-version-check'])
 
     command.extend(args)
-
     command = [str(x) for x in command]
-
     logger.info('Running pip command: %s', ' '.join(command))
 
     return subprocess.check_output(
@@ -134,10 +156,10 @@ def install_plugins_file():
         logger.warning('Plugin file %s does not exist', pf)
         return
 
-    cmd = ['install', '--disable-pip-version-check', '-U', '-r', str(pf)]
+    cmd = ['install', '-U', '-r', str(pf)]
 
     try:
-        pip_command(*cmd)
+        pip_command(*cmd, disable_version_check=True)
     except subprocess.CalledProcessError as error:
         output = error.output.decode('utf-8')
         logger.exception('Plugin file installation failed: %s', output)
@@ -167,7 +189,9 @@ def update_plugins_file(install_name, full_package=None, version=None, remove=Fa
 
     # If a full package name is provided, use that instead
     if full_package and full_package != install_name:
-        new_value = full_package
+        new_value = (
+            full_package if isinstance(full_package, str) else ' '.join(full_package)
+        )
     else:
         new_value = f'{install_name}=={version}' if version else install_name
 
@@ -275,12 +299,7 @@ def install_plugin(url=None, packagename=None, user=None, version=None):
 
     # Execute installation via pip
     try:
-        result = pip_command(*[
-            'install',
-            '-U',
-            '--disable-pip-version-check',
-            *full_pkg,
-        ])
+        result = pip_command(*['install', '-U', *full_pkg], disable_version_check=True)
 
         ret['result'] = ret['success'] = _('Installed plugin successfully')
         ret['output'] = str(result, 'utf-8')
