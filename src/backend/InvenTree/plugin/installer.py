@@ -57,9 +57,14 @@ def pip_command(*args, disable_version_check=False):
     command = [str(x) for x in command]
     logger.info('Running pip command: %s', ' '.join(command))
 
-    return subprocess.check_output(
+    ret = subprocess.check_output(
         command, cwd=settings.BASE_DIR.parent, stderr=subprocess.STDOUT
     )
+
+    # Ensure not having pip installed is handled gracefully
+    if ret and 'No module named pip' in str(ret):
+        raise ValidationError(_('Pip is not installed in the current environment'))
+    return ret
 
 
 def handle_pip_error(error, path: str) -> list:
@@ -311,6 +316,8 @@ def install_plugin(url=None, packagename=None, user=None, version=None):
 
     except subprocess.CalledProcessError as error:
         handle_pip_error(error, 'plugin_install')
+    except ValidationError as error:
+        raise error
     except Exception:
         log_error('install_plugin', scope='plugins')
 
@@ -400,6 +407,8 @@ def uninstall_plugin(cfg: plugin.models.PluginConfig, user=None, delete_config=T
             pip_command('uninstall', '-y', package_name)
         except subprocess.CalledProcessError as error:
             handle_pip_error(error, 'plugin_uninstall')
+        except ValidationError as error:
+            raise error
         except Exception:
             log_error('uninstall_plugin', scope='plugins')
     else:
