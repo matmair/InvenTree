@@ -85,7 +85,7 @@ class AttachmentTest(InvenTreeAPITestCase):
             '8&&&8.txt': '88.txt',
         }
 
-        for fn, expected in filenames.items():
+        for fn, _expected in filenames.items():
             attachment = Attachment.objects.create(
                 attachment=self.generate_file(fn),
                 comment=f'Testing filename: {fn}',
