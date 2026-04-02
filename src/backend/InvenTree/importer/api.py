@@ -77,7 +77,6 @@ class DataImportSessionMixin:
         """Return the set of DataImportSession objects that the user has permission to view."""
         queryset = importer.models.DataImportSession.objects.all()
 
-        # Extract user from context
         user = getattr(self.request, 'user', None)
 
         if not user or not user.is_authenticated:
