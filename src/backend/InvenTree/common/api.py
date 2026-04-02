@@ -374,7 +374,15 @@ class NotificationList(NotificationMessageMixin, BulkDeleteMixin, ListAPI):
         if not user.is_authenticated:  # pragma: no cover
             raise PermissionDenied('User must be authenticated to access notifications')
 
-        queryset = queryset.filter(user=user)
+        if not user.is_staff and not user.is_superuser:
+            queryset = queryset.filter(user=user)
+
+        # Allow filtering by 'all' if the user is a staff member
+        if (user.is_staff or user.is_superuser) and not str2bool(
+            self.request.query_params.get('all', False)
+        ):
+            queryset = queryset.filter(user=user)
+
         return queryset
 
     def filter_delete_queryset(self, queryset, request):
@@ -388,6 +396,16 @@ class NotificationDetail(NotificationMessageMixin, RetrieveUpdateDestroyAPI):
 
     - User can only view / delete their own notification objects
     """
+
+    def get_queryset(self):
+        """Filter by current user."""
+        queryset = super().get_queryset()
+        user = self.request.user
+
+        if user.is_staff or user.is_superuser:
+            return queryset
+
+        return queryset.filter(user=user)
 
 
 class NotificationReadAll(NotificationMessageMixin, RetrieveAPI):
@@ -464,6 +482,16 @@ class NotesImageList(ListCreateAPI):
     filter_backends = SEARCH_ORDER_FILTER
 
     search_fields = ['user', 'model_type', 'model_id']
+
+    def get_queryset(self):
+        """Filter by current user."""
+        queryset = super().get_queryset()
+        user = self.request.user
+
+        if user.is_staff or user.is_superuser:
+            return queryset
+
+        return queryset.filter(user=user)
 
     def perform_create(self, serializer):
         """Create (upload) a new notes image."""
@@ -781,6 +809,28 @@ class AttachmentList(AttachmentMixin, BulkDeleteMixin, ListCreateAPI):
 
 class AttachmentDetail(AttachmentMixin, RetrieveUpdateDestroyAPI):
     """Detail API endpoint for Attachment objects."""
+
+    def get_object(self):
+        """Check user permissions before returning an attachment."""
+        attachment = super().get_object()
+
+        if not attachment.check_permission('view', self.request.user):
+            raise PermissionDenied(
+                _('User does not have permission to view this attachment')
+            )
+
+        return attachment
+
+    def update(self, request, *args, **kwargs):
+        """Check user permissions before updating an attachment."""
+        attachment = self.get_object()
+
+        if not attachment.check_permission('change', request.user):
+            raise PermissionDenied(
+                _('User does not have permission to edit this attachment')
+            )
+
+        return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         """Check user permissions before deleting an attachment."""

@@ -75,15 +75,16 @@ class DataImportSessionMixin:
 
     def get_queryset(self):
         """Return the set of DataImportSession objects that the user has permission to view."""
-        queryset = super().get_queryset()
+        queryset = importer.models.DataImportSession.objects.all()
 
-        try:
-            user = self.request.user
-        except AttributeError:
-            raise PermissionDenied('User information is not available')
+        # Extract user from context
+        user = getattr(self.request, 'user', None)
+
+        if not user or not user.is_authenticated:
+            return importer.models.DataImportSession.objects.none()
 
         # Allow staff users access to all DataImportSession objects
-        if user.is_staff:
+        if user.is_staff or user.is_superuser:
             return queryset
 
         # For non-staff users, only allow access to sessions that they have created
@@ -115,6 +116,14 @@ class DataImportSessionAcceptFields(APIView):
         """Accept the field mapping for a DataImportSession."""
         session = get_object_or_404(importer.models.DataImportSession, pk=pk)
 
+        # Ensure the user has access to this session
+        if (
+            not request.user.is_staff
+            and not request.user.is_superuser
+            and session.user != request.user
+        ):
+            raise PermissionDenied()
+
         # Check that the user has permission to accept the field mapping
         if model_class := session.model_class:
             if not check_user_permission(request.user, model_class, 'change'):
@@ -126,7 +135,9 @@ class DataImportSessionAcceptFields(APIView):
         return Response(importer.serializers.DataImportSessionSerializer(session).data)
 
 
-class DataImportSessionAcceptRows(DataImporterPermissionMixin, CreateAPI):
+class DataImportSessionAcceptRows(
+    DataImporterPermissionMixin, DataImportSessionMixin, CreateAPI
+):
     """API endpoint to accept the rows for a DataImportSession."""
 
     queryset = importer.models.DataImportSession.objects.all()
@@ -137,9 +148,7 @@ class DataImportSessionAcceptRows(DataImporterPermissionMixin, CreateAPI):
         ctx = super().get_serializer_context()
 
         try:
-            ctx['session'] = importer.models.DataImportSession.objects.get(
-                pk=self.kwargs.get('pk', None)
-            )
+            ctx['session'] = self.get_object()
         except Exception:
             pass
 
@@ -157,12 +166,38 @@ class DataImportColumnMappingList(DataImporterPermissionMixin, ListAPI):
 
     filterset_fields = ['session']
 
+    def get_queryset(self):
+        """Filter by session user."""
+        queryset = importer.models.DataImportColumnMap.objects.all()
+        user = getattr(self.request, 'user', None)
+
+        if not user or not user.is_authenticated:
+            return queryset.none()
+
+        if user.is_staff or user.is_superuser:
+            return queryset
+
+        return queryset.filter(session__user=user)
+
 
 class DataImportColumnMappingDetail(DataImporterPermissionMixin, RetrieveUpdateAPI):
     """Detail endpoint for a single DataImportColumnMap object."""
 
     queryset = importer.models.DataImportColumnMap.objects.all()
     serializer_class = importer.serializers.DataImportColumnMapSerializer
+
+    def get_queryset(self):
+        """Filter by session user."""
+        queryset = importer.models.DataImportColumnMap.objects.all()
+        user = getattr(self.request, 'user', None)
+
+        if not user or not user.is_authenticated:
+            return queryset.none()
+
+        if user.is_staff or user.is_superuser:
+            return queryset
+
+        return queryset.filter(session__user=user)
 
 
 class DataImportRowList(DataImporterPermissionMixin, BulkDeleteMixin, ListAPI):
@@ -179,12 +214,38 @@ class DataImportRowList(DataImporterPermissionMixin, BulkDeleteMixin, ListAPI):
 
     ordering = 'row_index'
 
+    def get_queryset(self):
+        """Filter by session user."""
+        queryset = importer.models.DataImportRow.objects.all()
+        user = getattr(self.request, 'user', None)
+
+        if not user or not user.is_authenticated:
+            return queryset.none()
+
+        if user.is_staff or user.is_superuser:
+            return queryset
+
+        return queryset.filter(session__user=user)
+
 
 class DataImportRowDetail(DataImporterPermissionMixin, RetrieveUpdateDestroyAPI):
     """Detail endpoint for a single DataImportRow object."""
 
     queryset = importer.models.DataImportRow.objects.all()
     serializer_class = importer.serializers.DataImportRowSerializer
+
+    def get_queryset(self):
+        """Filter by session user."""
+        queryset = importer.models.DataImportRow.objects.all()
+        user = getattr(self.request, 'user', None)
+
+        if not user or not user.is_authenticated:
+            return queryset.none()
+
+        if user.is_staff or user.is_superuser:
+            return queryset
+
+        return queryset.filter(session__user=user)
 
 
 importer_api_urls = [

@@ -201,6 +201,21 @@ class UserSerializer(InvenTreeModelSerializer):
         label=_('Email'), help_text=_('Email address of the user'), allow_blank=True
     )
 
+    def to_representation(self, instance):
+        """Redact email if the requesting user is not staff and not the same user."""
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+
+        if request and request.user:
+            if (
+                not request.user.is_staff
+                and not request.user.is_superuser
+                and request.user.pk != instance.pk
+            ):
+                data.pop('email', None)
+
+        return data
+
 
 class ApiTokenSerializer(InvenTreeModelSerializer):
     """Serializer for the ApiToken model."""
