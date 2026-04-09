@@ -1,0 +1,113 @@
+name: 'Setup Enviroment'
+description: 'Setup the environment for general InvenTree tests'
+author: 'InvenTree'
+inputs:
+    python:
+        required: false
+        description: 'Install python.'
+        default: 'true'
+    npm:
+        required: false
+        description: 'Install npm.'
+        default: 'false'
+
+    install:
+        required: false
+        description: 'Install the InvenTree requirements?'
+        default: 'false'
+    static:
+        required: false
+        description: 'Should the static files be built?'
+        default: 'false'
+    dev-install:
+        required: false
+        description: 'Install the InvenTree development requirements?'
+        default: 'false'
+    update:
+        required: false
+        description: 'Should a full update cycle be run?'
+        default: 'false'
+
+    apt-dependency:
+        required: false
+        description: 'Extra APT package for install.'
+    pip-dependency:
+        required: false
+        description: 'Extra python package for install.'
+
+runs:
+    using: 'composite'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4.2.2
+        with:
+          persist-credentials: false
+
+      # Python installs
+      - name: Set up Python ${{ env.python_version }}
+        if: ${{ inputs.python == 'true' && env.python_version != '3.14' }}
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # pin@v5.0.0
+        with:
+          python-version: ${{ env.python_version }}
+          cache: pip
+          cache-dependency-path: |
+            src/backend/requirements.txt
+            src/backend/requirements-dev.txt
+            contrib/container/requirements.txt
+            contrib/dev_reqs/requirements.txt
+      - name: Setup Python 3.14
+        if: ${{ inputs.python == 'true' && env.python_version == '3.14' }}
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # pin@v5.0.0
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Install Base Python Dependencies
+        if: ${{ inputs.python == 'true' }}
+        shell: bash
+        run: |
+          python3 -m pip install -U pip
+          pip3 install -U invoke wheel
+          pip3 install 'uv>=0.9.6'
+      - name: Allow uv to use the system Python by default
+        run: echo "UV_SYSTEM_PYTHON=1" >> $GITHUB_ENV
+        shell: bash
+      - name: Install Specific Python Dependencies
+        if: ${{ inputs.pip-dependency }}
+        shell: bash
+        run: uv pip install ${PIP_DEPS}
+        env:
+          PIP_DEPS: ${{ inputs.pip-dependency }}
+
+      # NPM installs
+      - name: Install node.js ${{ env.node_version }}
+        if: ${{ inputs.npm == 'true' }}
+        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7  # pin to v3.8.2
+        with:
+          node-version: ${{ env.node_version }}
+      # OS installs
+      - name: Install OS Dependencies
+        if: ${{ inputs.apt-dependency }}
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install ${APT_DEPS}
+          sudo apt-get install ${APT_DEPS}
+        env:
+          APT_DEPS: ${{ inputs.apt-dependency }}
+
+      # Invoke commands
+      - name: Install dev requirements
+        if: ${{ inputs.dev-install == 'true' || inputs.install == 'true' }}
+        shell: bash
+        run: invoke install --dev
+      - name: Run invoke install
+        if: ${{ inputs.install == 'true' }}
+        shell: bash
+        run: invoke install
+      - name: Run invoke update
+        if: ${{ inputs.update == 'true' }}
+        shell: bash
+        run: invoke update --skip-backup --skip-static
+      - name: Collect static files
+        if: ${{ inputs.static == 'true' }}
+        shell: bash
+        run: invoke static --skip-plugins

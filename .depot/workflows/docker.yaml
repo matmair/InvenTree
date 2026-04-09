@@ -1,0 +1,219 @@
+# Depot CI Migration
+# Source: .github/workflows/docker.yaml
+#
+# Changes made:
+# - Removed unsupported trigger "release"
+# - Rewrote .github/ path references to .depot/
+# - Changed GitHub runs-on labels to their Depot equivalents
+
+# Build, test and push InvenTree docker image
+# This workflow runs under any of the following conditions:
+#
+# - Push to the master branch
+# - Publish release
+#
+# The following actions are performed:
+#
+# - Check that the version number matches the current branch or tag
+# - Build the InvenTree docker image
+# - Run suite of unit tests against the build image
+# - Push the compiled, tested image to dockerhub
+
+name: Docker
+# Removed unsupported trigger: release. Release events are not supported.
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+permissions:
+  contents: read
+jobs:
+  paths-filter:
+    permissions:
+      contents: read # for dorny/paths-filter to fetch a list of changed files
+      pull-requests: read # for dorny/paths-filter to read pull requests
+    name: Filter
+    runs-on: depot-ubuntu-latest # was: ubuntu-latest. Mapped standard GitHub runner to Depot equivalent.
+    outputs:
+      docker: ${{ steps.filter.outputs.docker }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # pin@v6.0.2
+        with:
+          persist-credentials: false
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # pin@v4.0.1
+        id: filter
+        with:
+          filters: |
+            docker:
+              - .depot/workflows/docker.yaml
+              - contrib/container/**
+              - src/backend/InvenTree/InvenTree/settings.py
+              - src/backend/requirements.txt
+              - tasks.py
+  # Build the docker image
+  build:
+    name: Docker Build Test
+    needs: paths-filter
+    if: needs.paths-filter.outputs.docker == 'true' || github.event_name == 'release' || github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'full-run')
+    permissions:
+      contents: read
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      python_version: "3.11"
+    runs-on: depot-ubuntu-latest # was: ubuntu-latest. Mapped standard GitHub runner to Depot equivalent.
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # pin@v6.0.2
+        with:
+          persist-credentials: false
+      - name: Test Docker Image
+        id: test-docker
+        run: |
+          docker build . --target production --tag inventree-test -f contrib/container/Dockerfile
+          docker run --rm inventree-test invoke version
+          docker run --rm inventree-test invoke --version
+          docker run --rm inventree-test invoke --list
+          docker run --rm inventree-test gunicorn --version
+          docker run --rm inventree-test pg_dump --version
+          docker run --rm inventree-test test -f /home/inventree/init.sh
+          docker run --rm inventree-test test -f /home/inventree/tasks.py
+          docker run --rm inventree-test test -f /home/inventree/gunicorn.conf.py
+          docker run --rm inventree-test test -f /home/inventree/src/backend/requirements.txt
+          docker run --rm inventree-test test -f /home/inventree/src/backend/InvenTree/manage.py
+      - name: Build Docker Image
+        # Build the development docker image (using docker-compose.yml)
+        run: docker compose --project-directory . -f contrib/container/dev-docker-compose.yml build --no-cache
+      - name: Update Docker Image
+        run: |
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke install
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke version
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke update
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke backup
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke restore
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke dev.setup-dev
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml up -d
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run inventree-dev-server invoke wait
+      - name: Check Data Directory
+        # The following file structure should have been created by the docker image
+        run: |
+          test -d data
+          test -d data/env
+          test -d data/pgdb
+          test -d data/media
+          test -d data/static
+          test -d data/plugins
+          test -f data/config.yaml
+          test -f data/plugins.txt
+          test -f data/secret_key.txt
+          test -f data/oidc.pem
+      - name: Run Unit Tests
+        run: |
+          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> contrib/container/docker.dev.env
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run --rm inventree-dev-server invoke dev.test --disable-pty --translations
+  # Run migration test
+  migration_test:
+    name: Migration Test
+    needs: paths-filter
+    if: needs.paths-filter.outputs.docker == 'true' || github.event_name == 'release' || github.event_name == 'push'
+    permissions:
+      contents: read
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      python_version: "3.11"
+    runs-on: depot-ubuntu-latest # was: ubuntu-latest. Mapped standard GitHub runner to Depot equivalent.
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # pin@v6.0.2
+        with:
+          persist-credentials: false
+      - name: Run Migration Tests
+        run: |
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run --rm inventree-dev-server invoke update
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run --rm inventree-dev-server invoke dev.setup-dev
+          docker compose --project-directory . -f contrib/container/dev-docker-compose.yml run --rm inventree-dev-server invoke dev.test --migrations --translations
+  # Build and publish
+  publish:
+    name: Publish Docker Image
+    needs: [build, migration_test]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      python_version: "3.11"
+    runs-on: depot-ubuntu-latest # was: ubuntu-latest. Mapped standard GitHub runner to Depot equivalent.
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # pin@v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set Up Python ${{ env.python_version }}
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # pin@v6.2.0
+        with:
+          python-version: ${{ env.python_version }}
+      - name: Version Check
+        run: |
+          pip install --require-hashes -r contrib/dev_reqs/requirements.txt
+          python3 .github/scripts/version_check.py
+          echo "git_commit_hash=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "git_commit_date=$(git show -s --format=%ci)" >> $GITHUB_ENV
+      - name: Set up QEMU
+        if: github.event_name != 'pull_request'
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # pin@v4.0.0
+      - name: Set up Docker Buildx
+        if: github.event_name != 'pull_request'
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # pin@v4.0.0
+      - name: Set up cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # pin@v4.1.1
+      - name: Check if Dockerhub login is required
+        id: docker_login
+        run: |
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then
+            echo "skip_dockerhub_login=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip_dockerhub_login=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Login to Dockerhub
+        if: github.event_name != 'pull_request' && steps.docker_login.outputs.skip_dockerhub_login != 'true'
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # pin@v4.0.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Log into registry ghcr.io
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # pin@v4.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract Docker metadata
+        if: github.event_name != 'pull_request'
+        id: meta
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # pin@v6.0.0
+        with:
+          images: |
+            inventree/inventree
+            ghcr.io/${{ github.repository }}
+      - uses: depot/setup-action@15c09a5f77a0840ad4bce955686522a257853461 # pin@v1
+      - name: Push Docker Images
+        id: push-docker
+        if: github.event_name != 'pull_request'
+        uses: depot/build-push-action@5f3b3c2e5a00f0093de47f657aeaefcedff27d18 # pin@v1
+        with:
+          project: jczzbjkk68
+          context: .
+          file: ./contrib/container/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          sbom: true
+          provenance: false
+          target: production
+          tags: ${{ env.docker_tags }}
+          build-args: |
+            commit_hash=${{ env.git_commit_hash }}
+            commit_date=${{ env.git_commit_date }}

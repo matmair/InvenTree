@@ -1,0 +1,74 @@
+# Depot CI Migration
+# Source: .github/workflows/translations.yaml
+#
+# Changes made:
+# - Rewrote .github/ path references to .depot/
+# - Changed GitHub runs-on labels to their Depot equivalents
+
+name: Update Translation Files
+on:
+  push:
+    branches:
+      - master
+env:
+  python_version: 3.11
+  node_version: 20
+permissions:
+  contents: read
+jobs:
+  synchronize-with-crowdin:
+    runs-on: depot-ubuntu-latest # was: ubuntu-latest. Mapped standard GitHub runner to Depot equivalent.
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      INVENTREE_DB_NAME: "./test_db.sqlite"
+      INVENTREE_DB_ENGINE: django.db.backends.sqlite3
+      INVENTREE_DEBUG: true
+      INVENTREE_LOG_LEVEL: INFO
+      INVENTREE_MEDIA_ROOT: ./media
+      INVENTREE_STATIC_ROOT: ./static
+      INVENTREE_BACKUP_DIR: ./backup
+      INVENTREE_SITE_URL: http://localhost:8000
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # pin@v6.0.2
+        with:
+          persist-credentials: false
+      - name: Environment Setup
+        uses: ./.depot/actions/setup
+        with:
+          install: true
+          apt-dependency: gettext
+      - name: Make Translations
+        run: invoke dev.translate
+      - name: Remove compiled static files
+        run: rm -rf src/backend/InvenTree/static
+      - name: Remove all local changes that are not *.po files
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add src/backend/InvenTree/locale/en/LC_MESSAGES/django.po src/frontend/src/locales/en/messages.po
+          echo "Adding commit (or ignoring if no changes)"
+          git commit -m "add translations" || true
+          echo "Removing all other changes"
+          git reset --hard
+          echo "Resetting to HEAD~"
+          git reset HEAD~ || true
+      - name: crowdin action
+        uses: crowdin/github-action@7ca9c452bfe9197d3bb7fa83a4d7e2b0c9ae835d # pin@v2
+        with:
+          upload_sources: true
+          upload_translations: false
+          download_translations: true
+          localization_branch_name: l10_crowdin
+          create_pull_request: true
+          pull_request_title: 'New Crowdin updates'
+          pull_request_body: 'New Crowdin translations by [Crowdin GH Action](https://github.com/crowdin/github-action)'
+          pull_request_base_branch_name: 'master'
+          pull_request_labels: 'translations'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}

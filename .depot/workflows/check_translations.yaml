@@ -1,0 +1,49 @@
+# Depot CI Migration
+# Source: .github/workflows/check_translations.yaml
+#
+# Changes made:
+# - Rewrote .github/ path references to .depot/
+# - Changed GitHub runs-on labels to their Depot equivalents
+
+name: Check Translations
+on:
+  push:
+    branches:
+      - l10
+  pull_request:
+    branches:
+      - l10
+env:
+  python_version: 3.11
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: depot-ubuntu-latest # was: ubuntu-latest. Mapped standard GitHub runner to Depot equivalent.
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      INVENTREE_DB_NAME: "./test_db.sqlite"
+      INVENTREE_DB_ENGINE: django.db.backends.sqlite3
+      INVENTREE_DEBUG: true
+      INVENTREE_LOG_LEVEL: INFO
+      INVENTREE_MEDIA_ROOT: ./media
+      INVENTREE_STATIC_ROOT: ./static
+      INVENTREE_BACKUP_DIR: ./backup
+      INVENTREE_SITE_URL: http://localhost:8000
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # pin@v6.0.2
+        with:
+          persist-credentials: false
+      - name: Environment Setup
+        uses: ./.depot/actions/setup
+        with:
+          install: true
+          apt-dependency: gettext
+      - name: Test Translations
+        run: invoke dev.translate
+      - name: Check for Duplicates
+        run: |
+          python ./.github/scripts/check_source_strings.py --frontend --backend
+      - name: Check Migration Files
+        run: python3 .github/scripts/check_migration_files.py
