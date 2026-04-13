@@ -128,6 +128,15 @@ class InvenTreeRoleScopeMixin(OASTokenMixin):
         """Return the required scopes for the current request."""
         if hasattr(view, 'required_alternate_scopes'):
             return view.required_alternate_scopes
+
+        # overwrite with role_required if specified
+        if role_required := getattr(view, 'role_required', None):
+            if '.' in role_required:
+                role, permission = role_required.split('.')
+            else:
+                role, permission = role_required, 'view'
+            return map_scope(roles=[role], override_all_actions=permission)
+
         try:
             # Extract the model name associated with this request
             model = get_model_for_view(view)
