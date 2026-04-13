@@ -129,6 +129,10 @@ class InvenTreeRoleScopeMixin(OASTokenMixin):
         if hasattr(view, 'required_alternate_scopes'):
             return view.required_alternate_scopes
 
+        # overwrite with required scope if specified
+        if scope_required := getattr(view, 'scope_required', None):
+            return map_scope(only_read=True, read_name=scope_required)
+
         # overwrite with role_required if specified
         if role_required := getattr(view, 'role_required', None):
             if '.' in role_required:
