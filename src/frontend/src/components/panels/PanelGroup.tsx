@@ -38,6 +38,7 @@ import { identifierString } from '@lib/functions/Conversion';
 import { cancelEvent } from '@lib/functions/Events';
 import { eventModified, getBaseUrl } from '@lib/functions/Navigation';
 import { navigateToLink } from '@lib/functions/Navigation';
+import type { PanelGroupType, PanelType } from '@lib/types/Panel';
 import { t } from '@lingui/core/macro';
 import { useShallow } from 'zustand/react/shallow';
 import { generateUrl } from '../../functions/urls';
@@ -45,7 +46,6 @@ import { usePluginPanels } from '../../hooks/UsePluginPanels';
 import { useLocalState } from '../../states/LocalState';
 import { vars } from '../../theme';
 import { StylishText } from '../items/StylishText';
-import type { PanelGroupType, PanelType } from '../panels/Panel';
 import * as classes from './PanelGroup.css';
 
 /**

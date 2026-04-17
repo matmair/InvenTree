@@ -5,9 +5,9 @@ import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import type { ModelType } from '@lib/enums/ModelType';
 import { apiUrl } from '@lib/functions/Api';
 import type { InvenTreePluginContext } from '@lib/types/Plugins';
+import type { PanelType } from '../../lib/types/Panel';
 import { api } from '../App';
 import { ApiIcon } from '../components/items/ApiIcon';
-import type { PanelType } from '../components/panels/Panel';
 import { useInvenTreeContext } from '../components/plugins/PluginContext';
 import PluginPanelContent from '../components/plugins/PluginPanel';
 import {

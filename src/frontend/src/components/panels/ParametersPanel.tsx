@@ -1,9 +1,9 @@
 import type { ModelType } from '@lib/enums/ModelType';
+import type { PanelType } from '@lib/types/Panel';
 import { t } from '@lingui/core/macro';
 import { Skeleton } from '@mantine/core';
 import { IconListDetails } from '@tabler/icons-react';
 import { ParameterTable } from '../../tables/general/ParameterTable';
-import type { PanelType } from './Panel';
 
 export default function ParametersPanel({
   model_type,

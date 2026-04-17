@@ -3,9 +3,9 @@ import { Skeleton } from '@mantine/core';
 import { IconNotes } from '@tabler/icons-react';
 
 import type { ModelType } from '@lib/enums/ModelType';
+import type { PanelType } from '@lib/types/Panel';
 import { useUserState } from '../../states/UserState';
 import NotesEditor from '../editors/NotesEditor';
-import type { PanelType } from './Panel';
 
 export default function NotesPanel({
   model_type,

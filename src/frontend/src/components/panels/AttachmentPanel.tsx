@@ -3,8 +3,8 @@ import { Skeleton } from '@mantine/core';
 import { IconPaperclip } from '@tabler/icons-react';
 
 import type { ModelType } from '@lib/enums/ModelType';
+import type { PanelType } from '@lib/types/Panel';
 import { AttachmentTable } from '../../tables/general/AttachmentTable';
-import type { PanelType } from './Panel';
 
 export default function AttachmentPanel({
   model_type,
