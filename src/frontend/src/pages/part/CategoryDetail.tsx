@@ -12,6 +12,9 @@ import {
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
+import SegmentedControlPanel from '@lib/components/nav/SegmentedControlPanel';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
@@ -33,9 +36,6 @@ import {
 import { ApiIcon } from '../../components/items/ApiIcon';
 import InstanceDetail from '../../components/nav/InstanceDetail';
 import NavigationTree from '../../components/nav/NavigationTree';
-import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup } from '../../components/panels/PanelGroup';
-import SegmentedControlPanel from '../../components/panels/SegmentedControlPanel';
 import { partCategoryFields } from '../../forms/PartForms';
 import {
   useDeleteApiFormModal,

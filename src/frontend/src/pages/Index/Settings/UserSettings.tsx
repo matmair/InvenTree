@@ -12,10 +12,10 @@ import {
 import { lazy, useMemo } from 'react';
 
 import { useShallow } from 'zustand/react/shallow';
+import { PanelGroup } from '../../../../lib/components/nav/PanelGroup';
 import type { PanelType } from '../../../../lib/types/Panel';
 import PageTitle from '../../../components/nav/PageTitle';
 import { SettingsHeader } from '../../../components/nav/SettingsHeader';
-import { PanelGroup } from '../../../components/panels/PanelGroup';
 import { UserSettingList } from '../../../components/settings/SettingList';
 import { Loadable } from '../../../functions/loading';
 import { useUserState } from '../../../states/UserState';

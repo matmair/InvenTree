@@ -10,6 +10,8 @@ import {
 import { type ReactNode, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
@@ -34,10 +36,8 @@ import {
 } from '../../components/items/ActionDropdown';
 import { StylishText } from '../../components/items/StylishText';
 import InstanceDetail from '../../components/nav/InstanceDetail';
-import { PageDetail } from '../../components/nav/PageDetail';
 import AttachmentPanel from '../../components/panels/AttachmentPanel';
 import NotesPanel from '../../components/panels/NotesPanel';
-import { PanelGroup } from '../../components/panels/PanelGroup';
 import ParametersPanel from '../../components/panels/ParametersPanel';
 import { RenderAddress } from '../../components/render/Company';
 import { StatusRenderer } from '../../components/render/StatusRenderer';

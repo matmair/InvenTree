@@ -28,6 +28,8 @@ import { type ReactNode, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ActionButton } from '@lib/components/ActionButton';
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
@@ -57,10 +59,8 @@ import {
 import { StylishText } from '../../components/items/StylishText';
 import InstanceDetail from '../../components/nav/InstanceDetail';
 import NavigationTree from '../../components/nav/NavigationTree';
-import { PageDetail } from '../../components/nav/PageDetail';
 import AttachmentPanel from '../../components/panels/AttachmentPanel';
 import NotesPanel from '../../components/panels/NotesPanel';
-import { PanelGroup } from '../../components/panels/PanelGroup';
 import LocateItemButton from '../../components/plugins/LocateItemButton';
 import { StatusRenderer } from '../../components/render/StatusRenderer';
 import OrderPartsWizard from '../../components/wizards/OrderPartsWizard';

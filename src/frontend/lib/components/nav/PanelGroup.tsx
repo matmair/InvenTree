@@ -41,11 +41,11 @@ import { navigateToLink } from '@lib/functions/Navigation';
 import type { PanelGroupType, PanelType } from '@lib/types/Panel';
 import { t } from '@lingui/core/macro';
 import { useShallow } from 'zustand/react/shallow';
-import { generateUrl } from '../../functions/urls';
-import { usePluginPanels } from '../../hooks/UsePluginPanels';
-import { useLocalState } from '../../states/LocalState';
-import { vars } from '../../theme';
-import { StylishText } from '../items/StylishText';
+import { StylishText } from '../../../src/components/items/StylishText';
+import { generateUrl } from '../../../src/functions/urls';
+import { usePluginPanels } from '../../../src/hooks/UsePluginPanels';
+import { useLocalState } from '../../../src/states/LocalState';
+import { vars } from '../../../src/theme';
 import * as classes from './PanelGroup.css';
 
 /**

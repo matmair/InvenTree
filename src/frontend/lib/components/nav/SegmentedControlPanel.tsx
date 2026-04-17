@@ -1,5 +1,5 @@
 import type { PanelType } from '@lib/types/Panel';
-import SegmentedIconControl from '../buttons/SegmentedIconControl';
+import SegmentedIconControl from '../../../src/components/buttons/SegmentedIconControl';
 
 export type SegmentedControlPanelSelection = {
   value: string;

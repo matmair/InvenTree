@@ -3,11 +3,14 @@ import { useHotkeys } from '@mantine/hooks';
 
 import { shortenString } from '@lib/functions/String';
 import { Fragment, type ReactNode, useMemo } from 'react';
-import { useUserSettingsState } from '../../states/SettingsStates';
-import { ApiImage } from '../images/ApiImage';
-import { StylishText } from '../items/StylishText';
-import { type Breadcrumb, BreadcrumbList } from './BreadcrumbList';
-import PageTitle from './PageTitle';
+import { ApiImage } from '../../../src/components/images/ApiImage';
+import { StylishText } from '../../../src/components/items/StylishText';
+import {
+  type Breadcrumb,
+  BreadcrumbList
+} from '../../../src/components/nav/BreadcrumbList';
+import PageTitle from '../../../src/components/nav/PageTitle';
+import { useUserSettingsState } from '../../../src/states/SettingsStates';
 
 interface PageDetailInterface {
   title?: string;

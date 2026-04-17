@@ -1,3 +1,5 @@
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import type { PanelType } from '@lib/types/Panel';
@@ -15,8 +17,6 @@ import {} from '../../components/items/ActionDropdown';
 import { RoleTable, type RuleSet } from '../../components/items/RoleTable';
 import { StylishText } from '../../components/items/StylishText';
 import InstanceDetail from '../../components/nav/InstanceDetail';
-import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup } from '../../components/panels/PanelGroup';
 import {} from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
 

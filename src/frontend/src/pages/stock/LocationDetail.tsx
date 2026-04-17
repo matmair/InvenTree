@@ -1,3 +1,6 @@
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
+import SegmentedControlPanel from '@lib/components/nav/SegmentedControlPanel';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
@@ -34,10 +37,7 @@ import {
 import { ApiIcon } from '../../components/items/ApiIcon';
 import InstanceDetail from '../../components/nav/InstanceDetail';
 import NavigationTree from '../../components/nav/NavigationTree';
-import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup } from '../../components/panels/PanelGroup';
 import ParametersPanel from '../../components/panels/ParametersPanel';
-import SegmentedControlPanel from '../../components/panels/SegmentedControlPanel';
 import LocateItemButton from '../../components/plugins/LocateItemButton';
 import { stockLocationFields } from '../../forms/StockForms';
 import { InvenTreeIcon } from '../../functions/icons';

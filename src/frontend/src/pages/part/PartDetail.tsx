@@ -42,6 +42,8 @@ import { type ReactNode, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Select from 'react-select';
 
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
@@ -71,10 +73,8 @@ import {
 } from '../../components/items/ActionDropdown';
 import InstanceDetail from '../../components/nav/InstanceDetail';
 import NavigationTree from '../../components/nav/NavigationTree';
-import { PageDetail } from '../../components/nav/PageDetail';
 import AttachmentPanel from '../../components/panels/AttachmentPanel';
 import NotesPanel from '../../components/panels/NotesPanel';
-import { PanelGroup } from '../../components/panels/PanelGroup';
 import { RenderPart } from '../../components/render/Part';
 import { RenderUser } from '../../components/render/User';
 import OrderPartsWizard from '../../components/wizards/OrderPartsWizard';

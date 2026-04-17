@@ -9,6 +9,8 @@ import {
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
@@ -30,10 +32,8 @@ import {
   OptionsActionDropdown
 } from '../../components/items/ActionDropdown';
 import InstanceDetail from '../../components/nav/InstanceDetail';
-import { PageDetail } from '../../components/nav/PageDetail';
 import AttachmentPanel from '../../components/panels/AttachmentPanel';
 import NotesPanel from '../../components/panels/NotesPanel';
-import { PanelGroup } from '../../components/panels/PanelGroup';
 import ParametersPanel from '../../components/panels/ParametersPanel';
 import { RenderAddress } from '../../components/render/Company';
 import { RenderUser } from '../../components/render/User';

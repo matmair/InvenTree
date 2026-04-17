@@ -3,9 +3,9 @@ import { Stack } from '@mantine/core';
 import { IconUser, IconUsersGroup } from '@tabler/icons-react';
 import { useMemo } from 'react';
 
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
 import PermissionDenied from '../../components/errors/PermissionDenied';
-import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup } from '../../components/panels/PanelGroup';
 import { useUserState } from '../../states/UserState';
 import { ContactTable } from '../../tables/company/ContactTable';
 import { GroupTable } from '../../tables/settings/GroupTable';

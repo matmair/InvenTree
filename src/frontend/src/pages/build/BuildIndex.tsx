@@ -8,6 +8,9 @@ import {
 } from '@tabler/icons-react';
 import { useMemo } from 'react';
 
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
+import SegmentedControlPanel from '@lib/components/nav/SegmentedControlPanel';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
 import type { TableFilter } from '@lib/types/Filters';
@@ -15,9 +18,6 @@ import type { PanelType } from '@lib/types/Panel';
 import { useLocalStorage } from '@mantine/hooks';
 import OrderCalendar from '../../components/calendar/OrderCalendar';
 import PermissionDenied from '../../components/errors/PermissionDenied';
-import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup } from '../../components/panels/PanelGroup';
-import SegmentedControlPanel from '../../components/panels/SegmentedControlPanel';
 import { useGlobalSettingsState } from '../../states/SettingsStates';
 import { useUserState } from '../../states/UserState';
 import { PartCategoryFilter } from '../../tables/Filter';

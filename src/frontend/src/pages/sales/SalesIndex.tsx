@@ -11,14 +11,14 @@ import {
 } from '@tabler/icons-react';
 import { useMemo } from 'react';
 
+import { PageDetail } from '@lib/components/nav/PageDetail';
+import { PanelGroup } from '@lib/components/nav/PanelGroup';
+import SegmentedControlPanel from '@lib/components/nav/SegmentedControlPanel';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
 import { useLocalStorage } from '@mantine/hooks';
 import OrderCalendar from '../../components/calendar/OrderCalendar';
 import PermissionDenied from '../../components/errors/PermissionDenied';
-import { PageDetail } from '../../components/nav/PageDetail';
-import { PanelGroup } from '../../components/panels/PanelGroup';
-import SegmentedControlPanel from '../../components/panels/SegmentedControlPanel';
 import { useUserState } from '../../states/UserState';
 import { CompanyTable } from '../../tables/company/CompanyTable';
 import ParametricCompanyTable from '../../tables/company/ParametricCompanyTable';
