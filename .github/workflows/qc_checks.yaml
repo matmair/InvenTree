@@ -609,6 +609,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: paths-filter
     if: ${{ (needs.paths-filter.outputs.force == 'true') || (github.ref == 'refs/heads/master' && needs.paths-filter.outputs.migrations == 'true') }}
+    strategy:
+      matrix:
+        version: ['0.10.0', '0.11.0', '0.13.5', '0.16.0', '0.17.0']
 
     env:
       INVENTREE_DB_ENGINE: sqlite3
@@ -629,40 +632,13 @@ jobs:
       - name: Fetch Database
         run: git clone --depth 1 https://github.com/inventree/test-db ./test-db
 
-      - name: 0.10.0 Database
+      - name: ${{ matrix.version }} Database
         run: |
           rm /home/runner/work/InvenTree/db.sqlite3
-          cp test-db/stable_0.10.0.sqlite3 /home/runner/work/InvenTree/db.sqlite3
+          cp test-db/stable_${{ matrix.version }}.sqlite3 /home/runner/work/InvenTree/db.sqlite3
           chmod +rw /home/runner/work/InvenTree/db.sqlite3
           invoke migrate
 
-      - name: 0.11.0 Database
-        run: |
-          rm /home/runner/work/InvenTree/db.sqlite3
-          cp test-db/stable_0.11.0.sqlite3 /home/runner/work/InvenTree/db.sqlite3
-          chmod +rw /home/runner/work/InvenTree/db.sqlite3
-          invoke migrate
-
-      - name: 0.13.5 Database
-        run: |
-          rm /home/runner/work/InvenTree/db.sqlite3
-          cp test-db/stable_0.13.5.sqlite3 /home/runner/work/InvenTree/db.sqlite3
-          chmod +rw /home/runner/work/InvenTree/db.sqlite3
-          invoke migrate
-
-      - name: 0.16.0 Database
-        run: |
-          rm /home/runner/work/InvenTree/db.sqlite3
-          cp test-db/stable_0.16.0.sqlite3 /home/runner/work/InvenTree/db.sqlite3
-          chmod +rw /home/runner/work/InvenTree/db.sqlite3
-          invoke migrate
-
-      - name: 0.17.0 Database
-        run: |
-          rm /home/runner/work/InvenTree/db.sqlite3
-          cp test-db/stable_0.17.0.sqlite3 /home/runner/work/InvenTree/db.sqlite3
-          chmod +rw /home/runner/work/InvenTree/db.sqlite3
-          invoke migrate
 
   web_ui:
     name: Tests - Web UI
