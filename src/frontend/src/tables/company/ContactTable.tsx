@@ -7,6 +7,7 @@ import {
   RowDeleteAction,
   RowEditAction
 } from '@lib/components/RowActions';
+import { RenderInlineModel } from '@lib/components/render/RenderInlineModel';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
@@ -16,7 +17,6 @@ import useTable from '@lib/hooks/UseTable';
 import type { ApiFormFieldSet } from '@lib/types/Forms';
 import type { TableColumn } from '@lib/types/Tables';
 import { useNavigate } from 'react-router-dom';
-import { RenderInlineModel } from '../../components/render/Instance';
 import {
   useCreateApiFormModal,
   useDeleteApiFormModal,
