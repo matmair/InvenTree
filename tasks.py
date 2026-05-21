@@ -1749,7 +1749,7 @@ def frontend_download(
         # if clean, delete static/web directory
         if clean:
             shutil.rmtree(dest_path, ignore_errors=True)
-            dest_path.mkdir()
+            dest_path.mkdir(parents=True, exist_ok=True)
             info(f'Cleaned directory: {dest_path}')
 
         # unzip build to static folder
@@ -1813,6 +1813,7 @@ def frontend_download(
     # if zip file is specified, try to extract it directly
     if file:
         handle_extract(file)
+        static(c, frontend=False, skip_plugins=True)
         return
 
     # check arguments
