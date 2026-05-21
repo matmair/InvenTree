@@ -73,10 +73,12 @@ export const test = baseTest.extend({
         !url.includes('/api/user/token/') &&
         !url.includes('/api/auth/v1/auth/login') &&
         !url.includes('/api/auth/v1/auth/session') &&
+        !url.includes('/api/auth/v1/account/authenticators/totp') &&
         !url.includes('/api/auth/v1/account/password/change') &&
         !url.includes('/api/barcode/') &&
         !url.includes('/favicon.ico') &&
         !url.startsWith('https://api.github.com/repos/inventree') &&
+        !url.startsWith('https://github.com/inventree/demo-data') &&
         !url.includes('/api/news/') &&
         !url.includes('/api/notifications/') &&
         !url.startsWith('chrome://') &&

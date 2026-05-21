@@ -18,6 +18,7 @@ import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
 import { apiUrl } from '@lib/functions/Api';
+import type { PanelType } from '@lib/types/Panel';
 import AdminButton from '../../components/buttons/AdminButton';
 import { PrintingActions } from '../../components/buttons/PrintingActions';
 import {
@@ -37,8 +38,8 @@ import InstanceDetail from '../../components/nav/InstanceDetail';
 import { PageDetail } from '../../components/nav/PageDetail';
 import AttachmentPanel from '../../components/panels/AttachmentPanel';
 import NotesPanel from '../../components/panels/NotesPanel';
-import type { PanelType } from '../../components/panels/Panel';
 import { PanelGroup } from '../../components/panels/PanelGroup';
+import ParametersPanel from '../../components/panels/ParametersPanel';
 import { companyFields } from '../../forms/CompanyForms';
 import {
   useDeleteApiFormModal,
@@ -247,6 +248,7 @@ export default function CompanyDetail(props: Readonly<CompanyDetailProps>) {
             tableName='assigned-stock'
             showLocation={false}
             allowReturn
+            defaultInStock={null}
             params={{ customer: company.pk }}
           />
         ) : (
@@ -265,13 +267,18 @@ export default function CompanyDetail(props: Readonly<CompanyDetailProps>) {
         icon: <IconMap2 />,
         content: company?.pk && <AddressTable companyId={company.pk} />
       },
+      ParametersPanel({
+        model_type: ModelType.company,
+        model_id: company?.pk
+      }),
       AttachmentPanel({
         model_type: ModelType.company,
         model_id: company.pk
       }),
       NotesPanel({
         model_type: ModelType.company,
-        model_id: company.pk
+        model_id: company.pk,
+        has_note: !!company.notes
       })
     ];
   }, [id, company, user]);

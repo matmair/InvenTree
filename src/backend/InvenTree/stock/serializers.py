@@ -14,9 +14,9 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 from sql_util.utils import SubqueryCount, SubquerySum
-from taggit.serializers import TagListSerializerField
 
 import build.models
+import common.filters
 import company.models
 import company.serializers as company_serializers
 import InvenTree.helpers
@@ -33,10 +33,10 @@ from generic.states.fields import InvenTreeCustomStatusSerializerMixin
 from importer.registry import register_importer
 from InvenTree.mixins import DataImportExportSerializerMixin
 from InvenTree.serializers import (
-    FilterableListField,
     InvenTreeCurrencySerializer,
     InvenTreeDecimalField,
-    enable_filter,
+    OptionalField,
+    TreePathSerializer,
 )
 from users.serializers import UserSerializer
 
@@ -220,10 +220,21 @@ class StockItemTestResultSerializer(
             'template',
             'template_detail',
         ]
-        read_only_fields = ['pk', 'user', 'date']
+        read_only_fields = ['pk']
 
-    user_detail = enable_filter(
-        UserSerializer(source='user', read_only=True, allow_null=True)
+    def __init__(self, *args, **kwargs):
+        """Handle custom initialization for the serializer."""
+        super().__init__(*args, **kwargs)
+
+        if not self._is_importing:
+            # Unless we are importing data, mark the 'user' and 'date' fields as read-only
+            self.fields['user'].read_only = True
+            self.fields['date'].read_only = True
+
+    user_detail = OptionalField(
+        serializer_class=UserSerializer,
+        serializer_kwargs={'source': 'user', 'read_only': True, 'allow_null': True},
+        prefetch_fields=['user'],
     )
 
     template = serializers.PrimaryKeyRelatedField(
@@ -235,10 +246,10 @@ class StockItemTestResultSerializer(
         label=_('Test template for this result'),
     )
 
-    template_detail = enable_filter(
-        part_serializers.PartTestTemplateSerializer(
-            source='template', read_only=True, allow_null=True
-        )
+    template_detail = OptionalField(
+        serializer_class=part_serializers.PartTestTemplateSerializer,
+        serializer_kwargs={'source': 'template', 'read_only': True, 'allow_null': True},
+        prefetch_fields=['template'],
     )
 
     attachment = InvenTree.serializers.InvenTreeAttachmentSerializerField(
@@ -366,20 +377,20 @@ class StockItemSerializer(
             'purchase_price_currency',
             'use_pack_size',
             'serial_numbers',
-            'tests',
             # Annotated fields
             'allocated',
             'expired',
             'installed_items',
             'child_items',
-            'location_path',
             'stale',
-            'tracking_items',
-            'tags',
-            # Detail fields (FK relationships)
-            'supplier_part_detail',
-            'part_detail',
+            # Optional fields (FK relationships)
             'location_detail',
+            'location_path',
+            'part_detail',
+            'supplier_part_detail',
+            'tags',
+            'tests',
+            'tracking_items',
         ]
         read_only_fields = [
             'allocated',
@@ -411,17 +422,22 @@ class StockItemSerializer(
     parent = serializers.PrimaryKeyRelatedField(
         many=False,
         read_only=True,
+        required=False,
+        allow_null=True,
         label=_('Parent Item'),
         help_text=_('Parent stock item'),
     )
 
-    location_path = enable_filter(
-        FilterableListField(
-            child=serializers.DictField(),
-            source='location.get_path',
-            read_only=True,
-            allow_null=True,
-        ),
+    location_path = OptionalField(
+        serializer_class=TreePathSerializer,
+        serializer_kwargs={
+            'source': 'location.get_path',
+            'extra_fields': ['icon'],
+            'many': True,
+            'read_only': True,
+            'allow_null': True,
+        },
+        default_include=False,
         filter_name='path_detail',
     )
 
@@ -461,12 +477,16 @@ class StockItemSerializer(
         status_custom_key = validated_data.pop('status_custom_key', None)
         status = validated_data.pop('status', None)
 
-        instance = super().update(instance, validated_data=validated_data)
-
         if status_code := status_custom_key or status:
-            if not instance.compare_status(status_code):
-                instance.set_status(status_code)
-                instance.save()
+            # avoid a second .save() call and perform both status updates at once (to support `old_status` in tracking event)
+            # by setting the values in validated_data as computed by set_status()
+            instance.set_status(status_code)
+            validated_data['status'] = instance.status
+            validated_data['status_custom_key'] = (
+                status_code  # for compatibility with custom "leader/follower" concept in super().update()
+            )
+
+        instance = super().update(instance, validated_data=validated_data)
 
         return instance
 
@@ -475,9 +495,7 @@ class StockItemSerializer(
         """Add some extra annotations to the queryset, performing database queries as efficiently as possible."""
         queryset = queryset.prefetch_related(
             'location',
-            'allocations',
             'sales_order',
-            'sales_order_allocations',
             'purchase_order',
             Prefetch(
                 'part',
@@ -489,25 +507,13 @@ class StockItemSerializer(
             ),
             'parent',
             'part__category',
-            'part__supplier_parts',
-            'part__supplier_parts__purchase_order_line_items',
-            'part__pricing_data',
-            'part__tags',
             'supplier_part',
-            'supplier_part__part',
-            'supplier_part__supplier',
             'supplier_part__manufacturer_part',
-            'supplier_part__manufacturer_part__manufacturer',
-            'supplier_part__manufacturer_part__tags',
-            'supplier_part__purchase_order_line_items',
-            'supplier_part__tags',
-            'test_results',
             'customer',
             'belongs_to',
             'sales_order',
             'consumed_by',
-            'tags',
-        )
+        ).select_related('part', 'part__pricing_data')
 
         # Annotate the queryset with the total allocated to sales orders
         queryset = queryset.annotate(
@@ -524,7 +530,7 @@ class StockItemSerializer(
         queryset = queryset.annotate(
             expired=Case(
                 When(
-                    StockItem.EXPIRED_FILTER,
+                    StockItem.get_expired_filter(),
                     then=Value(True, output_field=BooleanField()),
                 ),
                 default=Value(False, output_field=BooleanField()),
@@ -574,43 +580,66 @@ class StockItemSerializer(
     )
 
     # Optional detail fields, which can be appended via query parameters
-    supplier_part_detail = enable_filter(
-        company_serializers.SupplierPartSerializer(
-            label=_('Supplier Part'),
-            source='supplier_part',
-            brief=True,
-            supplier_detail=False,
-            manufacturer_detail=False,
-            part_detail=False,
-            many=False,
-            read_only=True,
-            allow_null=True,
-        ),
-        True,
+    supplier_part_detail = OptionalField(
+        serializer_class=company_serializers.SupplierPartSerializer,
+        serializer_kwargs={
+            'label': _('Supplier Part'),
+            'source': 'supplier_part',
+            'brief': True,
+            'supplier_detail': False,
+            'manufacturer_detail': False,
+            'part_detail': False,
+            'many': False,
+            'read_only': True,
+            'allow_null': True,
+        },
+        default_include=False,
+        prefetch_fields=[
+            'supplier_part__supplier',
+            'supplier_part__purchase_order_line_items',
+            'supplier_part__manufacturer_part__manufacturer',
+        ],
     )
 
-    part_detail = enable_filter(
-        part_serializers.PartBriefSerializer(
-            label=_('Part'), source='part', many=False, read_only=True, allow_null=True
-        ),
-        True,
+    part_detail = OptionalField(
+        serializer_class=part_serializers.PartBriefSerializer,
+        serializer_kwargs={
+            'label': _('Part'),
+            'source': 'part',
+            'many': False,
+            'read_only': True,
+            'allow_null': True,
+        },
+        default_include=True,
     )
 
-    location_detail = enable_filter(
-        LocationBriefSerializer(
-            label=_('Location'),
-            source='location',
-            many=False,
-            read_only=True,
-            allow_null=True,
-        ),
-        True,
+    location_detail = OptionalField(
+        serializer_class=LocationBriefSerializer,
+        serializer_kwargs={
+            'label': _('Location'),
+            'source': 'location',
+            'many': False,
+            'read_only': True,
+            'allow_null': True,
+        },
+        default_include=False,
+        prefetch_fields=['location'],
     )
 
-    tests = enable_filter(
-        StockItemTestResultSerializer(
-            source='test_results', many=True, read_only=True, allow_null=True
-        )
+    tests = OptionalField(
+        serializer_class=StockItemTestResultSerializer,
+        serializer_kwargs={
+            'source': 'test_results',
+            'many': True,
+            'read_only': True,
+            'allow_null': True,
+        },
+        default_include=False,
+        prefetch_fields=[
+            'test_results',
+            'test_results__user',
+            'test_results__template',
+        ],
     )
 
     quantity = InvenTreeDecimalField()
@@ -651,7 +680,7 @@ class StockItemSerializer(
         source='sales_order.reference', read_only=True, allow_null=True
     )
 
-    tags = TagListSerializerField(required=False)
+    tags = common.filters.enable_tags_filter()
 
 
 class SerializeStockItemSerializer(serializers.Serializer):
@@ -1053,20 +1082,38 @@ class StockChangeStatusSerializer(serializers.Serializer):
 
         transaction_notes = []
 
-        deltas = {'status': status}
-
         now = InvenTree.helpers.current_time()
 
         # Instead of performing database updates for each item,
         # perform bulk database updates (much more efficient)
 
+        # Pre-cache the custom status values (to reduce DB hits)
+        custom_status_codes = StockItem.STATUS_CLASS.custom_values()
+
         for item in items:
             # Ignore items which are already in the desired status
-            if item.compare_status(status):
-                continue
 
-            item.set_status(status)
+            # Careful check for custom status codes also
+            if item.compare_status(status):
+                custom_status = item.get_custom_status()
+                if status == custom_status or custom_status is None:
+                    continue
+
+            deltas = {'status': status}
+
+            # before save, track old status logical
+            deltas['old_status_logical'] = item.status
+
+            if item.get_custom_status():
+                deltas['old_status'] = item.get_custom_status()
+            else:
+                deltas['old_status'] = item.status
+
+            item.set_status(status, custom_values=custom_status_codes)
             item.save(add_note=False)
+
+            # after save, can track new status_logical
+            deltas['status_logical'] = item.status
 
             # Create a new transaction note for each item
             transaction_notes.append(
@@ -1081,7 +1128,7 @@ class StockChangeStatusSerializer(serializers.Serializer):
             )
 
         # Create tracking entries
-        StockItemTracking.objects.bulk_create(transaction_notes)
+        StockItemTracking.objects.bulk_create(transaction_notes, batch_size=250)
 
 
 class StockLocationTypeSerializer(InvenTree.serializers.InvenTreeModelSerializer):
@@ -1151,8 +1198,10 @@ class LocationSerializer(
             'structural',
             'external',
             'location_type',
+            # Optional fields
             'location_type_detail',
             'tags',
+            'parameters',
         ]
         read_only_fields = ['barcode_hash', 'icon', 'level', 'pathstring']
 
@@ -1185,17 +1234,22 @@ class LocationSerializer(
 
     level = serializers.IntegerField(read_only=True)
 
-    tags = TagListSerializerField(required=False)
+    tags = common.filters.enable_tags_filter()
 
-    path = enable_filter(
-        FilterableListField(
-            child=serializers.DictField(),
-            source='get_path',
-            read_only=True,
-            allow_null=True,
-        ),
+    path = OptionalField(
+        serializer_class=TreePathSerializer,
+        serializer_kwargs={
+            'many': True,
+            'source': 'get_path',
+            'extra_fields': ['icon'],
+            'read_only': True,
+            'allow_null': True,
+        },
+        default_include=False,
         filter_name='path_detail',
     )
+
+    parameters = common.filters.enable_parameters_filter()
 
     # explicitly set this field, so it gets included for AutoSchema
     icon = serializers.CharField(read_only=True)
@@ -1222,6 +1276,8 @@ class StockTrackingSerializer(
             'pk',
             'item',
             'item_detail',
+            'part',
+            'part_detail',
             'date',
             'deltas',
             'label',
@@ -1230,16 +1286,42 @@ class StockTrackingSerializer(
             'user',
             'user_detail',
         ]
-        read_only_fields = ['date', 'user', 'label', 'tracking_type']
+        read_only_fields = ['date', 'part', 'user', 'label', 'tracking_type']
 
     label = serializers.CharField(read_only=True)
 
-    item_detail = enable_filter(
-        StockItemSerializer(source='item', many=False, read_only=True, allow_null=True)
+    item_detail = OptionalField(
+        serializer_class=StockItemSerializer,
+        serializer_kwargs={
+            'source': 'item',
+            'many': False,
+            'read_only': True,
+            'allow_null': True,
+        },
+        prefetch_fields=['item', 'item__part'],
     )
 
-    user_detail = enable_filter(
-        UserSerializer(source='user', many=False, read_only=True, allow_null=True)
+    part_detail = OptionalField(
+        serializer_class=part_serializers.PartBriefSerializer,
+        serializer_kwargs={
+            'source': 'part',
+            'many': False,
+            'read_only': True,
+            'allow_null': True,
+        },
+        default_include=False,
+        prefetch_fields=['part'],
+    )
+
+    user_detail = OptionalField(
+        serializer_class=UserSerializer,
+        serializer_kwargs={
+            'source': 'user',
+            'many': False,
+            'read_only': True,
+            'allow_null': True,
+        },
+        prefetch_fields=['user'],
     )
 
     deltas = serializers.JSONField(read_only=True)
@@ -1671,6 +1753,10 @@ class StockAddSerializer(StockAdjustmentSerializer):
                 stock_item = item['pk']
                 quantity = item['quantity']
 
+                if quantity is None or quantity <= 0:
+                    # Ignore in this case - no stock to add
+                    continue
+
                 # Optional fields
                 extra = {}
 
@@ -1695,6 +1781,10 @@ class StockRemoveSerializer(StockAdjustmentSerializer):
             for item in data['items']:
                 stock_item = item['pk']
                 quantity = item['quantity']
+
+                # Ignore in this case - no stock to remove
+                if quantity is None or quantity <= 0:
+                    continue
 
                 # Optional fields
                 extra = {}

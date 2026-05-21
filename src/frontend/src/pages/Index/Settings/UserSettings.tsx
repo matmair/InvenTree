@@ -11,10 +11,11 @@ import {
 } from '@tabler/icons-react';
 import { lazy, useMemo } from 'react';
 
+import { PluginPanelKey } from '@lib/enums/ModelType';
+import type { PanelType } from '@lib/types/Panel';
 import { useShallow } from 'zustand/react/shallow';
 import PageTitle from '../../../components/nav/PageTitle';
 import { SettingsHeader } from '../../../components/nav/SettingsHeader';
-import type { PanelType } from '../../../components/panels/Panel';
 import { PanelGroup } from '../../../components/panels/PanelGroup';
 import { UserSettingList } from '../../../components/settings/SettingList';
 import { Loadable } from '../../../functions/loading';
@@ -59,12 +60,14 @@ export default function UserSettings() {
               'STICKY_HEADER',
               'STICKY_TABLE_HEADER',
               'SHOW_SPOTLIGHT',
+              'BARCODE_IN_FORM_FIELDS',
               'DATE_DISPLAY_FORMAT',
               'FORMS_CLOSE_USING_ESCAPE',
               'DISPLAY_STOCKTAKE_TAB',
               'ENABLE_LAST_BREADCRUMB',
               'SHOW_FULL_LOCATION_IN_TABLES',
-              'SHOW_FULL_CATEGORY_IN_TABLES'
+              'SHOW_FULL_CATEGORY_IN_TABLES',
+              'SHOW_BOM_SUBASSEMBLY_LEVELS'
             ]}
           />
         )
@@ -153,8 +156,8 @@ export default function UserSettings() {
         <PanelGroup
           pageKey='user-settings'
           panels={userSettingsPanels}
-          model='usersettings'
-          id={null}
+          pluginPanelWithoutId
+          pluginPanelKey={PluginPanelKey.usersettings}
         />
       </Stack>
     </>

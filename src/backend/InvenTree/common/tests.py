@@ -32,7 +32,7 @@ from InvenTree.unit_test import (
     PluginMixin,
     addUserPermission,
 )
-from part.models import Part, PartParameterTemplate
+from part.models import Part
 from plugin import registry
 
 from .api import WebhookView
@@ -45,6 +45,7 @@ from .models import (
     NotesImage,
     NotificationEntry,
     NotificationMessage,
+    ParameterTemplate,
     ProjectCode,
     SelectionList,
     SelectionListEntry,
@@ -201,6 +202,21 @@ class AttachmentTest(InvenTreeAPITestCase):
         # Assign 'delete' permission to 'part' model
         self.assignRole('part.delete')
         self.delete(url, expected_code=204)
+
+    def test_fully_qualified_url(self):
+        """Test that the fully qualified URL is returned correctly."""
+        part = Part.objects.first()
+
+        attachment = Attachment.objects.create(
+            attachment=self.generate_file('test.txt'),
+            comment='Testing filename: test.txt',
+            model_type='part',
+            model_id=part.pk,
+        )
+
+        url = attachment.fully_qualified_url()
+        self.assertIs(type(url), str)
+        self.assertIn(f'/media/attachments/part/{part.pk}/test', url)
 
 
 class SettingsTest(InvenTreeTestCase):
@@ -392,6 +408,8 @@ class SettingsTest(InvenTreeTestCase):
             'requires_restart',
             'after_save',
             'before_save',
+            'confirm',
+            'confirm_text',
         ]
 
         for k in setting:
@@ -624,6 +642,18 @@ class GlobalSettingsApiTest(InvenTreeAPITestCase):
 
             setting.refresh_from_db()
             self.assertEqual(setting.value, val)
+
+    def test_mfa_change(self):
+        """Test that changes in LOGIN_ENFORCE_MFA are handled correctly."""
+        # Setup admin users
+        self.user.usersession_set.create(ip='192.168.1.1')
+        self.assertEqual(self.user.usersession_set.count(), 1)
+
+        # Enable enforced MFA
+        set_global_setting('LOGIN_ENFORCE_MFA', True)
+
+        # There should be no user sessions now
+        self.assertEqual(self.user.usersession_set.count(), 0)
 
     def test_api_detail(self):
         """Test that we can access the detail view for a setting based on the <key>."""
@@ -1077,6 +1107,41 @@ class TaskListApiTests(InvenTreeAPITestCase):
         for task in response.data:
             self.assertEqual(task['name'], 'time.sleep')
 
+    def test_task_detail(self):
+        """Test the BackgroundTaskDetail API endpoint."""
+        from InvenTree.tasks import offload_task
+
+        # Force run a task
+        result = offload_task('fake_module.test_task', force_sync=True)
+        self.assertFalse(result)
+        self.assertEqual(type(result), bool)
+
+        # Schedule a dummy task - and ensure it offloads to the worker
+        task_id = offload_task('fake_module.test_task', force_async=True)
+        self.assertIsNotNone(task_id)
+        self.assertEqual(type(task_id), str)
+
+        url = reverse('api-task-detail', kwargs={'task_id': task_id})
+
+        data = self.get(url, expected_code=200).data
+
+        self.assertEqual(data['task_id'], task_id)
+        self.assertTrue(data['exists'])
+        self.assertTrue(data['pending'])
+        self.assertFalse(data['complete'])
+        self.assertFalse(data['success'])
+
+        # Perform a lookup for a non-existent task
+        url = reverse('api-task-detail', kwargs={'task_id': 'doesnotexist'})
+
+        data = self.get(url, expected_code=404).data
+
+        self.assertEqual(data['task_id'], 'doesnotexist')
+        self.assertFalse(data['exists'])
+        self.assertFalse(data['pending'])
+        self.assertFalse(data['complete'])
+        self.assertFalse(data['success'])
+
 
 class WebhookMessageTests(TestCase):
     """Tests for webhooks."""
@@ -1105,7 +1170,7 @@ class WebhookMessageTests(TestCase):
     def test_bad_token(self):
         """Test that a wrong token is not working."""
         response = self.client.post(
-            self.url, content_type=CONTENT_TYPE_JSON, HTTP_TOKEN='1234567fghj'
+            self.url, content_type=CONTENT_TYPE_JSON, headers={'token': '1234567fghj'}
         )
 
         assert response.status_code == HTTPStatus.FORBIDDEN
@@ -1128,7 +1193,7 @@ class WebhookMessageTests(TestCase):
             self.url,
             data="{'this': 123}",
             content_type=CONTENT_TYPE_JSON,
-            HTTP_TOKEN=str(self.endpoint_def.token),
+            headers={'token': str(self.endpoint_def.token)},
         )
 
         assert response.status_code == HTTPStatus.NOT_ACCEPTABLE
@@ -1176,7 +1241,7 @@ class WebhookMessageTests(TestCase):
         response = self.client.post(
             self.url,
             content_type=CONTENT_TYPE_JSON,
-            HTTP_TOKEN='68MXtc/OiXdA5e2Nq9hATEVrZFpLb3Zb0oau7n8s31I=',
+            headers={'token': '68MXtc/OiXdA5e2Nq9hATEVrZFpLb3Zb0oau7n8s31I='},
         )
 
         assert response.status_code == HTTPStatus.OK
@@ -1191,7 +1256,7 @@ class WebhookMessageTests(TestCase):
             self.url,
             data={'this': 'is a message'},
             content_type=CONTENT_TYPE_JSON,
-            HTTP_TOKEN=str(self.endpoint_def.token),
+            headers={'token': str(self.endpoint_def.token)},
         )
 
         assert response.status_code == HTTPStatus.OK
@@ -1239,11 +1304,40 @@ class NotificationTest(InvenTreeAPITestCase):
 
         self.assertEqual(
             response.data['description'],
-            'List view for all notifications of the current user.',
+            'Notifications for the current user.\n\n- User can only view / delete their own notification objects',
         )
 
         # POST action should fail (not allowed)
         response = self.post(url, {}, expected_code=405)
+
+    def test_api_read(self):
+        """Test that NotificationMessage can be marked as read."""
+        # Create a notification message
+        NotificationMessage.objects.create(
+            user=self.user,
+            category='test',
+            message='This is a test notification',
+            target_object=self.user,
+        )
+        user2 = get_user_model().objects.get(pk=2)
+        NotificationMessage.objects.create(
+            user=user2,
+            category='test',
+            message='This is a second test notification',
+            target_object=user2,
+        )
+
+        url = reverse('api-notifications-list')
+        self.assertEqual(NotificationMessage.objects.filter(read=True).count(), 0)
+        self.assertEqual(len(self.get(url, expected_code=200).data), 1)
+
+        # Read with readall endpoint
+        self.post(reverse('api-notifications-readall'), {}, expected_code=200)
+
+        self.assertEqual(NotificationMessage.objects.filter(read=True).count(), 1)
+        self.assertEqual(len(self.get(url, expected_code=200).data), 1)
+        # filtered by read status should be 0
+        self.assertEqual(len(self.get(url, {'read': False}, expected_code=200).data), 0)
 
     def test_bulk_delete(self):
         """Tests for bulk deletion of user notifications."""
@@ -1287,12 +1381,18 @@ class NotificationTest(InvenTreeAPITestCase):
 
         # Now, let's bulk delete all 'unread' notifications via the API,
         # but only associated with the logged in user
-        response = self.delete(url, {'filters': {'read': False}}, expected_code=200)
+        read_notifications = NotificationMessage.objects.filter(read=True)
+        response = self.delete(
+            url, {'items': [ntf.pk for ntf in read_notifications]}, expected_code=200
+        )
 
-        # Only 7 notifications should have been deleted,
+        # Only 3 notifications should have been deleted,
         # as the notifications associated with other users must remain untouched
-        self.assertEqual(NotificationMessage.objects.count(), 13)
-        self.assertEqual(NotificationMessage.objects.filter(user=self.user).count(), 3)
+        self.assertEqual(NotificationMessage.objects.count(), 17)
+        self.assertEqual(NotificationMessage.objects.filter(user=self.user).count(), 7)
+        self.assertEqual(
+            NotificationMessage.objects.filter(user=self.user, read=True).count(), 0
+        )
 
     def test_simple(self):
         """Test that a simple notification can be created."""
@@ -1455,6 +1555,35 @@ class CommonTest(InvenTreeAPITestCase):
         self.user.is_superuser = False
         self.user.save()
 
+    def test_health_api(self):
+        """Test health check URL."""
+        from plugin import registry
+
+        # Fully started system - ok
+        response_data = self.get(reverse('api-system-health'), expected_code=200).json()
+        self.assertIn('status', response_data)
+        self.assertEqual(response_data['status'], 'ok')
+
+        # Simulate plugin reloading - Not ready
+        try:
+            registry.plugins_loaded = False
+            response_data = self.get(
+                reverse('api-system-health'), expected_code=503
+            ).json()
+            self.assertIn('status', response_data)
+            self.assertEqual(response_data['status'], 'loading')
+        finally:
+            registry.plugins_loaded = True
+
+        # No plugins enabled - still ok
+        with self.settings(PLUGINS_ENABLED=False):
+            self.assertEqual(
+                self.get(reverse('api-system-health'), expected_code=200).json()[
+                    'status'
+                ],
+                'ok',
+            )
+
 
 class CurrencyAPITests(InvenTreeAPITestCase):
     """Unit tests for the currency exchange API endpoints."""
@@ -1475,9 +1604,14 @@ class CurrencyAPITests(InvenTreeAPITestCase):
 
         # Updating via the external exchange may not work every time
         for _idx in range(5):
-            self.post(
-                reverse('api-currency-refresh'), expected_code=200, max_query_time=30
-            )
+            try:
+                self.post(
+                    reverse('api-currency-refresh'),
+                    expected_code=200,
+                    max_query_time=30,
+                )
+            except Exception:
+                continue
 
             # There should be some new exchange rate objects now
             if Rate.objects.all().exists():
@@ -1730,7 +1864,7 @@ class CustomUnitAPITest(InvenTreeAPITestCase):
 
     def test_api(self):
         """Test the CustomUnit API."""
-        response = self.get(reverse('api-all-unit-list'))
+        response = self.get(reverse('api-custom-unit-all'))
         self.assertIn('default_system', response.data)
         self.assertIn('available_systems', response.data)
         self.assertIn('available_units', response.data)
@@ -2040,27 +2174,37 @@ class SelectionListTest(InvenTreeAPITestCase):
 
         # Add to parameter
         part = Part.objects.get(pk=1)
-        template = PartParameterTemplate.objects.create(
+        template = ParameterTemplate.objects.create(
             name='test_parameter', units='', selectionlist=self.list
         )
         rsp = self.get(
-            reverse('api-part-parameter-template-detail', kwargs={'pk': template.pk})
+            reverse('api-parameter-template-detail', kwargs={'pk': template.pk})
         )
         self.assertEqual(rsp.data['name'], 'test_parameter')
         self.assertEqual(rsp.data['choices'], '')
 
         # Add to part
-        url = reverse('api-part-parameter-list')
+        url = reverse('api-parameter-list')
         response = self.post(
             url,
-            {'part': part.pk, 'template': template.pk, 'data': 70},
+            {
+                'model_id': part.pk,
+                'model_type': 'part.part',
+                'template': template.pk,
+                'data': 70,
+            },
             expected_code=400,
         )
         self.assertIn('Invalid choice for parameter value', response.data['data'])
 
         response = self.post(
             url,
-            {'part': part.pk, 'template': template.pk, 'data': self.entry1.value},
+            {
+                'model_id': part.pk,
+                'model_type': 'part.part',
+                'template': template.pk,
+                'data': self.entry1.value,
+            },
             expected_code=201,
         )
         self.assertEqual(response.data['data'], self.entry1.value)

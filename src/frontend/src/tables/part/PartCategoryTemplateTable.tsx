@@ -11,6 +11,7 @@ import {
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { UserRoles } from '@lib/enums/Roles';
 import { apiUrl } from '@lib/functions/Api';
+import useTable from '@lib/hooks/UseTable';
 import type { TableFilter } from '@lib/types/Filters';
 import type { ApiFormFieldSet } from '@lib/types/Forms';
 import type { TableColumn } from '@lib/types/Tables';
@@ -19,7 +20,6 @@ import {
   useDeleteApiFormModal,
   useEditApiFormModal
 } from '../../hooks/UseForm';
-import { useTable } from '../../hooks/UseTable';
 import { useUserState } from '../../states/UserState';
 import { InvenTreeTable } from '../InvenTreeTable';
 
@@ -37,7 +37,7 @@ export default function PartCategoryTemplateTable({
         value: categoryId,
         disabled: categoryId !== undefined
       },
-      parameter_template: {},
+      template: {},
       default_value: {}
     };
   }, [categoryId]);
@@ -83,7 +83,7 @@ export default function PartCategoryTemplateTable({
         accessor: 'category_detail.pathstring'
       },
       {
-        accessor: 'parameter_template_detail.name',
+        accessor: 'template_detail.name',
         title: t`Parameter Template`,
         sortable: true,
         switchable: false
@@ -99,8 +99,8 @@ export default function PartCategoryTemplateTable({
 
           let units = '';
 
-          if (record?.parameter_template_detail?.units) {
-            units = `[${record.parameter_template_detail.units}]`;
+          if (record?.template_detail?.units) {
+            units = `[${record.template_detail.units}]`;
           }
 
           return (
@@ -162,7 +162,9 @@ export default function PartCategoryTemplateTable({
           tableActions: tableActions,
           enableDownload: true,
           params: {
-            category: categoryId
+            category: categoryId,
+            template_detail: true,
+            category_detail: true
           }
         }}
       />

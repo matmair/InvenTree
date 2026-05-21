@@ -14,30 +14,28 @@ import {
   IconBuildingFactory2,
   IconCircleCheck,
   IconCircleX,
-  IconExclamationCircle
+  IconExclamationCircle,
+  IconWand
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { ActionButton } from '@lib/components/ActionButton';
 import { AddItemButton } from '@lib/components/AddItemButton';
 import { ProgressBar } from '@lib/components/ProgressBar';
-import {
-  type RowAction,
-  RowEditAction,
-  RowViewAction
-} from '@lib/components/RowActions';
+import { type RowAction, RowEditAction } from '@lib/components/RowActions';
+import { StylishText } from '@lib/components/StylishText';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
 import { apiUrl } from '@lib/functions/Api';
+import useTable from '@lib/hooks/UseTable';
 import type { TableFilter } from '@lib/types/Filters';
 import type { StockOperationProps } from '@lib/types/Forms';
 import type { TableColumn } from '@lib/types/Tables';
-import { StylishText } from '../../components/items/StylishText';
 import { useApi } from '../../contexts/ApiContext';
 import {
+  useBuildAutoAllocateFields,
   useBuildOrderOutputFields,
   useCancelBuildOutputsForm,
   useCompleteBuildOutputsForm,
@@ -48,13 +46,13 @@ import {
   useStockItemSerializeFields
 } from '../../forms/StockForms';
 import { InvenTreeIcon } from '../../functions/icons';
+import useBackgroundTask from '../../hooks/UseBackgroundTask';
 import {
   useCreateApiFormModal,
   useEditApiFormModal
 } from '../../hooks/UseForm';
 import useStatusCodes from '../../hooks/UseStatusCodes';
 import { useStockAdjustActions } from '../../hooks/UseStockAdjustActions';
-import { useTable } from '../../hooks/UseTable';
 import { useUserState } from '../../states/UserState';
 import {
   LocationColumn,
@@ -124,6 +122,9 @@ function OutputAllocationDrawer({
       opened={opened}
       onClose={close}
       withCloseButton
+      closeButtonProps={{
+        'aria-label': 'close-allocation-drawer'
+      }}
       closeOnEscape
       closeOnClickOutside
       styles={{
@@ -155,7 +156,6 @@ export default function BuildOutputTable({
 }: Readonly<{ build: any; refreshBuild: () => void }>) {
   const api = useApi();
   const user = useUserState();
-  const navigate = useNavigate();
   const table = useTable('build-outputs');
 
   const buildId: number = useMemo(() => {
@@ -210,11 +210,47 @@ export default function BuildOutputTable({
         .get(apiUrl(ApiEndpoints.build_line_list), {
           params: {
             build: buildId,
-            tracked: true
+            tracked: true,
+            bom_item_detail: true,
+            allocations: true
           }
         })
         .then((response) => response.data);
     }
+  });
+
+  const [allocateTaskId, setAllocateTaskId] = useState<string>('');
+
+  useBackgroundTask({
+    taskId: allocateTaskId,
+    message: t`Allocating stock to build order`,
+    successMessage: t`Stock allocation complete`,
+    onSuccess: () => {
+      refetchTrackedItems();
+    }
+  });
+
+  const autoAllocateStock = useCreateApiFormModal({
+    url: ApiEndpoints.build_order_auto_allocate,
+    pk: build.pk,
+    title: t`Allocate Stock`,
+    fields: useBuildAutoAllocateFields({
+      item_type: 'tracked'
+    }),
+    initialData: {
+      location: build.take_from,
+      substitutes: true
+    },
+    successMessage: null,
+    onFormSuccess: (response: any) => {
+      setAllocateTaskId(response.task_id);
+    },
+    table: table,
+    preFormContent: (
+      <Alert color='green' title={t`Auto Allocate Stock`}>
+        <Text>{t`Automatically allocate tracked BOM items to this build according to the selected options`}</Text>
+      </Alert>
+    )
   });
 
   const hasTrackedItems: boolean = useMemo(() => {
@@ -313,6 +349,7 @@ export default function BuildOutputTable({
   const completeBuildOutputsForm = useCompleteBuildOutputsForm({
     build: build,
     outputs: selectedOutputs,
+    hasTrackedItems: hasTrackedItems,
     onFormSuccess: () => {
       table.refreshTable(true);
       refreshBuild();
@@ -442,6 +479,16 @@ export default function BuildOutputTable({
     return [
       stockAdjustActions.dropdown,
       <ActionButton
+        key='allocate-stock'
+        icon={<IconWand />}
+        color='blue'
+        tooltip={t`Auto Allocate Stock`}
+        hidden={!hasTrackedItems}
+        onClick={() => {
+          autoAllocateStock.open();
+        }}
+      />,
+      <ActionButton
         key='complete-selected-outputs'
         tooltip={t`Complete selected outputs`}
         icon={<InvenTreeIcon icon='success' />}
@@ -483,6 +530,7 @@ export default function BuildOutputTable({
     ];
   }, [
     build,
+    hasTrackedItems,
     user,
     table.selectedRecords,
     table.hasSelectedRecords,
@@ -537,6 +585,7 @@ export default function BuildOutputTable({
           title: t`Complete`,
           tooltip: t`Complete build output`,
           color: 'green',
+          hidden: !production,
           icon: <InvenTreeIcon icon='success' />,
           onClick: () => {
             setSelectedOutputs([record]);
@@ -569,16 +618,10 @@ export default function BuildOutputTable({
             setSelectedOutputs([record]);
             cancelBuildOutputsForm.open();
           }
-        },
-        RowViewAction({
-          title: t`View Build Output`,
-          modelId: record.pk,
-          modelType: ModelType.stockitem,
-          navigate: navigate
-        })
+        }
       ];
     },
-    [buildStatus, user, partId, hasTrackedItems]
+    [buildStatus, build.status, user, partId, hasTrackedItems]
   );
 
   const tableColumns: TableColumn[] = useMemo(() => {
@@ -689,6 +732,7 @@ export default function BuildOutputTable({
   return (
     <>
       {addBuildOutput.modal}
+      {autoAllocateStock.modal}
       {completeBuildOutputsForm.modal}
       {scrapBuildOutputsForm.modal}
       {editBuildOutput.modal}

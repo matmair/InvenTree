@@ -1,23 +1,30 @@
 """Middleware for InvenTree."""
 
 import sys
+from typing import Optional
 from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.contrib.auth.middleware import PersistentRemoteUserMiddleware
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
-from django.urls import resolve, reverse_lazy
+from django.urls import resolve, reverse, reverse_lazy
 from django.utils.deprecation import MiddlewareMixin
-from django.utils.http import is_same_domain
+from django.utils.http import is_same_domain, url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 
 import structlog
 from error_report.middleware import ExceptionProcessor
 
+import InvenTree.helpers
 from common.settings import get_global_setting
 from InvenTree.cache import create_session_cache, delete_session_cache
 from InvenTree.config import CONFIG_LOOKUPS, inventreeInstaller
+from InvenTree.version import (
+    inventreeApiVersion,
+    inventreePythonVersion,
+    inventreeVersion,
+)
 from users.models import ApiToken
 
 logger = structlog.get_logger('inventree')
@@ -40,6 +47,15 @@ def get_token_from_request(request):
     return None
 
 
+def ensure_slashes(path: str):
+    """Ensure that slashes are surrounding the passed path."""
+    if not path.startswith('/'):
+        path = f'/{path}'
+    if not path.endswith('/'):
+        path = f'{path}/'
+    return path
+
+
 # List of target URL endpoints where *do not* want to redirect to
 urls = [
     reverse_lazy('account_login'),
@@ -47,8 +63,47 @@ urls = [
     reverse_lazy('admin:logout'),
 ]
 
-# Do not redirect requests to any of these paths
-paths_ignore = ['/api/', '/auth/', settings.MEDIA_URL, settings.STATIC_URL]
+paths_ignore_handling = [
+    '/api/',
+    '/plugin/',
+    reverse('auth-check'),
+    settings.MEDIA_URL,
+    settings.STATIC_URL,
+]
+"""Paths that should not use InvenTrees own auth rejection behaviour, no host checking or redirecting. Security
+ are still enforced."""
+paths_own_security = [
+    '/api/',  # DRF handles API
+    '/o/',  # oAuth2 library - has its own auth model
+    '/anymail/',  # Mails - webhooks etc
+    '/accounts/',  # allauth account management - has its own auth model
+    '/assets/',  # Web assets - only used for testing, no security model needed
+    ensure_slashes(
+        settings.STATIC_URL
+    ),  # Static files  - static files are considered safe to serve
+    ensure_slashes(
+        settings.FRONTEND_URL_BASE
+    ),  # Frontend files - frontend paths have their own security model
+]
+"""Paths that handle their own security model."""
+pages_mfa_bypass = [
+    'api-user-meta',
+    'api-user-me',
+    'api-user-roles',
+    'api-inventree-info',
+    'api-token',
+    # web platform urls
+    'password_reset_confirm',
+    'index',
+    'web',
+    'web-wildcard',
+    'web-assets',
+]
+"""Exact page names that bypass MFA enforcement - normal security model is still enforced."""
+apps_mfa_bypass = [
+    'headless'  # Headless allauth app - has its own security model
+]
+"""App namespaces that bypass MFA enforcement - normal security model is still enforced."""
 
 
 class AuthRequiredMiddleware:
@@ -61,6 +116,7 @@ class AuthRequiredMiddleware:
     def check_token(self, request) -> bool:
         """Check if the user is authenticated via token."""
         if token := get_token_from_request(request):
+            request.token = token
             # Does the provided token match a valid user?
             try:
                 token = ApiToken.objects.get(key=token)
@@ -69,8 +125,11 @@ class AuthRequiredMiddleware:
                     # Provide the user information to the request
                     request.user = token.user
                     return True
-            except ApiToken.DoesNotExist:
-                logger.warning('Access denied for unknown token %s', token)
+            except ApiToken.DoesNotExist:  # pragma: no cover
+                logger.warning(
+                    'Access denied for unknown token %s',
+                    InvenTree.helpers.sanitize_token(str(token)),
+                )  # pragma: no cover
 
         return False
 
@@ -79,70 +138,47 @@ class AuthRequiredMiddleware:
 
         Redirects to login if not authenticated.
         """
+        path: str = request.path_info
         # Code to be executed for each request before
         # the view (and later middleware) are called.
 
         assert hasattr(request, 'user')
 
-        # API requests are handled by the DRF library
-        if request.path_info.startswith('/api/'):
-            return self.get_response(request)
-
-        # oAuth2 requests are handled by the oAuth2 library
-        if request.path_info.startswith('/o/'):
-            return self.get_response(request)
-
-        # anymail requests are handled by the anymail library
-        if request.path_info.startswith('/anymail/'):
+        # API requests that are handled elsewhere
+        if any(path.startswith(a) for a in paths_own_security):
             return self.get_response(request)
 
         # Is the function exempt from auth requirements?
         path_func = resolve(request.path).func
-
         if getattr(path_func, 'auth_exempt', False) is True:
             return self.get_response(request)
 
-        if not request.user.is_authenticated:
+        if not request.user.is_authenticated and not (
+            path == f'/{settings.FRONTEND_URL_BASE}' or self.check_token(request)
+        ):
             """
             Normally, a web-based session would use csrftoken based authentication.
 
             However when running an external application (e.g. the InvenTree app or Python library),
             we must validate the user token manually.
             """
-
-            authorized = False
-
-            # Allow static files to be accessed without auth
-            # Important for e.g. login page
-            if (
-                request.path_info.startswith('/static/')
-                or request.path_info.startswith('/accounts/')
-                or (
-                    request.path_info.startswith(f'/{settings.FRONTEND_URL_BASE}/')
-                    or request.path_info.startswith('/assets/')
-                    or request.path_info == f'/{settings.FRONTEND_URL_BASE}'
-                )
-                or self.check_token(request)
+            if path not in urls and not any(
+                path.startswith(p) for p in paths_ignore_handling
             ):
-                authorized = True
-
-            # No authorization was found for the request
-            if not authorized:
-                path = request.path_info
-
-                if path not in urls and not any(
-                    path.startswith(p) for p in paths_ignore
+                # Validate next url is safe to redirect to
+                next_url = request.path
+                if not url_has_allowed_host_and_scheme(
+                    url=next_url,
+                    allowed_hosts=settings.ALLOWED_HOSTS,
+                    require_https=request.is_secure(),
                 ):
-                    # Save the 'next' parameter to pass through to the login view
-
-                    return redirect(
-                        f'{reverse_lazy("account_login")}?next={request.path}'
-                    )
-                # Return a 401 (Unauthorized) response code for this request
-                return HttpResponse('Unauthorized', status=401)
+                    return redirect(str(reverse_lazy('account_login')))
+                # Save the 'next' parameter to pass through to the login view
+                return redirect(f'{reverse_lazy("account_login")}?next={next_url}')
+            # Return a 401 (Unauthorized) response code for this request
+            return HttpResponse('Unauthorized', status=401)
 
         response = self.get_response(request)
-
         return response
 
 
@@ -152,20 +188,6 @@ class Check2FAMiddleware(MiddlewareMixin):
     Adapted from https://github.com/pennersr/django-allauth/issues/3649
     """
 
-    allowed_pages = [
-        'api-user-meta',
-        'api-user-me',
-        'api-user-roles',
-        'api-inventree-info',
-        'api-token',
-        # web platform urls
-        'password_reset_confirm',
-        'index',
-        'web',
-        'web-wildcard',
-        'web-assets',
-    ]
-    app_names = ['headless']
     require_2fa_message = _(
         'You must enable two-factor authentication before doing anything else.'
     )
@@ -180,10 +202,10 @@ class Check2FAMiddleware(MiddlewareMixin):
         """Check if the current page can be accessed without mfa."""
         match = request.resolver_match
         return (
-            None
+            False
             if match is None
-            else any(ref in self.app_names for ref in match.app_names)
-            or match.url_name in self.allowed_pages
+            else any(ref in apps_mfa_bypass for ref in match.app_names)
+            or match.url_name in pages_mfa_bypass
             or match.route == 'favicon.ico'
         )
 
@@ -202,7 +224,7 @@ class Check2FAMiddleware(MiddlewareMixin):
 
     def process_view(
         self, request: HttpRequest, view_func, view_args, view_kwargs
-    ) -> HttpResponse:
+    ) -> Optional[HttpResponse]:
         """Determine if the server is set up enforce 2fa registration."""
         from django.conf import settings
 
@@ -216,6 +238,10 @@ class Check2FAMiddleware(MiddlewareMixin):
             return None
         if self.is_multifactor_logged_in(request):
             return None
+        if getattr(
+            request, 'token', get_token_from_request(request)
+        ):  # Token based login can not do MFA
+            return None
 
         if self.enforce_2fa(request):
             return self.on_require_2fa(request)
@@ -223,7 +249,9 @@ class Check2FAMiddleware(MiddlewareMixin):
 
     def enforce_2fa(self, request):
         """Use setting to check if MFA should be enforced."""
-        return get_global_setting('LOGIN_ENFORCE_MFA')
+        return get_global_setting(
+            'LOGIN_ENFORCE_MFA', None, 'INVENTREE_LOGIN_ENFORCE_MFA'
+        )
 
 
 class InvenTreeRemoteUserMiddleware(PersistentRemoteUserMiddleware):
@@ -304,12 +332,12 @@ class InvenTreeHostSettingsMiddleware(MiddlewareMixin):
 
         # Handle commonly ignored paths that might also work without a correct setup (api, auth)
         path = request.path_info
-        if path in urls or any(path.startswith(p) for p in paths_ignore):
+        if path in urls or any(path.startswith(p) for p in paths_ignore_handling):
             return None
 
         # treat the accessed scheme and host
         accessed_scheme = request._current_scheme_host
-        referer = urlsplit(accessed_scheme)
+        referrer = urlsplit(accessed_scheme)
 
         site_url = urlsplit(settings.SITE_URL)
 
@@ -317,8 +345,8 @@ class InvenTreeHostSettingsMiddleware(MiddlewareMixin):
         site_url_match = (
             (
                 # Exact match on domain
-                is_same_domain(referer.netloc, site_url.netloc)
-                and referer.scheme == site_url.scheme
+                is_same_domain(referrer.netloc, site_url.netloc)
+                and referrer.scheme == site_url.scheme
             )
             or (
                 # Lax protocol match, accessed URL starts with SITE_URL
@@ -328,7 +356,7 @@ class InvenTreeHostSettingsMiddleware(MiddlewareMixin):
             or (
                 # Lax protocol match, same domain
                 settings.SITE_LAX_PROTOCOL_CHECK
-                and referer.hostname == site_url.hostname
+                and referrer.hostname == site_url.hostname
             )
         )
 
@@ -354,7 +382,7 @@ class InvenTreeHostSettingsMiddleware(MiddlewareMixin):
         trusted_origins_match = (
             # Matching domain found in allowed origins
             any(
-                is_same_domain(referer.netloc, host)
+                is_same_domain(referrer.netloc, host)
                 for host in [
                     urlsplit(origin).netloc.lstrip('*')
                     for origin in settings.CSRF_TRUSTED_ORIGINS
@@ -364,7 +392,7 @@ class InvenTreeHostSettingsMiddleware(MiddlewareMixin):
             # Lax protocol match allowed
             settings.SITE_LAX_PROTOCOL_CHECK
             and any(
-                referer.hostname == urlsplit(origin).hostname
+                referrer.hostname == urlsplit(origin).hostname
                 for origin in settings.CSRF_TRUSTED_ORIGINS
             )
         )
@@ -379,3 +407,15 @@ class InvenTreeHostSettingsMiddleware(MiddlewareMixin):
 
         # All checks passed
         return None
+
+
+class InvenTreeVersionHeaderMiddleware(MiddlewareMixin):
+    """Middleware to add the InvenTree version header to all responses."""
+
+    def process_response(self, request, response):
+        """Add the InvenTree version header to the response."""
+        response['X-InvenTree-Version'] = inventreeVersion()
+        response['X-InvenTree-API'] = inventreeApiVersion()
+        response['X-InvenTree-Python'] = inventreePythonVersion()
+        response['X-InvenTree-Installer'] = inventreeInstaller()
+        return response

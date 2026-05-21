@@ -11,11 +11,10 @@ from django.core.exceptions import FieldDoesNotExist, ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator
 from django.utils.translation import gettext_lazy as _
 
-from jinja2 import Template
+from jinja2.sandbox import SandboxedEnvironment
 
 import build.validators
 import common.currency
-import common.models
 import common.validators
 import order.validators
 import report.helpers
@@ -50,10 +49,11 @@ def validate_part_name_format(value):
                 })
 
     # Attempt to render the template with a dummy Part instance
-    p = Part(name='test part', description='some test part')
+    # Use pk=1 to ensure conditional checks like {% if part.pk %} are evaluated
+    p = Part(pk=1, name='test part', description='some test part')
 
     try:
-        Template(value).render({'part': p})
+        SandboxedEnvironment().from_string(value).render({'part': p})
     except Exception as exc:
         raise ValidationError({'value': str(exc)})
 
@@ -105,6 +105,20 @@ def reload_plugin_registry(setting):
     logger.info("Reloading plugin registry due to change in setting '%s'", setting.key)
 
     registry.reload_plugins(full_reload=True, force_reload=True, collect=True)
+
+
+def enforce_mfa(setting):
+    """Enforce multifactor authentication for all users."""
+    from allauth.usersessions.models import UserSession
+
+    from common.models import logger
+
+    logger.info(
+        'Enforcing multifactor authentication for all users by signing out all sessions.'
+    )
+    for session in UserSession.objects.all():
+        session.end()
+    logger.info('All user sessions have been ended.')
 
 
 def barcode_plugins() -> list:
@@ -221,6 +235,18 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'validator': bool,
         'default': False,
     },
+    'INVENTREE_SHOW_SUPERUSER_BANNER': {
+        'name': _('Show superuser banner'),
+        'description': _('Show a warning banner in the UI when logged in as superuser'),
+        'validator': bool,
+        'default': True,
+    },
+    'INVENTREE_SHOW_ADMIN_BANNER': {
+        'name': _('Show admin banner'),
+        'description': _('Show a warning banner in the UI when logged in as admin'),
+        'validator': bool,
+        'default': False,
+    },
     'INVENTREE_COMPANY_NAME': {
         'name': _('Company name'),
         'description': _('Internal company name'),
@@ -259,26 +285,6 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'description': _('Currency update plugin to use'),
         'choices': common.currency.currency_exchange_plugins,
         'default': 'inventreecurrencyexchange',
-    },
-    'INVENTREE_DOWNLOAD_FROM_URL': {
-        'name': _('Download from URL'),
-        'description': _('Allow download of remote images and files from external URL'),
-        'validator': bool,
-        'default': False,
-    },
-    'INVENTREE_DOWNLOAD_IMAGE_MAX_SIZE': {
-        'name': _('Download Size Limit'),
-        'description': _('Maximum allowable download size for remote image'),
-        'units': 'MB',
-        'default': 1,
-        'validator': [int, MinValueValidator(1), MaxValueValidator(25)],
-    },
-    'INVENTREE_DOWNLOAD_FROM_URL_USER_AGENT': {
-        'name': _('User-agent used to download from URL'),
-        'description': _(
-            'Allow to override the user-agent used to download images and files from external URL (leave blank for the default)'
-        ),
-        'default': '',
     },
     'INVENTREE_STRICT_URLS': {
         'name': _('Strict URL Validation'),
@@ -522,14 +528,6 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'default': '',
         'validator': common.validators.validate_icon,
     },
-    'PART_PARAMETER_ENFORCE_UNITS': {
-        'name': _('Enforce Parameter Units'),
-        'description': _(
-            'If units are provided, parameter values must match the specified units'
-        ),
-        'default': True,
-        'validator': bool,
-    },
     'PRICING_DECIMAL_PLACES_MIN': {
         'name': _('Minimum Pricing Decimal Places'),
         'description': _(
@@ -632,6 +630,14 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'default': False,
         'validator': bool,
     },
+    'PART_BOM_ALLOW_ZERO_QUANTITY': {
+        'name': _('Allow BOM Zero Quantity'),
+        'description': _(
+            'Accept a zero quantity for BOM item for part. Enables using setup quantity to define a quantity required per build, independent of build quantity'
+        ),
+        'default': False,
+        'validator': bool,
+    },
     'LABEL_ENABLE': {
         'name': _('Enable label printing'),
         'description': _('Enable label printing from the web interface'),
@@ -670,6 +676,14 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'default': 'A4',
         'choices': report.helpers.report_page_size_options,
     },
+    'PARAMETER_ENFORCE_UNITS': {
+        'name': _('Enforce Parameter Units'),
+        'description': _(
+            'If units are provided, parameter values must match the specified units'
+        ),
+        'default': True,
+        'validator': bool,
+    },
     'SERIAL_NUMBER_GLOBALLY_UNIQUE': {
         'name': _('Globally Unique Serials'),
         'description': _('Serial numbers for stock items must be globally unique'),
@@ -679,6 +693,18 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
     'STOCK_DELETE_DEPLETED_DEFAULT': {
         'name': _('Delete Depleted Stock'),
         'description': _('Determines default behavior when a stock item is depleted'),
+        'default': True,
+        'validator': bool,
+    },
+    'STOCK_ALLOW_EDIT_SERIAL': {
+        'name': _('Allow Edit Serial Number'),
+        'description': _('Allow editing of serial number for stock items'),
+        'default': True,
+        'validator': bool,
+    },
+    'STOCK_ALLOW_DELETE_SERIALIZED': {
+        'name': _('Delete Serialized Stock'),
+        'description': _('Allow deletion of stock items which have a serial number'),
         'default': True,
         'validator': bool,
     },
@@ -792,6 +818,14 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'default': False,
         'validator': bool,
     },
+    'BUILDORDER_EXTERNAL_REQUIRED': {
+        'name': _('Require External Build Orders'),
+        'description': _(
+            'Require an external build order when ordering assembled parts from an external supplier'
+        ),
+        'default': False,
+        'validator': bool,
+    },
     'PREVENT_BUILD_COMPLETION_HAVING_INCOMPLETED_TESTS': {
         'name': _('Block Until Tests Pass'),
         'description': _(
@@ -866,6 +900,14 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'name': _('Mark Shipped Orders as Complete'),
         'description': _(
             'Sales orders marked as shipped will automatically be completed, bypassing the "shipped" status'
+        ),
+        'default': False,
+        'validator': bool,
+    },
+    'SALESORDER_BLOCK_INCOMPLETE_ITEM_TESTS': {
+        'name': _('Block Incomplete Item Tests'),
+        'description': _(
+            'Prevent allocation of stock items to sales orders if required item tests are incomplete'
         ),
         'default': False,
         'validator': bool,
@@ -1008,6 +1050,11 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'description': _('Users must use multifactor security.'),
         'default': False,
         'validator': bool,
+        'confirm': True,
+        'confirm_text': _(
+            'Enabling this setting will require all users to set up multifactor authentication. All sessions will be disconnected immediately.'
+        ),
+        'after_save': enforce_mfa,
     },
     'PLUGIN_ON_STARTUP': {
         'name': _('Check plugins on startup'),
@@ -1081,7 +1128,7 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'validator': bool,
     },
     'STOCKTAKE_ENABLE': {
-        'name': _('Enable Stock History'),
+        'name': _('Enable Stocktake'),
         'description': _(
             'Enable functionality for recording historical stock levels and value'
         ),
@@ -1091,30 +1138,47 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
     'STOCKTAKE_EXCLUDE_EXTERNAL': {
         'name': _('Exclude External Locations'),
         'description': _(
-            'Exclude stock items in external locations from stock history calculations'
+            'Exclude stock items in external locations from stocktake calculations'
         ),
         'validator': bool,
         'default': False,
     },
     'STOCKTAKE_AUTO_DAYS': {
         'name': _('Automatic Stocktake Period'),
-        'description': _('Number of days between automatic stock history recording'),
+        'description': _('Number of days between automatic stocktake recording'),
         'validator': [int, MinValueValidator(1)],
         'default': 7,
         'units': _('days'),
     },
     'STOCKTAKE_DELETE_OLD_ENTRIES': {
-        'name': _('Delete Old Stock History Entries'),
+        'name': _('Delete Old Stocktake Entries'),
         'description': _(
-            'Delete stock history entries older than the specified number of days'
+            'Delete stocktake entries older than the specified number of days'
         ),
         'default': False,
         'validator': bool,
     },
     'STOCKTAKE_DELETE_DAYS': {
-        'name': _('Stock History Deletion Interval'),
+        'name': _('Stocktake Deletion Interval'),
         'description': _(
-            'Stock history entries will be deleted after specified number of days'
+            'Stocktake entries will be deleted after specified number of days'
+        ),
+        'default': 365,
+        'units': _('days'),
+        'validator': [int, MinValueValidator(30)],
+    },
+    'STOCK_TRACKING_DELETE_OLD_ENTRIES': {
+        'name': _('Delete Old Stock Tracking Entries'),
+        'description': _(
+            'Delete stock tracking entries older than the specified number of days'
+        ),
+        'default': False,
+        'validator': bool,
+    },
+    'STOCK_TRACKING_DELETE_DAYS': {
+        'name': _('Stock Tracking Deletion Interval'),
+        'description': _(
+            'Stock tracking entries will be deleted after specified number of days'
         ),
         'default': 365,
         'units': _('days'),
@@ -1131,6 +1195,20 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'description': _('Display Users Profiles on their profile page'),
         'default': True,
         'validator': bool,
+    },
+    'WEEK_STARTS_ON': {
+        'name': _('Week Starts On'),
+        'description': _('Starting day of the week, for display in calendar views'),
+        'default': '1',
+        'choices': [
+            ('0', _('Sunday')),
+            ('1', _('Monday')),
+            ('2', _('Tuesday')),
+            ('3', _('Wednesday')),
+            ('4', _('Thursday')),
+            ('5', _('Friday')),
+            ('6', _('Saturday')),
+        ],
     },
     'TEST_STATION_DATA': {
         'name': _('Enable Test Station Data'),

@@ -14,7 +14,7 @@ from collections import OrderedDict
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from threading import Lock
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from django.apps import apps
 from django.conf import settings
@@ -212,7 +212,7 @@ class PluginsRegistry:
 
         return plg
 
-    def get_plugin_config(self, slug: str, name: Union[str, None] = None):
+    def get_plugin_config(self, slug: str, name: str | None = None):
         """Return the matching PluginConfig instance for a given plugin.
 
         Arguments:
@@ -222,13 +222,18 @@ class PluginsRegistry:
         import InvenTree.ready
         from plugin.models import PluginConfig
 
-        if InvenTree.ready.isImportingData():
-            return None
+        # Under certain circumstances, we want to avoid creating new PluginConfig instances in the database
+        can_create = (
+            InvenTree.ready.canAppAccessDatabase(
+                allow_plugins=False, allow_shell=True, allow_test=True
+            )
+            and not InvenTree.ready.isReadOnlyCommand()
+        )
 
         try:
             cfg = PluginConfig.objects.filter(key=slug).first()
 
-            if not cfg:
+            if not cfg and can_create:
                 logger.debug(
                     "get_plugin_config: Creating new PluginConfig for '%s'", slug
                 )
@@ -473,12 +478,19 @@ class PluginsRegistry:
 
             # Ensure that each loaded plugin has a valid configuration object in the database
             for plugin in self.plugins.values():
-                config = self.get_plugin_config(plugin.slug)
+                if config := self.get_plugin_config(plugin.slug):
+                    # Ensure mandatory plugins are marked as active
+                    if config.is_mandatory() and not config.active:
+                        config.active = True
 
-                # Ensure mandatory plugins are marked as active
-                if config.is_mandatory() and not config.active:
-                    config.active = True
-                    config.save(no_reload=True)
+                        try:
+                            config.save(no_reload=True)
+                        except (OperationalError, ProgrammingError):
+                            # Database is not ready, cannot save config
+                            logger.warning(
+                                "Database not ready - cannot set mandatory flag for plugin '%s'",
+                                plugin.slug,
+                            )
 
         except Exception as e:
             logger.exception('Unexpected error during plugin reload: %s', e)
@@ -774,9 +786,9 @@ class PluginsRegistry:
                     f"Plugin '{p}' is not compatible with the current InvenTree version {v}"
                 )
                 if v := plg_i.MIN_VERSION:
-                    _msg += _(f'Plugin requires at least version {v}')  # type: ignore[unsupported-operator]
+                    _msg += _(f'Plugin requires at least version {v}')  # ty:ignore[unsupported-operator]
                 if v := plg_i.MAX_VERSION:
-                    _msg += _(f'Plugin requires at most version {v}')  # type: ignore[unsupported-operator]
+                    _msg += _(f'Plugin requires at most version {v}')  # ty:ignore[unsupported-operator]
                 # Log to error stack
                 log_registry_error(_msg, reference=f'{p}:init_plugin')
             else:
@@ -820,7 +832,7 @@ class PluginsRegistry:
                         logger.exception(
                             '[PLUGIN] Encountered an error with %s:\n%s',
                             getattr(error, 'path', None),
-                            str(error),
+                            error,
                         )
 
         logger.debug('Finished plugin initialization')
@@ -980,9 +992,8 @@ class PluginsRegistry:
 
         if old_hash != self.registry_hash:
             try:
-                logger.info(
-                    'Updating plugin registry hash: %s', str(self.registry_hash)
-                )
+                logger.info('Updating plugin registry hash: %s', self.registry_hash)
+
                 set_global_setting(
                     '_PLUGIN_REGISTRY_HASH', self.registry_hash, change_user=None
                 )
@@ -991,7 +1002,7 @@ class PluginsRegistry:
                 pass
             except Exception as exc:
                 # Some other exception, we want to know about it
-                logger.exception('Failed to update plugin registry hash: %s', str(exc))
+                logger.exception('Failed to update plugin registry hash: %s', exc)
 
     def plugin_settings_keys(self):
         """A list of keys which are used to store plugin settings."""
@@ -1064,7 +1075,7 @@ class PluginsRegistry:
         try:
             reg_hash = get_global_setting('_PLUGIN_REGISTRY_HASH', '', create=False)
         except Exception as exc:
-            logger.exception('Failed to retrieve plugin registry hash: %s', str(exc))
+            logger.exception('Failed to retrieve plugin registry hash: %s', exc)
             return False
 
         if reg_hash and reg_hash != self.registry_hash:

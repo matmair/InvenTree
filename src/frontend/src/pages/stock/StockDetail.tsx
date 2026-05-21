@@ -21,19 +21,22 @@ import {
   IconPackages,
   IconSearch,
   IconShoppingCart,
-  IconSitemap
+  IconSitemap,
+  IconTransform
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { type ReactNode, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ActionButton } from '@lib/components/ActionButton';
+import { StylishText } from '@lib/components/StylishText';
 import { ApiEndpoints } from '@lib/enums/ApiEndpoints';
 import { ModelType } from '@lib/enums/ModelType';
 import { UserRoles } from '@lib/enums/Roles';
 import { apiUrl } from '@lib/functions/Api';
-import { getDetailUrl } from '@lib/functions/Navigation';
-import type { StockOperationProps } from '@lib/types/Forms';
+import { getDetailUrl, getOverviewUrl } from '@lib/functions/Navigation';
+import type { ApiFormFieldSet, StockOperationProps } from '@lib/types/Forms';
+import type { PanelType } from '@lib/types/Panel';
 import { notifications } from '@mantine/notifications';
 import { useBarcodeScanDialog } from '../../components/barcodes/BarcodeScanDialog';
 import AdminButton from '../../components/buttons/AdminButton';
@@ -53,13 +56,11 @@ import {
   EditItemAction,
   OptionsActionDropdown
 } from '../../components/items/ActionDropdown';
-import { StylishText } from '../../components/items/StylishText';
 import InstanceDetail from '../../components/nav/InstanceDetail';
 import NavigationTree from '../../components/nav/NavigationTree';
 import { PageDetail } from '../../components/nav/PageDetail';
 import AttachmentPanel from '../../components/panels/AttachmentPanel';
 import NotesPanel from '../../components/panels/NotesPanel';
-import type { PanelType } from '../../components/panels/Panel';
 import { PanelGroup } from '../../components/panels/PanelGroup';
 import LocateItemButton from '../../components/plugins/LocateItemButton';
 import { StatusRenderer } from '../../components/render/StatusRenderer';
@@ -623,7 +624,8 @@ export default function StockDetail() {
       }),
       NotesPanel({
         model_type: ModelType.stockitem,
-        model_id: stockitem.pk
+        model_id: stockitem.pk,
+        has_note: !!stockitem.notes
       })
     ];
   }, [
@@ -661,6 +663,26 @@ export default function StockDetail() {
     title: t`Edit Stock Item`,
     modalId: 'edit-stock-item',
     fields: editStockItemFields,
+    onFormSuccess: refreshInstance
+  });
+
+  const convertStockItemFields: ApiFormFieldSet = useMemo(() => {
+    return {
+      part: {
+        filters: {
+          active: true,
+          convert_from: stockitem.part
+        }
+      }
+    };
+  }, [stockitem]);
+
+  const convertStockItem = useCreateApiFormModal({
+    url: ApiEndpoints.stock_convert,
+    pk: stockitem.pk,
+    title: t`Convert Stock Item`,
+    modalId: 'convert-stock-item',
+    fields: convertStockItemFields,
     onFormSuccess: refreshInstance
   });
 
@@ -730,7 +752,20 @@ export default function StockDetail() {
     return {
       items: [stockitem],
       model: ModelType.stockitem,
-      refresh: refreshInstance,
+      refresh: () => {
+        const location = stockitem?.location;
+        refreshInstancePromise().then((response) => {
+          if (response.status == 'error') {
+            // If an error occurs refreshing the instance,
+            // the stock likely has likely been depleted
+            if (location) {
+              navigate(getDetailUrl(ModelType.stocklocation, location));
+            } else {
+              navigate(getOverviewUrl(ModelType.stockitem));
+            }
+          }
+        });
+      },
       filters: {
         in_stock: true
       }
@@ -740,7 +775,8 @@ export default function StockDetail() {
   const stockAdjustActions = useStockAdjustActions({
     formProps: stockOperationProps,
     delete: false,
-    assign: !!stockitem.in_stock,
+    changeBatch: false,
+    assign: !!stockitem.in_stock && stockitem.part_detail?.salable,
     return: !!stockitem.consumed_by || !!stockitem.customer,
     merge: false
   });
@@ -809,22 +845,16 @@ export default function StockDetail() {
   });
 
   const stockActions = useMemo(() => {
-    // Can this stock item be transferred to a different location?
-    const canTransfer =
-      user.hasChangeRole(UserRoles.stock) &&
-      !stockitem.sales_order &&
-      !stockitem.belongs_to &&
-      !stockitem.customer &&
-      !stockitem.consumed_by;
-
-    const isBuilding = stockitem.is_building;
-
     const serial = stockitem.serial;
     const serialized =
       serial != null &&
       serial != undefined &&
       serial != '' &&
       stockitem.quantity == 1;
+
+    const canConvert =
+      !!stockitem.part_detail?.variant_of ||
+      !!stockitem.part_detail?.is_template;
 
     return [
       <AdminButton model={ModelType.stockitem} id={stockitem.pk} />,
@@ -891,6 +921,13 @@ export default function StockDetail() {
             hidden: !user.hasChangeRole(UserRoles.stock),
             onClick: () => editStockItem.open()
           }),
+          {
+            name: t`Convert`,
+            tooltip: t`Convert this stock item to a different part`,
+            hidden: !user.hasChangeRole(UserRoles.stock) || !canConvert,
+            icon: <IconTransform color='blue' />,
+            onClick: () => convertStockItem.open()
+          },
           DeleteItemAction({
             hidden: !user.hasDeleteRole(UserRoles.stock),
             onClick: () => deleteStockItem.open()
@@ -942,6 +979,7 @@ export default function StockDetail() {
           />,
           <StatusRenderer
             status={stockitem.status_custom_key || stockitem.status}
+            fallbackStatus={stockitem.status}
             type={ModelType.stockitem}
             options={{
               size: 'lg'
@@ -1021,8 +1059,9 @@ export default function StockDetail() {
         </Stack>
       </InstanceDetail>
       {editStockItem.modal}
-      {duplicateStockItem.modal}
       {deleteStockItem.modal}
+      {convertStockItem.modal}
+      {duplicateStockItem.modal}
       {serializeStockItem.modal}
       {stockAdjustActions.modals.map((modal) => modal.modal)}
       {orderPartsWizard.wizard}

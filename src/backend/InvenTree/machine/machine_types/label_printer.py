@@ -1,6 +1,6 @@
 """Label printing machine type."""
 
-from typing import Union, cast
+from typing import cast
 
 from django.contrib.auth.models import AnonymousUser
 from django.db import models
@@ -59,7 +59,7 @@ class LabelPrinterBaseDriver(BaseDriver):
         label: LabelTemplate,
         items: QuerySet[models.Model],
         **kwargs,
-    ) -> Union[JsonResponse, None]:
+    ) -> JsonResponse | None:
         """Print one or more labels with the provided template and items.
 
         Arguments:
@@ -111,7 +111,7 @@ class LabelPrinterBaseDriver(BaseDriver):
         Returns:
             A class instance of a DRF serializer class, by default this an instance of self.PrintingOptionsSerializer using the *args, **kwargs if existing for this driver
         """
-        return self.PrintingOptionsSerializer(*args, **kwargs)  # type: ignore
+        return self.PrintingOptionsSerializer(*args, **kwargs)
 
     # --- helper functions
     @property
@@ -155,7 +155,7 @@ class LabelPrinterBaseDriver(BaseDriver):
 
     def render_to_png(
         self, label: LabelTemplate, item: models.Model, **kwargs
-    ) -> Union[Image, None]:
+    ) -> Image | None:
         """Helper method to render a label to PNG format for a specific item.
 
         Arguments:

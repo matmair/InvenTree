@@ -1,6 +1,6 @@
 """Code for managing email functionality in InvenTree."""
 
-from typing import Optional, Union
+from typing import Optional
 
 from django.conf import settings
 
@@ -8,7 +8,7 @@ import structlog
 from allauth.account.models import EmailAddress
 
 import InvenTree.ready
-import InvenTree.tasks
+import InvenTree.tasks as tasks
 from common.models import Priority, issue_mail
 
 logger = structlog.get_logger('inventree')
@@ -64,7 +64,7 @@ def is_email_configured() -> bool:
 def send_email(
     subject: str,
     body: str,
-    recipients: Union[str, list],
+    recipients: str | list,
     from_email: Optional[str] = None,
     html_message=None,
     prio: Priority = Priority.NORMAL,
@@ -99,7 +99,7 @@ def send_email(
                 )
                 return False, 'INVE-W7: no from_email or DEFAULT_FROM_EMAIL specified'
 
-    InvenTree.tasks.offload_task(
+    tasks.offload_task(
         issue_mail,
         subject=subject,
         body=body,
@@ -123,7 +123,8 @@ def get_email_for_user(user) -> Optional[str]:
     # Otherwise, find first matching email
     # Priority is given to primary or verified email addresses
     if (
-        email := EmailAddress.objects.filter(user=user)
+        email := EmailAddress.objects
+        .filter(user=user)
         .order_by('-primary', '-verified')
         .first()
     ):

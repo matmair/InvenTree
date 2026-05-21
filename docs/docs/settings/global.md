@@ -27,14 +27,19 @@ Configuration of basic server settings:
 {{ globalsetting("INVENTREE_INSTANCE_TITLE") }}
 {{ globalsetting("INVENTREE_INSTANCE_ID", default="Randomly generated value") }}
 {{ globalsetting("INVENTREE_ANNOUNCE_ID") }}
+{{ globalsetting("INVENTREE_SHOW_SUPERUSER_BANNER") }}
+{{ globalsetting("INVENTREE_SHOW_ADMIN_BANNER") }}
 {{ globalsetting("INVENTREE_RESTRICT_ABOUT") }}
 {{ globalsetting("DISPLAY_FULL_NAMES") }}
 {{ globalsetting("DISPLAY_PROFILE_INFO") }}
-{{ globalsetting("INVENTREE_UPDATE_CHECK_INTERVAL") }}
-{{ globalsetting("INVENTREE_DOWNLOAD_FROM_URL") }}
-{{ globalsetting("INVENTREE_DOWNLOAD_IMAGE_MAX_SIZE") }}
-{{ globalsetting("INVENTREE_DOWNLOAD_FROM_URL_USER_AGENT") }}
+{{ globalsetting("WEEK_STARTS_ON") }}
 {{ globalsetting("INVENTREE_STRICT_URLS") }}
+
+Configuration of various scheduled tasks:
+
+| Name | Description | Default | Units |
+| ---- | ----------- | ------- | ----- |
+{{ globalsetting("INVENTREE_UPDATE_CHECK_INTERVAL") }}
 {{ globalsetting("INVENTREE_BACKUP_ENABLE") }}
 {{ globalsetting("INVENTREE_BACKUP_DAYS") }}
 {{ globalsetting("INVENTREE_DELETE_TASKS_DAYS") }}
@@ -78,7 +83,7 @@ If this setting is enabled, users can reset their password via email. This requi
 
 If this setting is enabled, users must have multi-factor authentication enabled to log in.
 
-#### Auto Fil SSO Users
+#### Auto Fill SSO Users
 
 Automatically fill out user-details from SSO account-data. If this feature is enabled the user is only asked for their username, first- and surname if those values can not be gathered from their SSO profile. This might lead to unwanted usernames bleeding over.
 
@@ -170,15 +175,19 @@ Configuration of label printing:
 {{ globalsetting("PART_SALABLE") }}
 {{ globalsetting("PART_VIRTUAL") }}
 {{ globalsetting("PART_COPY_BOM") }}
+{{ globalsetting("PART_BOM_ALLOW_ZERO_QUANTITY") }}
 {{ globalsetting("PART_COPY_PARAMETERS") }}
 {{ globalsetting("PART_COPY_TESTS") }}
 {{ globalsetting("PART_CATEGORY_PARAMETERS") }}
 {{ globalsetting("PART_CATEGORY_DEFAULT_ICON") }}
-{{ globalsetting("PART_PARAMETER_ENFORCE_UNITS") }}
 
-#### Part Parameter Templates
+#### Parameter Templates
 
-Refer to the section describing [how to create part parameter templates](../part/parameter.md#create-template).
+| Name | Description | Default | Units |
+| ---- | ----------- | ------- | ----- |
+{{ globalsetting("PARAMETER_ENFORCE_UNITS") }}
+
+For more information on parameters, refer to the [parameter documentation](../concepts/parameters.md).
 
 ### Categories
 
@@ -200,6 +209,8 @@ Configuration of stock item options
 | Name | Description | Default | Units |
 | ---- | ----------- | ------- | ----- |
 {{ globalsetting("SERIAL_NUMBER_GLOBALLY_UNIQUE") }}
+{{ globalsetting("STOCK_ALLOW_EDIT_SERIAL") }}
+{{ globalsetting("STOCK_ALLOW_DELETE_SERIALIZED") }}
 {{ globalsetting("STOCK_DELETE_DEPLETED_DEFAULT") }}
 {{ globalsetting("STOCK_BATCH_CODE_TEMPLATE") }}
 {{ globalsetting("STOCK_ENABLE_EXPIRY") }}

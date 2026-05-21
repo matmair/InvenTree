@@ -9,12 +9,14 @@ import GetStartedWidget from './widgets/GetStartedWidget';
 import LanguageSelectDashboardWidget from './widgets/LanguageSelectWidget';
 import NewsWidget from './widgets/NewsWidget';
 import QueryCountDashboardWidget from './widgets/QueryCountDashboardWidget';
+import QueryDashboardWidget from './widgets/QueryDashboardWidget';
+import StocktakeDashboardWidget from './widgets/StocktakeDashboardWidget';
 
 /**
  *
  * @returns A list of built-in dashboard widgets which display the number of results for a particular query
  */
-export function BuiltinQueryCountWidgets(): DashboardWidgetProps[] {
+function BuiltinQueryCountWidgets(): DashboardWidgetProps[] {
   const user = useUserState.getState();
   const globalSettings = useGlobalSettingsState.getState();
 
@@ -47,7 +49,15 @@ export function BuiltinQueryCountWidgets(): DashboardWidgetProps[] {
         bom_valid: false // Only show parts with invalid BOMs
       }
     }),
-    // TODO: 'latest parts'
+    QueryDashboardWidget({
+      label: 'latest-parts',
+      title: t`Latest parts`,
+      description: t`Latest parts`,
+      modelType: ModelType.part,
+      params: {
+        ordering: '-id'
+      }
+    }),
     // TODO: 'recently updated stock'
     QueryCountDashboardWidget({
       title: t`Low Stock`,
@@ -57,6 +67,17 @@ export function BuiltinQueryCountWidgets(): DashboardWidgetProps[] {
       params: {
         active: true,
         low_stock: true,
+        virtual: false
+      }
+    }),
+    QueryCountDashboardWidget({
+      title: t`High Stock`,
+      label: 'hgh-stk',
+      description: t`Show the number of parts which have excess stock`,
+      modelType: ModelType.part,
+      params: {
+        active: true,
+        high_stock: true,
         virtual: false
       }
     }),
@@ -186,7 +207,7 @@ export function BuiltinQueryCountWidgets(): DashboardWidgetProps[] {
   });
 }
 
-export function BuiltinGettingStartedWidgets(): DashboardWidgetProps[] {
+function BuiltinGettingStartedWidgets(): DashboardWidgetProps[] {
   return [
     {
       label: 'gstart',
@@ -207,8 +228,12 @@ export function BuiltinGettingStartedWidgets(): DashboardWidgetProps[] {
   ];
 }
 
-export function BuiltinSettingsWidgets(): DashboardWidgetProps[] {
+function BuiltinSettingsWidgets(): DashboardWidgetProps[] {
   return [ColorToggleDashboardWidget(), LanguageSelectDashboardWidget()];
+}
+
+function BuiltinActionWidgets(): DashboardWidgetProps[] {
+  return [StocktakeDashboardWidget()];
 }
 
 /**
@@ -219,6 +244,7 @@ export default function DashboardWidgetLibrary(): DashboardWidgetProps[] {
   return [
     ...BuiltinQueryCountWidgets(),
     ...BuiltinGettingStartedWidgets(),
-    ...BuiltinSettingsWidgets()
+    ...BuiltinSettingsWidgets(),
+    ...BuiltinActionWidgets()
   ];
 }

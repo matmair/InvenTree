@@ -8,7 +8,6 @@ import {
   IconList,
   IconSitemap,
   IconTruckDelivery,
-  IconUser,
   IconUsersGroup
 } from '@tabler/icons-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -128,12 +127,6 @@ export function useBuildOrderFields({
       link: {
         icon: <IconLink />
       },
-      issued_by: {
-        icon: <IconUser />,
-        filters: {
-          is_active: true
-        }
-      },
       responsible: {
         icon: <IconUsersGroup />,
         filters: {
@@ -226,12 +219,39 @@ export function useBuildOrderOutputFields({
   }, [quantity, batchGenerator.result, serialGenerator.result, trackable]);
 }
 
+export function useBuildAutoAllocateFields({
+  item_type
+}: {
+  item_type: 'all' | 'tracked' | 'untracked';
+}): ApiFormFieldSet {
+  return useMemo(() => {
+    return {
+      location: {},
+      exclude_location: {},
+      item_type: {
+        value: item_type,
+        hidden: true
+      },
+      interchangeable: {
+        hidden: item_type === 'tracked'
+      },
+      substitutes: {},
+      optional_items: {
+        hidden: item_type === 'tracked',
+        value: item_type === 'tracked' ? false : undefined
+      }
+    };
+  }, [item_type]);
+}
+
 function BuildOutputFormRow({
   props,
-  record
+  record,
+  withQuantityColumn = true
 }: Readonly<{
   props: TableFieldRowProps;
   record: any;
+  withQuantityColumn?: boolean;
 }>) {
   const stockItemColumn = useMemo(() => {
     if (record.serial) {
@@ -271,15 +291,18 @@ function BuildOutputFormRow({
           <RenderPartColumn part={record.part_detail} />
         </Table.Td>
         <Table.Td>{stockItemColumn}</Table.Td>
-        <Table.Td>
-          <TableFieldErrorWrapper props={props} errorKey='output'>
-            {quantityColumn}
-          </TableFieldErrorWrapper>
-        </Table.Td>
+        {withQuantityColumn && (
+          <Table.Td>
+            <TableFieldErrorWrapper props={props} errorKey='output'>
+              {quantityColumn}
+            </TableFieldErrorWrapper>
+          </Table.Td>
+        )}
         <Table.Td>{record.batch}</Table.Td>
         <Table.Td>
           <StatusRenderer
-            status={record.status}
+            status={record.custom_status_key || record.status}
+            fallbackStatus={record.status}
             type={ModelType.stockitem}
           />{' '}
         </Table.Td>
@@ -294,10 +317,12 @@ function BuildOutputFormRow({
 export function useCompleteBuildOutputsForm({
   build,
   outputs,
+  hasTrackedItems,
   onFormSuccess
 }: {
   build: any;
   outputs: any[];
+  hasTrackedItems: boolean;
   onFormSuccess: (response: any) => void;
 }) {
   const [location, setLocation] = useState<number | null>(null);
@@ -348,9 +373,11 @@ export function useCompleteBuildOutputsForm({
         }
       },
       notes: {},
-      accept_incomplete_allocation: {}
+      accept_incomplete_allocation: {
+        hidden: !hasTrackedItems
+      }
     };
-  }, [location, outputs]);
+  }, [location, outputs, hasTrackedItems]);
 
   return useCreateApiFormModal({
     url: apiUrl(ApiEndpoints.build_output_complete, build.pk),
@@ -465,7 +492,12 @@ export function useCancelBuildOutputsForm({
         modelRenderer: (row: TableFieldRowProps) => {
           const record = outputs.find((output) => output.pk == row.item.output);
           return (
-            <BuildOutputFormRow props={row} record={record} key={record.pk} />
+            <BuildOutputFormRow
+              props={row}
+              record={record}
+              key={record.pk}
+              withQuantityColumn={false}
+            />
           );
         },
         headers: [
@@ -517,7 +549,7 @@ function BuildAllocateLineRow({
       field_type: 'related field',
       api_url: apiUrl(ApiEndpoints.stock_item_list),
       model: ModelType.stockitem,
-      autoFill: !!output?.serial,
+      autoFill: !output || !!output?.serial,
       autoFillFilters: {
         serial: output?.serial
       },
@@ -702,6 +734,7 @@ export function useAllocateStockToBuildForm({
     preFormContent: preFormContent,
     successMessage: t`Stock items allocated`,
     onFormSuccess: onFormSuccess,
+    keepOpenOption: true,
     initialData: {
       items: lineItems
         .filter((item) => {
@@ -814,7 +847,7 @@ export function useConsumeBuildItemsForm({
     url: ApiEndpoints.build_order_consume,
     pk: buildId,
     title: t`Consume Stock`,
-    successMessage: t`Stock items consumed`,
+    successMessage: null,
     onFormSuccess: onFormSuccess,
     size: '80%',
     fields: consumeFields,
@@ -915,7 +948,7 @@ export function useConsumeBuildLinesForm({
     url: ApiEndpoints.build_order_consume,
     pk: buildId,
     title: t`Consume Stock`,
-    successMessage: t`Stock items consumed`,
+    successMessage: null,
     onFormSuccess: onFormSuccess,
     fields: consumeFields,
     initialData: {

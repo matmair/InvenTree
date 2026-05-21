@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { ModelType } from '@lib/enums/ModelType';
 import { formatDecimal } from '@lib/functions/Formatting';
 import { getDetailUrl } from '@lib/functions/Navigation';
-import { shortenString } from '../../functions/tables';
+import { shortenString } from '@lib/functions/String';
 import { TableHoverCard } from '../../tables/TableHoverCard';
 import { ApiIcon } from '../items/ApiIcon';
 import { type InstanceRenderInterface, RenderInlineModel } from './Instance';
@@ -35,6 +35,10 @@ export function RenderPart(
   } else if (stock != null) {
     badgeText = `${t`Stock`}: ${formatDecimal(stock)}`;
     badgeColor = instance.minimum_stock > stock ? 'yellow' : 'green';
+
+    if (instance.maximum_stock > 0 && stock > instance.maximum_stock) {
+      badgeColor = 'teal';
+    }
   }
 
   const extra: ReactNode[] = [];
@@ -137,23 +141,6 @@ export function RenderPartCategory(
           ? getDetailUrl(ModelType.partcategory, instance.pk)
           : undefined
       }
-    />
-  );
-}
-
-/**
- * Inline rendering of a PartParameterTemplate instance
- */
-export function RenderPartParameterTemplate({
-  instance
-}: Readonly<{
-  instance: any;
-}>): ReactNode {
-  return (
-    <RenderInlineModel
-      primary={instance.name}
-      secondary={instance.description}
-      suffix={instance.units}
     />
   );
 }

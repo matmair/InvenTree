@@ -55,7 +55,7 @@ class InvenTreeUINotifications(NotificationMixin, InvenTreePlugin):
                 )
             )
 
-        NotificationMessage.objects.bulk_create(entries)
+        NotificationMessage.objects.bulk_create(entries, batch_size=250)
 
         return True
 
@@ -128,7 +128,7 @@ class InvenTreeSlackNotifications(NotificationMixin, SettingsMixin, InvenTreePlu
 
     SETTINGS = {
         'NOTIFICATION_SLACK_URL': {
-            'name': _('Slack incoming webhook url'),
+            'name': _('Slack incoming webhook URL'),
             'description': _('URL that is used to send messages to a slack channel'),
             'protected': True,
         }

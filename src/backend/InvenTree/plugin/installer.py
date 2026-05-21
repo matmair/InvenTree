@@ -100,7 +100,7 @@ def get_install_info(packagename: str) -> dict:
 
         output = error.output.decode('utf-8')
         info['error'] = output
-        logger.exception('Plugin lookup failed: %s', str(output))
+        logger.exception('Plugin lookup failed: %s', output)
     except Exception:
         log_error('get_install_info', scope='pip')
 
@@ -132,7 +132,7 @@ def install_plugins_file():
     pf = settings.PLUGIN_FILE
 
     if not pf or not pf.exists():
-        logger.warning('Plugin file %s does not exist', str(pf))
+        logger.warning('Plugin file %s does not exist', pf)
         return
 
     cmd = [
@@ -149,7 +149,7 @@ def install_plugins_file():
         pip_command(*cmd)
     except subprocess.CalledProcessError as error:
         output = error.output.decode('utf-8')
-        logger.exception('Plugin file installation failed: %s', str(output))
+        logger.exception('Plugin file installation failed: %s', output)
         log_error('install_plugins_file', scope='pip')
         return False
     except Exception as exc:
@@ -183,7 +183,7 @@ def update_plugins_file(install_name, full_package=None, version=None, remove=Fa
     pf = settings.PLUGIN_FILE
 
     if not pf or not pf.exists():
-        logger.warning('Plugin file %s does not exist', str(pf))
+        logger.warning('Plugin file %s does not exist', pf)
         return
 
     def compare_line(line: str):
@@ -195,7 +195,7 @@ def update_plugins_file(install_name, full_package=None, version=None, remove=Fa
         with pf.open(mode='r') as f:
             lines = f.readlines()
     except Exception as exc:
-        logger.exception('Failed to read plugins file: %s', str(exc))
+        logger.exception('Failed to read plugins file: %s', exc)
         log_error('update_plugins_file', scope='plugins')
         return
 
@@ -232,7 +232,7 @@ def update_plugins_file(install_name, full_package=None, version=None, remove=Fa
                 if not line.endswith('\n'):
                     f.write('\n')
     except Exception as exc:
-        logger.exception('Failed to add plugin to plugins file: %s', str(exc))
+        logger.exception('Failed to add plugin to plugins file: %s', exc)
         log_error('update_plugins_file', scope='plugins')
 
 
@@ -245,8 +245,8 @@ def install_plugin(url=None, packagename=None, user=None, version=None):
         user: Optional user performing the installation
         version: Optional version specifier
     """
-    if user and not user.is_staff:
-        raise ValidationError(_('Only staff users can administer plugins'))
+    if user and not user.is_superuser:
+        raise ValidationError(_('Only superuser accounts can administer plugins'))
 
     if settings.PLUGINS_INSTALL_DISABLED:
         raise ValidationError(_('Plugin installation is disabled'))
@@ -283,6 +283,13 @@ def install_plugin(url=None, packagename=None, user=None, version=None):
 
         if version:
             full_pkg = f'{full_pkg}=={version}'
+
+    if not full_pkg:
+        raise ValidationError(_('No package name or URL provided for installation'))
+
+    # Sanitize the package name for installation
+    if any(c in full_pkg for c in ';&|`$()'):
+        raise ValidationError(_('Invalid characters in package name or URL'))
 
     install_name.append(full_pkg)
 
@@ -348,6 +355,9 @@ def uninstall_plugin(cfg: plugin.models.PluginConfig, user=None, delete_config=T
         delete_config: If True, delete the plugin configuration from the database
     """
     from plugin.registry import registry
+
+    if user and not user.is_superuser:
+        raise ValidationError(_('Only superuser accounts can administer plugins'))
 
     if settings.PLUGINS_INSTALL_DISABLED:
         raise ValidationError(_('Plugin uninstalling is disabled'))

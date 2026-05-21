@@ -98,7 +98,7 @@ Sometimes, users may encounter unexpected error messages when updating their Inv
 
 The most common problem here is that the correct sequence of steps has not been followed:
 
-1. Ensure that the InvenTree web server and background worker processes are *halted*
+1. Ensure that the InvenTree [web server](./start/processes.md#web-server) and [background worker](./start/processes.md#background-worker) processes are *halted*
 1. Update the InvenTree software (e.g. using git or docker, depending on installation method)
 1. Run the `invoke update` command
 1. Restart the web server and background worker processes
@@ -150,7 +150,7 @@ or
 
 ### Background Worker "Not Running"
 
-The background worker process must be started separately to the web-server application.
+The [background worker process](./start/processes.md#background-worker) must be started separately to the web-server application.
 
 From the top-level source directory, run the following command from a separate terminal, while the server is already running:
 
@@ -195,3 +195,14 @@ This means that either:
 - The docker user does not have write permission to the specified directory
 
 In either case, ensure that the directory is available *on your local machine* and the user account has the required permissions.
+
+
+## Error Rendering Component
+
+Sometimes, following a software update, you may find that certain components of the web interface are not rendering correctly, and presented with a message similar to the screenshow below:
+
+{{ image("faq/boundary.png", "Error Rendering Component") }}
+
+This is often due to a caching issue with your web browser. Try performing a hard refresh of the page to clear the cache, this should resolve the issue in most cases.
+
+If the problem persists, refer to the [troubleshooting guide](./troubleshooting.md) for further assistance.
