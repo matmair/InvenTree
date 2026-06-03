@@ -4,7 +4,6 @@
 {% load report %}
 {% load barcode %}
 {% load inventree_extras %}
-{% load markdownify %}
 
 {% block page_margin %}
 margin: 2cm;
@@ -172,7 +171,7 @@ content: "v{{ report_revision }} - {% format_date date %}";
 <h3>{% trans "Notes" %}</h3>
 
 {% if build.notes %}
-{{ build.notes|markdownify }}
+{{ build.notes }}
 {% endif %}
 
 {% endblock page_content %}

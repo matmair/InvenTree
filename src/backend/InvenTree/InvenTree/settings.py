@@ -32,16 +32,7 @@ from InvenTree.version import checkMinPythonVersion, inventreeCommitHash
 from users.oauth2_scopes import oauth2_scopes
 
 from . import config
-from .setting import (
-    db_backend,
-    ldap,
-    locales,
-    markdown,
-    spectacular,
-    storages,
-    tracing,
-    worker,
-)
+from .setting import db_backend, ldap, locales, spectacular, storages, tracing, worker
 
 try:
     import django_stubs_ext
@@ -341,7 +332,6 @@ INSTALLED_APPS = [
     'corsheaders',  # Cross-origin Resource Sharing for DRF
     'django_cleanup.apps.CleanupConfig',  # Automatically delete orphaned MEDIA files
     'mptt',  # Modified Preorder Tree Traversal
-    'markdownify',  # Markdown template rendering
     'djmoney',  # django-money integration
     'djmoney.contrib.exchange',  # django-money exchange rates
     'error_report',  # Error reporting in the admin interface
@@ -1065,11 +1055,6 @@ LOGOUT_REDIRECT_URL = get_setting(
     'INVENTREE_LOGOUT_REDIRECT_URL', 'logout_redirect_url', 'index'
 )
 # endregion auth
-
-# Markdownify configuration
-# Ref: https://django-markdownify.readthedocs.io/en/latest/settings.html
-
-MARKDOWNIFY = markdown.markdownify_config()
 
 # Ignore these error types for in-database error logging
 IGNORED_ERRORS = [Http404, HttpResponseGone, django.core.exceptions.PermissionDenied]

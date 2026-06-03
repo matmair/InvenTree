@@ -89,12 +89,6 @@ bcrypt==5.0.0 \
     # via
     #   -c src/backend/requirements.txt
     #   paramiko
-bleach==4.1.0 \
-    --hash=sha256:0900d8b37eba61a802ee40ac0061f8c2b5dee29c1927dd1d233e075ebf5a71da \
-    --hash=sha256:4d2651ab93271d1129ac9cbc679f524565cc8a1b791909c4a51eac4446a15994
-    # via
-    #   -c src/backend/requirements.txt
-    #   django-markdownify
 blessed==1.42.0 \
     --hash=sha256:34b460b77562ed21f807cfd7c527b983b0cc300c98810c8076f283b7bcd45ba7 \
     --hash=sha256:f96c4a6dc664b48e0b832fa732acc16df67abd30f0ec35babf99025982f21852
@@ -535,7 +529,6 @@ django==5.2.14 \
     #   django-flags
     #   django-ical
     #   django-js-asset
-    #   django-markdownify
     #   django-money
     #   django-oauth-toolkit
     #   django-otp
@@ -628,12 +621,6 @@ django-mailbox==4.10.1 \
 django-maintenance-mode==0.22.0 \
     --hash=sha256:502f04f845d6996e8add321186b3b9236c3702de7cb0ab14952890af6523b9e5 \
     --hash=sha256:a9cf2ba79c9945bd67f98755a6cfd281869d39b3745bbb5d1f571d058657aa85
-    # via
-    #   -c src/backend/requirements.txt
-    #   -r src/backend/requirements.in
-django-markdownify==0.9.1 \
-    --hash=sha256:06ff2994ff09ce030b50de8c6fc5b89b9c25a66796948aff55370716ca1233af \
-    --hash=sha256:24ba68b8a5996b6ec9632d11a3fd2e7159cb7e6becd3104e0a9372b5a2a148ef
     # via
     #   -c src/backend/requirements.txt
     #   -r src/backend/requirements.in
@@ -1178,12 +1165,6 @@ lxml==6.1.1 \
     #   -c src/backend/requirements.txt
     #   python3-saml
     #   xmlsec
-markdown==3.10.2 \
-    --hash=sha256:994d51325d25ad8aa7ce4ebaec003febcce822c3f8c911e3b17c52f7f589f950 \
-    --hash=sha256:e91464b71ae3ee7afd3017d9f358ef0baf158fd9a298db92f1d4761133824c36
-    # via
-    #   -c src/backend/requirements.txt
-    #   django-markdownify
 markupsafe==3.0.3 \
     --hash=sha256:0303439a41979d9e74d18ff5e2dd8c43ed6c6001fd40e5bf2e43f7bd9bbc523f \
     --hash=sha256:068f375c472b3e7acbe2d5318dea141359e6900156b5b2ba06a30b169086b91a \
@@ -1479,7 +1460,6 @@ packaging==26.2 \
     --hash=sha256:ff452ff5a3e828ce110190feff1178bb1f2ea2281fa2075aadb987c2fb221661
     # via
     #   -c src/backend/requirements.txt
-    #   bleach
     #   gunicorn
     #   opentelemetry-instrumentation
 paramiko==5.0.0 \
@@ -2119,7 +2099,6 @@ six==1.17.0 \
     --hash=sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81
     # via
     #   -c src/backend/requirements.txt
-    #   bleach
     #   python-dateutil
 sqlparse==0.5.5 \
     --hash=sha256:12a08b3bf3eec877c519589833aed092e2444e68240a3577e8e26148acc7b1ba \
@@ -2215,7 +2194,6 @@ webencodings==0.5.1 \
     --hash=sha256:b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923
     # via
     #   -c src/backend/requirements.txt
-    #   bleach
     #   cssselect2
     #   tinycss2
     #   tinyhtml5

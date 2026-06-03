@@ -8,11 +8,7 @@ from rest_framework.response import Response
 import data_exporter.mixins
 import importer.mixins
 from InvenTree.fields import InvenTreeNotesField, OutputConfiguration
-from InvenTree.helpers import (
-    clean_markdown,
-    remove_non_printable_characters,
-    strip_html_tags,
-)
+from InvenTree.helpers import remove_non_printable_characters, strip_html_tags
 from InvenTree.schema import schema_for_view_output_options
 from InvenTree.serializers import FilterableSerializerMixin
 
@@ -56,7 +52,6 @@ class CleanMixin:
 
         # By default, newline characters are removed
         remove_newline = True
-        is_markdown = False
 
         try:
             if hasattr(self, 'serializer_class'):
@@ -69,7 +64,6 @@ class CleanMixin:
                 for field_type in allow_newline:
                     if issubclass(type(field_base), field_type[0]):
                         remove_newline = False
-                        is_markdown = field_type[1]
                         break
 
         except AttributeError:
@@ -82,9 +76,6 @@ class CleanMixin:
         )
 
         cleaned = strip_html_tags(cleaned, field_name=field)
-
-        if is_markdown:
-            cleaned = clean_markdown(cleaned)
 
         return cleaned
 
