@@ -385,7 +385,12 @@ class GetAuthToken(GenericAPIView):
 
         if not token:
             # User is authenticated, and requesting a token against the provided name.
-            token = ApiToken.objects.create(user=request.user, name=name)
+            token = ApiToken.objects.create(
+                user=request.user,
+                name=name,
+                key=ApiToken.generate_key(),
+                version=2
+            )
 
             logger.info(
                 "Created new API token for user '%s' (name='%s')", user.username, name
@@ -399,7 +404,11 @@ class GetAuthToken(GenericAPIView):
         token.set_metadata('server_name', request.META.get('SERVER_NAME', ''))
         token.set_metadata('server_port', request.META.get('SERVER_PORT', ''))
 
-        data = {'token': token.key, 'name': token.name, 'expiry': token.expiry}
+        data = {
+            'token': getattr(token, 'exposed_key', token.key),
+            'name': token.name,
+            'expiry': token.expiry
+        }
 
         # Ensure that the users session is logged in
         if not get_user(request).is_authenticated:
@@ -456,15 +465,32 @@ class TokenListView(TokenMixin, ListCreateAPI):
 
     def create(self, request, *args, **kwargs):
         """Create token and show key to user."""
-        resp = super().create(request, *args, **kwargs)
-        resp.data['token'] = self.serializer_class.Meta.model.objects.get(
-            id=resp.data['id']
-        ).key
-        return resp
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.save()
+
+        data = serializer.data
+        data['token'] = getattr(token, 'exposed_key', token.key)
+
+        headers = self.get_success_headers(data)
+        return Response(data, status=201, headers=headers)
 
     def get(self, request, *args, **kwargs):
         """List of user tokens for current user."""
         return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """Handle custom actions."""
+        if 'revoke_v1' in request.data:
+            if not request.user.is_superuser:
+                raise exceptions.PermissionDenied()
+
+            v1_tokens = ApiToken.objects.filter(version=1, revoked=False)
+            count = v1_tokens.count()
+            v1_tokens.update(revoked=True)
+            return Response({'status': f'Revoked {count} tokens'})
+
+        return self.create(request, *args, **kwargs)
 
 
 class TokenDetailView(TokenMixin, DestroyAPIView, RetrieveAPI):
