@@ -1189,4 +1189,6 @@ PRESIGNED_URL_EXPIRATION = 600
 TAGGIT_CASE_INSENSITIVE = True
 
 # API Token Hashing
-API_TOKEN_PEPPERS = get_setting('INVENTREE_API_TOKEN_PEPPERS', 'api_token_peppers', {}, typecast=dict)
+API_TOKEN_PEPPERS = get_setting(
+    'INVENTREE_API_TOKEN_PEPPERS', 'api_token_peppers', {}, typecast=dict
+)

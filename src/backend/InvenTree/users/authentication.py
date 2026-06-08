@@ -39,7 +39,9 @@ class ApiTokenAuthentication(TokenAuthentication):
                 peppers = getattr(settings, 'API_TOKEN_PEPPERS', {})
                 pepper = peppers.get(pepper_id) if pepper_id else settings.SECRET_KEY
 
-                if pepper and hmac.compare_digest(t.token_hash, t.generate_hash(key, pepper)):
+                if pepper and hmac.compare_digest(
+                    t.token_hash, t.generate_hash(key, pepper)
+                ):
                     token = t
                     break
 

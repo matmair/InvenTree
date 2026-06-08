@@ -134,9 +134,7 @@ class ApiToken(AuthToken, InvenTree.models.MetadataMixin):
     def generate_hash(key, pepper):
         """Generate a HMAC-SHA256 hash for a token key."""
         return hmac.new(
-            key=pepper.encode(),
-            msg=key.encode(),
-            digestmod=hashlib.sha256
+            key=pepper.encode(), msg=key.encode(), digestmod=hashlib.sha256
         ).hexdigest()
 
     @staticmethod

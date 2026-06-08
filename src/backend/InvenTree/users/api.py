@@ -386,10 +386,7 @@ class GetAuthToken(GenericAPIView):
         if not token:
             # User is authenticated, and requesting a token against the provided name.
             token = ApiToken.objects.create(
-                user=request.user,
-                name=name,
-                key=ApiToken.generate_key(),
-                version=2
+                user=request.user, name=name, key=ApiToken.generate_key(), version=2
             )
 
             logger.info(
@@ -407,7 +404,7 @@ class GetAuthToken(GenericAPIView):
         data = {
             'token': getattr(token, 'exposed_key', token.key),
             'name': token.name,
-            'expiry': token.expiry
+            'expiry': token.expiry,
         }
 
         # Ensure that the users session is logged in

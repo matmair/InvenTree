@@ -73,9 +73,14 @@ class ApiTokenAdmin(admin.ModelAdmin):
             # Add warning for v1 tokens
             if obj.version == 1:
                 from django.utils.safestring import mark_safe
+
                 obj.v1_warning = mark_safe(
                     '<div style="color: red; font-weight: bold; padding: 10px; border: 1px solid red;">'
-                    + str(_('This is an old (v1) token. It is stored in plaintext and should be replaced.'))
+                    + str(
+                        _(
+                            'This is an old (v1) token. It is stored in plaintext and should be replaced.'
+                        )
+                    )
                     + '</div>'
                 )
                 ro.append('v1_warning')
