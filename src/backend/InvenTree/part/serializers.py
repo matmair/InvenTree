@@ -103,6 +103,8 @@ class CategorySerializer(
             'structural',
             'icon',
             'parent_default_location',
+            # Optional fields
+            'parameters',
         ]
         read_only_fields = ['level', 'pathstring']
 
@@ -176,15 +178,28 @@ class CategorySerializer(
 
     parent_default_location = serializers.IntegerField(read_only=True, allow_null=True)
 
+    parameters = common.filters.enable_parameters_filter()
 
-class CategoryTree(InvenTree.serializers.InvenTreeModelSerializer):
+
+class CategoryTreeSerializer(InvenTree.serializers.InvenTreeModelSerializer):
     """Serializer for PartCategory tree."""
 
     class Meta:
         """Metaclass defining serializer fields."""
 
         model = PartCategory
-        fields = ['pk', 'name', 'parent', 'icon', 'structural', 'subcategories']
+        fields = [
+            'pk',
+            'name',
+            'description',
+            'pathstring',
+            'parent',
+            'tree_id',
+            'level',
+            'icon',
+            'structural',
+            'subcategories',
+        ]
 
     subcategories = serializers.IntegerField(label=_('Subcategories'), read_only=True)
 

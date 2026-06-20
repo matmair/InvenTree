@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from django.contrib.auth.models import User
-from django.db.models import F, Q
+from django.db.models import F, OuterRef, Q, Subquery, Sum
+from django.db.models.functions import Coalesce
 from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
 
@@ -394,9 +395,7 @@ class BuildList(
         serializer = self.get_serializer(data=self.clean_data(request.data))
         serializer.is_valid(raise_exception=True)
 
-        build = serializer.save()
-        build.issued_by = request.user
-        build.save()
+        serializer.save(issued_by=request.user)
 
         headers = self.get_success_headers(serializer.data)
         return Response(
@@ -520,8 +519,22 @@ class BuildLineFilter(FilterSet):
         - The quantity available for each BuildLine (including variants and substitutes)
         - The quantity allocated for each BuildLine
         """
-        flt = Q(
-            quantity__lte=F('allocated')
+        allocated_subquery = (
+            BuildItem.objects
+            .filter(build_line=OuterRef('pk'))
+            .values('build_line')
+            .annotate(total=Sum('quantity'))
+            .values('total')
+        )
+
+        queryset = queryset.alias(
+            allocated_quantity=Coalesce(Subquery(allocated_subquery), 0)
+        )
+
+        # A query filter construct to determine the total quantity available for this BuildLine,
+        # taking into account any stock which is already allocated or consumed
+        available = (
+            F('allocated_quantity')
             + F('consumed')
             + F('available_stock')
             + F('available_substitute_stock')
@@ -529,8 +542,9 @@ class BuildLineFilter(FilterSet):
         )
 
         if str2bool(value):
-            return queryset.filter(flt)
-        return queryset.exclude(flt)
+            return queryset.filter(quantity__lte=available)
+
+        return queryset.filter(quantity__gt=available)
 
     on_order = rest_filters.BooleanFilter(label=_('On Order'), method='filter_on_order')
 
