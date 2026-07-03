@@ -103,6 +103,10 @@ const LocationTypesTable = Loadable(
   lazy(() => import('../../../../tables/stock/LocationTypesTable'))
 );
 
+const DialogProfilePanel = Loadable(
+  lazy(() => import('./DialogProfilePanel'))
+);
+
 export default function AdminCenter() {
   const user = useUserState();
 
@@ -189,6 +193,12 @@ export default function AdminCenter() {
         content: <UnitManagementPanel />
       },
       {
+        name: 'dialog-profiles',
+        label: t`Dialog Profiles`,
+        icon: <IconListDetails />,
+        content: <DialogProfilePanel />
+      },
+      {
         name: 'parameters',
         label: t`Parameters`,
         icon: <IconList />,
@@ -267,7 +277,8 @@ export default function AdminCenter() {
           'export',
           'project-codes',
           'custom-states',
-          'custom-units'
+          'custom-units',
+          'dialog-profiles'
         ]
       },
       {

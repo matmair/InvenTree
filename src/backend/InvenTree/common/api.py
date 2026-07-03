@@ -545,6 +545,18 @@ class TagDetail(TagMixin, RetrieveUpdateDestroyAPI):
     """Detail view for a particular tag."""
 
 
+class DialogProfileViewset(DataExportViewMixin, viewsets.ModelViewSet):
+    """Viewset for DialogProfile model."""
+
+    queryset = common.models.DialogProfile.objects.all()
+    serializer_class = common.serializers.DialogProfileSerializer
+    permission_classes = [IsStaffOrReadOnlyScope]
+    filter_backends = SEARCH_ORDER_FILTER
+    filterset_fields = ['enabled']
+    ordering_fields = ['name']
+    search_fields = ['name', 'description']
+
+
 class CustomUnitViewset(DataExportViewMixin, viewsets.ModelViewSet):
     """List view for custom units."""
 
@@ -582,6 +594,7 @@ class CustomUnitViewset(DataExportViewMixin, viewsets.ModelViewSet):
         }
 
 
+common_router.register('dialog-profile', DialogProfileViewset, basename='api-dialog-profile')
 common_router.register('units', CustomUnitViewset, basename='api-custom-unit')
 
 

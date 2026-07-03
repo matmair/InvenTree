@@ -1,10 +1,15 @@
 """InvenTree API version information."""
 
 # InvenTree API version
-INVENTREE_API_VERSION = 513
+INVENTREE_API_VERSION = 514
 """Increment this API version number whenever there is a significant change to the API that any clients need to know about."""
 
 INVENTREE_API_TEXT = """
+
+v514 -> 2026-07-03 : https://github.com/inventree/InvenTree/pull/12263
+    - Adds DialogProfile model and API endpoints
+    - Adds DIALOG_PROFILES_ENABLED system setting
+    - Integrates Dialog Profiles into API metadata filtering
 
 v513 -> 2026-06-25 : https://github.com/inventree/InvenTree/pull/12250
     - Adds "active" field to the ProjectCode model and API endpoints

@@ -77,10 +77,47 @@ class InvenTreeMetadata(SimpleMetadata):
 
     def determine_metadata(self, request, view):
         """Overwrite the metadata to adapt to the request user."""
+        from django.core.cache import cache
+
+        from common.models import DialogProfile
+        from common.settings import get_global_setting
+
         self.request = request
         self.view = view
 
         metadata = super().determine_metadata(request, view)
+
+        # Apply dialog profiles if enabled
+        if get_global_setting('DIALOG_PROFILES_ENABLED', cache=True):
+            try:
+                # Extract the model name associated with the view
+                model = InvenTree.permissions.get_model_for_view(view)
+                model_name = model._meta.model_name
+
+                # Find all enabled profiles
+                cache_key = 'inventree_dialog_profiles'
+                profile_definitions = cache.get(cache_key)
+
+                if profile_definitions is None:
+                    profiles = DialogProfile.objects.filter(enabled=True)
+                    profile_definitions = [p.definition for p in profiles]
+                    cache.set(cache_key, profile_definitions, timeout=3600)
+
+                hidden_fields = set()
+                for definition in profile_definitions:
+                    if model_name in definition:
+                        hidden_fields.update(definition[model_name])
+
+                if hidden_fields:
+                    actions = metadata.get('actions', {})
+                    for method in actions:
+                        for field in hidden_fields:
+                            if field in actions[method]:
+                                actions[method][field]['hidden'] = True
+
+            except Exception:
+                # Fallback if model cannot be determined
+                pass
 
         """
         Custom context information to pass through to the OPTIONS endpoint,

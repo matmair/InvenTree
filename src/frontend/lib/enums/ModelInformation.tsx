@@ -325,5 +325,11 @@ export const ModelInformationDict: ModelDict = {
     label_multiple: () => t`Tags`,
     api_endpoint: ApiEndpoints.tag_list,
     icon: 'tag'
+  },
+  dialogprofile: {
+    label: () => t`Dialog Profile`,
+    label_multiple: () => t`Dialog Profiles`,
+    api_endpoint: ApiEndpoints.dialog_profile_list,
+    icon: 'list_details'
   }
 };

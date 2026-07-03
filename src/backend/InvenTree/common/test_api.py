@@ -1170,6 +1170,50 @@ class TagAPITests(InvenTreeAPITestCase):
         self.assertNotIn(self.part_b.pk, pks)
 
 
+class DialogProfileAPITests(InvenTreeAPITestCase):
+    """API tests for the DialogProfile endpoint."""
+
+    roles = 'all'
+
+    def test_dialog_profile_list(self):
+        """Test the DialogProfile API list endpoint."""
+        url = reverse('api-dialog-profile-list')
+
+        common.models.DialogProfile.objects.create(name='Profile A', definition={})
+        common.models.DialogProfile.objects.create(name='Profile B', definition={}, enabled=False)
+
+        response = self.get(url)
+        self.assertEqual(len(response.data), 2)
+
+        response = self.get(url, data={'enabled': True})
+        self.assertEqual(len(response.data), 1)
+
+    def test_dialog_profile_crud(self):
+        """Test CRUD operations for DialogProfile."""
+        url = reverse('api-dialog-profile-list')
+
+        # Create
+        data = {
+            'name': 'New Profile',
+            'definition': {'part': ['link']}
+        }
+        response = self.post(url, data, expected_code=201)
+        pk = response.data['pk']
+
+        # Read
+        response = self.get(reverse('api-dialog-profile-detail', kwargs={'pk': pk}))
+        self.assertEqual(response.data['name'], 'New Profile')
+        self.assertEqual(response.data['definition'], {'part': ['link']})
+
+        # Update
+        response = self.patch(reverse('api-dialog-profile-detail', kwargs={'pk': pk}), {'name': 'Updated Profile'}, expected_code=200)
+        self.assertEqual(response.data['name'], 'Updated Profile')
+
+        # Delete
+        self.delete(reverse('api-dialog-profile-detail', kwargs={'pk': pk}), expected_code=204)
+        self.assertFalse(common.models.DialogProfile.objects.filter(pk=pk).exists())
+
+
 class SelectionListLockedTest(InvenTreeAPITestCase):
     """Tests that a locked SelectionList rejects all entry mutations."""
 
