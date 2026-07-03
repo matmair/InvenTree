@@ -3018,6 +3018,87 @@ class Parameter(
         return self.template.description
 
 
+@receiver(post_save, sender=ParameterTemplate, dispatch_uid='post_save_parameter_template')
+def post_save_parameter_template(sender, instance, created, **kwargs):
+    """Callback function when a ParameterTemplate is created or saved."""
+    import common.tasks
+
+    if InvenTree.ready.canAppAccessDatabase() and not InvenTree.ready.isImportingData():
+        if not created:
+            # Schedule a background task to rebuild the parameters against this template
+            InvenTree.tasks.offload_task(
+                common.tasks.rebuild_parameters,
+                instance.pk,
+                force_async=True,
+                group='parameters',
+            )
+
+
+class DialogProfile(InvenTree.models.InvenTreeModel):
+    """A DialogProfile is used to customize the visibility of fields in dialogs.
+
+    Attributes:
+        name: The name of the profile
+        description: A description of the profile
+        enabled: Is this profile enabled?
+        definition: A JSON field containing the profile definition
+    """
+
+    class Meta:
+        """Meta options for DialogProfile."""
+
+        verbose_name = _('Dialog Profile')
+        verbose_name_plural = _('Dialog Profiles')
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name'),
+        help_text=_('Name of the dialog profile'),
+        unique=True,
+    )
+
+    description = models.CharField(
+        max_length=250,
+        verbose_name=_('Description'),
+        help_text=_('Description of the dialog profile'),
+        blank=True,
+    )
+
+    enabled = models.BooleanField(
+        default=True,
+        verbose_name=_('Enabled'),
+        help_text=_('Is this dialog profile enabled?'),
+    )
+
+    definition = models.JSONField(
+        verbose_name=_('Definition'),
+        help_text=_('JSON definition for the dialog profile'),
+        default=dict,
+        blank=True,
+    )
+
+    def save(self, *args, **kwargs):
+        """Clear cache on save."""
+        from django.core.cache import cache
+        cache.delete('inventree_dialog_profiles')
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """Clear cache on delete."""
+        from django.core.cache import cache
+        cache.delete('inventree_dialog_profiles')
+        super().delete(*args, **kwargs)
+
+    def __str__(self):
+        """String representation of a DialogProfile."""
+        return self.name
+
+    @staticmethod
+    def get_api_url():
+        """Return the API URL for this model."""
+        return reverse('api-dialog-profile-list')
+
+
 class BarcodeScanResult(InvenTree.models.InvenTreeModel):
     """Model for storing barcode scans results."""
 

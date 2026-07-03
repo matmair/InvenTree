@@ -52,6 +52,7 @@ import {
   RenderError,
   RenderImportSession,
   RenderParameter,
+  RenderDialogProfile,
   RenderParameterTemplate,
   RenderProjectCode,
   RenderSelectionEntry,
@@ -117,6 +118,7 @@ export const RendererLookup: ModelRendererDict = {
   [ModelType.contenttype]: RenderContentType,
   [ModelType.selectionlist]: RenderSelectionList,
   [ModelType.selectionentry]: RenderSelectionEntry,
+  [ModelType.dialogprofile]: RenderDialogProfile,
   [ModelType.error]: RenderError,
   [ModelType.tag]: RenderTag
 };

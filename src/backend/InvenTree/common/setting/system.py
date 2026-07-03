@@ -1280,4 +1280,10 @@ SYSTEM_SETTINGS: dict[str, InvenTreeSettingsKeyType] = {
         'default': True,
         'validator': bool,
     },
+    'DIALOG_PROFILES_ENABLED': {
+        'name': _('Enable Dialog Profiles'),
+        'description': _('Enable customising shown dialog fields via profiles'),
+        'default': False,
+        'validator': bool,
+    },
 }

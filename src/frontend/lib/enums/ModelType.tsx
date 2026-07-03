@@ -38,6 +38,7 @@ export enum ModelType {
   contenttype = 'contenttype',
   selectionlist = 'selectionlist',
   selectionentry = 'selectionentry',
+  dialogprofile = 'dialogprofile',
   error = 'error',
   tag = 'tag'
 }

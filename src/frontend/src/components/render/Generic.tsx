@@ -44,6 +44,19 @@ export function RenderProjectCode({
   );
 }
 
+export function RenderDialogProfile({
+  instance
+}: Readonly<InstanceRenderInterface>): ReactNode {
+  return (
+    instance && (
+      <RenderInlineModel
+        primary={instance.name}
+        suffix={instance.description}
+      />
+    )
+  );
+}
+
 export function RenderContentType({
   instance
 }: Readonly<InstanceRenderInterface>): ReactNode {

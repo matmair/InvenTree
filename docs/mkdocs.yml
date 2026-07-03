@@ -188,6 +188,7 @@ nav:
       - Single Sign on: settings/SSO.md
       - Multi Factor Authentication: settings/MFA.md
       - Email Settings: settings/email.md
+      - Dialog Profiles: settings/dialog_profiles.md
       - Experimental Features: settings/experimental.md
     - Operations:
       - Background Tasks: settings/tasks.md

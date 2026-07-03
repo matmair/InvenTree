@@ -259,6 +259,7 @@ export enum ApiEndpoints {
   config_list = 'admin/config/',
   parameter_list = 'parameter/',
   parameter_template_list = 'parameter/template/',
+  dialog_profile_list = 'settings/dialog-profile/',
   tag_list = 'tag/',
 
   // Internal system things

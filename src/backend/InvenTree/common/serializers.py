@@ -524,6 +524,23 @@ class ContentTypeSerializer(serializers.Serializer):
 
 
 @register_importer()
+class DialogProfileSerializer(DataImportExportSerializerMixin, InvenTreeModelSerializer):
+    """Serializer for the DialogProfile model."""
+
+    class Meta:
+        """Meta options for DialogProfileSerializer."""
+
+        model = common_models.DialogProfile
+        fields = [
+            'pk',
+            'name',
+            'description',
+            'enabled',
+            'definition',
+        ]
+
+
+@register_importer()
 class CustomUnitSerializer(DataImportExportSerializerMixin, InvenTreeModelSerializer):
     """DRF serializer for CustomUnit model."""
 
