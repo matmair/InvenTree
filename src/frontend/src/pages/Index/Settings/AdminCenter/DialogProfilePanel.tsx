@@ -1,4 +1,3 @@
-import { t } from '@lingui/core/macro';
 import { Stack } from '@mantine/core';
 
 import { GlobalSettingList } from '../../../../components/settings/SettingList';

@@ -594,7 +594,9 @@ class CustomUnitViewset(DataExportViewMixin, viewsets.ModelViewSet):
         }
 
 
-common_router.register('dialog-profile', DialogProfileViewset, basename='api-dialog-profile')
+common_router.register(
+    'dialog-profile', DialogProfileViewset, basename='api-dialog-profile'
+)
 common_router.register('units', CustomUnitViewset, basename='api-custom-unit')
 
 

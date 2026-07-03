@@ -103,9 +103,7 @@ const LocationTypesTable = Loadable(
   lazy(() => import('../../../../tables/stock/LocationTypesTable'))
 );
 
-const DialogProfilePanel = Loadable(
-  lazy(() => import('./DialogProfilePanel'))
-);
+const DialogProfilePanel = Loadable(lazy(() => import('./DialogProfilePanel')));
 
 export default function AdminCenter() {
   const user = useUserState();

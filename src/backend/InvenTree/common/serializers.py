@@ -524,20 +524,16 @@ class ContentTypeSerializer(serializers.Serializer):
 
 
 @register_importer()
-class DialogProfileSerializer(DataImportExportSerializerMixin, InvenTreeModelSerializer):
+class DialogProfileSerializer(
+    DataImportExportSerializerMixin, InvenTreeModelSerializer
+):
     """Serializer for the DialogProfile model."""
 
     class Meta:
         """Meta options for DialogProfileSerializer."""
 
         model = common_models.DialogProfile
-        fields = [
-            'pk',
-            'name',
-            'description',
-            'enabled',
-            'definition',
-        ]
+        fields = ['pk', 'name', 'description', 'enabled', 'definition']
 
 
 @register_importer()

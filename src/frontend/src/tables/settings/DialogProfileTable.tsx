@@ -19,10 +19,7 @@ import {
   useEditApiFormModal
 } from '../../hooks/UseForm';
 import { useUserState } from '../../states/UserState';
-import {
-  BooleanColumn,
-  DescriptionColumn
-} from '../ColumnRenderers';
+import { BooleanColumn, DescriptionColumn } from '../ColumnRenderers';
 import { InvenTreeTable } from '../InvenTreeTable';
 
 export function dialogProfileFields() {
@@ -31,7 +28,7 @@ export function dialogProfileFields() {
     description: {},
     enabled: {},
     definition: {
-        // Use a basic text field for JSON for now
+      // Use a basic text field for JSON for now
     }
   };
 }

@@ -1180,7 +1180,9 @@ class DialogProfileAPITests(InvenTreeAPITestCase):
         url = reverse('api-dialog-profile-list')
 
         common.models.DialogProfile.objects.create(name='Profile A', definition={})
-        common.models.DialogProfile.objects.create(name='Profile B', definition={}, enabled=False)
+        common.models.DialogProfile.objects.create(
+            name='Profile B', definition={}, enabled=False
+        )
 
         response = self.get(url)
         self.assertEqual(len(response.data), 2)
@@ -1193,10 +1195,7 @@ class DialogProfileAPITests(InvenTreeAPITestCase):
         url = reverse('api-dialog-profile-list')
 
         # Create
-        data = {
-            'name': 'New Profile',
-            'definition': {'part': ['link']}
-        }
+        data = {'name': 'New Profile', 'definition': {'part': ['link']}}
         response = self.post(url, data, expected_code=201)
         pk = response.data['pk']
 
@@ -1206,11 +1205,17 @@ class DialogProfileAPITests(InvenTreeAPITestCase):
         self.assertEqual(response.data['definition'], {'part': ['link']})
 
         # Update
-        response = self.patch(reverse('api-dialog-profile-detail', kwargs={'pk': pk}), {'name': 'Updated Profile'}, expected_code=200)
+        response = self.patch(
+            reverse('api-dialog-profile-detail', kwargs={'pk': pk}),
+            {'name': 'Updated Profile'},
+            expected_code=200,
+        )
         self.assertEqual(response.data['name'], 'Updated Profile')
 
         # Delete
-        self.delete(reverse('api-dialog-profile-detail', kwargs={'pk': pk}), expected_code=204)
+        self.delete(
+            reverse('api-dialog-profile-detail', kwargs={'pk': pk}), expected_code=204
+        )
         self.assertFalse(common.models.DialogProfile.objects.filter(pk=pk).exists())
 
 

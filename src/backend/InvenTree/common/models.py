@@ -3018,22 +3018,6 @@ class Parameter(
         return self.template.description
 
 
-@receiver(post_save, sender=ParameterTemplate, dispatch_uid='post_save_parameter_template')
-def post_save_parameter_template(sender, instance, created, **kwargs):
-    """Callback function when a ParameterTemplate is created or saved."""
-    import common.tasks
-
-    if InvenTree.ready.canAppAccessDatabase() and not InvenTree.ready.isImportingData():
-        if not created:
-            # Schedule a background task to rebuild the parameters against this template
-            InvenTree.tasks.offload_task(
-                common.tasks.rebuild_parameters,
-                instance.pk,
-                force_async=True,
-                group='parameters',
-            )
-
-
 class DialogProfile(InvenTree.models.InvenTreeModel):
     """A DialogProfile is used to customize the visibility of fields in dialogs.
 
@@ -3080,12 +3064,14 @@ class DialogProfile(InvenTree.models.InvenTreeModel):
     def save(self, *args, **kwargs):
         """Clear cache on save."""
         from django.core.cache import cache
+
         cache.delete('inventree_dialog_profiles')
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         """Clear cache on delete."""
         from django.core.cache import cache
+
         cache.delete('inventree_dialog_profiles')
         super().delete(*args, **kwargs)
 
