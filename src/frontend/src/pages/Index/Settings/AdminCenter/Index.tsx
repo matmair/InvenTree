@@ -194,7 +194,8 @@ export default function AdminCenter() {
         name: 'dialog-profiles',
         label: t`Dialog Profiles`,
         icon: <IconListDetails />,
-        content: <DialogProfilePanel />
+        content: <DialogProfilePanel />,
+        hidden: !user.hasViewRole(UserRoles.admin)
       },
       {
         name: 'parameters',

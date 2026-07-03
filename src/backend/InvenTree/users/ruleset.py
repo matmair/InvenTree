@@ -91,6 +91,7 @@ def get_ruleset_models() -> dict:
             'flags_flagstate',
             'machine_machineconfig',
             'machine_machinesetting',
+            'common_dialogprofile',
             # common / comms
             'common_emailmessage',
             'common_emailthread',
