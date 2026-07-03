@@ -981,7 +981,9 @@ def render_html_text(text: str, **kwargs):
 
     # Wrap the text in the requested tags
     for tag in reversed(tags):
-        output = format_html('<{tag}>{content}</{tag}>', tag=mark_safe(tag), content=output)
+        output = format_html(
+            '<{tag}>{content}</{tag}>', tag=mark_safe(tag), content=output
+        )
 
     return output
 
