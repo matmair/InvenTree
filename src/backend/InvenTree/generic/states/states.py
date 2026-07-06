@@ -42,6 +42,14 @@ class BaseEnum(enum.IntEnum):  # noqa: PLW1641
 
         return super().__eq__(obj)
 
+    def __hash__(self):
+        """Return integer hash so enum members are usable as dict keys and in sets.
+
+        Required because we define ``__eq__``: Python sets ``__hash__ = None``
+        when ``__eq__`` is overridden without a matching ``__hash__``.
+        """
+        return hash(self.value)
+
     def __ne__(self, obj):
         """Override inequality operator to allow comparison with int."""
         if type(self) is type(obj):

@@ -6,9 +6,11 @@ There is a rendered state for each state value. The rendered state is used for d
 States can be extended with custom options for each InvenTree instance - those options are stored in the database and need to link back to state values.
 """
 
+from django_fsm import can_proceed
+
 from . import fields
 from .states import ColorEnum, StatusCode, StatusCodeMixin
-from .transition import StateTransitionMixin, TransitionMethod
+from .transition import StateTransitionMixin, TransitionMethod, inventree_transition
 
 __all__ = [
     'ColorEnum',
@@ -16,5 +18,7 @@ __all__ = [
     'StatusCode',
     'StatusCodeMixin',
     'TransitionMethod',
+    'can_proceed',
     'fields',
+    'inventree_transition',
 ]

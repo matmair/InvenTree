@@ -39,7 +39,7 @@ from build.validators import (
 from common.models import ProjectCode
 from common.settings import get_global_setting
 from generic.enums import StringEnum
-from generic.states import StateTransitionMixin, StatusCodeMixin
+from generic.states import StateTransitionMixin, StatusCodeMixin, can_proceed, inventree_transition
 from plugin.events import trigger_event
 from stock.status_codes import StockHistoryCode, StockStatus
 
@@ -660,31 +660,20 @@ class Build(
         # which point to this Build Order
         self.allocated_stock.all().delete()
 
-    @transaction.atomic
+    @inventree_transition(
+        field=status,
+        source=[BuildStatus.PENDING, BuildStatus.PRODUCTION, BuildStatus.ON_HOLD],
+        target=BuildStatus.COMPLETE,
+    )
     def complete_build(self, user: User, trim_allocated_stock: bool = False):
-        """Mark this build as complete.
+        """Transition this Build to COMPLETE status.
 
         Arguments:
             user: The user who is completing the build
             trim_allocated_stock: If True, trim any allocated stock
         """
-        return self.handle_transition(
-            self.status,
-            BuildStatus.COMPLETE.value,
-            self,
-            self._action_complete,
-            user=user,
-            trim_allocated_stock=trim_allocated_stock,
-        )
-
-    def _action_complete(self, *args, **kwargs):
-        """Action to be taken when a build is completed."""
         import build.tasks
 
-        trim_allocated_stock = kwargs.pop('trim_allocated_stock', False)
-        user = kwargs.pop('user', None)
-
-        # Prevent completion if there are open child builds
         if (
             get_global_setting('BUILDORDER_REQUIRE_CLOSED_CHILDS')
             and self.has_open_child_builds
@@ -709,82 +698,60 @@ class Build(
 
         self.completion_date = InvenTree.helpers.current_date()
         self.completed_by = user
-        self.status = BuildStatus.COMPLETE.value
-        self.save()
 
-    @transaction.atomic
+    @inventree_transition(
+        field=status,
+        source=[BuildStatus.PENDING, BuildStatus.ON_HOLD],
+        target=BuildStatus.PRODUCTION,
+    )
     def issue_build(self):
-        """Mark the Build as IN PRODUCTION.
+        """Transition this Build to PRODUCTION status.
 
-        Args:
-            user: The user who is issuing the build
+        The build must currently be PENDING or ON_HOLD.
         """
-        return self.handle_transition(
-            self.status, BuildStatus.PENDING.value, self, self._action_issue
+        from build.tasks import check_build_stock
+
+        trigger_event(BuildEvents.ISSUED, id=self.pk)
+
+        # Run checks on required parts
+        InvenTree.tasks.offload_task(
+            check_build_stock, self, group='build', force_async=True
         )
 
     @property
     def can_issue(self) -> bool:
         """Returns True if this BuildOrder can be issued."""
-        return self.status in [BuildStatus.PENDING.value, BuildStatus.ON_HOLD.value]
+        return can_proceed(self.issue_build)
 
-    def _action_issue(self, *args, **kwargs):
-        """Perform the action to mark this order as PRODUCTION."""
-        if self.can_issue:
-            self.status = BuildStatus.PRODUCTION.value
-            self.save()
-
-            trigger_event(BuildEvents.ISSUED, id=self.pk)
-
-            from build.tasks import check_build_stock
-
-            # Run checks on required parts
-            InvenTree.tasks.offload_task(
-                check_build_stock, self, group='build', force_async=True
-            )
-
-    @transaction.atomic
+    @inventree_transition(
+        field=status,
+        source=[BuildStatus.PENDING, BuildStatus.PRODUCTION],
+        target=BuildStatus.ON_HOLD,
+    )
     def hold_build(self):
-        """Mark the Build as ON HOLD."""
-        return self.handle_transition(
-            self.status, BuildStatus.ON_HOLD.value, self, self._action_hold
-        )
+        """Transition this Build to ON_HOLD status.
+
+        The build must currently be PENDING or PRODUCTION.
+        """
+        trigger_event(BuildEvents.HOLD, id=self.pk)
 
     @property
     def can_hold(self) -> bool:
         """Returns True if this BuildOrder can be placed on hold."""
-        return self.status in [BuildStatus.PENDING.value, BuildStatus.PRODUCTION.value]
+        return can_proceed(self.hold_build)
 
-    def _action_hold(self, *args, **kwargs):
-        """Action to be taken when a build is placed on hold."""
-        if self.can_hold:
-            self.status = BuildStatus.ON_HOLD.value
-            self.save()
+    @inventree_transition(
+        field=status,
+        source=[BuildStatus.PENDING, BuildStatus.PRODUCTION, BuildStatus.ON_HOLD],
+        target=BuildStatus.CANCELLED,
+    )
+    def cancel_build(self, user=None, **kwargs):
+        """Transition this Build to CANCELLED status.
 
-            trigger_event(BuildEvents.HOLD, id=self.pk)
-
-    @transaction.atomic
-    def cancel_build(self, user, **kwargs):
-        """Mark the Build as CANCELLED.
-
-        - Delete any pending BuildItem objects (but do not remove items from stock)
-        - Set build status to CANCELLED
-        - Save the Build object
+        Offloads expensive cleanup operations (de-allocating stock, removing
+        incomplete outputs) to a background task.
         """
-        return self.handle_transition(
-            self.status,
-            BuildStatus.CANCELLED.value,
-            self,
-            self._action_cancel,
-            user=user,
-            **kwargs,
-        )
-
-    def _action_cancel(self, *args, **kwargs):
-        """Action to be taken when a build is cancelled."""
         import build.tasks
-
-        user = kwargs.pop('user', None)
 
         remove_allocated_stock = kwargs.get('remove_allocated_stock', False)
         remove_incomplete_outputs = kwargs.get('remove_incomplete_outputs', False)
@@ -802,9 +769,6 @@ class Build(
         # Date of 'completion' is the date the build was cancelled
         self.completion_date = InvenTree.helpers.current_date()
         self.completed_by = user
-
-        self.status = BuildStatus.CANCELLED.value
-        self.save()
 
     @transaction.atomic
     def deallocate_stock(self, build_line=None, output=None):

@@ -558,6 +558,9 @@ django-filter==25.2 \
     --hash=sha256:760e984a931f4468d096f5541787efb8998c61217b73006163bf2f9523fe8f23 \
     --hash=sha256:9c0f8609057309bba611062fe1b720b4a873652541192d232dd28970383633e3
     # via -r src/backend/requirements.in
+django-fsm-2==4.2.4 \
+    --hash=sha256:0072be359520075eee4baead3873e5eb8f1700b4f91e41208058cbea0ceae9b9
+    # via -r src/backend/requirements.in
 django-flags==5.2.0 \
     --hash=sha256:a3aee5e0d11e24e35f5ae4a423d52cad721f639181c1b1251e0148d8530a3f81 \
     --hash=sha256:aa22543410f68a4082c576f3be469ea67a51c933f8a43eb8b10f6236f158e17e
