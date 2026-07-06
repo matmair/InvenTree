@@ -9,7 +9,7 @@ from typing import Optional
 logger = logging.getLogger('inventree')
 
 
-class BaseEnum(enum.IntEnum):  # noqa: PLW1641
+class BaseEnum(enum.IntEnum):
     """An `Enum` capabile of having its members have docstrings.
 
     Based on https://stackoverflow.com/questions/19330460/how-do-i-put-docstrings-on-enums

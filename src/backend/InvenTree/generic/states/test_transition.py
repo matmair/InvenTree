@@ -2,20 +2,25 @@
 
 from django.core.exceptions import ValidationError
 
-from InvenTree.unit_test import InvenTreeTestCase
 from generic.states import can_proceed
+from InvenTree.unit_test import InvenTreeTestCase
 from order.models import PurchaseOrder, ReturnOrder
-from order.status_codes import (
-    PurchaseOrderStatus,
-    ReturnOrderStatus,
-)
+from order.status_codes import PurchaseOrderStatus, ReturnOrderStatus
 from plugin import registry
 
 
 class InvenTreeTransitionTests(InvenTreeTestCase):
     """Tests for the @inventree_transition decorator and FSM integration."""
 
-    fixtures = ['company', 'supplier_part', 'category', 'part', 'location', 'stock', 'order']
+    fixtures = [
+        'company',
+        'supplier_part',
+        'category',
+        'part',
+        'location',
+        'stock',
+        'order',
+    ]
 
     def test_decorator_applied_to_purchase_order(self):
         """Verify @inventree_transition metadata is attached to PurchaseOrder methods."""

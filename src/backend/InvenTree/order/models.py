@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import structlog
+from django_fsm import RETURN_VALUE
 from djmoney.contrib.exchange.exceptions import MissingRate
 from djmoney.contrib.exchange.models import convert_money
 from djmoney.money import Money
@@ -35,7 +36,12 @@ from common.currency import currency_code_default
 from common.notifications import InvenTreeNotificationBodies
 from common.settings import get_global_setting
 from company.models import Address, Company, Contact, SupplierPart
-from generic.states import StateTransitionMixin, StatusCodeMixin, can_proceed, inventree_transition
+from generic.states import (
+    StateTransitionMixin,
+    StatusCodeMixin,
+    can_proceed,
+    inventree_transition,
+)
 from generic.states.fields import InvenTreeCustomStatusModelField
 from InvenTree.exceptions import log_error
 from InvenTree.fields import (
@@ -45,7 +51,6 @@ from InvenTree.fields import (
 )
 from InvenTree.helpers import decimal2string, pui_url
 from InvenTree.helpers_model import notify_responsible
-from django_fsm import RETURN_VALUE
 from order.events import (
     PurchaseOrderEvents,
     ReturnOrderEvents,
@@ -834,7 +839,6 @@ class PurchaseOrder(TotalPriceMixin, Order):
         line.save()
 
         return line
-
 
     # region state changes
 
@@ -1724,7 +1728,9 @@ class SalesOrder(TotalPriceMixin, Order):
         from django_fsm import TransitionNotAllowed
 
         if not self.can_complete(**kwargs):
-            raise TransitionNotAllowed('Order cannot be shipped or completed at this time')
+            raise TransitionNotAllowed(
+                'Order cannot be shipped or completed at this time'
+            )
 
         bypass_shipped = InvenTree.helpers.str2bool(
             get_global_setting('SALESORDER_SHIP_COMPLETE')

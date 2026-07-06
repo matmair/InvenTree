@@ -39,7 +39,12 @@ from build.validators import (
 from common.models import ProjectCode
 from common.settings import get_global_setting
 from generic.enums import StringEnum
-from generic.states import StateTransitionMixin, StatusCodeMixin, can_proceed, inventree_transition
+from generic.states import (
+    StateTransitionMixin,
+    StatusCodeMixin,
+    can_proceed,
+    inventree_transition,
+)
 from plugin.events import trigger_event
 from stock.status_codes import StockHistoryCode, StockStatus
 

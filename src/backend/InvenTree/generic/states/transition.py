@@ -7,10 +7,9 @@ from functools import wraps
 from django.db import transaction
 from django.db.models import Model
 
-from django_fsm import TransitionNotAllowed, can_proceed, transition
-from django_fsm.signals import pre_transition
-
 import structlog
+from django_fsm import TransitionNotAllowed, transition
+from django_fsm.signals import pre_transition
 
 logger = structlog.get_logger('inventree')
 
@@ -54,16 +53,12 @@ def _plugin_pre_transition_handler(sender, instance, name, source, target, **kwa
 
         for handler in handlers:
             if not isinstance(handler, TransitionMethod):
-                logger.error(
-                    'INVE-E9: Invalid transition handler type: %s', handler
-                )
+                logger.error('INVE-E9: Invalid transition handler type: %s', handler)
                 continue
 
             # Call the transition method.
             # ValidationError raised here will propagate and cancel the transition.
-            result = handler.transition(
-                source, target, instance, lambda *a, **kw: None
-            )
+            result = handler.transition(source, target, instance, lambda *a, **kw: None)
 
             if result:
                 # Historically, returning True meant "I handled it, skip the default
@@ -193,11 +188,11 @@ class TransitionMethod:
         handlers are invoked via the ``pre_transition`` signal *before* the
         method body executes.  The semantics are:
 
-        * **Ignore** – return ``False``.  Further handlers are attempted;
+        * **Ignore** - return ``False``.  Further handlers are attempted;
           the decorated method body executes as normal.
-        * **Veto** – raise ``ValidationError``.  The transition is cancelled;
+        * **Veto** - raise ``ValidationError``.  The transition is cancelled;
           no further handlers are called; the method body does *not* execute.
-        * **Handle** (deprecated) – return ``True``.  This historically meant
+        * **Handle** (deprecated) - return ``True``.  This historically meant
           "I handled the transition; skip the default action."  Under
           ``@inventree_transition``, the decorated method body *always* runs, so
           returning ``True`` now only triggers a ``DeprecationWarning``.  Plugin

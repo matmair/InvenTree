@@ -441,7 +441,9 @@ django-stubs-ext==6.0.6 \
     --hash=sha256:5470c970f61a3ccf5aae7633feef1a097f944f417b955da200c9ac26ecd9134b \
     --hash=sha256:e6f09884e48d7c5b250a373dfa22aa3e83bb91b8babbd8d05187f6b92247f232
     # via
+    #   -c src/backend/requirements-3.14.txt
     #   -c src/backend/requirements-dev.txt
+    #   -c src/backend/requirements.txt
     #   django-stubs
 django-test-migrations==1.5.0 \
     --hash=sha256:1cbff04b1e82c5564a6f635284907b381cc11a2ff883adff46776d9126824f07 \
