@@ -15,7 +15,6 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import structlog
-from django_fsm import RETURN_VALUE
 from djmoney.contrib.exchange.exceptions import MissingRate
 from djmoney.contrib.exchange.models import convert_money
 from djmoney.money import Money
@@ -37,8 +36,10 @@ from common.notifications import InvenTreeNotificationBodies
 from common.settings import get_global_setting
 from company.models import Address, Company, Contact, SupplierPart
 from generic.states import (
+    RETURN_VALUE,
     StateTransitionMixin,
     StatusCodeMixin,
+    TransitionNotAllowed,
     can_proceed,
     inventree_transition,
 )
@@ -1825,8 +1826,6 @@ class SalesOrder(TotalPriceMixin, Order):
         Raises:
             TransitionNotAllowed: if business-logic preconditions are not met.
         """
-        from django_fsm import TransitionNotAllowed
-
         if not self.can_complete(**kwargs):
             raise TransitionNotAllowed(
                 'Order cannot be shipped or completed at this time'
