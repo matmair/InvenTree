@@ -708,6 +708,7 @@ class Build(
         field=status,
         source=[BuildStatus.PENDING, BuildStatus.ON_HOLD],
         target=BuildStatus.PRODUCTION,
+        event=BuildEvents.ISSUED,
     )
     def issue_build(self):
         """Transition this Build to PRODUCTION status.
@@ -715,8 +716,6 @@ class Build(
         The build must currently be PENDING or ON_HOLD.
         """
         from build.tasks import check_build_stock
-
-        trigger_event(BuildEvents.ISSUED, id=self.pk)
 
         # Run checks on required parts
         InvenTree.tasks.offload_task(
@@ -732,13 +731,13 @@ class Build(
         field=status,
         source=[BuildStatus.PENDING, BuildStatus.PRODUCTION],
         target=BuildStatus.ON_HOLD,
+        event=BuildEvents.HOLD,
     )
     def hold_build(self):
         """Transition this Build to ON_HOLD status.
 
         The build must currently be PENDING or PRODUCTION.
         """
-        trigger_event(BuildEvents.HOLD, id=self.pk)
 
     @property
     def can_hold(self) -> bool:

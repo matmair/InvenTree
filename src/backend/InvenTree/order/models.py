@@ -850,6 +850,7 @@ class PurchaseOrder(TotalPriceMixin, Order):
         field=status,
         source=[PurchaseOrderStatus.PENDING, PurchaseOrderStatus.ON_HOLD],
         target=PurchaseOrderStatus.PLACED,
+        event=PurchaseOrderEvents.PLACED,
     )
     def place_order(self):
         """Transition this PurchaseOrder to PLACED status.
@@ -857,8 +858,6 @@ class PurchaseOrder(TotalPriceMixin, Order):
         The order must currently be PENDING or ON_HOLD.
         """
         self.issue_date = InvenTree.helpers.current_date()
-
-        trigger_event(PurchaseOrderEvents.PLACED, id=self.pk)
 
         notify_responsible(
             self,
@@ -881,6 +880,7 @@ class PurchaseOrder(TotalPriceMixin, Order):
         field=status,
         source=PurchaseOrderStatus.PLACED,
         target=PurchaseOrderStatus.COMPLETE,
+        event=PurchaseOrderEvents.COMPLETED,
     )
     def complete_order(self):
         """Transition this PurchaseOrder to COMPLETE status.
@@ -898,19 +898,17 @@ class PurchaseOrder(TotalPriceMixin, Order):
         for part in unique_parts:
             part.schedule_pricing_update(create=True, refresh=False)
 
-        trigger_event(PurchaseOrderEvents.COMPLETED, id=self.pk)
-
     @inventree_transition(
         field=status,
         source=[PurchaseOrderStatus.PENDING, PurchaseOrderStatus.PLACED],
         target=PurchaseOrderStatus.ON_HOLD,
+        event=PurchaseOrderEvents.HOLD,
     )
     def hold_order(self):
         """Transition this PurchaseOrder to ON_HOLD status.
 
         The order must currently be PENDING or PLACED.
         """
-        trigger_event(PurchaseOrderEvents.HOLD, id=self.pk)
 
     @property
     def can_hold(self) -> bool:
@@ -925,14 +923,13 @@ class PurchaseOrder(TotalPriceMixin, Order):
             PurchaseOrderStatus.PLACED,
         ],
         target=PurchaseOrderStatus.CANCELLED,
+        event=PurchaseOrderEvents.CANCELLED,
     )
     def cancel_order(self):
         """Transition this PurchaseOrder to CANCELLED status.
 
         The order must currently be open (PENDING, ON_HOLD, or PLACED).
         """
-        trigger_event(PurchaseOrderEvents.CANCELLED, id=self.pk)
-
         notify_responsible(
             self,
             PurchaseOrder,
@@ -1777,6 +1774,7 @@ class SalesOrder(TotalPriceMixin, Order):
         field=status,
         source=[SalesOrderStatus.PENDING, SalesOrderStatus.ON_HOLD],
         target=SalesOrderStatus.IN_PROGRESS,
+        event=SalesOrderEvents.ISSUED,
     )
     def issue_order(self):
         """Transition this SalesOrder to IN_PROGRESS status.
@@ -1784,8 +1782,6 @@ class SalesOrder(TotalPriceMixin, Order):
         The order must currently be PENDING or ON_HOLD.
         """
         self.issue_date = InvenTree.helpers.current_date()
-
-        trigger_event(SalesOrderEvents.ISSUED, id=self.pk)
 
         notify_responsible(
             self,
@@ -1804,13 +1800,13 @@ class SalesOrder(TotalPriceMixin, Order):
         field=status,
         source=[SalesOrderStatus.PENDING, SalesOrderStatus.IN_PROGRESS],
         target=SalesOrderStatus.ON_HOLD,
+        event=SalesOrderEvents.HOLD,
     )
     def hold_order(self):
         """Transition this SalesOrder to ON_HOLD status.
 
         The order must currently be PENDING or IN_PROGRESS.
         """
-        trigger_event(SalesOrderEvents.HOLD, id=self.pk)
 
     @property
     def can_hold(self) -> bool:
@@ -1898,6 +1894,7 @@ class SalesOrder(TotalPriceMixin, Order):
             SalesOrderStatus.SHIPPED,
         ],
         target=SalesOrderStatus.CANCELLED,
+        event=SalesOrderEvents.CANCELLED,
     )
     def cancel_order(self):
         """Transition this SalesOrder to CANCELLED status.
@@ -1907,8 +1904,6 @@ class SalesOrder(TotalPriceMixin, Order):
         for line in self.lines.all():
             for allocation in line.allocations.all():
                 allocation.delete()
-
-        trigger_event(SalesOrderEvents.CANCELLED, id=self.pk)
 
         notify_responsible(
             self,
@@ -3128,13 +3123,13 @@ class ReturnOrder(TotalPriceMixin, Order):
         field=status,
         source=[ReturnOrderStatus.PENDING, ReturnOrderStatus.IN_PROGRESS],
         target=ReturnOrderStatus.ON_HOLD,
+        event=ReturnOrderEvents.HOLD,
     )
     def hold_order(self):
         """Transition this ReturnOrder to ON_HOLD status.
 
         The order must currently be PENDING or IN_PROGRESS.
         """
-        trigger_event(ReturnOrderEvents.HOLD, id=self.pk)
 
     @property
     def can_hold(self):
@@ -3149,11 +3144,10 @@ class ReturnOrder(TotalPriceMixin, Order):
             ReturnOrderStatus.IN_PROGRESS,
         ],
         target=ReturnOrderStatus.CANCELLED,
+        event=ReturnOrderEvents.CANCELLED,
     )
     def cancel_order(self):
         """Transition this ReturnOrder to CANCELLED status."""
-        trigger_event(ReturnOrderEvents.CANCELLED, id=self.pk)
-
         notify_responsible(
             self,
             ReturnOrder,
@@ -3171,6 +3165,7 @@ class ReturnOrder(TotalPriceMixin, Order):
         field=status,
         source=ReturnOrderStatus.IN_PROGRESS,
         target=ReturnOrderStatus.COMPLETE,
+        event=ReturnOrderEvents.COMPLETED,
     )
     def complete_order(self):
         """Transition this ReturnOrder to COMPLETE status.
@@ -3178,9 +3173,6 @@ class ReturnOrder(TotalPriceMixin, Order):
         The order must currently be IN_PROGRESS.
         """
         self.complete_date = InvenTree.helpers.current_date()
-        self.save()  # TODO @matmair: check if this causes issues with the event
-
-        trigger_event(ReturnOrderEvents.COMPLETED, id=self.pk)
 
     def place_order(self):
         """Deprecated version of 'issue_order'."""
@@ -3195,6 +3187,7 @@ class ReturnOrder(TotalPriceMixin, Order):
         field=status,
         source=[ReturnOrderStatus.PENDING, ReturnOrderStatus.ON_HOLD],
         target=ReturnOrderStatus.IN_PROGRESS,
+        event=ReturnOrderEvents.ISSUED,
     )
     def issue_order(self):
         """Transition this ReturnOrder to IN_PROGRESS status.
@@ -3202,8 +3195,6 @@ class ReturnOrder(TotalPriceMixin, Order):
         The order must currently be PENDING or ON_HOLD.
         """
         self.issue_date = InvenTree.helpers.current_date()
-
-        trigger_event(ReturnOrderEvents.ISSUED, id=self.pk)
 
         notify_responsible(
             self,
@@ -3629,6 +3620,7 @@ class TransferOrder(Order):
         field=status,
         source=[TransferOrderStatus.PENDING, TransferOrderStatus.ON_HOLD],
         target=TransferOrderStatus.ISSUED,
+        event=TransferOrderEvents.ISSUED,
     )
     def issue_order(self):
         """Transition this TransferOrder to ISSUED status.
@@ -3636,8 +3628,6 @@ class TransferOrder(Order):
         The order must currently be PENDING or ON_HOLD.
         """
         self.issue_date = InvenTree.helpers.current_date()
-
-        trigger_event(TransferOrderEvents.ISSUED, id=self.pk)
 
         notify_responsible(
             self,
@@ -3656,15 +3646,16 @@ class TransferOrder(Order):
         field=status,
         source=[TransferOrderStatus.PENDING, TransferOrderStatus.ISSUED],
         target=TransferOrderStatus.ON_HOLD,
+        event=TransferOrderEvents.HOLD,
     )
     def hold_order(self):
         """Transition this TransferOrder to ON_HOLD status."""
-        trigger_event(TransferOrderEvents.HOLD, id=self.pk)
 
     @inventree_transition(
         field=status,
         source=TransferOrderStatus.ISSUED,
         target=TransferOrderStatus.COMPLETE,
+        event=TransferOrderEvents.COMPLETED,
     )
     def complete_order(self, user=None, **kwargs):
         """Transition this TransferOrder to COMPLETE status.
@@ -3678,8 +3669,6 @@ class TransferOrder(Order):
 
         self.complete_date = InvenTree.helpers.current_date()
 
-        trigger_event(TransferOrderEvents.COMPLETED, id=self.pk)
-
     @inventree_transition(
         field=status,
         source=[
@@ -3688,6 +3677,7 @@ class TransferOrder(Order):
             TransferOrderStatus.ISSUED,
         ],
         target=TransferOrderStatus.CANCELLED,
+        event=TransferOrderEvents.CANCELLED,
     )
     def cancel_order(self):
         """Transition this TransferOrder to CANCELLED status.
@@ -3697,8 +3687,6 @@ class TransferOrder(Order):
         for line in self.lines.all():
             for allocation in line.allocations.all():
                 allocation.delete()
-
-        trigger_event(TransferOrderEvents.CANCELLED, id=self.pk)
 
         notify_responsible(
             self,

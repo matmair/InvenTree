@@ -11,6 +11,8 @@ import structlog
 from django_fsm import TransitionNotAllowed, transition
 from django_fsm.signals import pre_transition
 
+from plugin.events import trigger_event
+
 logger = structlog.get_logger('inventree')
 
 
@@ -79,7 +81,7 @@ def _plugin_pre_transition_handler(sender, instance, name, source, target, **kwa
 pre_transition.connect(_plugin_pre_transition_handler)
 
 
-def inventree_transition(field, source, target, **extra):
+def inventree_transition(field, source, target, event=None, **extra):
     """Decorator that combines ``@django_fsm.transition`` with InvenTree conventions.
 
     Wraps a model method so that:
@@ -101,9 +103,9 @@ def inventree_transition(field, source, target, **extra):
                 field=status,
                 source=[MyOrderStatus.PENDING, MyOrderStatus.ON_HOLD],
                 target=MyOrderStatus.PLACED,
+                event=MyOrderEvents.PLACED
             )
             def place_order(self):
-                trigger_event(...)
                 notify_responsible(...)
 
     The ``can_<method>`` guard pattern can be preserved using ``can_proceed``::
@@ -118,6 +120,7 @@ def inventree_transition(field, source, target, **extra):
         source: Allowed source state(s) for the transition.
         target: Target state after the transition.  May be a
                 ``django_fsm.RETURN_VALUE`` instance for dynamic targets.
+        event: Optional event name to trigger after the transition.  If not provided no event is triggered.
         **extra: Additional keyword arguments forwarded to
                  ``django_fsm.transition`` (e.g. ``conditions``,
                  ``on_error``).
@@ -142,6 +145,11 @@ def inventree_transition(field, source, target, **extra):
                 return False
             # Persist all changes (including the updated status field) to the DB.
             self.save()
+
+            # trigger event for the transition
+            if event:
+                trigger_event(event, id=self.pk)
+
             return True
 
         # Propagate the django-fsm metadata so that can_proceed() works correctly
