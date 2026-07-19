@@ -3657,11 +3657,18 @@ class TransferOrder(Order):
         target=TransferOrderStatus.COMPLETE,
         event=TransferOrderEvents.COMPLETED,
     )
-    def complete_order(self, user=None, **kwargs):
+    def complete_order(self, **kwargs):
         """Transition this TransferOrder to COMPLETE status.
 
         The order must currently be ISSUED and meet all completion requirements.
         """
+        user = kwargs.pop('user', None)
+
+        # Lock this order against concurrent completion, and re-read the status
+        # from the database. Without this, two simultaneous completion requests
+        # can both observe status=ISSUED, and each would process every allocation
+        # (duplicating all associated stock operations).
+        self.status = TransferOrder.objects.select_for_update().get(pk=self.pk).status
         self.can_complete(raise_error=True, **kwargs)
 
         for allocation in self.allocations():
