@@ -3674,12 +3674,13 @@ class TransferOrder(Order):
         target=TransferOrderStatus.COMPLETE,
         event=TransferOrderEvents.COMPLETED,
     )
-    def complete_order(self, **kwargs):
+    def complete_order(self, user=None, **kwargs):
         """Transition this TransferOrder to COMPLETE status.
 
         The order must currently be ISSUED and meet all completion requirements.
         """
-        user = kwargs.pop('user', None)
+        if not user:
+            user = kwargs.pop('user', None)
 
         # Lock this order against concurrent completion, and re-read the status
         # from the database. Without this, two simultaneous completion requests
