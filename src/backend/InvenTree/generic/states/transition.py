@@ -81,7 +81,9 @@ def _plugin_pre_transition_handler(sender, instance, name, source, target, **kwa
 pre_transition.connect(_plugin_pre_transition_handler)
 
 
-def inventree_transition(field, source, target, event=None, **extra):
+def inventree_transition(
+    field, source, target, event=None, update_status: bool = True, **extra
+):
     """Decorator that combines ``@django_fsm.transition`` with InvenTree conventions.
 
     Wraps a model method so that:
@@ -103,7 +105,8 @@ def inventree_transition(field, source, target, event=None, **extra):
                 field=status,
                 source=[MyOrderStatus.PENDING, MyOrderStatus.ON_HOLD],
                 target=MyOrderStatus.PLACED,
-                event=MyOrderEvents.PLACED
+                event=MyOrderEvents.PLACED,
+                update_status=False,
             )
             def place_order(self):
                 notify_responsible(...)
@@ -121,6 +124,7 @@ def inventree_transition(field, source, target, event=None, **extra):
         target: Target state after the transition.  May be a
                 ``django_fsm.RETURN_VALUE`` instance for dynamic targets.
         event: Optional event name to trigger after the transition.  If not provided no event is triggered.
+        update_status: If True, the status field is updated from the database before the transition.
         **extra: Additional keyword arguments forwarded to
                  ``django_fsm.transition`` (e.g. ``conditions``,
                  ``on_error``).
@@ -133,6 +137,20 @@ def inventree_transition(field, source, target, event=None, **extra):
         @transaction.atomic
         @wraps(func)
         def wrapper(self, *args, **kwargs):
+            """Ensure that transitions are handled correctly."""
+            if update_status:
+                try:
+                    # TODO make this dynamic
+                    FIELD_NAME = 'status'
+
+                    # Update the status field from the database to avoid race conditions
+                    current_obj = type(self).objects.select_for_update().get(pk=self.pk)
+                    new_status = getattr(current_obj, FIELD_NAME)
+                    setattr(self, FIELD_NAME, new_status)
+                except type(self).DoesNotExist:
+                    # The object has been deleted, so we cannot proceed with the transition.
+                    return False
+
             # Execute the FSM-wrapped function.  This validates the source state,
             # fires pre_transition (which invokes plugin hooks), runs the method
             # body, and updates the field to the target state.

@@ -3877,7 +3877,6 @@ class TransferOrder(Order):
         # from the database. Without this, two simultaneous completion requests
         # can both observe status=ISSUED, and each would process every allocation
         # (duplicating all associated stock operations).
-        self.status = TransferOrder.objects.select_for_update().get(pk=self.pk).status
         self.can_complete(raise_error=True, **kwargs)
 
         for allocation in self.allocations():
