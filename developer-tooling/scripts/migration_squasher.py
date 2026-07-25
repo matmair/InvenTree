@@ -3,8 +3,6 @@ import os
 import sys
 import glob
 import re
-import shutil
-import subprocess
 
 BUILTIN_APPS = [
     "build",
@@ -24,7 +22,7 @@ BUILTIN_APPS = [
 
 def get_migrations_info():
     """Finds all built-in apps and counts their migrations."""
-    base_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "src", "backend", "InvenTree")
     apps_info = {}
     total_files = 0
 
@@ -42,19 +40,6 @@ def get_migrations_info():
         total_files += count
 
     return apps_info, total_files
-
-def run_cmd(cmd):
-    env = os.environ.copy()
-    env["INVENTREE_STATIC_ROOT"] = "/tmp/static"
-    env["INVENTREE_MEDIA_ROOT"] = "/tmp/media"
-    env["INVENTREE_DB_ENGINE"] = "sqlite3"
-    env["INVENTREE_DB_NAME"] = "/tmp/db.sqlite3"
-    env["INVENTREE_SECRET_KEY"] = "test_secret_key_12345"
-    env["INVENTREE_SITE_URL"] = "http://localhost:8000"
-    env["INVENTREE_BACKUP_DIR"] = "/tmp/backups"
-
-    res = subprocess.run(cmd, shell=True, capture_output=True, text=True, env=env)
-    return res
 
 def fix_squashed_migration(filepath, app_name):
     """Post-processes a squashed migration file to resolve syntax errors with leading zero numbers."""
@@ -113,12 +98,14 @@ def get_migration_func(migration_name, func_name):
     if insertion_point != -1:
         content = content[:insertion_point] + dynamic_getter + custom_classes + "\n" + content[insertion_point:]
 
-    # Replace references to operations subclasses
-    content = content.replace(f"{app_name}.migrations.0112_auto_20230525_1606.RemoveFieldOrSkip", "RemoveFieldOrSkip")
-    content = content.replace(f"{app_name}.migrations.0112_auto_20230525_1606.AddFieldOrSkip", "AddFieldOrSkip")
+    # Replace references to operations subclasses (only when app_name is "part")
+    if app_name == "part":
+        content = content.replace("part.migrations.0112_auto_20230525_1606.RemoveFieldOrSkip", "RemoveFieldOrSkip")
+        content = content.replace("part.migrations.0112_auto_20230525_1606.AddFieldOrSkip", "AddFieldOrSkip")
 
     # Replace references like app_name.migrations.0034_auto_20200404_1238.create_thumbnails
-    pattern = rf"{app_name}\.migrations\.([0-9a-zA-Z_]+)\.([a-zA-Z0-9_]+)"
+    escaped_app_name = re.escape(app_name)
+    pattern = rf"{escaped_app_name}\.migrations\.([0-9a-zA-Z_]+)\.([a-zA-Z0-9_]+)"
 
     def replacer(match):
         migration_name = match.group(1)
@@ -134,9 +121,16 @@ def get_migration_func(migration_name, func_name):
     return True
 
 def main():
-    if len(sys.argv) > 2 and sys.argv[1] == "fix":
+    if len(sys.argv) > 1 and sys.argv[1] == "fix":
+        if len(sys.argv) < 4:
+            print("Error: fix command requires both <filepath> and <app_name> arguments.")
+            print("Usage: python migration_squasher.py fix <filepath> <app_name>")
+            sys.exit(1)
         filepath = sys.argv[2]
-        app_name = sys.argv[3] if len(sys.argv) > 3 else "part"
+        app_name = sys.argv[3]
+        if app_name not in BUILTIN_APPS:
+            print(f"Error: app_name '{app_name}' is not in BUILTIN_APPS.")
+            sys.exit(1)
         fix_squashed_migration(filepath, app_name)
         return
 

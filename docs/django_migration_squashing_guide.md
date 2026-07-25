@@ -75,14 +75,14 @@ For a highly robust, low-risk implementation, we propose:
    - Focus on the heaviest apps: `part` (153 migrations), `stock` (126 migrations), `order` (122 migrations), and `company` (80 migrations).
    - Use our helper tool (`migration_squasher.py`) to systematically identify linear chunks of migrations that do not contain inter-app cyclic dependencies.
    - Run Django's `squashmigrations` for these apps up to a stable milestone release.
-   - For custom data migrations (`RunPython`), analyze their code:
-     - Data migrations that perform data cleanup (e.g., `make_empty_email_field_null`, `backfill_user_profiles`) are *no-ops* on brand new database setups because no legacy data exists.
-     - Data migrations that seed necessary static values or default settings (e.g., `set_default_currency`, setting up default units or parameters) are extracted and appended to the final squashed migration so they run during fresh installations.
+   - For custom data migrations (`RunPython`), analyze their code using our AST-based optimization tool:
+     - Data migrations that perform historical database/data cleanup (e.g., `make_empty_email_field_null`, `backfill_user_profiles`) are safely rewritten to `migrations.RunPython.noop` on brand new database setups because no legacy data exists. This dramatically reduces migration execution times.
+     - Data migrations that seed necessary static values or default settings (e.g., `set_default_currency`, setting up default units or parameters) are preserved inline. This is achieved via an AST-based parser (`optimize_runpython.py`) that checks functions against a predefined `SEED_ALLOWLIST` and converts any non-allowlisted data migrations to `noop` inline.
 
 2. **Guidelines for Custom `RunPython` Migrations during Squashing:**
    - When squashing, Django automatically copies `RunPython` operations into the squashed file.
-   - Inspect the squashed file and identify functions that are no longer needed. You can safely replace them with `migrations.RunPython.noop` to skip processing on new setups.
-   - If a function *is* required on a new setup, ensure its code is fully self-contained (does not import deleted models or rely on historical model states that no longer exist).
+   - Run our AST rewriter (`optimize_runpython.py`) over the newly generated squashed migration file. This will automatically identify and convert non-essential data migrations to `migrations.RunPython.noop` inline while preserving critical seeding functions.
+   - If a custom function *is* required on a new setup and is preserved, ensure its code is fully self-contained (does not import deleted models or rely on historical model states that no longer exist).
 
 3. **Validation Workflow:**
    - Always run:
