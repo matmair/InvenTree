@@ -227,6 +227,7 @@ class StockLocation(
     )
 
     @property
+    @report.mixins.report_attribute()
     def icon(self) -> str:
         """Get the current icon used for this location.
 
@@ -325,7 +326,8 @@ class StockLocation(
         return self.get_stock_items(cascade).count()
 
     @property
-    def item_count(self):
+    @report.mixins.report_attribute()
+    def item_count(self) -> int:
         """Simply returns the number of stock items in this location.
 
         Required for tree view serializer.
@@ -865,7 +867,8 @@ class StockItem(
         return self.get_next_serialized_item(reverse=True)
 
     @property
-    def status_label(self):
+    @report.mixins.report_attribute()
+    def status_label(self) -> str:
         """Return label."""
         return StockStatus.label(self.status)
 
@@ -1667,6 +1670,53 @@ class StockItem(
         """Return the quantity of this StockItem which is *not* allocated."""
         return max(self.quantity - self.allocation_count(), 0)
 
+    @staticmethod
+    def bulk_allocation_count(stock_items) -> dict:
+        """Bulk-compute the total allocated quantity (builds + sales orders + transfer orders) for a set of StockItem objects.
+
+        Mirrors the per-instance calculation in `allocation_count()`, but resolves the whole
+        set in 3 aggregate queries (one per allocation type) rather than one query per
+        allocation type *per item* - critical for validating requests which reference many
+        stock items at once.
+
+        Returns:
+            A {stock_item.pk: total_allocated_quantity} dict. Items with no allocations
+            of any kind are omitted (i.e. callers should default missing pks to zero).
+        """
+        pks = [item.pk for item in stock_items]
+
+        totals = {}
+
+        def _accumulate(queryset, group_field):
+            rows = queryset.values(group_field).annotate(
+                total=Coalesce(Sum('quantity'), Decimal(0))
+            )
+            for row in rows:
+                pk = row[group_field]
+                totals[pk] = totals.get(pk, Decimal(0)) + row['total']
+
+        _accumulate(
+            build.models.BuildItem.objects.filter(stock_item__in=pks), 'stock_item'
+        )
+
+        _accumulate(
+            order.models.SalesOrderAllocation.objects.filter(
+                item__in=pks,
+                line__order__status__in=SalesOrderStatusGroups.OPEN,
+                shipment__shipment_date=None,
+            ),
+            'item',
+        )
+
+        _accumulate(
+            order.models.TransferOrderAllocation.objects.filter(
+                item__in=pks, line__order__status__in=TransferOrderStatusGroups.OPEN
+            ),
+            'item',
+        )
+
+        return totals
+
     def can_delete(self):
         """Can this stock item be deleted?
 
@@ -1675,11 +1725,25 @@ class StockItem(
         - Is installed inside another StockItem
         - It has been assigned to a SalesOrder
         - It has been assigned to a BuildOrder
+        - It has active allocations against a SalesOrder or TransferOrder
+        - It is referenced by a ReturnOrder line item
         """
         if self.installed_item_count() > 0:
             return False
 
-        return self.sales_order is None
+        if self.sales_order is not None:
+            return False
+
+        if self.allocations.exists():
+            return False
+
+        if self.get_sales_order_allocations(active=True).exists():
+            return False
+
+        if self.get_transfer_order_allocations(active=True).exists():
+            return False
+
+        return not self.return_order_lines.exists()
 
     def get_installed_items(self, cascade: bool = False) -> set[StockItem]:
         """Return all stock items which are *installed* in this one!
@@ -2814,6 +2878,7 @@ class StockItem(
         linking the resulting tracking entry back to the order which triggered it.
         """
         return [
+            'stockitem',
             'stockitemlocation',
             'transferorder',
             'purchaseorder',
