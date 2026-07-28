@@ -1896,7 +1896,6 @@ def setup_test(
         c,
         filename=template_dir.joinpath('inventree_data.json'),
         clear=True,
-        ignore_nonexistent=True,
         verbose=verbose,
     )
 

@@ -26,7 +26,6 @@ from company.serializers import (
     ContactSerializer,
     SupplierPartSerializer,
 )
-from data_exporter.mixins import DataExportSerializerMixin
 from generic.states.fields import InvenTreeCustomStatusSerializerMixin
 from importer.registry import register_importer
 from InvenTree.helpers import extract_serial_numbers, hash_barcode, normalize, str2bool
@@ -306,8 +305,6 @@ class AbstractLineItemSerializer(FilterableSerializerMixin, serializers.Serializ
         required=False, allow_null=True, label=_('Target Date')
     )
 
-    discount = InvenTreeDecimalField(required=False)
-
     project_code_label = common.filters.enable_project_label_filter()
 
     project_code_detail = common.filters.enable_project_code_filter()
@@ -325,7 +322,6 @@ class AbstractExtraLineSerializer(
             'pk',
             'line',
             'description',
-            'discount',
             'link',
             'notes',
             'order',
@@ -335,7 +331,6 @@ class AbstractExtraLineSerializer(
             'quantity',
             'reference',
             'target_date',
-            'total_price',
             # Filterable detail fields
             'order_detail',
             'project_code_label',
@@ -345,15 +340,9 @@ class AbstractExtraLineSerializer(
 
     quantity = serializers.FloatField()
 
-    discount = InvenTreeDecimalField(required=False)
-
     price = InvenTreeMoneySerializer(allow_null=True)
 
     price_currency = InvenTreeCurrencySerializer()
-
-    total_price = InvenTreeMoneySerializer(
-        source='total_line_price', allow_null=True, read_only=True
-    )
 
     project_code_label = common.filters.enable_project_label_filter()
 
@@ -366,7 +355,6 @@ class AbstractExtraLineMeta:
     fields = [
         'pk',
         'description',
-        'discount',
         'quantity',
         'reference',
         'notes',
@@ -375,7 +363,6 @@ class AbstractExtraLineMeta:
         'order_detail',
         'price',
         'price_currency',
-        'total_price',
         'link',
     ]
 
@@ -571,7 +558,6 @@ class PurchaseOrderLineItemSerializer(
         fields = AbstractLineItemSerializer.line_fields([
             'part',
             'build_order',
-            'discount',
             'overdue',
             'received',
             'purchase_price',
@@ -600,6 +586,7 @@ class PurchaseOrderLineItemSerializer(
     def annotate_queryset(queryset):
         """Add some extra annotations to this queryset.
 
+        - "total_price" = purchase_price * quantity
         - "overdue" status (boolean field)
         """
         queryset = queryset.prefetch_related(
@@ -613,6 +600,12 @@ class PurchaseOrderLineItemSerializer(
             'part__supplier',
             'part__manufacturer_part',
             'part__manufacturer_part__manufacturer',
+        )
+
+        queryset = queryset.annotate(
+            total_price=ExpressionWrapper(
+                F('purchase_price') * F('quantity'), output_field=models.DecimalField()
+            )
         )
 
         queryset = queryset.annotate(
@@ -655,9 +648,7 @@ class PurchaseOrderLineItemSerializer(
 
     overdue = serializers.BooleanField(read_only=True, allow_null=True)
 
-    total_price = InvenTreeMoneySerializer(
-        source='total_line_price', allow_null=True, read_only=True
-    )
+    total_price = serializers.FloatField(read_only=True)
 
     part_detail = OptionalField(
         serializer_class=PartBriefSerializer,
@@ -744,14 +735,6 @@ class PurchaseOrderLineItemSerializer(
         default=True,
         write_only=True,
     )
-
-    def __init__(self, *args, **kwargs):
-        """Set dynamic defaults for create-only fields."""
-        super().__init__(*args, **kwargs)
-
-        self.fields['merge_items'].default = get_global_setting(
-            'PURCHASEORDER_MERGE_LINE_ITEMS', backup_value=True
-        )
 
     sku = serializers.CharField(
         source='part.SKU', read_only=True, allow_null=True, label=_('SKU')
@@ -1251,7 +1234,6 @@ class SalesOrderLineItemSerializer(
         fields = AbstractLineItemSerializer.line_fields([
             'allocated',
             'customer_detail',
-            'discount',
             'overdue',
             'part',
             'part_detail',
@@ -1552,7 +1534,7 @@ class SalesOrderShipmentSerializer(
 
 
 class SalesOrderAllocationSerializer(
-    DataExportSerializerMixin, FilterableSerializerMixin, InvenTreeModelSerializer
+    FilterableSerializerMixin, InvenTreeModelSerializer
 ):
     """Serializer for the SalesOrderAllocation model.
 
@@ -2349,7 +2331,6 @@ class ReturnOrderLineItemSerializer(
             'item',
             'received_date',
             'outcome',
-            'discount',
             'price',
             'price_currency',
             # Filterable detail fields

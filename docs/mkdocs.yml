@@ -183,8 +183,7 @@ nav:
     - Labels: report/labels.md
     - Report Assets: report/assets.md
     - Report Snippets: report/snippets.md
-    - Report Context: report/context_variables.md
-    - Model Context: report/model_context.md
+    - Context Variables: report/context_variables.md
     - Helper Functions: report/helpers.md
     - Barcodes: report/barcodes.md
     - Sample Templates: report/samples.md

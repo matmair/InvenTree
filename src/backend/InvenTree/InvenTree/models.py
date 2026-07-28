@@ -34,7 +34,6 @@ import InvenTree.format
 import InvenTree.helpers
 import InvenTree.helpers_model
 import InvenTree.sentry
-import report.mixins
 
 logger = structlog.get_logger('inventree')
 
@@ -560,8 +559,7 @@ class InvenTreeParameterMixin(InvenTreePermissionCheckMixin, models.Model):
         )
 
     @property
-    @report.mixins.report_attribute()
-    def parameters(self) -> report.mixins.QuerySet:
+    def parameters(self) -> QuerySet:
         """Return a QuerySet containing all the Parameter instances for this model.
 
         This will return pre-fetched data if available (i.e. in a serializer context).
@@ -694,8 +692,7 @@ class InvenTreeAttachmentMixin(InvenTreePermissionCheckMixin):
         super().delete(*args, **kwargs)
 
     @property
-    @report.mixins.report_attribute()
-    def attachments(self) -> report.mixins.QuerySet:
+    def attachments(self) -> QuerySet:
         """Return a queryset containing all attachments for this model."""
         return self.attachments_for_model().filter(model_id=self.pk)
 
@@ -1272,9 +1269,8 @@ class PathStringMixin(models.Model):
             )
 
     @property
-    @report.mixins.report_attribute()
     def parentpath(self) -> list:
-        """Construct the parent path of this tree node.
+        """Get the parent path of this category.
 
         Returns:
             List of category names from the top level to the parent of this category
@@ -1282,9 +1278,8 @@ class PathStringMixin(models.Model):
         return list(self.get_ancestors())
 
     @property
-    @report.mixins.report_attribute()
     def path(self) -> list:
-        """Construct the complete part of this tree node.
+        """Get the complete part of this category.
 
         e.g. ["Top", "Second", "Third", "This"]
 
@@ -1473,7 +1468,6 @@ class InvenTreeBarcodeMixin(models.Model):
         return data
 
     @property
-    @report.mixins.report_attribute()
     def barcode(self) -> str:
         """Format a minimal barcode string (e.g. for label printing)."""
         return self.format_barcode()
@@ -1652,26 +1646,14 @@ class InvenTreeImageMixin(models.Model):
         verbose_name=_('Image'),
     )
 
-    def get_image_url(self) -> str:
+    def get_image_url(self):
         """Return the URL of the image for this object."""
         if self.image:
             return InvenTree.helpers.getMediaUrl(self.image)
         return InvenTree.helpers.getBlankImage()
-
-    @property
-    @report.mixins.report_attribute()
-    def image_url(self) -> str:
-        """Return the URL of the image for this object."""
-        return self.get_image_url()
 
     def get_thumbnail_url(self) -> str:
         """Return the URL of the image thumbnail for this object."""
         if self.image:
             return InvenTree.helpers.getMediaUrl(self.image, 'thumbnail')
         return InvenTree.helpers.getBlankThumbnail()
-
-    @property
-    @report.mixins.report_attribute()
-    def thumbnail_url(self) -> str:
-        """Return the URL of the image thumbnail for this object."""
-        return self.get_thumbnail_url()

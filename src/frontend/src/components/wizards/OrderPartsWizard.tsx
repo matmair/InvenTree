@@ -32,7 +32,6 @@ import { usePurchaseOrderFields } from '../../forms/PurchaseOrderForms';
 import { useCreateApiFormModal } from '../../hooks/UseForm';
 import { useInstance } from '../../hooks/UseInstance';
 import useWizard from '../../hooks/UseWizard';
-import { useGlobalSettingsState } from '../../states/SettingsStates';
 import RemoveRowButton from '../buttons/RemoveRowButton';
 import { StandaloneField } from '../forms/StandaloneField';
 import Expand from '../items/Expand';
@@ -196,7 +195,6 @@ function SelectPartsStep({
   const [selectedRecord, setSelectedRecord] = useState<PartOrderRecord | null>(
     null
   );
-  const globalSettings = useGlobalSettingsState();
 
   const purchaseOrderFields = usePurchaseOrderFields({
     supplierId: selectedRecord?.supplier_part?.supplier
@@ -242,11 +240,9 @@ function SelectPartsStep({
       },
       purchase_price: {},
       purchase_price_currency: {},
-      merge_items: {
-        default: globalSettings.isSet('PURCHASEORDER_MERGE_LINE_ITEMS', true)
-      }
+      merge_items: {}
     };
-  }, [selectedRecord, globalSettings]);
+  }, [selectedRecord]);
 
   const addToOrder = useCreateApiFormModal({
     url: apiUrl(ApiEndpoints.purchase_order_line_list),

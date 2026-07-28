@@ -9,7 +9,7 @@ import os
 import re
 from datetime import timedelta
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
-from typing import Optional, TypedDict, cast
+from typing import TypedDict, cast
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -35,7 +35,6 @@ from mptt.models import TreeForeignKey
 
 import common.currency
 import common.models
-import company.models
 import InvenTree.conversion
 import InvenTree.fields
 import InvenTree.helpers
@@ -1004,7 +1003,6 @@ class Part(
         return InvenTree.helpers.increment_serial_number(sn, self)
 
     @property
-    @report.mixins.report_attribute()
     def full_name(self) -> str:
         """Format a 'full name' for this Part based on the format PART_NAME_FORMAT defined in InvenTree settings."""
         return part_helpers.render_part_full_name(self)
@@ -1216,8 +1214,7 @@ class Part(
         return None
 
     @property
-    @report.mixins.report_attribute()
-    def default_supplier(self) -> Optional[company.models.SupplierPart]:
+    def default_supplier(self):
         """Return the default (primary) SupplierPart for this Part.
 
         This function is included for backwards compatibility,
@@ -1372,15 +1369,14 @@ class Part(
     )
 
     @property
-    def category_path(self) -> str:
+    def category_path(self):
         """Return the category path of this Part instance."""
         if self.category:
             return self.category.pathstring
         return ''
 
     @property
-    @report.mixins.report_attribute()
-    def available_stock(self) -> Decimal:
+    def available_stock(self):
         """Return the total available stock.
 
         - This subtracts stock which is already allocated to builds
@@ -1618,8 +1614,7 @@ class Part(
             PartStar.objects.filter(part=self, user=user).delete()
 
     @property
-    @report.mixins.report_attribute()
-    def can_build(self) -> Decimal:
+    def can_build(self):
         """Return the number of units that can be build with available stock."""
         import part.filters
 
@@ -1651,7 +1646,7 @@ class Part(
         return int(max(can_build_quantity, 0))
 
     @property
-    def active_builds(self) -> int:
+    def active_builds(self):
         """Return a list of outstanding builds.
 
         Builds marked as 'complete' or 'cancelled' are ignored
@@ -1659,9 +1654,11 @@ class Part(
         return self.builds.filter(status__in=BuildStatusGroups.ACTIVE_CODES)
 
     @property
-    @report.mixins.report_attribute()
-    def quantity_being_built(self) -> Decimal:
+    def quantity_being_built(self, include_variants: bool = True):
         """Return the current number of parts currently being built.
+
+        Arguments:
+            include_variants: If True, include variants of this part in the calculation
 
         Note: This is the total quantity of Build orders, *not* the number of build outputs.
               In this fashion, it is the "projected" quantity of builds
@@ -1670,8 +1667,12 @@ class Part(
             status__in=BuildStatusGroups.ACTIVE_CODES
         )
 
-        # We are including variants, get all parts in the variant tree
-        builds = builds.filter(part__in=self.get_descendants(include_self=True))
+        if include_variants:
+            # If we are including variants, get all parts in the variant tree
+            builds = builds.filter(part__in=self.get_descendants(include_self=True))
+        else:
+            # Only look at this part
+            builds = builds.filter(part=self)
 
         quantity = 0
 
@@ -1682,7 +1683,7 @@ class Part(
         return quantity
 
     @property
-    def quantity_in_production(self, include_variants: bool = True) -> Decimal:
+    def quantity_in_production(self, include_variants: bool = True):
         """Quantity of this part currently actively in production.
 
         Arguments:
@@ -1876,8 +1877,7 @@ class Part(
         return query['t']
 
     @property
-    @report.mixins.report_attribute()
-    def total_stock(self) -> Decimal:
+    def total_stock(self):
         """Return the total stock quantity for this part.
 
         - Part may be stored in multiple locations
@@ -2030,7 +2030,7 @@ class Part(
         return list(parts)
 
     @property
-    def has_bom(self) -> bool:
+    def has_bom(self):
         """Return True if this Part instance has any BOM items."""
         return self.get_bom_items().exists()
 
@@ -2042,7 +2042,7 @@ class Part(
         return queryset
 
     @property
-    def has_trackable_parts(self) -> bool:
+    def has_trackable_parts(self):
         """Return True if any parts linked in the Bill of Materials are trackable.
 
         This is important when building the part.
@@ -2050,16 +2050,16 @@ class Part(
         return self.get_trackable_parts().exists()
 
     @property
-    def bom_count(self) -> int:
+    def bom_count(self):
         """Return the number of items contained in the BOM for this part."""
         return self.get_bom_items().count()
 
     @property
-    def used_in_count(self) -> int:
+    def used_in_count(self):
         """Return the number of part BOMs that this part appears in."""
         return len(self.get_used_in())
 
-    def get_bom_hash(self) -> str:
+    def get_bom_hash(self):
         """Return a checksum hash for the BOM for this part.
 
         Used to determine if the BOM has changed (and needs to be signed off!)
@@ -2068,14 +2068,7 @@ class Part(
         result_hash = hashlib.md5(str(self.id).encode())
 
         # List *all* BOM items (including inherited ones!)
-        # Note: We must order the BOM items in a consistent way, otherwise the hash will change if the order of the items changes
-        bom_items = (
-            self
-            .get_bom_items()
-            .all()
-            .prefetch_related('part', 'sub_part')
-            .order_by('pk')
-        )
+        bom_items = self.get_bom_items().all().prefetch_related('part', 'sub_part')
 
         for item in bom_items:
             result_hash.update(str(item.get_item_hash()).encode())
@@ -2148,7 +2141,7 @@ class Part(
         if parts is None:
             parts = set()
 
-        bom_items = self.get_bom_items().prefetch_related('sub_part')
+        bom_items = self.get_bom_items()
 
         for bom_item in bom_items:
             sub_part = bom_item.sub_part
@@ -2451,8 +2444,7 @@ class Part(
         return orders
 
     @property
-    @report.mixins.report_attribute()
-    def on_order(self) -> Decimal:
+    def on_order(self):
         """Return the total number of items on order for this part.
 
         Note that some supplier parts may have a different pack_quantity attribute,
@@ -3694,7 +3686,6 @@ class BomItem(InvenTree.models.MetadataMixin, InvenTree.models.InvenTreeModel):
         allow_variants: bool = True,
         allow_substitutes: bool = True,
         allow_inactive: bool = True,
-        variant_parts=None,
     ):
         """Return a list of valid parts which can be allocated against this BomItem.
 
@@ -3702,8 +3693,6 @@ class BomItem(InvenTree.models.MetadataMixin, InvenTree.models.InvenTreeModel):
             allow_variants: If True, include variants of the sub_part
             allow_substitutes: If True, include any directly specified substitute parts
             allow_inactive: If True, include inactive parts in the returned list
-            variant_parts: Optional pre-fetched iterable of sub_part's descendants,
-                to avoid re-querying the part tree when the caller already has it
 
         Includes:
         - The referenced sub_part
@@ -3717,9 +3706,7 @@ class BomItem(InvenTree.models.MetadataMixin, InvenTree.models.InvenTreeModel):
 
         # Variant parts (if allowed)
         if allow_variants and self.allow_variants:
-            if variant_parts is None:
-                variant_parts = self.sub_part.get_descendants(include_self=False)
-            for variant in variant_parts:
+            for variant in self.sub_part.get_descendants(include_self=False):
                 parts.add(variant)
 
         # Substitute parts
