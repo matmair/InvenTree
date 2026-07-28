@@ -68,20 +68,7 @@ function TableFieldRow({
     );
   }
 
-  // Render every error associated with this row, regardless of whether
-  // the modelRenderer also displays it next to a specific field -
-  // this guarantees no backend error is ever silently dropped
-  const rowErrorMessages: { key: string; message: string }[] = [];
-
-  if (rowErrors && typeof rowErrors === 'object') {
-    for (const [key, value] of Object.entries<any>(rowErrors)) {
-      const message = value?.message ?? value;
-
-      if (message) {
-        rowErrorMessages.push({ key, message });
-      }
-    }
-  }
+  const nonFieldErrors = rowErrors?.non_field_errors;
 
   return (
     <>
@@ -92,25 +79,17 @@ function TableFieldRow({
         changeFn: changeFn,
         removeFn: removeFn
       })}
-      {rowErrorMessages.length > 0 && (
-        <Table.Tr key={`table-row-${rowId}-errors`}>
+      {nonFieldErrors && (
+        <Table.Tr key={`table-row-${rowId}-non-field-errors`}>
           <Table.Td colSpan={columnCount}>
-            <Stack gap={4}>
-              {rowErrorMessages.map(({ key, message }) => (
-                <Group
-                  gap='xs'
-                  wrap='nowrap'
-                  key={`table-row-${rowId}-error-${key}`}
-                >
-                  <ActionIcon size='sm' variant='transparent' c='red'>
-                    <IconCornerDownRight />
-                  </ActionIcon>
-                  <Text size='xs' c='red'>
-                    {message}
-                  </Text>
-                </Group>
-              ))}
-            </Stack>
+            <Group gap='xs'>
+              <ActionIcon size='sm' variant='transparent' c='red'>
+                <IconCornerDownRight />
+              </ActionIcon>
+              <Text size='xs' c='red'>
+                {nonFieldErrors.message ?? nonFieldErrors}
+              </Text>
+            </Group>
           </Table.Td>
         </Table.Tr>
       )}

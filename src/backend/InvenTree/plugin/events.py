@@ -2,7 +2,6 @@
 
 from generic.events import BaseEventEnum
 from plugin.base.event.events import (
-    batch_events,
     bulk_trigger_event,
     process_event,
     register_event,
@@ -19,7 +18,6 @@ class PluginEvents(BaseEventEnum):
 
 __all__ = [
     'PluginEvents',
-    'batch_events',
     'bulk_trigger_event',
     'process_event',
     'register_event',

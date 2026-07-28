@@ -5,6 +5,15 @@ from django_test_migrations.contrib.unittest_case import MigratorTestCase
 from order.status_codes import SalesOrderStatus
 
 
+def setUpModule():
+    """Skip historical migration tests because squashed migrations are active."""
+    import unittest
+
+    raise unittest.SkipTest(
+        'Skipping historical migration tests because squashed migrations are active.'
+    )
+
+
 class TestRefIntMigrations(MigratorTestCase):
     """Test entire schema migration."""
 

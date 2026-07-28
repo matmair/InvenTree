@@ -145,12 +145,6 @@ export function PartTableFilters(): TableFilter[] {
       type: 'boolean'
     },
     {
-      name: 'on_order',
-      label: t`On Order`,
-      description: t`Filter by parts which are on order`,
-      type: 'boolean'
-    },
-    {
       name: 'starred',
       label: t`Subscribed`,
       description: t`Filter by parts to which the user is subscribed`,

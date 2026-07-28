@@ -36,7 +36,6 @@ import {
   IPNColumn,
   LineItemColumn,
   LinkColumn,
-  PercentageColumn,
   ProjectCodeColumn,
   ReferenceColumn,
   RenderPartColumn,
@@ -122,18 +121,13 @@ export default function SalesOrderLineItemTable({
             currency: record.sale_price_currency
           })
       },
-      PercentageColumn({
-        accessor: 'discount',
-        title: t`Discount`,
-        defaultVisible: false
-      }),
       {
         accessor: 'total_price',
         title: t`Total Price`,
         render: (record: any) =>
           formatCurrency(record.sale_price, {
             currency: record.sale_price_currency,
-            multiplier: record.quantity * (1 - (record.discount ?? 0) / 100)
+            multiplier: record.quantity
           })
       },
       DateColumn({

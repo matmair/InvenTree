@@ -19,7 +19,6 @@ import {
   LineItemColumn,
   LinkColumn,
   NoteColumn,
-  PercentageColumn,
   ProjectCodeColumn
 } from '../../components/tables/ColumnRenderers';
 import { InvenTreeTable } from '../../components/tables/InvenTreeTable';
@@ -70,17 +69,13 @@ export default function ExtraLineItemTable({
             currency: record.price_currency
           })
       },
-      PercentageColumn({
-        accessor: 'discount',
-        title: t`Discount`,
-        defaultVisible: false
-      }),
       {
         accessor: 'total_price',
         title: t`Total Price`,
         render: (record: any) =>
-          formatCurrency(record.total_price, {
-            currency: record.price_currency
+          formatCurrency(record.price, {
+            currency: record.price_currency,
+            multiplier: record.quantity
           })
       },
       ProjectCodeColumn({}),

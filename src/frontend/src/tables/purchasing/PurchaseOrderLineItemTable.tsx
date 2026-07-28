@@ -30,7 +30,6 @@ import {
   LocationColumn,
   NoteColumn,
   PartColumn,
-  PercentageColumn,
   ProjectCodeColumn,
   ReferenceColumn,
   TargetDateColumn
@@ -255,17 +254,13 @@ export function PurchaseOrderLineItemTable({
         accessor: 'purchase_price',
         title: t`Unit Price`
       }),
-      PercentageColumn({
-        accessor: 'discount',
-        title: t`Discount`,
-        defaultVisible: false
-      }),
       {
         accessor: 'total_price',
         title: t`Total Price`,
         render: (record: any) =>
-          formatCurrency(record.total_price, {
-            currency: record.purchase_price_currency
+          formatCurrency(record.purchase_price, {
+            currency: record.purchase_price_currency,
+            multiplier: record.quantity
           })
       },
       TargetDateColumn({}),

@@ -856,7 +856,6 @@ def check_for_updates():
     data = json.loads(response.text)
 
     tag = data.get('tag_name', None)
-    release_url = data.get('html_url')
 
     if not tag:
         raise ValueError("'tag_name' missing from GitHub response")  # pragma: no cover
@@ -886,13 +885,11 @@ def check_for_updates():
         trigger_notification(
             None,
             'update_available',
-            notification_uid=0,
             targets=get_user_model().objects.filter(is_superuser=True),
             delivery_methods={InvenTreeUINotifications},
             context={
                 'name': _('Update Available'),
                 'message': _('An update for InvenTree is available'),
-                'link': release_url,
             },
         )
 

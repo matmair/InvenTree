@@ -272,7 +272,7 @@ export function PartDetailsPanel({
   const br: DetailsField[] = useMemo(() => {
     const fields: DetailsField[] = [
       {
-        type: 'date',
+        type: 'string',
         name: 'creation_date',
         label: t`Creation Date`
       },
