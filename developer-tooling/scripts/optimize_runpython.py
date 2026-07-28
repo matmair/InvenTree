@@ -23,6 +23,8 @@ SEED_ALLOWLIST = {
     'update_templates',
     'add_part_links',
     'set_creation_date',
+    'backfill_user_profiles',
+    'move_mfa',
 }
 
 

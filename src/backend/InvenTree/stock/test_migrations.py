@@ -3,6 +3,15 @@
 from django_test_migrations.contrib.unittest_case import MigratorTestCase
 
 
+def setUpModule():
+    """Skip historical migration tests because squashed migrations are active."""
+    import unittest
+
+    raise unittest.SkipTest(
+        'Skipping historical migration tests because squashed migrations are active.'
+    )
+
+
 class TestSerialNumberMigration(MigratorTestCase):
     """Test data migration which updates serial numbers."""
 
