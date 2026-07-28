@@ -610,20 +610,22 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
 def validate_primary_group_on_save(sender, instance, **kwargs):
     """Validate primary_group on user profiles when a group is created or updated."""
     for user in instance.user_set.all():
-        profile = user.profile
-        if profile.primary_group and profile.primary_group not in user.groups.all():
-            profile.primary_group = None
-            profile.save()
+        if hasattr(user, 'profile'):
+            profile = user.profile
+            if profile.primary_group and profile.primary_group not in user.groups.all():
+                profile.primary_group = None
+                profile.save()
 
 
 @receiver(post_delete, sender=Group)
 def validate_primary_group_on_delete(sender, instance, **kwargs):
     """Validate primary_group on user profiles when a group is deleted."""
     for user in instance.user_set.all():
-        profile = user.profile
-        if profile.primary_group == instance:
-            profile.primary_group = None
-            profile.save()
+        if hasattr(user, 'profile'):
+            profile = user.profile
+            if profile.primary_group == instance:
+                profile.primary_group = None
+                profile.save()
 
 
 @receiver(m2m_changed, sender=User.groups.through)
@@ -634,7 +636,8 @@ def validate_primary_group_on_group_change(sender, instance, action, **kwargs):
         return
 
     if action in ['post_add', 'post_remove']:
-        profile = instance.profile
-        if profile.primary_group and profile.primary_group not in instance.groups.all():
-            profile.primary_group = None
-            profile.save()
+        if hasattr(instance, 'profile'):
+            profile = instance.profile
+            if profile.primary_group and profile.primary_group not in instance.groups.all():
+                profile.primary_group = None
+                profile.save()
