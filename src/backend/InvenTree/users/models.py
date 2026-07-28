@@ -638,6 +638,9 @@ def validate_primary_group_on_group_change(sender, instance, action, **kwargs):
     if action in ['post_add', 'post_remove']:
         if hasattr(instance, 'profile'):
             profile = instance.profile
-            if profile.primary_group and profile.primary_group not in instance.groups.all():
+            if (
+                profile.primary_group
+                and profile.primary_group not in instance.groups.all()
+            ):
                 profile.primary_group = None
                 profile.save()
