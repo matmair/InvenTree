@@ -88,7 +88,7 @@ def inventree_transition(
     source,
     target,
     event=None,
-    update_status: bool = True,
+    refresh_field: bool = True,
     raise_error: bool = False,
     **extra,
 ):
@@ -114,7 +114,7 @@ def inventree_transition(
                 source=[MyOrderStatus.PENDING, MyOrderStatus.ON_HOLD],
                 target=MyOrderStatus.PLACED,
                 event=MyOrderEvents.PLACED,
-                update_status=False,
+                refresh_field=False,
             )
             def place_order(self):
                 notify_responsible(...)
@@ -132,7 +132,7 @@ def inventree_transition(
         target: Target state after the transition.  May be a
                 ``django_fsm.RETURN_VALUE`` instance for dynamic targets.
         event: Optional event name to trigger after the transition.  If not provided no event is triggered.
-        update_status: If True, the status field is updated from the database before the transition.
+        refresh_field: If True, the status field is updated from the database before the transition.
         raise_error: If True, a ValueError exception is raised on invalid transitions instead of returning False.
         **extra: Additional keyword arguments forwarded to
                  ``django_fsm.transition`` (e.g. ``conditions``,
@@ -147,15 +147,12 @@ def inventree_transition(
         @wraps(func)
         def wrapper(self, *args, **kwargs):
             """Ensure that transitions are handled correctly."""
-            if update_status:
+            if refresh_field:
                 try:
-                    # TODO make this dynamic
-                    FIELD_NAME = 'status'
-
-                    # Update the status field from the database to avoid race conditions
+                    # Update the field from the database to avoid race conditions
                     current_obj = type(self).objects.select_for_update().get(pk=self.pk)
-                    new_status = getattr(current_obj, FIELD_NAME)
-                    setattr(self, FIELD_NAME, new_status)
+                    new_value = getattr(current_obj, field.name)
+                    setattr(self, field.name, new_value)
                 except type(self).DoesNotExist:
                     # The object has been deleted, so we cannot proceed with the transition.
                     return False
