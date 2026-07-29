@@ -2,8 +2,10 @@
 
 import warnings
 from collections.abc import Callable
+from enum import Enum
 from functools import wraps
 
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Model
 
@@ -82,7 +84,13 @@ pre_transition.connect(_plugin_pre_transition_handler)
 
 
 def inventree_transition(
-    field, source, target, event=None, update_status: bool = True, **extra
+    field,
+    source,
+    target,
+    event=None,
+    update_status: bool = True,
+    raise_error: bool = False,
+    **extra,
 ):
     """Decorator that combines ``@django_fsm.transition`` with InvenTree conventions.
 
@@ -125,6 +133,7 @@ def inventree_transition(
                 ``django_fsm.RETURN_VALUE`` instance for dynamic targets.
         event: Optional event name to trigger after the transition.  If not provided no event is triggered.
         update_status: If True, the status field is updated from the database before the transition.
+        raise_error: If True, a ValueError exception is raised on invalid transitions instead of returning False.
         **extra: Additional keyword arguments forwarded to
                  ``django_fsm.transition`` (e.g. ``conditions``,
                  ``on_error``).
@@ -156,10 +165,23 @@ def inventree_transition(
             # body, and updates the field to the target state.
             try:
                 fsm_func(self, *args, **kwargs)
-            except TransitionNotAllowed:
+            except TransitionNotAllowed as exc:
                 # Preserve backward-compatible behaviour: an invalid transition
                 # (wrong source state, failed condition, or explicit raise inside
                 # the method body) returns False rather than raising.
+                if raise_error:
+                    if getattr(self, field.name) == target:
+                        target_val = (
+                            target.label
+                            if isinstance(target, Enum) and hasattr(target, 'label')
+                            else target
+                        )
+                        raise ValidationError(
+                            f'{self._meta.verbose_name} is already {target_val}'
+                        ) from exc
+                    raise ValidationError(
+                        f'Invalid transition - cannot transition {field.name} (should be {source}, is {getattr(self, field.name)})'
+                    ) from exc
                 return False
             # Persist all changes (including the updated status field) to the DB.
             self.save()
