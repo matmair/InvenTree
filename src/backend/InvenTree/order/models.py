@@ -3824,31 +3824,17 @@ class TransferOrder(Order):
         return all(line.is_completed() for line in self.lines.all())
 
     # region fsm
-    def can_complete(
-        self, raise_error: bool = False, allow_incomplete_lines: bool = False
-    ) -> bool:
+    def can_complete(self, allow_incomplete_lines: bool = False) -> bool:
         """Test if this TransferOrder can be completed."""
-        try:
-            if self.status == TransferOrderStatus.COMPLETE.value:
-                raise ValidationError(_('Order is already complete'))
+        if not self.consume and not self.destination:
+            raise ValidationError(
+                _('Order cannot be completed until a destination location is set')
+            )
 
-            if self.status == TransferOrderStatus.CANCELLED.value:
-                raise ValidationError(_('Order is already cancelled'))
-
-            if not self.consume and not self.destination:
-                raise ValidationError(
-                    _('Order cannot be completed until a destination location is set')
-                )
-
-            if not (self.is_fully_allocated() or allow_incomplete_lines):
-                raise ValidationError(
-                    _('Order cannot be completed until it is fully allocated')
-                )
-        except ValidationError as e:
-            if raise_error:
-                raise e
-            else:
-                return False
+        if not (self.is_fully_allocated() or allow_incomplete_lines):
+            raise ValidationError(
+                _('Order cannot be completed until it is fully allocated')
+            )
 
         return True
 
@@ -3897,18 +3883,13 @@ class TransferOrder(Order):
     @inventree_transition(
         field=status,
         source=TransferOrderStatus.ISSUED,
+        # conditions=[can_complete],
         target=TransferOrderStatus.COMPLETE,
         event=TransferOrderEvents.COMPLETED,
     )
     def complete_order(self, user=None, **kwargs):
-        """Transition this TransferOrder to COMPLETE status.
-
-        The order must currently be ISSUED and meet all completion requirements.
-        """
-        if not user:
-            user = kwargs.pop('user', None)
-
-        self.can_complete(raise_error=True, **kwargs)
+        """Transition this TransferOrder to COMPLETE status."""
+        self.can_complete(**kwargs)
 
         for allocation in self.allocations():
             allocation.complete_allocation(user)
