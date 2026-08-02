@@ -13,6 +13,8 @@ from django_fsm import TransitionNotAllowed, transition
 
 from plugin.events import trigger_event
 
+from .deprecations import deprecated
+
 logger = structlog.get_logger('inventree')
 
 
@@ -73,19 +75,18 @@ def inventree_transition(
                     current_obj = type(self).objects.select_for_update().get(pk=self.pk)
                     new_value = getattr(current_obj, field.name)
                     setattr(self, field.name, new_value)
-                except type(self).DoesNotExist:
-                    # The object has been deleted, so we cannot proceed with the transition.
-                    return False
+                except type(self).DoesNotExist:  # pragma: no cover
+                    raise ValidationError(
+                        f'{self._meta.verbose_name} with pk={self.pk} does not exist in the database'
+                    )
 
             # Run plugin transition handlers - if no step is taken the decorated method is called
-            result = _run_plugin_transition_handlers(
+            if result := _run_plugin_transition_handlers(
                 self,
                 getattr(self, field.name),
                 target,
                 default_action=_noop_default_action,
-            )
-            if result:
-                # A plugin handler has handled the transition, so we skip the decorated method.
+            ):
                 return result
 
             # Execute the FSM-wrapped function.  This validates the source state,
@@ -103,7 +104,7 @@ def inventree_transition(
                         else target
                     )
                     raise ValidationError(
-                        f'{self._meta.verbose_name} is already {target_val}'
+                        f'Invalid transition on {self._meta.verbose_name}.{field.name} (source value should be {source}, is {getattr(self, field.name)})'
                     ) from exc
                 raise ValidationError(
                     f'Invalid transition - cannot transition {field.name} (should be {source}, is {getattr(self, field.name)})'
@@ -218,6 +219,7 @@ class StateTransitionMixin:
                 pass
     """
 
+    @deprecated('Use the @inventree_transition decorator instead', version='1.5.0')
     def handle_transition(
         self, current_state, target_state, instance, default_action, **kwargs
     ):
@@ -235,10 +237,9 @@ class StateTransitionMixin:
             default_action: Default action to be taken if none of the
                 transitions returns a boolean true value
         """
-        result = _run_plugin_transition_handlers(
+        if result := _run_plugin_transition_handlers(
             instance, current_state, target_state, default_action=default_action
-        )
-        if result:
+        ):
             return result
         return default_action(current_state, target_state, instance, **kwargs)
 
@@ -248,10 +249,9 @@ def _run_plugin_transition_handlers(instance, source, target, default_action):
 
     A plugin handler may veto the transition by raising a ``ValidationError``.
     """
-    if not isinstance(instance, StateTransitionMixin):
-        return
-
-    if not isinstance(instance, Model):
+    if not isinstance(instance, StateTransitionMixin) or not isinstance(
+        instance, Model
+    ):
         return
 
     from InvenTree.exceptions import log_error
