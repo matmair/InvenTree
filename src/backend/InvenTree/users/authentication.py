@@ -1,7 +1,9 @@
 """Custom token authentication class for InvenTree API."""
 
 import datetime
+import hmac
 
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
@@ -23,8 +25,30 @@ class ApiTokenAuthentication(TokenAuthentication):
 
     def authenticate_credentials(self, key):
         """Adds additional checks to the default token authentication method."""
-        # If this runs without error, then the token is valid (so far)
-        (user, token) = super().authenticate_credentials(key)
+        # Try finding as v1 token first
+        token = self.model.objects.filter(key=key, version=1).first()
+
+        if not token:
+            # Try finding as v2 token
+            # Prefix is first 12 characters
+            prefix = key[:12]
+            tokens = self.model.objects.filter(key=prefix, version=2)
+
+            for t in tokens:
+                pepper_id = t.pepper_id
+                peppers = getattr(settings, 'API_TOKEN_PEPPERS', {})
+                pepper = peppers.get(pepper_id) if pepper_id else settings.SECRET_KEY
+
+                if pepper and hmac.compare_digest(
+                    t.token_hash, t.generate_hash(key, pepper)
+                ):
+                    token = t
+                    break
+
+        if not token:
+            raise exceptions.AuthenticationFailed(_('Invalid token.'))
+
+        user = token.user
 
         if token.revoked:
             raise exceptions.AuthenticationFailed(_('Token has been revoked'))

@@ -1,3 +1,4 @@
+import { ActionButton } from '@lib/components/ActionButton';
 import { AddItemButton } from '@lib/components/AddItemButton';
 import { CopyButton } from '@lib/components/CopyButton';
 import type { RowAction } from '@lib/components/RowActions';
@@ -41,15 +42,37 @@ export function ApiTokenTable({
     }
   });
   const tableActions = useMemo(() => {
-    if (only_myself)
-      return [
+    const actions = [];
+    if (only_myself) {
+      actions.push(
         <AddItemButton
           key={'generate'}
           tooltip={t`Generate Token`}
           onClick={() => generateToken.open()}
         />
-      ];
-    return [];
+      );
+    } else {
+      actions.push(
+        <ActionButton
+          key={'revoke-v1'}
+          tooltip={t`Revoke all old (v1) tokens`}
+          icon={<IconCircleX />}
+          color='red'
+          onClick={() => {
+            api
+              .post(apiUrl(ApiEndpoints.user_tokens), { revoke_v1: true })
+              .then(() => table.refreshTable())
+              .catch((error) =>
+                showApiErrorMessage({
+                  error: error,
+                  title: t`Error revoking tokens`
+                })
+              );
+          }}
+        />
+      );
+    }
+    return actions;
   }, [only_myself]);
 
   const table = useTable('api-tokens', { idAccessor: 'id' });
@@ -100,6 +123,18 @@ export function ApiTokenTable({
         accessor: 'created',
         title: t`Created`,
         sortable: true
+      },
+      {
+        accessor: 'version',
+        title: t`Version`,
+        sortable: true,
+        render: (record: any) => {
+          return (
+            <Badge color={record.version === 1 ? 'red' : 'blue'}>
+              v{record.version}
+            </Badge>
+          );
+        }
       }
     ];
     if (!only_myself) {

@@ -240,6 +240,7 @@ class ApiTokenSerializer(InvenTreeModelSerializer):
             'user',
             'user_detail',
             'in_use',
+            'version',
         ]
 
     def validate(self, data):
