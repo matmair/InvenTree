@@ -141,7 +141,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-pkgr:
-    if: github.repository == 'inventree/InvenTree'
     name: ${{ matrix.target }}
     runs-on: ubuntu-latest
     needs: [build]
@@ -239,14 +238,6 @@ jobs:
             INVENTREE_PLUGIN_FILE=/opt/inventree/plugins.txt
             INVENTREE_CONFIG_FILE=/opt/inventree/config.yaml
             APP_REPO=inventree/InvenTree
-      - name: Publish to go.packager.io - current release channel
-        uses: pkgr/action/publish@c5666febcd31750da6428042193fc5b2fb765435 # main
-        with:
-          target: ${{ matrix.target }}
-          token: ${{ secrets.PACKAGER_RELEASE_TOKEN }}
-          repository: inventree/InvenTree
-          channel: ${{ env.pkg_channel }}
-          file: ${{ steps.package.outputs.package_path }}
       - name: Publish to artifact
         run: gh release upload ${REF} ${PACKAGE_PATH}#${PACKAGE_NAME}
         env:
@@ -254,8 +245,18 @@ jobs:
           PACKAGE_PATH: ${{ steps.package.outputs.package_path }}
           PACKAGE_NAME: ${{ matrix.target }}-${{ steps.setup.outputs.version }}.tar.gz
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to go.packager.io - current release channel
+        uses: pkgr/action/publish@c5666febcd31750da6428042193fc5b2fb765435 # main
+        if: github.repository == 'inventree/InvenTree'
+        with:
+          target: ${{ matrix.target }}
+          token: ${{ secrets.PACKAGER_RELEASE_TOKEN }}
+          repository: inventree/InvenTree
+          channel: ${{ env.pkg_channel }}
+          file: ${{ steps.package.outputs.package_path }}
       - name: Package - stable release channel
         uses: pkgr/action/package@c5666febcd31750da6428042193fc5b2fb765435 # main
+        if: github.repository == 'inventree/InvenTree'
         id: package-stable
         with:
           target: ${{ matrix.target }}
@@ -274,6 +275,7 @@ jobs:
             APP_REPO=inventree/InvenTree
       - name: Publish to go.packager.io - stable release channel
         uses: pkgr/action/publish@c5666febcd31750da6428042193fc5b2fb765435 # main
+        if: github.repository == 'inventree/InvenTree'
         with:
           target: ${{ matrix.target }}
           token: ${{ secrets.PACKAGER_RELEASE_TOKEN }}
