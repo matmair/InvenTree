@@ -502,7 +502,7 @@ export function DetailsTableField({
 
   return (
     <Table.Tr style={{ verticalAlign: 'top' }}>
-      <Table.Td style={{ minWidth: 75, lineBreak: 'auto', flex: 2 }}>
+      <Table.Td style={{ width: '35%', lineBreak: 'auto' }}>
         <Group gap='xs' wrap='nowrap'>
           {showIcons && (
             <InvenTreeIcon
@@ -512,17 +512,10 @@ export function DetailsTableField({
           <Text style={{ paddingLeft: showIcons ? 10 : 0 }}>{field.label}</Text>
         </Group>
       </Table.Td>
-      <Table.Td
-        style={{
-          lineBreak: 'anywhere',
-          minWidth: 100,
-          flex: 10,
-          display: 'inline-block'
-        }}
-      >
+      <Table.Td style={{ lineBreak: 'anywhere' }}>
         <FieldType field_data={field} field_value={fieldValue} />
       </Table.Td>
-      <Table.Td style={{ width: '50' }}>
+      <Table.Td style={{ width: 32 }}>
         {field.copy && <CopyField value={fieldValue} />}
       </Table.Td>
     </Table.Tr>
@@ -558,7 +551,12 @@ export function DetailsTable({
     >
       <Stack gap='xs'>
         {title && <StylishText size='lg'>{title}</StylishText>}
-        <Table striped verticalSpacing={5} horizontalSpacing='sm'>
+        <Table
+          striped
+          verticalSpacing={5}
+          horizontalSpacing='sm'
+          style={{ tableLayout: 'fixed', width: '100%' }}
+        >
           <Table.Tbody>
             {visibleFields.map((field: DetailsField) => (
               <DetailsTableField
