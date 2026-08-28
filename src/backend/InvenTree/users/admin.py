@@ -18,12 +18,24 @@ User = get_user_model()
 class ApiTokenAdmin(admin.ModelAdmin):
     """Admin class for the ApiToken model."""
 
-    list_display = ('token', 'user', 'name', 'expiry', 'active')
-    list_filter = ('user', 'revoked')
+    list_display = ('token', 'user', 'name', 'expiry', 'active', 'version')
+    list_filter = ('user', 'revoked', 'version')
+    actions = ['disable_v1_tokens']
+
+    @admin.action(description=_('Disable all old (v1) tokens'))
+    def disable_v1_tokens(self, request, queryset):
+        """Disable all v1 tokens."""
+        # Note: we ignore the queryset and disable ALL v1 tokens
+        v1_tokens = ApiToken.objects.filter(version=1, revoked=False)
+        count = v1_tokens.count()
+        v1_tokens.update(revoked=True)
+        self.message_user(request, _(f'Disabled {count} old tokens.'))
+
     fields = (
         'token',
         'user',
         'name',
+        'version',
         'created',
         'last_seen',
         'revoked',
@@ -35,9 +47,13 @@ class ApiTokenAdmin(admin.ModelAdmin):
         """Return list of fields to display."""
         fields = ['token'] if obj else ['key']
 
+        if obj and obj.version == 1:
+            fields.insert(0, 'v1_warning')
+
         fields += [
             'user',
             'name',
+            'version',
             'created',
             'last_seen',
             'revoked',
@@ -49,12 +65,31 @@ class ApiTokenAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         """Some fields are read-only after creation."""
-        ro = ['created', 'last_seen']
+        ro = ['created', 'last_seen', 'version', 'token_hash', 'pepper_id']
 
         if obj:
             ro += ['token', 'user', 'expiry', 'name']
 
+            # Add warning for v1 tokens
+            if obj.version == 1:
+                from django.utils.safestring import mark_safe
+
+                obj.v1_warning = mark_safe(
+                    '<div style="color: red; font-weight: bold; padding: 10px; border: 1px solid red;">'
+                    + str(
+                        _(
+                            'This is an old (v1) token. It is stored in plaintext and should be replaced.'
+                        )
+                    )
+                    + '</div>'
+                )
+                ro.append('v1_warning')
+
         return ro
+
+    def v1_warning(self, obj):
+        """Return warning message for v1 tokens."""
+        return getattr(obj, 'v1_warning', '')
 
 
 class RuleSetInline(admin.TabularInline):

@@ -1,6 +1,8 @@
 """Database model definitions for the 'users' app."""
 
 import datetime
+import hashlib
+import hmac
 
 from django.conf import settings
 from django.contrib import admin
@@ -84,6 +86,7 @@ class ApiToken(AuthToken, InvenTree.models.MetadataMixin):
     Extensions:
     - Adds an 'expiry' date - tokens can be set to expire after a certain date
     - Adds a 'name' field - tokens can be given a custom name (in addition to the user information)
+    - Adds hashing support for tokens
     """
 
     class Meta:
@@ -105,14 +108,74 @@ class ApiToken(AuthToken, InvenTree.models.MetadataMixin):
 
         return prefix + str(AuthToken.generate_key()) + suffix
 
-    # Override the 'key' field - force it to be unique
+    def save(self, *args, **kwargs):
+        """Custom save method for the ApiToken model.
+
+        If the version is 2 and no hash is provided, generate a new hash.
+        """
+        if self.version == 2 and not self.token_hash:
+            # We are creating a new v2 token.
+            # We use the first 12 characters of the key as the 'key' (prefix)
+            # and hash the full key.
+
+            # Store the full key temporarily so it can be displayed to the user
+            self.exposed_key = self.key
+
+            pepper_id, pepper = self.get_current_pepper()
+            self.pepper_id = pepper_id
+            self.token_hash = self.generate_hash(self.key, pepper)
+            self.key = self.key[:12]
+
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def generate_hash(key, pepper):
+        """Generate a HMAC-SHA256 hash for a token key."""
+        return hmac.new(
+            key=pepper.encode(), msg=key.encode(), digestmod=hashlib.sha256
+        ).hexdigest()
+
+    @staticmethod
+    def get_current_pepper():
+        """Return the current pepper ID and value."""
+        peppers = getattr(settings, 'API_TOKEN_PEPPERS', {})
+        if not peppers:
+            # Fallback to SECRET_KEY if no peppers are defined
+            return ('', settings.SECRET_KEY)
+
+        # Return the last pepper in the dict (highest ID)
+        pepper_id = max(peppers.keys())
+        return (pepper_id, peppers[pepper_id])
+
+    # Override the 'key' field
     key = models.CharField(
-        default=default_token,
         verbose_name=_('Key'),
         db_index=True,
         unique=True,
         max_length=100,
         validators=[MinLengthValidator(50)],
+    )
+
+    version = models.PositiveIntegerField(
+        default=1,
+        verbose_name=_('Version'),
+        help_text=_('Token version (1 for plaintext, 2 for hashed)'),
+    )
+
+    token_hash = models.CharField(
+        max_length=128,
+        blank=True,
+        default='',
+        verbose_name=_('Token Hash'),
+        help_text=_('Hashed value of the token (for v2 tokens)'),
+    )
+
+    pepper_id = models.CharField(
+        max_length=50,
+        blank=True,
+        default='',
+        verbose_name=_('Pepper ID'),
+        help_text=_('ID of the pepper used to hash the token'),
     )
 
     # Override the 'user' field, to allow multiple tokens per user
@@ -177,7 +240,11 @@ class ApiToken(AuthToken, InvenTree.models.MetadataMixin):
         if self.pk is None:
             return self.key  # pragma: no cover
 
-        return InvenTree.helpers.sanitize_token(self.key)
+        if self.version == 1:
+            return InvenTree.helpers.sanitize_token(self.key)
+        else:
+            # For v2 tokens, the 'key' field only contains the prefix
+            return self.key + '*' * 40
 
     @property
     @admin.display(boolean=True, description=_('Expired'))
