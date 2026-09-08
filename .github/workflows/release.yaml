@@ -141,7 +141,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-pkgr:
-    if: github.repository == 'inventree/InvenTree'
+    if: github.repository == 'matmair/InvenTree'
     name: ${{ matrix.target }}
     runs-on: ubuntu-latest
     needs: [build]
@@ -238,14 +238,14 @@ jobs:
             INVENTREE_BACKUP_DIR=/opt/inventree/backup
             INVENTREE_PLUGIN_FILE=/opt/inventree/plugins.txt
             INVENTREE_CONFIG_FILE=/opt/inventree/config.yaml
-            APP_REPO=inventree/InvenTree
+            APP_REPO=inventree/invenTree
       - name: Publish to go.packager.io - current release channel
         uses: pkgr/action/publish@c5666febcd31750da6428042193fc5b2fb765435 # main
         with:
           target: ${{ matrix.target }}
           token: ${{ secrets.PACKAGER_RELEASE_TOKEN }}
-          repository: inventree/InvenTree
-          channel: ${{ env.pkg_channel }}
+          repository: inventree/inventree
+          channel: beta
           file: ${{ steps.package.outputs.package_path }}
       - name: Publish to artifact
         run: gh release upload ${REF} ${PACKAGE_PATH}#${PACKAGE_NAME}
@@ -271,12 +271,12 @@ jobs:
             INVENTREE_BACKUP_DIR=/opt/inventree/backup
             INVENTREE_PLUGIN_FILE=/opt/inventree/plugins.txt
             INVENTREE_CONFIG_FILE=/opt/inventree/config.yaml
-            APP_REPO=inventree/InvenTree
+            APP_REPO=inventree/inventree
       - name: Publish to go.packager.io - stable release channel
         uses: pkgr/action/publish@c5666febcd31750da6428042193fc5b2fb765435 # main
         with:
           target: ${{ matrix.target }}
           token: ${{ secrets.PACKAGER_RELEASE_TOKEN }}
           repository: inventree/InvenTree
-          channel: stable
+          channel: beta
           file: ${{ steps.package-stable.outputs.package_path }}
