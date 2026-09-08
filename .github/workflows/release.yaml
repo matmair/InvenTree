@@ -238,7 +238,7 @@ jobs:
             INVENTREE_BACKUP_DIR=/opt/inventree/backup
             INVENTREE_PLUGIN_FILE=/opt/inventree/plugins.txt
             INVENTREE_CONFIG_FILE=/opt/inventree/config.yaml
-            APP_REPO=inventree/invenTree
+            APP_REPO=inventree/inventree
       - name: Publish to go.packager.io - current release channel
         uses: pkgr/action/publish@c5666febcd31750da6428042193fc5b2fb765435 # main
         with:
