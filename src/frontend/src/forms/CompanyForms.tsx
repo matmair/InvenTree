@@ -13,7 +13,7 @@ import {
   IconPhone
 } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
-import { TagsField } from './CommonFields';
+import { DuplicateField, TagsField } from './CommonFields';
 
 /**
  * Field set for SupplierPart instance
@@ -21,11 +21,13 @@ import { TagsField } from './CommonFields';
 export function useSupplierPartFields({
   manufacturerId,
   manufacturerPartId,
-  partId
+  partId,
+  duplicateSupplierPartId
 }: {
   manufacturerId?: number;
   manufacturerPartId?: number;
   partId?: number;
+  duplicateSupplierPartId?: number | null;
 }) {
   const [part, setPart] = useState<any>({});
 
@@ -95,14 +97,35 @@ export function useSupplierPartFields({
         icon: <IconPackage />
       },
       primary: {},
-      active: {}
+      active: {},
+      duplicate: DuplicateField({
+        originalId: duplicateSupplierPartId,
+        extraFields: {
+          copy_parameters: {},
+          copy_notes: {}
+        }
+      })
     };
 
+    if (!duplicateSupplierPartId) {
+      delete fields.duplicate;
+    }
+
     return fields;
-  }, [manufacturerId, manufacturerPartId, partId, part]);
+  }, [
+    manufacturerId,
+    manufacturerPartId,
+    partId,
+    part,
+    duplicateSupplierPartId
+  ]);
 }
 
-export function useManufacturerPartFields() {
+export function useManufacturerPartFields({
+  duplicateManufacturerPartId
+}: {
+  duplicateManufacturerPartId?: number | null;
+} = {}) {
   return useMemo(() => {
     const fields: ApiFormFieldSet = {
       part: {},
@@ -120,18 +143,33 @@ export function useManufacturerPartFields() {
       MPN: {},
       description: {},
       tags: TagsField({}),
-      link: {}
+      link: {},
+      duplicate: DuplicateField({
+        originalId: duplicateManufacturerPartId,
+        extraFields: {
+          copy_parameters: {},
+          copy_notes: {}
+        }
+      })
     };
 
+    if (!duplicateManufacturerPartId) {
+      delete fields.duplicate;
+    }
+
     return fields;
-  }, []);
+  }, [duplicateManufacturerPartId]);
 }
 
 /**
  * Field set for editing a company instance
  */
-export function companyFields(): ApiFormFieldSet {
-  return {
+export function companyFields({
+  duplicateCompanyId
+}: {
+  duplicateCompanyId?: number | null;
+} = {}): ApiFormFieldSet {
+  const fields: ApiFormFieldSet = {
     name: {},
     description: {},
     website: {
@@ -151,6 +189,19 @@ export function companyFields(): ApiFormFieldSet {
     is_supplier: {},
     is_manufacturer: {},
     is_customer: {},
-    active: {}
+    active: {},
+    duplicate: DuplicateField({
+      originalId: duplicateCompanyId,
+      extraFields: {
+        copy_parameters: {},
+        copy_notes: {}
+      }
+    })
   };
+
+  if (!duplicateCompanyId) {
+    delete fields.duplicate;
+  }
+
+  return fields;
 }

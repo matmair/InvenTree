@@ -29,11 +29,11 @@ import {
   TableFieldQuantityInput,
   type TableFieldRowProps
 } from '../components/forms/fields/TableField';
+import { RenderPartColumn } from '../components/tables/ColumnRenderers';
 import useBackgroundTask from '../hooks/UseBackgroundTask';
 import { useCreateApiFormModal, useEditApiFormModal } from '../hooks/UseForm';
 import { useGlobalSettingsState } from '../states/SettingsStates';
 import { useUserState } from '../states/UserState';
-import { RenderPartColumn } from '../tables/ColumnRenderers';
 import { ProjectCodeField, TagsField } from './CommonFields';
 
 export function useSalesOrderFields({
@@ -97,13 +97,14 @@ export function useSalesOrderFields({
     if (!!duplicateOrderId) {
       fields.duplicate = {
         children: {
-          order_id: {
+          original: {
             hidden: true,
             value: duplicateOrderId
           },
           copy_lines: {},
           copy_extra_lines: {},
-          copy_parameters: {}
+          copy_parameters: {},
+          copy_notes: {}
         }
       };
     }
@@ -197,6 +198,7 @@ export function useSalesOrderLineItemFields({
         value: partCurrency,
         onValueChange: setPartCurrency
       },
+      discount: {},
       project_code: ProjectCodeField(),
       target_date: {},
       notes: {},

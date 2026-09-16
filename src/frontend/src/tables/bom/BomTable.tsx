@@ -30,6 +30,19 @@ import type { TableFilter } from '@lib/types/Filters';
 import type { TableColumn } from '@lib/types/Tables';
 import { ActionDropdown } from '../../components/items/ActionDropdown';
 import { RenderPart } from '../../components/render/Part';
+import {
+  BooleanColumn,
+  CategoryColumn,
+  DescriptionColumn,
+  IPNColumn,
+  NoteColumn,
+  ReferenceColumn,
+  RenderPartColumn
+} from '../../components/tables/ColumnRenderers';
+import { PartCategoryFilter } from '../../components/tables/Filter';
+import { InvenTreeTable } from '../../components/tables/InvenTreeTable';
+import RowExpansionIcon from '../../components/tables/RowExpansionIcon';
+import { TableHoverCard } from '../../components/tables/TableHoverCard';
 import { useApi } from '../../contexts/ApiContext';
 import { formatDecimal, formatPriceRange } from '../../defaults/formatters';
 import { bomItemFields, useEditBomSubstitutesForm } from '../../forms/BomForms';
@@ -45,19 +58,6 @@ import {
   useUserSettingsState
 } from '../../states/SettingsStates';
 import { useUserState } from '../../states/UserState';
-import {
-  BooleanColumn,
-  CategoryColumn,
-  DescriptionColumn,
-  IPNColumn,
-  NoteColumn,
-  ReferenceColumn,
-  RenderPartColumn
-} from '../ColumnRenderers';
-import { PartCategoryFilter } from '../Filter';
-import { InvenTreeTable } from '../InvenTreeTable';
-import RowExpansionIcon from '../RowExpansionIcon';
-import { TableHoverCard } from '../TableHoverCard';
 import { subassemblyRowExpansion } from './BomSubassemblyTable';
 
 // Calculate the total stock quantity available for a given BomItem
@@ -247,6 +247,19 @@ export function BomTable({
                 {units && <Text size='xs'>[{units}]</Text>}
               </Group>
             );
+          }
+        }
+      },
+      {
+        accessor: 'piece_count',
+        defaultVisible: false,
+        sortable: true,
+        render: (record: any) => {
+          const piece_count = record.piece_count;
+          if (piece_count == null || piece_count <= 1) {
+            return '-';
+          } else {
+            return <Text size='xs'>{piece_count}</Text>;
           }
         }
       },
@@ -742,6 +755,10 @@ export function BomTable({
             enableSelection: isEditing && !isLocked,
             enableBulkDelete:
               isEditing && !isLocked && user.hasDeleteRole(UserRoles.bom),
+            bulkDeleteFilter: (record: any) => {
+              // If the BOM item is defined for a different parent, then it cannot be deleted
+              return record.part === partId;
+            },
             enableDownload: true,
             rowExpansion: isEditing ? undefined : rowExpansion
           }}

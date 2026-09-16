@@ -237,6 +237,9 @@ class MeUserDetail(RetrieveUpdateAPI, UserDetail):
 
     rolemap = {'POST': 'view', 'PUT': 'view', 'PATCH': 'view'}
 
+    # Prevent 'delete' operations on this endpoint
+    http_method_names = ['get', 'put', 'patch', 'head', 'options', 'trace']
+
     def get_object(self):
         """Always return the current user object."""
         return self.request.user
@@ -247,6 +250,24 @@ class MeUserDetail(RetrieveUpdateAPI, UserDetail):
         Note that for this endpoint, the current user can *always* edit their own details.
         """
         return None
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='roles',
+                type=bool,
+                location=OpenApiParameter.QUERY,
+                description='Include the roles and permissions associated with the current user in the response',
+            )
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        """Retrieve details for the current user.
+
+        Pass '?roles=true' to also include the user's roles and permissions
+        (previously only available via the separate '/user/me/roles/' endpoint).
+        """
+        return super().get(request, *args, **kwargs)
 
 
 class UserList(ListCreateAPI):
@@ -265,7 +286,7 @@ class UserList(ListCreateAPI):
 
     filter_backends = SEARCH_ORDER_FILTER
 
-    search_fields = ['first_name', 'last_name', 'username']
+    search_fields = ['first_name', 'last_name', 'username', 'email']
 
     ordering_fields = [
         'email',
@@ -290,7 +311,7 @@ class GroupMixin(SerializerContextMixin):
 
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [InvenTree.permissions.IsStaffOrReadOnlyScope]
+    permission_classes = [InvenTree.permissions.StaffRolePermissionOrReadOnly]
 
 
 class GroupOutputOptions(OutputConfiguration):
@@ -327,7 +348,7 @@ class RuleSetMixin:
 
     queryset = RuleSet.objects.all()
     serializer_class = RuleSetSerializer
-    permission_classes = [InvenTree.permissions.IsStaffOrReadOnlyScope]
+    permission_classes = [InvenTree.permissions.StaffRolePermissionOrReadOnly]
 
 
 class RuleSetList(RuleSetMixin, ListAPI):
@@ -441,16 +462,14 @@ class TokenListView(TokenMixin, ListCreateAPI):
     """List of user tokens for current user."""
 
     filter_backends = SEARCH_ORDER_FILTER
-    search_fields = ['name', 'key']
-    ordering_fields = [
-        'created',
-        'expiry',
-        'last_seen',
-        'user',
+    search_fields = [
         'name',
-        'revoked',
-        'revoked',
+        'user__username',
+        'user__first_name',
+        'user__last_name',
+        'user__email',
     ]
+    ordering_fields = ['created', 'expiry', 'last_seen', 'user', 'name', 'revoked']
     filterset_fields = ['revoked', 'user']
     queryset = ApiToken.objects.none()
 

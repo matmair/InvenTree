@@ -6,8 +6,9 @@ from pathlib import Path
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.urls import path, reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import RedirectView
@@ -30,6 +31,8 @@ from common.settings import get_global_setting
 from InvenTree import helpers, ready
 from InvenTree.auth_overrides import registration_enabled
 from InvenTree.mixins import ListCreateAPI
+from InvenTree.tasks import batch_offload_tasks
+from plugin.base.event.events import batch_events
 from plugin.serializers import MetadataSerializer
 from users.models import ApiToken
 from users.permissions import check_user_permission, prefetch_rule_sets
@@ -227,6 +230,7 @@ class InfoApiSerializer(serializers.Serializer):
     class SettingsSerializer(serializers.Serializer):
         """Serializer for InfoApiSerializer."""
 
+        sso_enabled = serializers.BooleanField()
         sso_registration = serializers.BooleanField()
         registration_enabled = serializers.BooleanField()
         password_forgotten_enabled = serializers.BooleanField()
@@ -263,6 +267,8 @@ class InfoApiSerializer(serializers.Serializer):
     target = serializers.CharField(read_only=True, allow_null=True)
     django_admin = serializers.CharField(read_only=True)
     settings = SettingsSerializer(read_only=True, many=False)
+    """System state details that are mainly for warning purposes and do not require a hard API contract."""
+    system_state = serializers.JSONField(read_only=True)
 
 
 class InfoView(APIView):
@@ -326,12 +332,14 @@ class InfoView(APIView):
             if (is_staff and settings.INVENTREE_ADMIN_ENABLED)
             else None,
             'settings': {
+                'sso_enabled': get_global_setting('LOGIN_ENABLE_SSO'),
                 'sso_registration': registration_enabled('LOGIN_ENABLE_SSO_REG'),
                 'registration_enabled': registration_enabled('LOGIN_ENABLE_REG'),
                 'password_forgotten_enabled': get_global_setting(
                     'LOGIN_ENABLE_PWD_FORGOT'
                 ),
             },
+            'system_state': {'cors_allow_all': settings.CORS_ALLOW_ALL_ORIGINS},
         }
 
         return JsonResponse(data)
@@ -494,7 +502,7 @@ class BulkCreateMixin:
             if unique_create_fields := getattr(self, 'unique_create_fields', None):
                 existing = collections.defaultdict(list)
                 for idx, item in enumerate(data):
-                    key = tuple(item[v] for v in list(unique_create_fields))  # ty: ignore[not-subscriptable]
+                    key = tuple(item[v] for v in list(unique_create_fields))
                     existing[key].append(idx)
 
                 unique_errors = [[] for _ in range(len(data))]
@@ -510,7 +518,7 @@ class BulkCreateMixin:
                 if has_unique_errors:
                     raise ValidationError(unique_errors)
 
-            with transaction.atomic():
+            with transaction.atomic(), batch_events(), batch_offload_tasks():
                 for item in data:
                     serializer = self.get_serializer(data=item)
                     if serializer.is_valid():
@@ -534,7 +542,11 @@ class BulkUpdateMixin(BulkOperationMixin):
 
     Bulk update allows for multiple items to be updated in a single API query,
     rather than using multiple API calls to the various detail endpoints.
+
+    Each instance is validated and saved individually, so that any custom save methods are triggered.
     """
+
+    BULK_ID_FIELD: str = 'pk'
 
     def validate_update(self, queryset, request) -> None:
         """Perform validation right before updating.
@@ -579,17 +591,35 @@ class BulkUpdateMixin(BulkOperationMixin):
         # Perform the update operation
         data = request.data
 
-        n = queryset.count()
+        # Extract the primary key values up-front:
+        # Each instance is re-fetched from the database immediately before it is
+        # updated, as saving one instance may alter database state which other
+        # instances in the queryset depend on (e.g. MPTT tree structure fields).
+        # Saving a stale instance can result in database corruption (and it must
+        # be the *instance* that is fresh - refresh_from_db is not sufficient here,
+        # as MPTT caches original field values when the instance is loaded).
+        pk_values = sorted(queryset.values_list(self.BULK_ID_FIELD, flat=True))
 
         instance_data = []
 
-        with transaction.atomic():
+        with transaction.atomic(), batch_events(), batch_offload_tasks():
             # Perform object update
             # Note that we do not perform a bulk-update operation here,
             # as we want to trigger any custom post_save methods on the model
 
             # Run validation first
-            for instance in queryset:
+            for pk in pk_values:
+                try:
+                    instance = queryset.select_for_update(of=('self',)).get(**{
+                        self.BULK_ID_FIELD: pk
+                    })
+                except ObjectDoesNotExist:
+                    raise ValidationError({
+                        'non_field_errors': _(
+                            'Item no longer matches the provided criteria'
+                        )
+                    })
+
                 serializer = self.get_serializer(instance, data=data, partial=True)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
@@ -597,7 +627,7 @@ class BulkUpdateMixin(BulkOperationMixin):
                 instance_data.append(serializer.data)
 
         return Response(
-            {'success': f'Updated {n} items', 'items': instance_data}, status=200
+            {'success': 'Updated multiple items', 'items': instance_data}, status=200
         )
 
 
@@ -669,7 +699,7 @@ class CommonBulkDeleteMixin(BulkOperationMixin):
         # Keep track of how many items we deleted
         n_deleted = queryset.count()
 
-        with transaction.atomic():
+        with transaction.atomic(), batch_events(), batch_offload_tasks():
             # Perform object deletion
             # Note that we do not perform a bulk-delete operation here,
             # as we want to trigger any custom post_delete methods on the model
@@ -755,7 +785,7 @@ class APISearchView(GenericAPIView):
             'supplierpart': company.api.SupplierPartList,
             'part': part.api.PartList,
             'partcategory': part.api.CategoryList,
-            'purchaseorder': order.api.PurchaseOrderList,
+            'purchaseorder': order.api.PurchaseOrderViewSet,
             'returnorder': order.api.ReturnOrderList,
             'salesorder': order.api.SalesOrderList,
             'salesordershipment': order.api.SalesOrderShipmentList,
@@ -819,7 +849,10 @@ class APISearchView(GenericAPIView):
                 if type(params) is not dict:
                     continue
 
-                view = cls()
+                is_viewset = issubclass(cls, viewsets.GenericViewSet) or issubclass(
+                    cls, viewsets.ViewSetMixin
+                )
+                view = cls if is_viewset else cls()
 
                 # Override regular query params with specific ones for this search request
                 cloned_request._request.GET = params
@@ -838,7 +871,25 @@ class APISearchView(GenericAPIView):
                     continue
 
                 try:
-                    results[key] = view.list(request, *args, **kwargs).data
+                    if is_viewset:
+                        # use dummy request to call the list method of the viewset
+                        req = HttpRequest()
+                        req.method = 'GET'
+                        req.user = request.user
+                        req.GET = params
+
+                        # Copy META from the original request, so that host/scheme
+                        # information is available (e.g. for pagination links).
+                        # Strip content-length/type, as this is a synthetic GET
+                        # request with no body of its own to parse.
+                        req.META = request.META.copy()
+                        req.META.pop('CONTENT_LENGTH', None)
+                        req.META.pop('CONTENT_TYPE', None)
+
+                        list_method = cls.as_view({'get': 'list'})(req, *args, **kwargs)
+                    else:
+                        list_method = view.list(request, *args, **kwargs)
+                    results[key] = list_method.data
                 except Exception as exc:
                     results[key] = {'error': str(exc)}
 
@@ -851,6 +902,9 @@ class GenericMetadataView(RetrieveUpdateAPI):
     model = None  # Placeholder for the model class
     serializer_class = MetadataSerializer
     permission_classes = [InvenTree.permissions.ContentTypePermission]
+
+    # Enforce limited range of lookup fields to prevent arbitrary queryset filtering
+    ALLOWED_LOOKUP_FIELDS = {'pk', 'key'}
 
     def get_permission_model(self):
         """Return the 'permission' model associated with this view."""
@@ -895,6 +949,17 @@ class GenericMetadataView(RetrieveUpdateAPI):
             'lookup_value' if 'lookup_field' in self.kwargs else 'pk'
         )
         return super().dispatch(request, *args, **kwargs)
+
+    def initial(self, request, *args, **kwargs):
+        """Validate the lookup field before any queryset is touched.
+
+        This runs inside APIView's own exception handling (unlike dispatch(),
+        which runs before it), and *before* permission checks - so an invalid
+        lookup field is rejected without ever executing a query.
+        """
+        if self.lookup_field not in self.ALLOWED_LOOKUP_FIELDS:
+            raise ValidationError(f"Invalid lookup field '{self.lookup_field}'")
+        return super().initial(request, *args, **kwargs)
 
 
 class SimpleGenericMetadataView(GenericMetadataView):

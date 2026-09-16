@@ -254,6 +254,37 @@ test('Settings - Admin', async ({ browser }) => {
   await loadTab(page, 'Category Parameters');
   await loadTab(page, 'Label Templates');
   await loadTab(page, 'Report Templates');
+
+  // Check the "report snippets" panel
+  await loadTab(page, 'Report Snippets');
+  await page
+    .getByText(
+      'Snippets are reusable pieces of HTML content that can be inserted into reports and labels.'
+    )
+    .waitFor();
+
+  // Launch the dialog to upload a new snippet
+  await page.getByLabel('action-button-add-snippet').click();
+  await page.getByText('Add Snippet', { exact: true }).waitFor();
+  await page.locator('input[type="file"]').waitFor({ state: 'attached' });
+  await page.getByLabel('text-field-description').waitFor();
+  await page.getByRole('button', { name: 'Cancel' }).click();
+
+  // Check the "report assets" panel
+  await loadTab(page, 'Report Assets');
+  await page
+    .getByText(
+      'Assets are files (such as images) which can be used when rendering reports and labels.'
+    )
+    .waitFor();
+
+  // Launch the dialog to upload a new asset
+  await page.getByLabel('action-button-add-asset').click();
+  await page.getByText('Add Asset', { exact: true }).waitFor();
+  await page.locator('input[type="file"]').waitFor({ state: 'attached' });
+  await page.getByLabel('text-field-description').waitFor();
+  await page.getByRole('button', { name: 'Cancel' }).click();
+
   await loadTab(page, 'Plugins');
 
   // Adjust some "location type" items
@@ -337,15 +368,15 @@ test('Settings - Admin - Background Tasks', async ({ browser }) => {
 });
 
 test('Settings - Admin - Barcode History', async ({ browser }) => {
-  // Login with admin credentials
-  const page = await doCachedLogin(browser, {
-    user: adminuser
-  });
-
-  // Ensure that the "save scans" setting is enabled
+  // Ensure that the "save scans" setting is enabled; done before first load of test to reduce flakiness
   await setSettingState({
     setting: 'BARCODE_STORE_RESULTS',
     value: true
+  });
+
+  // Login with admin credentials
+  const page = await doCachedLogin(browser, {
+    user: adminuser
   });
 
   // Scan some barcodes (via API calls)
@@ -397,8 +428,6 @@ test('Settings - Admin - Barcode History', async ({ browser }) => {
   for (const barcode of barcodes) {
     await checkBarcode(barcode);
   }
-
-  await page.waitForTimeout(2500);
 });
 
 test('Settings - Admin - Parameter', async ({ browser }) => {

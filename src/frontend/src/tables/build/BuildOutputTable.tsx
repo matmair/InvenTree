@@ -33,6 +33,24 @@ import useTable from '@lib/hooks/UseTable';
 import type { TableFilter } from '@lib/types/Filters';
 import type { StockOperationProps } from '@lib/types/Forms';
 import type { TableColumn } from '@lib/types/Tables';
+import {
+  LocationColumn,
+  PartColumn,
+  RenderPartColumn,
+  StatusColumn
+} from '../../components/tables/ColumnRenderers';
+import {
+  BatchFilter,
+  HasBatchCodeFilter,
+  IsSerializedFilter,
+  SerialFilter,
+  SerialGTEFilter,
+  SerialLTEFilter,
+  StatusFilterOptions,
+  StockLocationFilter
+} from '../../components/tables/Filter';
+import { InvenTreeTable } from '../../components/tables/InvenTreeTable';
+import { TableHoverCard } from '../../components/tables/TableHoverCard';
 import { useApi } from '../../contexts/ApiContext';
 import {
   useBuildAutoAllocateFields,
@@ -45,6 +63,7 @@ import {
   useStockFields,
   useStockItemSerializeFields
 } from '../../forms/StockForms';
+import { compareTestResults } from '../../functions/comparison';
 import { InvenTreeIcon } from '../../functions/icons';
 import useBackgroundTask from '../../hooks/UseBackgroundTask';
 import {
@@ -54,24 +73,6 @@ import {
 import useStatusCodes from '../../hooks/UseStatusCodes';
 import { useStockAdjustActions } from '../../hooks/UseStockAdjustActions';
 import { useUserState } from '../../states/UserState';
-import {
-  LocationColumn,
-  PartColumn,
-  RenderPartColumn,
-  StatusColumn
-} from '../ColumnRenderers';
-import {
-  BatchFilter,
-  HasBatchCodeFilter,
-  IsSerializedFilter,
-  SerialFilter,
-  SerialGTEFilter,
-  SerialLTEFilter,
-  StatusFilterOptions,
-  StockLocationFilter
-} from '../Filter';
-import { InvenTreeTable } from '../InvenTreeTable';
-import { TableHoverCard } from '../TableHoverCard';
 import BuildLineTable from './BuildLineTable';
 
 type TestResultOverview = {
@@ -277,9 +278,7 @@ export default function BuildOutputTable({
           // Find the "newest" result for this template in the returned data
           const result = record.tests
             ?.filter((test: any) => test.template == template.pk)
-            .sort((a: any, b: any) => {
-              return a.pk < b.pk ? 1 : -1;
-            })
+            .sort(compareTestResults)
             .shift();
 
           if (template?.required && result?.result) {

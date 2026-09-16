@@ -11,14 +11,6 @@ import useTable from '@lib/hooks/UseTable';
 import type { TableFilter } from '@lib/types/Filters';
 import type { StockOperationProps } from '@lib/types/Forms';
 import type { TableColumn } from '@lib/types/Tables';
-import OrderPartsWizard from '../../components/wizards/OrderPartsWizard';
-import { formatCurrency, formatPriceRange } from '../../defaults/formatters';
-import { useStockFields } from '../../forms/StockForms';
-import { InvenTreeIcon } from '../../functions/icons';
-import { useCreateApiFormModal } from '../../hooks/UseForm';
-import { useStockAdjustActions } from '../../hooks/UseStockAdjustActions';
-import { useGlobalSettingsState } from '../../states/SettingsStates';
-import { useUserState } from '../../states/UserState';
 import {
   DateColumn,
   DescriptionColumn,
@@ -27,7 +19,7 @@ import {
   PartColumn,
   StatusColumn,
   StockColumn
-} from '../ColumnRenderers';
+} from '../../components/tables/ColumnRenderers';
 import {
   BatchFilter,
   CreatedAfterFilter,
@@ -45,8 +37,16 @@ import {
   TagsFilter,
   UpdatedAfterFilter,
   UpdatedBeforeFilter
-} from '../Filter';
-import { InvenTreeTable } from '../InvenTreeTable';
+} from '../../components/tables/Filter';
+import { InvenTreeTable } from '../../components/tables/InvenTreeTable';
+import OrderPartsWizard from '../../components/wizards/OrderPartsWizard';
+import { formatCurrency, formatPriceRange } from '../../defaults/formatters';
+import { useStockFields } from '../../forms/StockForms';
+import { InvenTreeIcon } from '../../functions/icons';
+import { useCreateApiFormModal } from '../../hooks/UseForm';
+import { useStockAdjustActions } from '../../hooks/UseStockAdjustActions';
+import { useGlobalSettingsState } from '../../states/SettingsStates';
+import { useUserState } from '../../states/UserState';
 
 /**
  * Construct a list of columns for the stock item table
@@ -412,6 +412,7 @@ export function StockItemTable({
   const newStockItemFields = useStockFields({
     create: true,
     partId: params.part,
+    locationId: params.location,
     supplierPartId: params.supplier_part,
     pricing: params.pricing,
     modalId: 'add-stock-item'
@@ -423,8 +424,7 @@ export function StockItemTable({
     modalId: 'add-stock-item',
     fields: newStockItemFields,
     initialData: {
-      part: params.part,
-      location: params.location
+      part: params.part
     },
     follow: params.openNewStockItem ?? true,
     table: table,

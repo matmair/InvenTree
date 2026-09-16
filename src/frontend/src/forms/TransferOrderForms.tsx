@@ -10,9 +10,9 @@ import {
   TableFieldQuantityInput,
   type TableFieldRowProps
 } from '../components/forms/fields/TableField';
+import { RenderPartColumn } from '../components/tables/ColumnRenderers';
 import { useCreateApiFormModal } from '../hooks/UseForm';
 import { useGlobalSettingsState } from '../states/SettingsStates';
-import { RenderPartColumn } from '../tables/ColumnRenderers';
 import { ProjectCodeField, TagsField } from './CommonFields';
 
 export function useTransferOrderFields({
@@ -54,13 +54,13 @@ export function useTransferOrderFields({
     if (!!duplicateOrderId) {
       fields.duplicate = {
         children: {
-          order_id: {
+          original: {
             hidden: true,
             value: duplicateOrderId
           },
           copy_lines: {},
-          // Transfer Orders don't have extra lines for now...
-          copy_extra_lines: { hidden: true, value: false }
+          copy_parameters: {},
+          copy_notes: {}
         }
       };
     }

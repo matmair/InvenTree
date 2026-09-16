@@ -154,7 +154,12 @@ type RowModelProps = {
   navigate: NavigateFunction;
 };
 
-export type RowViewProps = RowAction & RowModelProps;
+type RowViewBehaviorProps = {
+  isPreviewEnabled?: () => boolean;
+  openPreview?: (modelType: ModelType, modelId: number) => void;
+};
+
+export type RowViewProps = RowAction & RowModelProps & RowViewBehaviorProps;
 
 /**
  * Set of optional properties which can be passed to an InvenTreeTable component
@@ -163,6 +168,7 @@ export type RowViewProps = RowAction & RowModelProps;
  * @param tableState : TableState - State manager for the table
  * @param defaultSortColumn : string - Default column to sort by
  * @param noRecordsText : string - Text to display when no records are found
+ * @param bulkDeleteFilter : (record: any) => boolean - Callback function to determine if a record is eligible for bulk deletion
  * @param enableBulkDelete : boolean - Enable bulk deletion of records
  * @param enableDownload : boolean - Enable download actions
  * @param enableFilters : boolean - Enable filter actions
@@ -178,6 +184,7 @@ export type RowViewProps = RowAction & RowModelProps;
  * @param barcodeActions : any[] - List of barcode actions
  * @param tableFilters : TableFilter[] - List of custom filters
  * @param tableActions : any[] - List of custom action groups
+ * @param tableActionsFullWidth : boolean - Allow custom table actions to use the available header width
  * @param isRecordSelectable : (record: any, index: number) => boolean - Callback function to determine if a row is selectable
  * @param detailAction: boolean - Enable detail action for each row (default = true)
  * @param dataFormatter : (data: any) => any - Callback function to reformat data returned by server (if not in default format)
@@ -193,6 +200,7 @@ export type InvenTreeTableProps<T = any> = {
   params?: any;
   defaultSortColumn?: string;
   noRecordsText?: string;
+  bulkDeleteFilter?: (record: T) => boolean;
   enableBulkDelete?: boolean;
   enableDownload?: boolean;
   enableFilters?: boolean;
@@ -209,6 +217,7 @@ export type InvenTreeTableProps<T = any> = {
   barcodeActions?: React.ReactNode[];
   tableFilters?: TableFilter[];
   tableActions?: React.ReactNode[];
+  tableActionsFullWidth?: boolean;
   isRecordSelectable?: (record: T, index: number) => boolean;
   rowExpansion?: DataTableRowExpansionProps<T>;
   dataFormatter?: (data: any) => any;

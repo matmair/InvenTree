@@ -1,10 +1,13 @@
 """Tests for custom InvenTree management commands."""
 
+import os
+import subprocess
 from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
+from django.db import IntegrityError
 from django.test import TestCase
 
 from opentelemetry.instrumentation.sqlite3 import SQLite3Instrumentor
@@ -14,6 +17,48 @@ from InvenTree.config import get_testfolder_dir
 
 class CommandTestCase(TestCase):
     """Test case for custom management commands."""
+
+    def test_makemigrations_currency_overrides_no_changes(self):
+        """Ensure currency list changes do not cause migration drift."""
+        currency_sets = ['USD,EUR,GBP', 'JPY,CNY,KRW']
+
+        for currency_codes in currency_sets:
+            with self.subTest(currency_codes=currency_codes):
+                old_value = os.environ.get('INVENTREE_CURRENCY_CODES')
+
+                try:
+                    os.environ['INVENTREE_CURRENCY_CODES'] = currency_codes
+                    project_dir = Path(__file__).resolve().parents[1]
+
+                    result = subprocess.run(
+                        [
+                            'python3',
+                            'manage.py',
+                            'makemigrations',
+                            '--check',
+                            '--dry-run',
+                            '--verbosity',
+                            '0',
+                        ],
+                        cwd=project_dir,
+                        env=os.environ.copy(),
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+
+                    if result.returncode != 0:
+                        self.fail(
+                            'makemigrations reported schema changes '
+                            f'for INVENTREE_CURRENCY_CODES={currency_codes}\n'
+                            f'stdout:\n{result.stdout}\n'
+                            f'stderr:\n{result.stderr}'
+                        )
+                finally:
+                    if old_value is None:
+                        os.environ.pop('INVENTREE_CURRENCY_CODES', None)
+                    else:
+                        os.environ['INVENTREE_CURRENCY_CODES'] = old_value
 
     def test_schema(self):
         """Test the schema generation command."""
@@ -71,6 +116,50 @@ class CommandTestCase(TestCase):
         output = call_command('remove_mfa', username=my_admin3.username, verbosity=0)
         self.assertEqual(output, 'done')
         self.assertEqual(my_admin3.authenticator_set.all().count(), 0)
+
+    def test_bulkloaddata(self):
+        """Test the bulkloaddata command."""
+        from django.contrib.contenttypes.models import ContentType
+        from django.core import serializers
+
+        # ContentType has no custom signals and a real unique_together constraint
+        # (app_label, model), making it a convenient, side-effect-free test model.
+        entries = [
+            ContentType.objects.create(app_label='bulkloaddata_test', model=f'model{i}')
+            for i in range(5)
+        ]
+        pks = [e.pk for e in entries]
+        data = serializers.serialize('json', entries)
+        ContentType.objects.filter(pk__in=pks).delete()
+
+        tmp_file = get_testfolder_dir().joinpath('bulkloaddata_test.json')
+        tmp_file.write_text(data, encoding='utf-8')
+
+        try:
+            # Basic load - all records should be recreated
+            call_command('bulkloaddata', str(tmp_file), verbosity=0)
+            self.assertEqual(ContentType.objects.filter(pk__in=pks).count(), 5)
+
+            # Re-loading without --ignore-conflicts should raise (unique app_label/model)
+            with self.assertRaises(IntegrityError):
+                call_command('bulkloaddata', str(tmp_file), verbosity=0)
+
+            # Re-loading with --ignore-conflicts should succeed, without duplicating rows
+            call_command(
+                'bulkloaddata', str(tmp_file), verbosity=0, ignore_conflicts=True
+            )
+            self.assertEqual(ContentType.objects.filter(pk__in=pks).count(), 5)
+
+            # A small batch size should still load every record correctly
+            ContentType.objects.filter(pk__in=pks).delete()
+            call_command('bulkloaddata', str(tmp_file), verbosity=0, batch_size=2)
+            models = set(
+                ContentType.objects.filter(pk__in=pks).values_list('model', flat=True)
+            )
+            self.assertEqual(models, {e.model for e in entries})
+        finally:
+            ContentType.objects.filter(pk__in=pks).delete()
+            tmp_file.unlink(missing_ok=True)
 
     def test_backup_metadata(self):
         """Test the backup metadata functions."""

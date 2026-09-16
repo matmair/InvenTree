@@ -20,9 +20,9 @@ import type {
 } from '@lib/types/Forms';
 import type { TableFieldRowProps } from '../components/forms/fields/TableField';
 import { Thumbnail } from '../components/images/Thumbnail';
+import { StatusFilterOptions } from '../components/tables/Filter';
 import { useCreateApiFormModal } from '../hooks/UseForm';
 import { useGlobalSettingsState } from '../states/SettingsStates';
-import { StatusFilterOptions } from '../tables/Filter';
 import { ProjectCodeField, TagsField } from './CommonFields';
 
 export function useReturnOrderFields({
@@ -84,17 +84,13 @@ export function useReturnOrderFields({
     if (!!duplicateOrderId) {
       fields.duplicate = {
         children: {
-          order_id: {
+          original: {
             hidden: true,
             value: duplicateOrderId
           },
-          copy_lines: {
-            // Cannot duplicate lines from a return order!
-            value: false,
-            hidden: true
-          },
           copy_extra_lines: {},
-          copy_parameters: {}
+          copy_parameters: {},
+          copy_notes: {}
         }
       };
     }
@@ -138,6 +134,7 @@ export function useReturnOrderLineItemFields({
       },
       price: {},
       price_currency: {},
+      discount: {},
       project_code: ProjectCodeField(),
       target_date: {},
       notes: {},
