@@ -18,6 +18,7 @@ from django.core.files.storage import default_storage
 from django.db.models import Model
 from django.db.models.query import QuerySet
 from django.utils import translation
+from django.utils.html import format_html
 from django.utils.safestring import SafeString, mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -708,7 +709,7 @@ def internal_link(link, text) -> str:
         logger.warning('Failed to construct absolute URL for internal link')
         return text
 
-    return mark_safe(f'<a href="{url}">{text}</a>')
+    return format_html('<a href="{url}">{text}</a>', url=url, text=text)
 
 
 def make_decimal(value: Any) -> Any:
@@ -1066,13 +1067,18 @@ def render_html_text(text: str, **kwargs):
         tags.append('em')
 
     if heading := kwargs.get('heading', ''):
-        tags.append(heading)
+        if heading in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span']:
+            tags.append(heading)
 
-    output = ''.join([f'<{tag}>' for tag in tags])
-    output += text
-    output += ''.join([f'</{tag}>' for tag in tags])
+    output = text
 
-    return mark_safe(output)
+    # Wrap the text in the requested tags
+    for tag in reversed(tags):
+        output = format_html(
+            '<{tag}>{content}</{tag}>', tag=mark_safe(tag), content=output
+        )
+
+    return output
 
 
 @register.simple_tag
@@ -1242,8 +1248,11 @@ def icon(name, **kwargs):
         return ''
 
     unicode = chr(int(icon['variants'][variant], 16))
-    return mark_safe(
-        f'<i class="icon {kwargs.get("class", "")}" style="font-family: inventree-icon-font-{pack.prefix}">{unicode}</i>'
+    return format_html(
+        '<i class="icon {cls}" style="font-family: inventree-icon-font-{prefix}">{unicode}</i>',
+        cls=kwargs.get('class', ''),
+        prefix=pack.prefix,
+        unicode=unicode,
     )
 
 
