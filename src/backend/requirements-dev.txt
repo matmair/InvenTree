@@ -867,7 +867,7 @@ scim2-models==0.12.2 \
     #   -c src/backend/requirements.txt
     #   scim2-client
     #   scim2-tester
-scim2-tester[httpx]==0.5.2 \
+scim2-tester==0.5.2 \
     --hash=sha256:10bc7068620d1c24f4b5cea2216f86bb8d57d0e56e585d622814f7e6b337dce5 \
     --hash=sha256:f1d7f0d32eb66ff1b3aa48ce1ea272268322f902ce4bafdcd77f4c29b541e6a3
     # via -r src/backend/requirements-dev.in
