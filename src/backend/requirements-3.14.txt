@@ -107,16 +107,16 @@ blessed==1.51.0 \
     # via
     #   -c src/backend/requirements.txt
     #   -r src/backend/requirements.in
-boto3==1.43.114 \
-    --hash=sha256:be704857751564a5cf69c5bbaadbfa01c22806409815c73563db42fbffe583a2 \
-    --hash=sha256:d9cac2eb921ce674970cef1c9ad750f85ee3a846aedcf188d18368fb9eb6da23
+boto3==1.43.115 \
+    --hash=sha256:6667a0c21d48dc125dbba88444bc8a601ce881a99341a0e6169f9333898e620d \
+    --hash=sha256:c0f35e5f9cdf0edb365195e306d5586d3970b224660a11a87a4ec361ec3d7168
     # via
     #   -c src/backend/requirements.txt
     #   django-anymail
     #   django-storages
-botocore==1.43.114 \
-    --hash=sha256:d1c441a22e93e158de5b1e026205f5d6d67a4545d10540c5090c62dccb3a9eca \
-    --hash=sha256:f366fa4db518775632ad1eb128cd8203ca46396cecf37209d904f0bbc049ce90
+botocore==1.43.115 \
+    --hash=sha256:9ceda640c868bc15f5399129e8cfdef8cbb4b350e8a99547c9b5f477cfb9619a \
+    --hash=sha256:aa4d9c4e7ef99988b7347e0cd276ba84e1eb1625510557b0e36cd57ecb19bbf2
     # via
     #   -c src/backend/requirements.txt
     #   boto3
@@ -638,9 +638,9 @@ defusedxml==0.7.1 \
     # via
     #   -c src/backend/requirements.txt
     #   python3-openid
-django==5.2.17 \
-    --hash=sha256:9d4d93be539a18ab80d058eb515900e10951e04c537c5a6b394fc49528d3251f \
-    --hash=sha256:f04fb3b36ee119e1af4fa1d397d5fd6cf12700f49321e84d4f4c642c5b1973db
+django==6.1.2 \
+    --hash=sha256:141efee6ec64d1db6db90683bf734c550102450f444fb099063b0be1bd27d991 \
+    --hash=sha256:a1e92451ccb8b514e91bbb3b6d186d20b4030558f116b5d9de6535455ff210b7
     # via
     #   -c src/backend/requirements.txt
     #   -r src/backend/requirements.in
@@ -1408,9 +1408,9 @@ lxml==6.1.3 \
     #   -c src/backend/requirements.txt
     #   python3-saml
     #   xmlsec
-markdown==3.11.1 \
-    --hash=sha256:496f4f80f9ebd3395a04c8ec9595c40bbe8ec19e9c67d21fe071a1643e876606 \
-    --hash=sha256:f1fa378ba5d682900c9ecb55ccceacca936016dda7c3b27097e8ae03ff78feb5
+markdown==3.11.2 \
+    --hash=sha256:87bf5d90f2d2882e2c02fcda182c2800456b985bff38913867c49706481514b0 \
+    --hash=sha256:f80390747a2a0ff2ba54da074ce4f862f72a6685f608cd2637b646a6d83993f5
     # via
     #   -c src/backend/requirements.txt
     #   django-markdownify
@@ -1891,9 +1891,9 @@ pillow==13.0.0 \
     #   python-barcode
     #   qrcode
     #   weasyprint
-pint==0.26.1 \
-    --hash=sha256:1bbde36eae57a5a289cd05081c6405618a5899814940752064ce351cd0204f71 \
-    --hash=sha256:e982b129415c09c63308f314ae44697d83e5c96f253bcc0d5b833fc3329eb6d4
+pint==0.26.2 \
+    --hash=sha256:391e5d2fc01fdb121c113b8eb47386688575542c1f5144c465ff318bf5133573 \
+    --hash=sha256:c94124cdb19baa1a84bb65c8bb9a620a9636b9b9cd80f32f30ad7ff795ea2eb8
     # via
     #   -c src/backend/requirements.txt
     #   -r src/backend/requirements.in
@@ -2567,9 +2567,9 @@ rpds-py==2026.9.1 \
     #   -c src/backend/requirements.txt
     #   jsonschema
     #   referencing
-s3transfer==0.19.2 \
-    --hash=sha256:ba0309fd86be3c27dbf78cdd813c13c5e1df16e5874b99d2535ebbdfb9892993 \
-    --hash=sha256:d8168eccca828cbb2cd573675333f3bddd254313a9c42494b84c76b539e8ba25
+s3transfer==0.19.3 \
+    --hash=sha256:24eb7535804306355e31c952a90022bf5b2f9d760f9a11062c7493a217c08553 \
+    --hash=sha256:8326acc3d056d7f7b8a37110c7d2aea41f67e83f6ae79cd3b5fbcca34c726406
     # via
     #   -c src/backend/requirements.txt
     #   boto3
