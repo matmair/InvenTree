@@ -67,16 +67,16 @@ Documentation build complete, but zensical build not requested
 
 To generate the schema files *and* build the static HTML site (in `docs/site/`), including the post-build checks that all settings are documented, run:
 
-```
-$ invoke build-docs --build
+```bash
+invoke build-docs --build
 ```
 
 ## Viewing the documentation
 
 Generate the HTML files from the markdown source files, and start the zensical webpage server:
 
-```
-$ zensical serve -a localhost:8080 -f docs/mkdocs.yml
+```bash
+zensical serve -a localhost:8080 -f docs/mkdocs.yml
 ```
 
 You can then point your web browser at http://localhost:8080/
