@@ -509,9 +509,9 @@ cryptography==50.0.2 \
     #   -c src/backend/requirements-dev.txt
     #   -c src/backend/requirements.txt
     #   pdfminer-six
-django==5.2.19 \
-    --hash=sha256:5965d974a5218a2b68a11dd1276434707f23886525c23f0598eccedaf4f4ca00 \
-    --hash=sha256:ad03d8abc51dbff95ebf34b27123cf0c26a3b62db7ba0cd520783686362533d1
+django==6.1.3 \
+    --hash=sha256:a0530e3fdac55d34ccc5893c36f6c57d7a7083064f3d414537e51473648b3290 \
+    --hash=sha256:b5d2d9e35295065d13b1927b3f19a59bd119f737aa6299def14ccca1ae3c8c0d
     # via
     #   -c src/backend/requirements-3.14.txt
     #   -c src/backend/requirements-dev.txt
@@ -570,9 +570,9 @@ dnspython==2.9.2 \
     #   -c src/backend/requirements-dev.txt
     #   -c src/backend/requirements.txt
     #   email-validator
-email-validator==2.3.0 \
-    --hash=sha256:80f13f623413e6b197ae73bb10bf4eb0908faf509ad8362c5edeb0be7fd450b4 \
-    --hash=sha256:9fc05c37f2f6cf439ff414f8fc46d917929974a82244c20eb10231ba60c54426
+email-validator==2.4.0 \
+    --hash=sha256:4454e41c4e1c6b6caee34a1dc71d5e736791562be8fd179b02e298f796522684 \
+    --hash=sha256:be487bc50bc3bd832a98515a55a15649d9bec06d954fa178663190714b6c4ee1
     # via
     #   -c src/backend/requirements-3.14.txt
     #   -c src/backend/requirements-dev.txt
@@ -688,9 +688,9 @@ pip==26.3 \
     # via
     #   -c src/backend/requirements-dev.txt
     #   pip-tools
-pip-tools==7.6.2 \
-    --hash=sha256:04dbe0e25f3b60fbdeee17d0590dac7fe20039876aa410a946fc54dc926c09ba \
-    --hash=sha256:f37eb4b736859c2c30230e50977312c61918b7ef931071ff7811fd067715c25f
+pip-tools==7.7.0 \
+    --hash=sha256:210a8939ee5ad30734731a804a57dae35ba1fe0541175a289798e95948c624b9 \
+    --hash=sha256:4cee2e99ae34b37f81ae4b0947911ad462e41f07fc164e084b8f83af3f1efdad
     # via
     #   -c src/backend/requirements-dev.txt
     #   -r src/backend/requirements-dev.in
@@ -700,17 +700,17 @@ pluggy==1.7.0 \
     # via
     #   -c src/backend/requirements-dev.txt
     #   pytest
-prek==0.5.10 \
-    --hash=sha256:0b47b06f8f118b0dc4cb8663492fd64fb90408dfe20d596dea3767003d716b2f \
-    --hash=sha256:175ef58e5aab13e6d6a1a41409ed011dfae62bc60180b227bb7192803e980010 \
-    --hash=sha256:35e50990aa83d52f3a54c2a5be9cfe60649b07a02c5ec252e834d830f6903ee8 \
-    --hash=sha256:647cee631058495c6a16560624ca48fed8020d835cc944c6b6941a515827f0fe \
-    --hash=sha256:6aaaff95bd6fe1bd0ceef3d76e17c798eafc740be19ab36c28fa15329d35ed16 \
-    --hash=sha256:b4a5667c09ae692be1ed930b9cef23258c3a648ea89aa1a737a16317ea78f718 \
-    --hash=sha256:bfb3c7072fc9c5c49d715c015693f4ea6ef7b051f134eac158ed7753e6f00101 \
-    --hash=sha256:d6dc6bde07884cf7b065bfe901416343e9ed187ab41d26fcb29e219ac1759415 \
-    --hash=sha256:e689633358ec7c0e3dd3d0d9bce55613a9f78fc31ce3b4a16cdce70bb1d1d47a \
-    --hash=sha256:f527aff6b0f66fe1b25d69c8b52cd3855eecd0bde6a7b092d068cf3459d61492
+prek==0.5.11 \
+    --hash=sha256:1cce91fe6524e1b2dfc4e5f40353caa0b62e2db9ae4b2bab314958027663a712 \
+    --hash=sha256:2e530bd4c8975c6ac6eae20c70fa54c50714d56279040cc3c2b0bce279c0c84e \
+    --hash=sha256:95da482d8f1d3323beea219e95b6bbe31a27d3b14943148d3c4eac94e9f7d7ee \
+    --hash=sha256:96503d57ea00e3f2b10942b340031396c7956b602ebb3719d090a401653800da \
+    --hash=sha256:99c8363ca07b881dc49cf71eb3c362670c95d0d554fc375ceee0245548081829 \
+    --hash=sha256:c343b4e40e5aa5851fd0526c49ad8f52c4c688cde848fa95f57db91c15c67215 \
+    --hash=sha256:c90b274d8eb35f28d6b70907b9d757072e20dccde1bdb7d19eeb85aac9c37ee3 \
+    --hash=sha256:ca78936abfb2793ba9d6b9b4ac0e4eb13189bcfabd16d94c29aa573963bac87f \
+    --hash=sha256:e5cbd96ed40c04a7909d98a9b8cd1d38e8e63d52e97932f09e1733b9f51bd6ac \
+    --hash=sha256:e74faafdaf9512580c5d0fefa2891d5a092f92a4ff4e996cae6869922d830e32
     # via
     #   -c src/backend/requirements-dev.txt
     #   -r src/backend/requirements-dev.in
@@ -971,9 +971,9 @@ scim2-models==0.12.4 \
     #   -c src/backend/requirements.txt
     #   scim2-client
     #   scim2-tester
-scim2-tester==0.6.4 \
-    --hash=sha256:a4d5e522f228d2d2afaa147d66c641bc5659dcdde5967411fb4b830b08198a8a \
-    --hash=sha256:df8c582d391511ae7f0d35e0d7bfe4916c79571af22768ab96cc43599765b144
+scim2-tester==0.6.5 \
+    --hash=sha256:e31bf17eef9adda3dcb13932b055a0581b24ea129ce451831b25fe9bdd3ba2eb \
+    --hash=sha256:ee49ea896b63562cb466f913b66f35593428b38b691450ed10058245c83404c4
     # via
     #   -c src/backend/requirements-dev.txt
     #   -r src/backend/requirements-dev.in

@@ -1,5 +1,5 @@
 # Please keep this list sorted - if you pin a version provide a reason
-django<6.0                              # Django package
+django<7.0                              # Django package
 blessed                                 # CLI for Q Monitor
 cryptography                            # Core cryptographic functionality
 django-anymail[amazon_ses,postal]       # Email backend for various providers
@@ -10,7 +10,7 @@ django-cors-headers                     # CORS headers extension for DRF
 django-dbbackup                         # Backup / restore of database and media files
 django-error-report-2                   # Error report viewer for the admin interface
 django-filter                           # Extended filtering options
-django-fsm-2<4.3.0                      # Finite state machine for Django models
+django-fsm-2<4.4.0                      # Finite state machine for Django models
 django-flags                            # Feature flags
 django-ical                             # iCal export for calendar views
 django-maintenance-mode                 # Shut down application while reloading etc.
