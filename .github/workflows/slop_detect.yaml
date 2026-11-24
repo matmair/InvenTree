@@ -1,5 +1,6 @@
 # Detect suspicious patterns and flag PRs
 name: Slop Detect
+
 on:
   pull_request_target:
     types: [opened, reopened]
